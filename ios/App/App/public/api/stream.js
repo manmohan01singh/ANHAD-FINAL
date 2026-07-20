@@ -14,6 +14,7 @@ const ALLOWED_HOSTS = [
   'radio.gurbanisewa.org',
   'sgpc.net',
   'live.sgpc.net',
+  'radio.sikhnet.com',   // HTTPS proxy streams — no port restrictions
   'play.sikhnet.com',
   'www.sikhnet.com',
 ];
@@ -39,6 +40,10 @@ export default async function handler(req) {
     return new Response('Host not allowed: ' + parsedUrl.hostname, { status: 403 });
   }
 
+  // Use AbortController with 8-second timeout to fail fast if stream is offline
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 8000);
+
   try {
     const upstream = await fetch(targetUrl, {
       headers: {
@@ -46,8 +51,10 @@ export default async function handler(req) {
         'Icy-MetaData': '1',
         'Connection': 'keep-alive',
       },
-      // Edge runtime supports streaming responses
+      signal: controller.signal,
     });
+
+    clearTimeout(timeoutId);
 
     const contentType = upstream.headers.get('content-type') || 'audio/mpeg';
     const responseHeaders = new Headers({
@@ -70,6 +77,10 @@ export default async function handler(req) {
       headers: responseHeaders,
     });
   } catch (err) {
+    clearTimeout(timeoutId);
+    if (err.name === 'AbortError') {
+      return new Response('Stream timeout: upstream did not respond in 8s (stream may be offline)', { status: 504 });
+    }
     return new Response('Stream fetch failed: ' + err.message, { status: 502 });
   }
 }

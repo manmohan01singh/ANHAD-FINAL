@@ -85,9 +85,9 @@
         if (theme === 'auto') {
             let autoBg = '#FAF8F5';
             if (timeOfDay === 'morning') autoBg = '#FFF5EC';
-            else if (timeOfDay === 'day') autoBg = '#FFFDF9';
+            else if (timeOfDay === 'day') autoBg = '#FAF8F5';
             else if (timeOfDay === 'evening') autoBg = '#FFF8E7';
-            else if (timeOfDay === 'night') autoBg = '#0F0F12';
+            else if (timeOfDay === 'night') autoBg = '#0D0D0F';
             html.style.setProperty('background-color', autoBg, 'important');
         }
 

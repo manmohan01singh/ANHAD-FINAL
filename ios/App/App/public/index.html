@@ -37,9 +37,9 @@
         let bg = (effectiveTheme === 'dark') ? '#0D0D0F' : '#FAF8F5';
         if (theme === 'auto') {
           if (timeOfDay === 'morning') bg = '#FFF5EC';
-          else if (timeOfDay === 'day') bg = '#FFFDF9';
+          else if (timeOfDay === 'day') bg = '#FAF8F5';
           else if (timeOfDay === 'evening') bg = '#FFF8E7';
-          else if (timeOfDay === 'night') bg = '#0F0F12';
+          else if (timeOfDay === 'night') bg = '#0D0D0F';
         }
         document.documentElement.style.setProperty('background-color', bg, 'important');
 
@@ -52,7 +52,7 @@
         }
         if (theme === 'auto' && document.documentElement.hasAttribute('data-anhad-home')) {
           if (timeOfDay === 'morning') { _v = '--bg-primary:#FFF5EC;--bg-secondary:#FFEBD8;--bg-tertiary:#FFE0C4;--text-primary:#3E2723;--text-secondary:#7D6B58;--text-accent:#E8A87C;--border-color:rgba(232,168,124,0.2);--shadow-color:rgba(0,0,0,0.15);--highlight-color:#FFD60A;--btn-bg:#E8A87C;--btn-text:#FFFFFF;--card-green-gradient:linear-gradient(140deg,#FFF0E6 0%,#FFE4CC 100%);--card-gold-gradient:linear-gradient(140deg,#FFF5DC 0%,#FFE8B0 100%);--card-purple-gradient:linear-gradient(140deg,#FFF0F0 0%,#FFE0D8 100%);--card-blue-gradient:linear-gradient(140deg,#FFF3E8 0%,#FFE6D0 100%);--card-rose-gradient:linear-gradient(140deg,#FFF0E6 0%,#FFD8C4 100%);--card-event-gradient:linear-gradient(160deg,#FFF8F2 0%,#FFF0E0 25%,#FFE8CC 50%,#FFE0B8 75%,#FFD8A0 100%);--event-title-color:#72500A;--event-title-shadow:0 1px 1px rgba(255,255,255,0.6)'; }
-          else if (timeOfDay === 'day') { _v = '--bg-primary:#FFFDF9;--bg-secondary:#FFF8EE;--bg-tertiary:#FFF2DF;--text-primary:#1C1C1E;--text-secondary:#8E8E93;--text-accent:#D4943A;--border-color:rgba(212,148,58,0.15);--shadow-color:rgba(0,0,0,0.15);--highlight-color:#FFD60A;--btn-bg:#D4943A;--btn-text:#FFFFFF;--card-green-gradient:linear-gradient(140deg,#F2FAEE 0%,#E0F5D6 100%);--card-gold-gradient:linear-gradient(140deg,#FFFBEE 0%,#FFF3CC 100%);--card-purple-gradient:linear-gradient(140deg,#F5F0FC 0%,#E8DCFA 100%);--card-blue-gradient:linear-gradient(140deg,#EEF6FF 0%,#D8ECFF 100%);--card-rose-gradient:linear-gradient(140deg,#FFF0F3 0%,#FFD8E0 100%);--card-event-gradient:linear-gradient(160deg,#FFFCF8 0%,#FFF8EE 25%,#FFF2E0 50%,#FFE8C8 75%,#FFECB3 100%);--event-title-color:#72500A;--event-title-shadow:0 1px 1px rgba(255,255,255,0.6)'; }
+          else if (timeOfDay === 'day') { _v = '--bg-primary:#FAF8F5;--bg-secondary:#F2F2F7;--bg-tertiary:#E5E5EA;--text-primary:#1C1C1E;--text-secondary:#8E8E93;--text-accent:#007AFF;--border-color:rgba(0,0,0,0.1);--shadow-color:rgba(0,0,0,0.15);--highlight-color:#FFD60A;--btn-bg:#007AFF;--btn-text:#FFFFFF;--card-green-gradient:linear-gradient(140deg,#E8F5E9 0%,#C8E6C9 100%);--card-gold-gradient:linear-gradient(140deg,#FFF8E1 0%,#FFECB3 100%);--card-purple-gradient:linear-gradient(140deg,#EDE7F6 0%,#D1C4E9 100%);--card-blue-gradient:linear-gradient(140deg,#E3F2FD 0%,#BBDEFB 100%);--card-rose-gradient:linear-gradient(140deg,#FFEBEE 0%,#FFCDD2 100%);--card-event-gradient:linear-gradient(160deg,#FFFCF8 0%,#FFF8EE 25%,#FFF2E0 50%,#FFE8C8 75%,#FFECB3 100%);--event-title-color:#72500A;--event-title-shadow:0 1px 1px rgba(255,255,255,0.6)'; }
           else if (timeOfDay === 'evening') { _v = '--bg-primary:#FFF8E7;--bg-secondary:#FFF0D4;--bg-tertiary:#FFE4B5;--text-primary:#3B2A00;--text-secondary:#7A6A4F;--text-accent:#B8860B;--border-color:rgba(184,134,11,0.25);--shadow-color:rgba(0,0,0,0.15);--highlight-color:#FFD60A;--btn-bg:#B8860B;--btn-text:#FFFFFF;--card-green-gradient:linear-gradient(140deg,#F5F5DC 0%,#EEEEC0 100%);--card-gold-gradient:linear-gradient(140deg,#FFF8D8 0%,#FFE896 100%);--card-purple-gradient:linear-gradient(140deg,#FFF0E8 0%,#FFE0C8 100%);--card-blue-gradient:linear-gradient(140deg,#F8F0D8 0%,#EEE4B8 100%);--card-rose-gradient:linear-gradient(140deg,#FFF0D8 0%,#FFE0B0 100%);--card-event-gradient:linear-gradient(160deg,#FFF8E8 0%,#FFF0D0 25%,#FFE8B8 50%,#FFE0A0 75%,#FFD888 100%);--event-title-color:#4A3500;--event-title-shadow:0 1px 1px rgba(255,255,255,0.4)'; }
         }
         var _s = document.createElement('style');
@@ -414,82 +414,90 @@
        TIME-BASED COLOR PALETTE FOR HEADER BUTTONS (AUTO MODE)
        ═══════════════════════════════════════════════════════════════ */
     
-    /* DAY TIME: Light blue tint */
+    /* DAY TIME: Same as light mode — neutral white glass, no sky-blue tint */
     [data-theme-mode="auto"][data-time-of-day="day"] .header__left,
     [data-theme-mode="auto"][data-time-of-day="day"] .header__right {
-      background: rgba(220, 244, 255, 0.15) !important;
-      border: 0.5px solid rgba(80, 160, 230, 0.25) !important;
+      background: rgba(255, 255, 255, 0.72) !important;
+      border: 0.5px solid rgba(0, 0, 0, 0.08) !important;
       box-shadow: 
-        0 2px 12px rgba(80, 160, 230, 0.15),
-        inset 0 1px 1px rgba(200, 230, 255, 0.2) !important;
+        0 2px 12px rgba(0, 0, 0, 0.08),
+        inset 0 1px 1px rgba(255, 255, 255, 0.9) !important;
     }
     
-    /* MORNING TIME: Peach/warm tint */
+    /* MORNING TIME: Soft cushion clay — white border, no orange ring */
     [data-theme-mode="auto"][data-time-of-day="morning"] .header__left,
     [data-theme-mode="auto"][data-time-of-day="morning"] .header__right {
-      background: rgba(255, 230, 220, 0.15) !important;
-      border: 0.5px solid rgba(220, 110, 80, 0.25) !important;
+      background: linear-gradient(145deg, rgba(255,253,249,0.92), rgba(255,229,208,0.85)) !important;
+      border: 1px solid rgba(255, 255, 255, 0.9) !important;
       box-shadow: 
-        0 2px 12px rgba(220, 110, 80, 0.15),
-        inset 0 1px 1px rgba(255, 240, 230, 0.2) !important;
+        3px 3px 8px rgba(232, 148, 100, 0.08),
+        -3px -3px 8px rgba(255, 255, 255, 0.95),
+        inset 1.5px 1.5px 3px rgba(255, 255, 255, 0.95),
+        inset -1.5px -1.5px 3px rgba(232, 148, 100, 0.05) !important;
     }
     
-    /* EVENING TIME: Orange/sunset tint */
+    /* EVENING TIME: Soft cushion clay — white border, no orange ring */
     [data-theme-mode="auto"][data-time-of-day="evening"] .header__left,
     [data-theme-mode="auto"][data-time-of-day="evening"] .header__right {
-      background: rgba(255, 228, 198, 0.15) !important;
-      border: 0.5px solid rgba(190, 80, 30, 0.25) !important;
+      background: linear-gradient(145deg, rgba(255,253,248,0.92), rgba(255,236,184,0.85)) !important;
+      border: 1px solid rgba(255, 255, 255, 0.9) !important;
       box-shadow: 
-        0 2px 12px rgba(190, 80, 30, 0.15),
-        inset 0 1px 1px rgba(255, 240, 220, 0.2) !important;
+        3px 3px 8px rgba(184, 134, 11, 0.08),
+        -3px -3px 8px rgba(255, 255, 255, 0.95),
+        inset 1.5px 1.5px 3px rgba(255, 255, 255, 0.95),
+        inset -1.5px -1.5px 3px rgba(184, 134, 11, 0.05) !important;
     }
     
-    /* NIGHT TIME: Golden/amber tint */
+    /* NIGHT TIME: Dark mode glass — matches data-theme=dark styling */
     [data-theme-mode="auto"][data-time-of-day="night"] .header__left,
     [data-theme-mode="auto"][data-time-of-day="night"] .header__right {
-      background: rgba(212, 148, 58, 0.08) !important;
-      border: 0.5px solid rgba(212, 148, 58, 0.18) !important;
+      background: rgba(255, 255, 255, 0.04) !important;
+      border: 0.5px solid rgba(255, 255, 255, 0.08) !important;
       box-shadow: 
-        0 2px 12px rgba(212, 148, 58, 0.12),
-        inset 0 1px 1px rgba(255, 230, 180, 0.1) !important;
+        0 2px 12px rgba(0, 0, 0, 0.25),
+        inset 0 1px 1px rgba(255, 255, 255, 0.08) !important;
     }
     
     /* CENTER TITLE PILL TIME-BASED COLORS */
     
-    /* DAY TIME: Light blue tint */
+    /* DAY TIME: Same as light mode — neutral white glass, no sky-blue tint */
     [data-theme-mode="auto"][data-time-of-day="day"] .anhad-title-pill {
-      background: rgba(220, 244, 255, 0.12) !important;
-      border: 0.5px solid rgba(80, 160, 230, 0.22) !important;
+      background: rgba(255, 255, 255, 0.68) !important;
+      border: 0.5px solid rgba(0, 0, 0, 0.07) !important;
       box-shadow: 
-        0 2px 12px rgba(80, 160, 230, 0.12),
-        inset 0 1px 1px rgba(200, 230, 255, 0.18) !important;
+        0 2px 12px rgba(0, 0, 0, 0.07),
+        inset 0 1px 1px rgba(255, 255, 255, 0.85) !important;
     }
     
-    /* MORNING TIME: Peach tint */
+    /* MORNING TIME: Soft cushion clay pill — white border */
     [data-theme-mode="auto"][data-time-of-day="morning"] .anhad-title-pill {
-      background: rgba(255, 230, 220, 0.12) !important;
-      border: 0.5px solid rgba(220, 110, 80, 0.22) !important;
+      background: linear-gradient(145deg, rgba(255,253,249,0.9), rgba(255,229,208,0.8)) !important;
+      border: 1px solid rgba(255, 255, 255, 0.9) !important;
       box-shadow: 
-        0 2px 12px rgba(220, 110, 80, 0.12),
-        inset 0 1px 1px rgba(255, 240, 230, 0.18) !important;
+        3px 3px 8px rgba(232, 148, 100, 0.08),
+        -3px -3px 8px rgba(255, 255, 255, 0.95),
+        inset 1.5px 1.5px 3px rgba(255, 255, 255, 0.95),
+        inset -1.5px -1.5px 3px rgba(232, 148, 100, 0.05) !important;
     }
     
-    /* EVENING TIME: Orange tint */
+    /* EVENING TIME: Soft cushion clay pill — white border */
     [data-theme-mode="auto"][data-time-of-day="evening"] .anhad-title-pill {
-      background: rgba(255, 228, 198, 0.12) !important;
-      border: 0.5px solid rgba(190, 80, 30, 0.22) !important;
+      background: linear-gradient(145deg, rgba(255,253,248,0.9), rgba(255,236,184,0.8)) !important;
+      border: 1px solid rgba(255, 255, 255, 0.9) !important;
       box-shadow: 
-        0 2px 12px rgba(190, 80, 30, 0.12),
-        inset 0 1px 1px rgba(255, 240, 220, 0.18) !important;
+        3px 3px 8px rgba(184, 134, 11, 0.08),
+        -3px -3px 8px rgba(255, 255, 255, 0.95),
+        inset 1.5px 1.5px 3px rgba(255, 255, 255, 0.95),
+        inset -1.5px -1.5px 3px rgba(184, 134, 11, 0.05) !important;
     }
     
-    /* NIGHT TIME: Golden tint */
+    /* NIGHT TIME: Dark mode glass — matches data-theme=dark styling */
     [data-theme-mode="auto"][data-time-of-day="night"] .anhad-title-pill {
-      background: rgba(212, 148, 58, 0.08) !important;
-      border: 0.5px solid rgba(212, 148, 58, 0.18) !important;
+      background: rgba(255, 255, 255, 0.04) !important;
+      border: 0.5px solid rgba(255, 255, 255, 0.08) !important;
       box-shadow: 
-        0 2px 12px rgba(212, 148, 58, 0.12),
-        inset 0 1px 1px rgba(255, 230, 180, 0.1) !important;
+        0 2px 12px rgba(0, 0, 0, 0.25),
+        inset 0 1px 1px rgba(255, 255, 255, 0.08) !important;
     }
     
     /* CENTER TITLE - SEPARATE WATERDROPLET */
@@ -561,12 +569,12 @@
       -webkit-text-fill-color: #8B3A0E !important;
     }
     
-    /* NIGHT TIME: Soft golden title (not glowing) */
+    /* NIGHT TIME: Bright golden title on dark bg — same as dark mode */
     [data-theme-mode="auto"][data-time-of-day="night"] .anhad-title-pill h1.header__title,
     [data-theme-mode="auto"][data-time-of-day="night"] h1.header__title {
-      color: #D4AF37 !important;
-      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
-      -webkit-text-fill-color: #D4AF37 !important;
+      color: #FFEB3B !important;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6) !important;
+      -webkit-text-fill-color: #FFEB3B !important;
     }
     
     /* LIGHT MODE: Dark title for visibility */
@@ -2637,7 +2645,13 @@
     </defs>
   </svg>
 
-  <main class="app" id="app">
+  <main class="app" id="app" style="position: relative;">
+    
+    <!-- Dynamic Time-Based Orbs — BEHIND ALL CONTENT (No Green) -->
+    <div class="time-orb time-orb-1" aria-hidden="true"></div>
+    <div class="time-orb time-orb-2" aria-hidden="true"></div>
+    <div class="time-orb time-orb-3" aria-hidden="true"></div>
+
     <!-- ════════════════════════════════════════════════════════════════════
          HEADER — Avatar | ANHAD | Emoji Actions
     ════════════════════════════════════════════════════════════════════ -->
@@ -2647,7 +2661,7 @@
         <button class="header__btn ios-haptic" id="settingsBtn"
            aria-label="Settings"
            title="Settings"
-           onclick="window.location.href='./Settings/index.html'"
+           onclick="try{sessionStorage.setItem('anhad_welcomed','1');localStorage.setItem('anhad_welcome_seen','true');localStorage.setItem('anhad_session_active_ts',Date.now().toString());}catch(e){} window.location.href='./Settings/index.html'"
            style="display: flex; align-items: center; justify-content: center; border: none; background: inherit; cursor: pointer;">
           <span class="ios-emoji" role="img" aria-label="settings" style="font-size: 20px;">⚙️</span>
         </button>
@@ -2896,6 +2910,14 @@
     <!-- ════════════════════════════════════════════════════════════════════
          GURPURAB SPECIAL MODE — Divine Visual Effects Container
     ════════════════════════════════════════════════════════════════════ -->
+    <!-- Day Mode Background Orbs (Static decoration) -->
+    <div class="day-orbs-container" aria-hidden="true">
+      <div class="day-orb day-orb-1"></div>
+      <div class="day-orb day-orb-2"></div>
+      <div class="day-orb day-orb-3"></div>
+      <div class="day-orb day-orb-4"></div>
+    </div>
+
     <div class="gurpurab-container" id="gurpurabContainer" aria-hidden="true">
       <!-- Ambient Glow Layer -->
       <div class="gurpurab-ambient-glow"></div>

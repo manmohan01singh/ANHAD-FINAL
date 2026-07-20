@@ -386,6 +386,12 @@ class NaamAbhyas {
                 }
             }
 
+            // Always schedule random spiritual notifications (regardless of enabled state)
+            // Deferred to not block initial render
+            setTimeout(() => {
+                try { this.scheduleRandomSpiritualNotifications(); } catch (e) { /* non-critical */ }
+            }, 2000);
+
             // HIDE LOADING SCREEN NOW
             this.hideLoadingScreen();
             this.isInitialized = true;
@@ -1369,6 +1375,9 @@ class NaamAbhyas {
         }
 
         console.log('🔔 Scheduled notifications for upcoming sessions (local + SW)');
+
+        // Also schedule random spiritual nudges (always, not just when Naam Abhyas is on)
+        try { this.scheduleRandomSpiritualNotifications(); } catch (e) { /* non-critical */ }
     }
 
     /**
@@ -1619,6 +1628,229 @@ class NaamAbhyas {
                     const store = db.createObjectStore(STORE_NAME, { keyPath: 'id' });
                     store.createIndex('scheduledTime', 'scheduledTime', { unique: false });
                     store.createIndex('fired', 'fired', { unique: false });
+                }
+            };
+        });
+    }
+
+    /**
+     * ═══════════════════════════════════════════════════════════════════════
+     * RANDOM SPIRITUAL NOTIFICATIONS — 5-6 daily spiritual nudges
+     * These fire at random times regardless of Naam Abhyas enabled state.
+     * Deep-links to relevant pages (Hukamnama, Nitnem, Radio, etc.)
+     * ═══════════════════════════════════════════════════════════════════════
+     */
+    scheduleRandomSpiritualNotifications() {
+        if (!('Notification' in window) || Notification.permission !== 'granted') {
+            console.log('[NaamAbhyas] Random spiritual notifs: permission not granted, skipping');
+            return;
+        }
+
+        // Only schedule once per day
+        const today = new Date().toLocaleDateString('en-CA');
+        const lastScheduled = localStorage.getItem('anhad_random_notif_scheduled_date');
+        if (lastScheduled === today) {
+            console.log('[NaamAbhyas] Random spiritual notifs already scheduled for today');
+            return;
+        }
+
+        // Mark as scheduled for today
+        localStorage.setItem('anhad_random_notif_scheduled_date', today);
+
+        // ─── Define the pool of random spiritual nudges ───
+        const SPIRITUAL_NUDGES = [
+            {
+                id: 'rn_hukamnama',
+                title: '📖 ਅੱਜ ਦਾ ਹੁਕਮਨਾਮਾ | Hukamnama',
+                messages: [
+                    'ਅੱਜ ਦਾ ਹੁਕਮਨਾਮਾ ਸਾਹਿਬ ਪੜ੍ਹਿਆ? ਜੇ ਨਹੀਂ ਤਾਂ ਹੁਣੇ ਕਰ ਸਕਦੇ ਹੋ 🙏',
+                    'Waheguru Ji\'s divine command for today is waiting for you. Read Hukamnama now 📖',
+                    'ਗੁਰੂ ਦੀ ਕ੍ਰਿਪਾ — ਅੱਜ ਦਾ ਹੁਕਮਨਾਮਾ ਸਾਹਿਬ ਪੜ੍ਹੋ',
+                    'Start your day with divine guidance. Today\'s Hukamnama Sahib awaits 🌅'
+                ],
+                url: 'Hukamnama/daily-hukamnama.html',
+                icon: 'assets/icon-192x192.png',
+                timeWindows: [{ startHour: 6, endHour: 10 }, { startHour: 12, endHour: 14 }]
+            },
+            {
+                id: 'rn_nitnem',
+                title: '🙏 ਨਿਤਨੇਮ | Nitnem Reminder',
+                messages: [
+                    'ਅੱਜ ਦਾ ਨਿਤਨੇਮ ਕੀਤਾ? ਗੁਰਬਾਣੀ ਦਾ ਪਾਠ ਕਰੋ ਅਤੇ ਮਨ ਨੂੰ ਸ਼ਾਂਤੀ ਮਿਲੇਗੀ 📿',
+                    'Have you completed your Nitnem today? Japji Sahib is just a tap away 🌸',
+                    'ਗੁਰੂ ਕੀ ਬਾਣੀ ਪੜ੍ਹੋ — ਨਿਤਨੇਮ ਦਾ ਸਮਾਂ ਹੈ',
+                    'Nitnem is your daily bread for the soul. Take 15 minutes right now 🙏'
+                ],
+                url: 'NitnemTracker/nitnem-tracker.html',
+                icon: 'assets/icon-192x192.png',
+                timeWindows: [{ startHour: 5, endHour: 9 }, { startHour: 18, endHour: 20 }]
+            },
+            {
+                id: 'rn_kirtan',
+                title: '🎵 ਕੀਰਤਨ ਸੁਣੋ | Listen to Kirtan',
+                messages: [
+                    'ਕੀਰਤਨ ਸੁਣੋ ਅਤੇ ਮਨ ਨੂੰ ਸ਼ਾਂਤੀ ਦਿਓ — Darbar Sahib live kirtan is on 🎵',
+                    'Tune in to live kirtan from Sri Harmandir Sahib right now 🕌',
+                    'ਸ਼ਬਦ ਸੁਣਿਆ ਸਭਨਾ ਭਾਇਆ — Listen to shabad kirtan and feel the divine',
+                    'Live kirtan is playing. Plug in your earphones and connect with Waheguru 🎧'
+                ],
+                url: 'GurbaniRadio/gurbani-radio.html',
+                icon: 'assets/Darbar-sahib-AMRITVELA.webp',
+                timeWindows: [{ startHour: 8, endHour: 12 }, { startHour: 15, endHour: 19 }]
+            },
+            {
+                id: 'rn_simran',
+                title: '☬ ਵਾਹਿਗੁਰੂ ਸਿਮਰਨ | Naam Simran',
+                messages: [
+                    'ਵਾਹਿਗੁਰੂ ਵਾਹਿਗੁਰੂ ਵਾਹਿਗੁਰੂ ਵਾਹਿਗੁਰੂ... ਜਪੋ ਜੀ ਸਤਿ ਨਾਮੁ 🙏',
+                    'Take 2 minutes right now for Naam Simran. Breathe in Waheguru, breathe out peace ☬',
+                    'ਸਿਮਰਉ ਸਿਮਰਿ ਸਿਮਰਿ ਸੁਖ ਪਾਵਉ — Remember the Name and find peace',
+                    'Your soul is calling. Close your eyes for just 2 minutes and chant Waheguru 🕊️'
+                ],
+                url: 'NaamAbhyas/naam-abhyas.html',
+                icon: 'assets/icon-192x192.png',
+                timeWindows: [{ startHour: 7, endHour: 11 }, { startHour: 13, endHour: 17 }, { startHour: 20, endHour: 22 }]
+            },
+            {
+                id: 'rn_gurpurab',
+                title: '🌸 ਗੁਰਪੁਰਬ ਯਾਦ | Gurpurab Reminder',
+                messages: [
+                    'ਅੱਜ ਕੋਈ ਗੁਰਪੁਰਬ ਹੈ? ਐਪ ਵਿੱਚ ਦੇਖੋ ਅਤੇ ਜਾਣਕਾਰੀ ਲਵੋ 📅',
+                    'Check today\'s Gurpurab calendar. Every day is blessed by the Gurus 🌺',
+                    'ਗੁਰੂ ਦੀ ਕ੍ਰਿਪਾ — ਅੱਜ ਦੇ ਗੁਰਪੁਰਬ ਬਾਰੇ ਜਾਣੋ',
+                    'Guru\'s blessings are always flowing. See what\'s happening in the Sikh world today 📖'
+                ],
+                url: 'index.html',
+                icon: 'assets/icon-192x192.png',
+                timeWindows: [{ startHour: 9, endHour: 12 }, { startHour: 17, endHour: 20 }]
+            },
+            {
+                id: 'rn_wisdom',
+                title: '💎 ਗੁਰੂ ਦੀ ਸਿੱਖਿਆ | Guru\'s Wisdom',
+                messages: [
+                    'ਇੱਕ ਪਲ ਲਈ ਰੁਕੋ — ਗੁਰਬਾਣੀ ਦੀ ਇੱਕ ਪੰਕਤੀ ਯਾਦ ਕਰੋ 💎',
+                    '"ਨਾਨਕ ਨਾਮੁ ਜਪਹੁ ਮਨ ਮੇਰੇ" — Have you reflected on Gurbani today?',
+                    'ਸਤਿ ਨਾਮੁ ਕਰਤਾ ਪੁਰਖੁ — The True Name is the Creator Being. Remember this today 🙏',
+                    'A moment of reflection: "ਵਾਹਿਗੁਰੂ" is the answer to every question life asks you ☬'
+                ],
+                url: 'index.html',
+                icon: 'assets/icon-192x192.png',
+                timeWindows: [{ startHour: 10, endHour: 14 }, { startHour: 16, endHour: 21 }]
+            }
+        ];
+
+        // ─── Pick 5-6 notifications distributed across the day ───
+        const selectedNudges = SPIRITUAL_NUDGES.sort(() => Math.random() - 0.5).slice(0, 5 + Math.floor(Math.random() * 2));
+        const now = new Date();
+
+        let scheduledCount = 0;
+        selectedNudges.forEach((nudge, index) => {
+            // Pick a valid time window for this nudge
+            const validWindows = nudge.timeWindows.filter(w => {
+                const windowStartMinutes = w.startHour * 60;
+                const nowMinutes = now.getHours() * 60 + now.getMinutes();
+                return windowStartMinutes > nowMinutes + 30; // Must be at least 30min in future
+            });
+
+            if (validWindows.length === 0) return; // No valid windows today
+
+            // Pick a random window and random time within it
+            const window = validWindows[Math.floor(Math.random() * validWindows.length)];
+            const randomHour = window.startHour + Math.floor(Math.random() * (window.endHour - window.startHour));
+            const randomMinute = Math.floor(Math.random() * 60);
+
+            const scheduledTime = new Date();
+            scheduledTime.setHours(randomHour, randomMinute, 0, 0);
+
+            if (scheduledTime <= now) return; // Safety check
+
+            // Pick random message
+            const message = nudge.messages[Math.floor(Math.random() * nudge.messages.length)];
+
+            // Build payload and save to IndexedDB for SW background delivery
+            const payload = {
+                id: `${nudge.id}_${today}`,
+                title: nudge.title,
+                body: message,
+                scheduledTime: scheduledTime.getTime(),
+                tag: `anhad-spiritual-${nudge.id}-${today}`,
+                requireInteraction: false,
+                data: {
+                    url: nudge.url,
+                    type: 'spiritualNudge',
+                    nudgeId: nudge.id,
+                    timestamp: scheduledTime.getTime()
+                },
+                icon: nudge.icon || 'assets/icon-192x192.png'
+            };
+
+            // Save to IndexedDB for background delivery (same pipeline as Naam Abhyas sessions)
+            this.saveRandomNotifToIndexedDB(payload).then(() => {
+                console.log(`[NaamAbhyas] ✅ Random spiritual notif scheduled: "${nudge.id}" at ${randomHour}:${String(randomMinute).padStart(2, '0')}`);
+            }).catch(e => {
+                console.warn('[NaamAbhyas] Failed to save random notif:', e);
+            });
+
+            // Also post to SW for in-memory scheduling
+            this.scheduleViaSW(payload, `${randomHour}:${String(randomMinute).padStart(2, '0')}`);
+
+            scheduledCount++;
+        });
+
+        console.log(`[NaamAbhyas] 🔔 Scheduled ${scheduledCount} random spiritual notifications for today`);
+    }
+
+    /**
+     * Save a random spiritual notification to IndexedDB
+     * Uses a separate store 'random_spiritual_notifs' from Naam Abhyas alarms
+     */
+    async saveRandomNotifToIndexedDB(payload) {
+        return new Promise((resolve, reject) => {
+            const DB_NAME = 'GurbaniRadioSW';
+            const DB_VERSION = 3; // Incremented to add new store
+            const STORE_NAME = 'random_spiritual_notifs';
+
+            const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+            request.onerror = () => reject(request.error);
+            request.onsuccess = () => {
+                const db = request.result;
+                if (!db.objectStoreNames.contains(STORE_NAME)) {
+                    db.close();
+                    resolve(); // Store not yet created (DB version mismatch), will retry after upgrade
+                    return;
+                }
+                const tx = db.transaction(STORE_NAME, 'readwrite');
+                const store = tx.objectStore(STORE_NAME);
+                const entry = {
+                    id: payload.id,
+                    title: payload.title,
+                    body: payload.body,
+                    scheduledTime: payload.scheduledTime,
+                    tag: payload.tag,
+                    icon: payload.icon || 'assets/icon-192x192.png',
+                    fired: false,
+                    createdAt: Date.now(),
+                    data: payload.data || {}
+                };
+                const putRequest = store.put(entry);
+                putRequest.onsuccess = () => { db.close(); resolve(); };
+                putRequest.onerror = () => { db.close(); reject(putRequest.error); };
+            };
+
+            request.onupgradeneeded = (event) => {
+                const db = event.target.result;
+                // Ensure notification_schedule store exists (created by saveAlarmToIndexedDB)
+                if (!db.objectStoreNames.contains('notification_schedule')) {
+                    const ns = db.createObjectStore('notification_schedule', { keyPath: 'id' });
+                    ns.createIndex('scheduledTime', 'scheduledTime', { unique: false });
+                    ns.createIndex('fired', 'fired', { unique: false });
+                }
+                // Create new random spiritual notifs store
+                if (!db.objectStoreNames.contains(STORE_NAME)) {
+                    const rs = db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+                    rs.createIndex('scheduledTime', 'scheduledTime', { unique: false });
+                    rs.createIndex('fired', 'fired', { unique: false });
                 }
             };
         });

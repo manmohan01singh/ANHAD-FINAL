@@ -663,7 +663,7 @@ body {
 
 /* Gurmukhi Text - MFJashan as default */
 .verse-gurmukhi {
-    font-family: 'MFJashan', 'Noto Sans Gurmukhi', sans-serif;
+    font-family: var(--font-gurmukhi, 'MFJashan', 'Noto Sans Gurmukhi', sans-serif);
     font-size: var(--gurmukhi-size);
     font-weight: normal;
     line-height: var(--line-spacing);

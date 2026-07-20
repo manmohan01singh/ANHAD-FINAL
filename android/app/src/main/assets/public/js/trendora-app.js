@@ -1542,10 +1542,17 @@
           const isDark = getIsDark(localStorage.getItem('anhad_theme'));
           this._apply(isDark);
         }
-        if (e.key === 'nitnemTracker_nitnemLog' || e.key === 'nitnemTracker_selectedBanis' || e.key === 'anhad_streak_data') {
+        if (e.key === 'nitnemTracker_nitnemLog' || e.key === 'nitnemTracker_selectedBanis' || e.key === 'anhad_streak_data' || e.key === 'anhad_unified_stats') {
           Store.clearCache();
           UIController.updateNitnemCard();
         }
+      });
+
+      // Clear cache and update UI on pageshow (e.g. back navigation from NitnemTracker / bfcache restore)
+      window.addEventListener('pageshow', (e) => {
+        console.log('[AnhadHome] Page shown (restored from cache:', e.persisted, '), refreshing card displays...');
+        Store.clearCache();
+        UIController.updateNitnemCard();
       });
 
       // Listen for in-page nitnem updates (same page, e.g. My Pothi dispatches this)

@@ -7,30 +7,36 @@
  */
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   DYNAMIC TIME-BASED ORBS — BEHIND ALL CONTENT (Fixed Position)
-   Major: Sky Blue | Little: Soft Red, Soft Yellow, Soft Purple (NO GREEN)
+   SUBTLE AMBIENT ORBS — Only in Greeting Section (2 orbs: Sky Blue + Yellow)
+   Matches "Your Practice" card color exactly
    ───────────────────────────────────────────────────────────────────────────── */
 
-/* App container must be positioned for orb layering */
-.app {
+/* Greeting section must be positioned for orbs */
+.greeting {
   position: relative !important;
-  z-index: 1;
+  overflow: visible !important;
+}
+
+/* Greeting content above orbs */
+.greeting__content {
+  position: relative;
+  z-index: 2;
 }
 
 .time-orb {
-  position: fixed;
+  position: absolute;
   border-radius: 50%;
   pointer-events: none;
   z-index: 0;
-  filter: blur(140px);
-  opacity: 1;
+  filter: blur(100px);
+  opacity: 0.25;
   transition: opacity 0.8s ease;
 }
 
 /* Show orbs only in DAY and NIGHT auto mode */
 [data-theme-mode="auto"][data-time-of-day="day"] .time-orb,
 [data-theme-mode="auto"][data-time-of-day="night"] .time-orb {
-  opacity: 1;
+  opacity: 0.25;
 }
 
 /* Hide orbs in other modes */
@@ -42,54 +48,38 @@
   display: none;
 }
 
-/* DAY TIME ORBS — Major Sky Blue, Little Yellow, Little Red (3 orbs, NO GREEN) */
+/* DAY TIME — Sky Blue (Your Practice card color) + Yellow */
 [data-theme-mode="auto"][data-time-of-day="day"] .time-orb-1 {
-  width: 700px;
-  height: 700px;
-  background: radial-gradient(circle, rgba(135, 206, 250, 0.7) 0%, rgba(135, 206, 250, 0.4) 50%, transparent 70%);
-  top: 100px;
-  right: -200px;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(227, 242, 253, 0.9) 0%, rgba(187, 222, 251, 0.6) 40%, transparent 70%);
+  top: -150px;
+  right: -100px;
 }
 
 [data-theme-mode="auto"][data-time-of-day="day"] .time-orb-2 {
-  width: 500px;
-  height: 500px;
-  background: radial-gradient(circle, rgba(255, 255, 140, 0.5) 0%, rgba(255, 255, 140, 0.25) 50%, transparent 70%);
-  top: 300px;
-  left: -150px;
+  width: 350px;
+  height: 350px;
+  background: radial-gradient(circle, rgba(255, 249, 196, 0.8) 0%, rgba(255, 245, 157, 0.5) 40%, transparent 70%);
+  top: -100px;
+  left: -80px;
 }
 
-[data-theme-mode="auto"][data-time-of-day="day"] .time-orb-3 {
-  width: 450px;
-  height: 450px;
-  background: radial-gradient(circle, rgba(255, 99, 132, 0.45) 0%, rgba(255, 99, 132, 0.2) 50%, transparent 70%);
-  top: 500px;
-  right: 10%;
-}
-
-/* NIGHT TIME ORBS — Major Sky Blue, Little Red, Little Purple (3 orbs, NO GREEN) */
+/* NIGHT TIME — Dark Blue (Your Practice dark card) + Yellow */
 [data-theme-mode="auto"][data-time-of-day="night"] .time-orb-1 {
-  width: 700px;
-  height: 700px;
-  background: radial-gradient(circle, rgba(135, 206, 250, 0.6) 0%, rgba(135, 206, 250, 0.35) 50%, transparent 70%);
-  top: 150px;
-  left: -180px;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(28, 45, 61, 0.9) 0%, rgba(42, 61, 74, 0.6) 40%, transparent 70%);
+  top: -150px;
+  left: -100px;
 }
 
 [data-theme-mode="auto"][data-time-of-day="night"] .time-orb-2 {
-  width: 550px;
-  height: 550px;
-  background: radial-gradient(circle, rgba(255, 99, 132, 0.5) 0%, rgba(255, 99, 132, 0.25) 50%, transparent 70%);
-  top: 250px;
-  right: -150px;
-}
-
-[data-theme-mode="auto"][data-time-of-day="night"] .time-orb-3 {
-  width: 480px;
-  height: 480px;
-  background: radial-gradient(circle, rgba(186, 85, 211, 0.45) 0%, rgba(186, 85, 211, 0.22) 50%, transparent 70%);
-  top: 550px;
-  right: 15%;
+  width: 350px;
+  height: 350px;
+  background: radial-gradient(circle, rgba(255, 235, 128, 0.7) 0%, rgba(255, 220, 100, 0.4) 40%, transparent 70%);
+  top: -100px;
+  right: -80px;
 }
 
 /* ─── Design token fallbacks (resolved by trendora-premium.css if loaded) ─── */

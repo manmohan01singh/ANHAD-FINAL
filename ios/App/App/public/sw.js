@@ -12,7 +12,7 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
-const CACHE_VERSION = 'anhad-v9.0.3'; // Stream library UI + Settings overflow fix
+const CACHE_VERSION = 'anhad-v10.2.0'; // v10.2.0: Orbs behind ALL content (fixed position), removed green orb, only Sky Blue (major) + Red/Yellow/Purple
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 const DATA_CACHE = `${CACHE_VERSION}-data`;
@@ -195,6 +195,7 @@ const STATIC_FILES = [
   'GurbaniRadio/gurbani-radio.css',
   'GurbaniRadio/ios17-player.css',
   'GurbaniRadio/ios17-player.js',
+  'GurbaniRadio/stream-library.js',
 
   // Notes
   'Notes/notes.html',
@@ -314,6 +315,7 @@ function _markShownToday(id) {
 // INSTALL EVENT - Cache static files but DON'T skip waiting automatically
 // ═══════════════════════════════════════════════════════════════════════════════
 self.addEventListener('install', (event) => {
+  self.skipWaiting();
   console.log('[SW] Installing...');
 
   event.waitUntil(
@@ -798,7 +800,8 @@ self.addEventListener('periodicsync', (event) => {
     event.waitUntil(
       Promise.all([
         checkAndFireScheduledNotifications(),
-        checkNaamAbhyasSchedule()
+        checkNaamAbhyasSchedule(),
+        checkRandomSpiritualNotifications()
       ])
     );
   }
@@ -826,6 +829,89 @@ async function checkAndFireScheduledNotifications() {
 
   const now = Date.now();
   const today = new Date().toLocaleDateString('en-CA');
+
+  const spiritualNotifications = [
+    {
+      id: 'hukamnama_morning',
+      title: '📜 ਅੱਜ ਦਾ ਹੁਕਮਨਾਮਾ | Ajj da Hukamnama',
+      body: 'Ajj da Hukamnama Sahib read kr lya tuc? Je nhi ta hune kr skde ho',
+      timeRanges: [[6, 10], [12, 14]], // 6-10 AM or 12-2 PM
+      url: '/Hukamnama/daily-hukamnama.html',
+      icon: '📜'
+    },
+    {
+      id: 'nitnem_reminder',
+      title: '🙏 ਨਿਤਨੇਮ ਯਾਦ | Nitnem Reminder',
+      body: 'Nitnem da time hai ji. Aao Gurbani pdhiye',
+      timeRanges: [[5, 9], [18, 20]], // 5-9 AM or 6-8 PM
+      url: '/nitnem/index.html',
+      icon: '🙏'
+    },
+    {
+      id: 'kirtan_time',
+      title: '🎵 ਕੀਰਤਨ ਸੁਣੋ | Kirtan Sunno',
+      body: 'Kujh der Kirtan sun lo. Rabb di yaad ch lin karo',
+      timeRanges: [[8, 12], [15, 19]], // 8 AM-12 PM or 3-7 PM
+      url: '/GurbaniRadio/gurbani-radio.html',
+      icon: '🎵'
+    },
+    {
+      id: 'simran_reminder',
+      title: '☬ ਵਾਹਿਗੁਰੂ ਸਿਮਰਨ | Vaheguru Simran',
+      body: 'Waheguru Simran sun ke mn ko shant kro',
+      timeRanges: [[7, 11], [13, 17], [20, 22]], // 7-11 AM, 1-5 PM, 8-10 PM
+      url: '/GurbaniRadio/gurbani-radio.html?stream=simran',
+      icon: '☬'
+    },
+    {
+      id: 'gurpurab_reminder',
+      title: '🌸 ਗੁਰਪੁਰਬ ਯਾਦ | Gurpurab Yaad',
+      body: 'Ajj koi Gurpurab ya important din hai? Check kro',
+      timeRanges: [[9, 12], [17, 20]], // 9 AM-12 PM or 5-8 PM
+      url: '/index.html',
+      icon: '🌸'
+    },
+    {
+      id: 'guru_sikhya',
+      title: '💎 ਗੁਰੂ ਦੀ ਸਿੱਖਿਆ | Guru di Sikhya',
+      body: 'Ajj Guru Ji di ik sikhya yaad rakhiye',
+      timeRanges: [[10, 14], [16, 21]], // 10 AM-2 PM or 4-9 PM
+      url: '/index.html',
+      icon: '💎'
+    }
+  ];
+
+  // Check and fire spiritual notifications
+  for (const notif of spiritualNotifications) {
+    // Check if current time falls in any of the time ranges
+    const currentHour = new Date().getHours();
+    const inTimeRange = notif.timeRanges.some(([start, end]) => currentHour >= start && currentHour < end);
+    
+    if (!inTimeRange) continue;
+    if (_hasShownToday(notif.id)) continue;
+
+    // Random chance to fire (20% per check to avoid spam)
+    if (Math.random() > 0.2) continue;
+
+    try {
+      await self.registration.showNotification(notif.title, {
+        body: notif.body,
+        icon: '/assets/icon-192x192.png',
+        badge: '/assets/icon-72x72.png',
+        tag: notif.id,
+        data: { url: notif.url },
+        requireInteraction: false,
+        actions: [
+          { action: 'open', title: 'Open' },
+          { action: 'dismiss', title: 'Later' }
+        ]
+      });
+      _markShownToday(notif.id);
+      console.log(`[SW] Fired spiritual notification: ${notif.title}`);
+    } catch (e) {
+      console.error('[SW] Failed to show spiritual notification:', e);
+    }
+  }
 
   const defaultNotifications = [
     {
@@ -929,6 +1015,100 @@ async function scheduleDailyReminders() {
   // Re-check all notifications for the new day
   await checkAndFireScheduledNotifications();
   await checkNaamAbhyasSchedule();
+  await checkRandomSpiritualNotifications();
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// RANDOM SPIRITUAL NOTIFICATIONS CHECKER
+// Reads from IndexedDB 'random_spiritual_notifs' store and fires any due ones
+// ═══════════════════════════════════════════════════════════════════════════════
+async function checkRandomSpiritualNotifications() {
+  const DB_NAME = 'GurbaniRadioSW';
+  const STORE_NAME = 'random_spiritual_notifs';
+
+  try {
+    const db = await new Promise((resolve, reject) => {
+      const req = indexedDB.open(DB_NAME, 3);
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+      req.onupgradeneeded = (event) => {
+        const d = event.target.result;
+        if (!d.objectStoreNames.contains('notification_schedule')) {
+          const ns = d.createObjectStore('notification_schedule', { keyPath: 'id' });
+          ns.createIndex('scheduledTime', 'scheduledTime', { unique: false });
+          ns.createIndex('fired', 'fired', { unique: false });
+        }
+        if (!d.objectStoreNames.contains(STORE_NAME)) {
+          const rs = d.createObjectStore(STORE_NAME, { keyPath: 'id' });
+          rs.createIndex('scheduledTime', 'scheduledTime', { unique: false });
+          rs.createIndex('fired', 'fired', { unique: false });
+        }
+      };
+    });
+
+    if (!db.objectStoreNames.contains(STORE_NAME)) {
+      db.close();
+      return;
+    }
+
+    const now = Date.now();
+    const firedIds = [];
+
+    // Get all unfired notifications
+    const notifs = await new Promise((resolve, reject) => {
+      const tx = db.transaction(STORE_NAME, 'readonly');
+      const store = tx.objectStore(STORE_NAME);
+      const req = store.getAll();
+      req.onsuccess = () => resolve(req.result || []);
+      req.onerror = () => reject(req.error);
+    });
+
+    for (const notif of notifs) {
+      if (notif.fired) continue;
+      const timeDiff = now - notif.scheduledTime;
+      // Fire if within -1min to +20min window (generous to catch periodic sync gaps)
+      if (timeDiff >= -60000 && timeDiff <= 1200000) {
+        if (!_hasShownToday(notif.id)) {
+          await self.registration.showNotification(notif.title, {
+            body: notif.body,
+            icon: notif.icon || 'assets/icon-192x192.png',
+            badge: 'assets/icon-72x72.png',
+            tag: notif.tag || `spiritual-${notif.id}`,
+            renotify: true,
+            requireInteraction: false,
+            vibrate: [100, 50, 100],
+            data: notif.data || { url: 'index.html', type: 'spiritualNudge' },
+            actions: [
+              { action: 'open', title: 'Open' },
+              { action: 'dismiss', title: 'Later' }
+            ]
+          });
+          _markShownToday(notif.id);
+          firedIds.push(notif.id);
+          console.log(`[SW] 🔔 Random spiritual notif fired: ${notif.id}`);
+        }
+      }
+    }
+
+    // Mark fired notifications in DB
+    if (firedIds.length > 0) {
+      const tx2 = db.transaction(STORE_NAME, 'readwrite');
+      const store2 = tx2.objectStore(STORE_NAME);
+      for (const id of firedIds) {
+        const getReq = store2.get(id);
+        getReq.onsuccess = () => {
+          if (getReq.result) {
+            getReq.result.fired = true;
+            store2.put(getReq.result);
+          }
+        };
+      }
+    }
+
+    db.close();
+  } catch (e) {
+    console.warn('[SW] checkRandomSpiritualNotifications failed:', e);
+  }
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════

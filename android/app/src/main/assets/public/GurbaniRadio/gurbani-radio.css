@@ -195,32 +195,39 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
   position: relative;
   z-index: 2;
   transition: color 0.25s ease;
-  padding: 0 6px;
+  padding: 0 10px;
   min-width: 0;
+  overflow: hidden;
+}
+.gr-tab.active {
+  color: #FFFFFF;
+}
+
+.gr-tab-text-inner {
+  display: inline-block;
+  max-width: 100%;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  text-align: center;
+  transition: transform 0.25s ease;
 }
-.gr-tab.active { color: #FFFFFF; }
 
-/* Icon-only mode (4–5 slots) */
-.gr-tab.icon-only {
-  font-size: 0;    /* hide any text that leaked */
-  gap: 0;
-  padding: 0 2px;
+/* Marquee animation for active long stream names */
+@keyframes grTabMarquee {
+  0% { transform: translate3d(0, 0, 0); }
+  15% { transform: translate3d(0, 0, 0); }
+  85% { transform: translate3d(calc(-100% + 80px), 0, 0); }
+  100% { transform: translate3d(calc(-100% + 80px), 0, 0); }
 }
-.gr-tab-icon {
-  width: 15px;
-  height: 15px;
-  flex-shrink: 0;
-}
-.gr-tab-emoji {
-  font-size: 18px;
-  line-height: 1;
+
+.gr-tab.active.should-marquee .gr-tab-text-inner {
+  animation: grTabMarquee 6s linear infinite alternate;
+  text-overflow: clip;
+  overflow: visible;
 }
 
 

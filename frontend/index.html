@@ -2645,12 +2645,7 @@
     </defs>
   </svg>
 
-  <main class="app" id="app" style="position: relative;">
-    
-    <!-- Dynamic Time-Based Orbs — BEHIND ALL CONTENT (No Green) -->
-    <div class="time-orb time-orb-1" aria-hidden="true"></div>
-    <div class="time-orb time-orb-2" aria-hidden="true"></div>
-    <div class="time-orb time-orb-3" aria-hidden="true"></div>
+  <main class="app" id="app">
 
     <!-- ════════════════════════════════════════════════════════════════════
          HEADER — Avatar | ANHAD | Emoji Actions
@@ -2689,7 +2684,11 @@
     <!-- ════════════════════════════════════════════════════════════════════
          GREETING — iOS Large Title Inspired
     ════════════════════════════════════════════════════════════════════ -->
-    <section class="greeting ios-animate-in" aria-label="Personal Greeting">
+    <section class="greeting ios-animate-in" aria-label="Personal Greeting" style="position: relative; overflow: visible;">
+      <!-- Subtle Ambient Orbs — ONLY 2: Sky Blue + Yellow -->
+      <div class="time-orb time-orb-1" aria-hidden="true"></div>
+      <div class="time-orb time-orb-2" aria-hidden="true"></div>
+      
       <div class="greeting__content">
         <!-- Portrait Slider for immersive experience -->
         <div class="greeting__portrait-slider" id="guruSlider">

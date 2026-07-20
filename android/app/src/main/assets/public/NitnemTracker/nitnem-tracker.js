@@ -7204,6 +7204,11 @@ const StreakManager = {
     saveStreakData() {
         this.state.lastUpdated = new Date().toISOString();
         this.StreakSaverManager.enqueueSave(this.state);
+        
+        // SYNC to UnifiedStats immediately for instant home page streak update
+        if (typeof UnifiedStats !== 'undefined' && typeof UnifiedStats.syncStreak === 'function') {
+            UnifiedStats.syncStreak(this.state.currentStreak);
+        }
     },
 
     /**

@@ -70,33 +70,125 @@
 }
 
 [data-theme="light"] {
-  --glass-bg: rgba(255, 255, 255, 0.6);
-  --glass-bg-strong: rgba(255, 255, 255, 0.8);
-  --glass-bg-light: rgba(0, 0, 0, 0.03);
-  --glass-border: rgba(0, 0, 0, 0.06);
-  --glass-border-strong: rgba(0, 0, 0, 0.1);
+  --glass-bg: rgba(255, 255, 255, 0.85);
+  --glass-bg-strong: rgba(255, 255, 255, 0.95);
+  --glass-bg-light: rgba(0, 0, 0, 0.02);
+  --glass-border: rgba(0, 0, 0, 0.08);
+  --glass-border-strong: rgba(0, 0, 0, 0.12);
   --glass-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.6);
-  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  --glass-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
 
-  --clay-bg: #EDEDED;
+  --clay-bg: #F5F5F7;
   --clay-surface: #FFFFFF;
-  --clay-elevated: #F5F5F7;
+  --clay-elevated: #FAFAFA;
   --clay-modal: #FFFFFF;
-  --clay-extrude: -3px -3px 6px rgba(255, 255, 255, 0.8), 3px 3px 10px rgba(0, 0, 0, 0.08);
-  --clay-extrude-sm: -2px -2px 4px rgba(255, 255, 255, 0.7), 2px 2px 6px rgba(0, 0, 0, 0.06);
-  --clay-pressed: inset 2px 2px 6px rgba(0, 0, 0, 0.06), inset -1px -1px 3px rgba(255, 255, 255, 0.5);
-  --clay-pressed-sm: inset 1px 1px 3px rgba(0, 0, 0, 0.05);
-  --clay-inset: inset 0 2px 4px rgba(0, 0, 0, 0.04);
+  --clay-extrude: -2px -2px 4px rgba(255, 255, 255, 0.9), 2px 2px 6px rgba(0, 0, 0, 0.06);
+  --clay-extrude-sm: -1px -1px 2px rgba(255, 255, 255, 0.8), 1px 1px 3px rgba(0, 0, 0, 0.04);
+  --clay-pressed: inset 1px 1px 4px rgba(0, 0, 0, 0.05), inset -1px -1px 2px rgba(255, 255, 255, 0.5);
+  --clay-pressed-sm: inset 1px 1px 2px rgba(0, 0, 0, 0.04);
+  --clay-inset: inset 0 1px 3px rgba(0, 0, 0, 0.03);
 
   --clay-sacred: #C5842E;
   --clay-sacred-light: #D4943A;
   --clay-sacred-dark: #A06E1E;
-  --clay-sacred-glow: rgba(197, 132, 46, 0.2);
+  --clay-sacred-glow: rgba(197, 132, 46, 0.15);
   --clay-gold: #C5842E;
-  --clay-gold-light: rgba(197, 132, 46, 0.08);
+  --clay-gold-light: rgba(197, 132, 46, 0.06);
   --clay-text: #1D1D1F;
   --clay-text-secondary: #6E6E73;
   --clay-text-tertiary: #86868B;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DARK MODE: Dark cards with white text
+   ═══════════════════════════════════════════════════════════════ */
+[data-theme="dark"] .glass-card,
+.theme-dark .glass-card,
+body.theme-dark .glass-card,
+html[data-theme="dark"] .glass-card {
+  background: rgba(44, 44, 46, 0.85) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6) !important;
+}
+
+/* White text in dark mode */
+[data-theme="dark"] .glass-card *,
+.theme-dark .glass-card *,
+body.theme-dark .glass-card *,
+html[data-theme="dark"] .glass-card * {
+  color: #FFFFFF !important;
+}
+
+[data-theme="dark"] .toggle-label,
+[data-theme="dark"] .next-title,
+[data-theme="dark"] .timeline-title,
+[data-theme="dark"] .qa-title,
+[data-theme="dark"] .wisdom-translation,
+[data-theme="dark"] .schedule-time-value {
+  color: #FFFFFF !important;
+}
+
+[data-theme="dark"] .toggle-desc,
+[data-theme="dark"] .next-subtitle,
+[data-theme="dark"] .timeline-subtitle,
+[data-theme="dark"] .qa-sub,
+[data-theme="dark"] .schedule-time-range {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TIME-BASED CARD COLORS (Auto Mode Only) - Match index.html
+   ═══════════════════════════════════════════════════════════════ */
+
+/* MORNING - Peach/Orange tint */
+[data-theme-mode="auto"][data-time-of-day="morning"] .glass-card {
+  background: linear-gradient(145deg, rgba(255, 250, 245, 0.92), rgba(255, 235, 215, 0.88)) !important;
+  border: 1px solid rgba(232, 168, 124, 0.2) !important;
+  box-shadow: 0 8px 32px rgba(232, 168, 124, 0.15) !important;
+}
+
+[data-theme-mode="auto"][data-time-of-day="morning"] .glass-card * {
+  color: #3E2723 !important;
+}
+
+[data-theme-mode="auto"][data-time-of-day="morning"] .toggle-desc,
+[data-theme-mode="auto"][data-time-of-day="morning"] .next-subtitle,
+[data-theme-mode="auto"][data-time-of-day="morning"] .timeline-subtitle {
+  color: #7D6B58 !important;
+}
+
+/* DAY - Neutral bright white */
+[data-theme-mode="auto"][data-time-of-day="day"] .glass-card {
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(250, 250, 252, 0.92)) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08) !important;
+}
+
+[data-theme-mode="auto"][data-time-of-day="day"] .glass-card * {
+  color: #1C1C1E !important;
+}
+
+[data-theme-mode="auto"][data-time-of-day="day"] .toggle-desc,
+[data-theme-mode="auto"][data-time-of-day="day"] .next-subtitle,
+[data-theme-mode="auto"][data-time-of-day="day"] .timeline-subtitle {
+  color: #8E8E93 !important;
+}
+
+/* EVENING - Golden/Sunset tint */
+[data-theme-mode="auto"][data-time-of-day="evening"] .glass-card {
+  background: linear-gradient(145deg, rgba(255, 252, 245, 0.92), rgba(255, 240, 220, 0.88)) !important;
+  border: 1px solid rgba(184, 134, 11, 0.25) !important;
+  box-shadow: 0 8px 32px rgba(184, 134, 11, 0.12) !important;
+}
+
+[data-theme-mode="auto"][data-time-of-day="evening"] .glass-card * {
+  color: #3B2A00 !important;
+}
+
+[data-theme-mode="auto"][data-time-of-day="evening"] .toggle-desc,
+[data-theme-mode="auto"][data-time-of-day="evening"] .next-subtitle,
+[data-theme-mode="auto"][data-time-of-day="evening"] .timeline-subtitle {
+  color: #7A6A4F !important;
 }
 
 /* ─── NOISE TEXTURE OVERLAY ─── */
@@ -139,6 +231,13 @@ body {
   line-height: 1.5;
 }
 
+/* Dark mode: Pure black background */
+[data-theme="dark"] body,
+body.theme-dark,
+html[data-theme="dark"] body {
+  background: #000000 !important;
+}
+
 [data-theme="dark"] body::before {
   opacity: 0.02;
 }
@@ -168,51 +267,55 @@ a {
   border-radius: var(--radius-xs);
 }
 
-/* ─── BACKGROUND GRADIENT ORBS ─── */
+/* ─── BACKGROUND GRADIENT ORBS — OPTIMIZED FOR PERFORMANCE ─── */
 .bg-orb {
   position: fixed;
   border-radius: 50%;
   pointer-events: none;
   z-index: 0;
-  filter: blur(80px);
-  opacity: 0.12;
+  filter: blur(60px);
+  opacity: 0.08;
+  will-change: transform;
   animation: orbFloat 20s ease-in-out infinite;
+  /* Hardware acceleration without forcing layer promotion everywhere */
+  transform: translateZ(0);
 }
 
 @media (max-width: 768px) and (pointer: coarse) {
   .bg-orb {
-    filter: blur(40px);
-    /* Halves GPU rasterization/fill cost on mobile screen sizes */
+    filter: blur(30px);
+    opacity: 0.06;
+    /* Further reduced blur for mobile GPU */
   }
 }
 
 .bg-orb-1 {
-  width: 400px;
-  height: 400px;
+  width: 320px;
+  height: 320px;
   background: var(--clay-sacred);
-  top: -100px;
-  right: -100px;
+  top: -80px;
+  right: -80px;
   animation-delay: 0s;
 }
 
 .bg-orb-2 {
-  width: 300px;
-  height: 300px;
+  width: 260px;
+  height: 260px;
   background: #8B5CF6;
-  bottom: -80px;
-  left: -80px;
+  bottom: -60px;
+  left: -60px;
   animation-delay: -7s;
-  opacity: 0.08;
+  opacity: 0.05;
 }
 
 .bg-orb-3 {
-  width: 250px;
-  height: 250px;
+  width: 220px;
+  height: 220px;
   background: var(--clay-sacred-light);
   top: 50%;
   left: 50%;
   animation-delay: -14s;
-  opacity: 0.06;
+  opacity: 0.04;
 }
 
 @keyframes orbFloat {
@@ -476,17 +579,20 @@ a {
   height: 40px;
 }
 
-/* ═══ CARD SYSTEM — Glassmorphism Core ═══ */
+/* ═══ CARD SYSTEM — Optimized Claymorphism ═══ */
 .glass-card {
   position: relative;
   background: var(--glass-bg);
-  backdrop-filter: blur(var(--glass-blur));
-  -webkit-backdrop-filter: blur(var(--glass-blur));
+  /* CRITICAL FIX: Disable backdrop-filter on cards — major GPU bottleneck on mobile */
+  /* backdrop-filter: blur(var(--glass-blur)); */
+  /* -webkit-backdrop-filter: blur(var(--glass-blur)); */
   border-radius: var(--radius-2xl);
   border: 1px solid var(--glass-border);
-  box-shadow: var(--glass-shadow);
+  /* CRITICAL FIX: Reduce shadow complexity for 60fps scrolling */
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
   padding: var(--space-xl);
-  transition: transform 0.3s var(--ease-spring), box-shadow 0.3s var(--ease-spring), background 0.3s;
+  /* CRITICAL FIX: Remove transform from transition — causes repaints */
+  transition: background 0.2s ease;
   overflow: hidden;
 }
 
@@ -501,14 +607,15 @@ a {
   pointer-events: none;
 }
 
-.glass-card:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--glass-shadow), 0 12px 40px rgba(0, 0, 0, 0.15);
-  background: var(--glass-bg-strong);
+/* CRITICAL FIX: Remove hover transforms — not needed on mobile, causes lag */
+@media (hover: hover) and (pointer: fine) {
+  .glass-card:hover {
+    background: var(--glass-bg-strong);
+  }
 }
 
 .glass-card:active {
-  transform: translateY(0) scale(0.99);
+  opacity: 0.95;
 }
 
 /* ─── HERO SECTION ─── */
@@ -3911,4 +4018,231 @@ a {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 10px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   § 20. CLAYMORPHISM CUSHION OVERRIDES — Root & Time-of-Day Themes
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+/* Base Light Mode Cushion Card */
+[data-theme="light"] .glass-card {
+  background: var(--clay-surface);
+  border: none !important;
+  box-shadow:
+    10px 10px 24px rgba(0, 0, 0, 0.05),
+    -8px -8px 20px rgba(255, 255, 255, 0.9),
+    inset 4px 4px 12px rgba(255, 255, 255, 0.8),
+    inset -4px -4px 12px rgba(0, 0, 0, 0.03) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+[data-theme="light"] .glass-card::before {
+  display: none !important;
+}
+
+/* Hover & Active Lift */
+[data-theme="light"] .glass-card:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    12px 12px 30px rgba(0, 0, 0, 0.06),
+    -10px -10px 24px rgba(255, 255, 255, 0.95),
+    inset 4px 4px 12px rgba(255, 255, 255, 0.8) !important;
+}
+
+[data-theme="light"] .glass-card:active {
+  transform: translateY(0) scale(0.99);
+  box-shadow:
+    inset 6px 6px 12px rgba(0, 0, 0, 0.05),
+    inset -6px -6px 12px rgba(255, 255, 255, 0.9) !important;
+}
+
+/* ─── TIME OF DAY GRADIENTS (CUSHION EFFECT) ─── */
+
+/* Day mode — Sky Blue gradient */
+[data-time-of-day="day"] .glass-card,
+[data-theme-mode="light"] .glass-card {
+  background: linear-gradient(140deg, #EFF8FF 0%, #DBEAFE 100%) !important;
+  box-shadow:
+    10px 10px 24px rgba(186, 230, 253, 0.25),
+    -8px -8px 20px rgba(255, 255, 255, 0.9),
+    inset 4px 4px 12px rgba(255, 255, 255, 0.8),
+    inset -4px -4px 12px rgba(0, 0, 0, 0.02) !important;
+}
+
+/* Morning mode — Warm Gold gradient */
+[data-time-of-day="morning"] .glass-card {
+  background: linear-gradient(140deg, #FFF8EC 0%, #FFEAD4 100%) !important;
+  box-shadow:
+    10px 10px 24px rgba(212, 148, 58, 0.12),
+    -8px -8px 20px rgba(255, 255, 255, 0.95),
+    inset 4px 4px 12px rgba(255, 255, 255, 0.8),
+    inset -4px -4px 12px rgba(0, 0, 0, 0.02) !important;
+}
+
+/* Evening mode — Warm Amber/Peach gradient */
+[data-time-of-day="evening"] .glass-card {
+  background: linear-gradient(140deg, #FFF8E7 0%, #FFE4B5 100%) !important;
+  box-shadow:
+    10px 10px 24px rgba(184, 134, 11, 0.12),
+    -8px -8px 20px rgba(255, 255, 255, 0.95),
+    inset 4px 4px 12px rgba(255, 255, 255, 0.8),
+    inset -4px -4px 12px rgba(0, 0, 0, 0.02) !important;
+}
+
+/* ─── NEXT CARD OVERRIDES (ACTION GOLD CARD) ─── */
+.next-card {
+  border-radius: var(--radius-2xl) !important;
+  border: none !important;
+}
+
+/* ─── BUTTONS & Toggles OVERRIDES ─── */
+[data-theme="light"] .quick-actions .qa-btn {
+  background: linear-gradient(140deg, #EFF8FF 0%, #DBEAFE 100%) !important;
+  border: none !important;
+  box-shadow:
+    6px 6px 16px rgba(0, 0, 0, 0.04),
+    -6px -6px 16px rgba(255, 255, 255, 0.9),
+    inset 3px 3px 8px rgba(255, 255, 255, 0.8),
+    inset -3px -3px 8px rgba(0, 0, 0, 0.02) !important;
+  color: var(--clay-text) !important;
+}
+
+[data-theme="light"] .quick-actions .qa-btn.qa-primary {
+  background: linear-gradient(140deg, #FFEAD4 0%, #D4943A 100%) !important;
+  box-shadow:
+    6px 6px 16px rgba(212, 148, 58, 0.15),
+    -6px -6px 16px rgba(255, 255, 255, 0.9),
+    inset 3px 3px 8px rgba(255, 255, 255, 0.5) !important;
+  color: #3E2723 !important;
+}
+
+[data-theme="light"] .quick-actions .qa-btn:active {
+  transform: scale(0.96);
+  box-shadow:
+    inset 4px 4px 10px rgba(0, 0, 0, 0.05),
+    inset -4px -4px 10px rgba(255, 255, 255, 0.8) !important;
+}
+
+/* ─── COMPONENT CARD INTERIORS (LIGHT THEME) ─── */
+[data-theme="light"] .toggle-icon-wrap,
+[data-theme="light"] .sync-hub-icon-wrap,
+[data-theme="light"] .timeline-icon-wrap,
+[data-theme="light"] .stats-icon-wrap,
+[data-theme="light"] .ach-icon-wrap {
+  background: rgba(255, 255, 255, 0.8) !important;
+  box-shadow:
+    3px 3px 8px rgba(0, 0, 0, 0.03),
+    -3px -3px 8px rgba(255, 255, 255, 0.9),
+    inset 1px 1px 3px rgba(255, 255, 255, 0.9),
+    inset -1px -1px 3px rgba(0, 0, 0, 0.02) !important;
+  border: none !important;
+}
+
+[data-theme="light"] .sync-item {
+  background: rgba(255, 255, 255, 0.5) !important;
+  border: none !important;
+  box-shadow:
+    4px 4px 10px rgba(0, 0, 0, 0.02),
+    -4px -4px 10px rgba(255, 255, 255, 0.8),
+    inset 2px 2px 5px rgba(255, 255, 255, 0.8),
+    inset -2px -2px 5px rgba(0, 0, 0, 0.02) !important;
+  border-radius: var(--radius-md) !important;
+}
+
+[data-theme="light"] .sync-item:active {
+  box-shadow:
+    inset 3px 3px 6px rgba(0, 0, 0, 0.04),
+    inset -3px -3px 6px rgba(255, 255, 255, 0.8) !important;
+}
+
+/* Timeline/Schedule item overrides for claymorphism */
+[data-theme="light"] .sched-item {
+  background: rgba(255, 255, 255, 0.4) !important;
+  border: none !important;
+  box-shadow:
+    4px 4px 10px rgba(0, 0, 0, 0.02),
+    -4px -4px 10px rgba(255, 255, 255, 0.8),
+    inset 2px 2px 5px rgba(255, 255, 255, 0.8),
+    inset -2px -2px 5px rgba(0, 0, 0, 0.02) !important;
+  border-radius: var(--radius-md) !important;
+  margin-bottom: 10px !important;
+}
+
+[data-theme="light"] .sched-item.completed {
+  background: linear-gradient(140deg, #F0FDF4 0%, #DCFCE7 100%) !important;
+  box-shadow:
+    4px 4px 10px rgba(52, 199, 89, 0.05),
+    -4px -4px 10px rgba(255, 255, 255, 0.8),
+    inset 2px 2px 5px rgba(255, 255, 255, 0.8) !important;
+}
+
+[data-theme="light"] .sched-item.active {
+  background: linear-gradient(140deg, #FFF8EC 0%, #FFEAD4 100%) !important;
+  box-shadow:
+    4px 4px 10px rgba(212, 148, 58, 0.1),
+    -4px -4px 10px rgba(255, 255, 255, 0.8),
+    inset 2px 2px 5px rgba(255, 255, 255, 0.8) !important;
+}
+
+/* Stats dashboard elements override */
+[data-theme="light"] .stat-cell {
+  background: rgba(255, 255, 255, 0.5) !important;
+  border: none !important;
+  box-shadow:
+    4px 4px 10px rgba(0, 0, 0, 0.02),
+    -4px -4px 10px rgba(255, 255, 255, 0.8),
+    inset 2px 2px 5px rgba(255, 255, 255, 0.8),
+    inset -2px -2px 5px rgba(0, 0, 0, 0.02) !important;
+  border-radius: var(--radius-md) !important;
+}
+
+[data-theme="light"] .ring-container {
+  box-shadow:
+    6px 6px 16px rgba(0, 0, 0, 0.03),
+    -6px -6px 16px rgba(255, 255, 255, 0.9),
+    inset 3px 3px 8px rgba(255, 255, 255, 0.8),
+    inset -3px -3px 8px rgba(0, 0, 0, 0.02) !important;
+}
+
+[data-theme="light"] .today-bar-track {
+  background: rgba(0, 0, 0, 0.04) !important;
+  border: none !important;
+  box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.05) !important;
+}
+
+[data-theme="light"] .weekly-banner {
+  background: rgba(255, 255, 255, 0.5) !important;
+  border: none !important;
+  box-shadow:
+    4px 4px 10px rgba(0, 0, 0, 0.02),
+    -4px -4px 10px rgba(255, 255, 255, 0.8),
+    inset 2px 2px 5px rgba(255, 255, 255, 0.8),
+    inset -2px -2px 5px rgba(0, 0, 0, 0.02) !important;
+  border-radius: var(--radius-md) !important;
+}
+
+/* Header streak clock pill styling */
+[data-theme="light"] .status-pill {
+  background: rgba(255, 255, 255, 0.8) !important;
+  box-shadow:
+    4px 4px 10px rgba(0, 0, 0, 0.03),
+    -4px -4px 10px rgba(255, 255, 255, 0.9),
+    inset 2px 2px 5px rgba(255, 255, 255, 0.8) !important;
+  border: none !important;
+}
+
+[data-theme="light"] .hdr-btn {
+  background: rgba(255, 255, 255, 0.8) !important;
+  box-shadow:
+    4px 4px 10px rgba(0, 0, 0, 0.03),
+    -4px -4px 10px rgba(255, 255, 255, 0.9),
+    inset 2px 2px 5px rgba(255, 255, 255, 0.8) !important;
+  border: none !important;
+}
+
+[data-theme="light"] .hdr-btn:active {
+  box-shadow:
+    inset 3px 3px 6px rgba(0, 0, 0, 0.05),
+    inset -3px -3px 6px rgba(255, 255, 255, 0.8) !important;
 }

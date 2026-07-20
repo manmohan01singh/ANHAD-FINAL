@@ -37,7 +37,7 @@ html[data-theme="dark"] body {
   max-width: 680px;
   margin: 0 auto;
   padding: 20px 0;
-  padding-top: calc(env(safe-area-inset-top, 0px) + 64px);
+  padding-top: calc(env(safe-area-inset-top, 0px) + 90px);
   padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 100px);
   background: transparent !important;
   min-height: 100vh;
@@ -217,8 +217,8 @@ html[data-theme="dark"] .settings-item__label {
   .settings-page {
     padding-left: 0;
     padding-right: 0;
-    /* Keep padding-top from base rule (calc with safe-area + 64px nav) */
-    padding-top: calc(env(safe-area-inset-top, 0px) + 72px);
+    /* Keep padding-top from base rule (calc with safe-area + 90px nav) */
+    padding-top: calc(env(safe-area-inset-top, 0px) + 98px);
   }
 
   .settings-section {
