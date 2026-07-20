@@ -12,7 +12,7 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
-const CACHE_VERSION = 'anhad-v9.4.0'; // White-to-sky-blue day practice cards, text-based segmented control, global card scroll lag fixes
+const CACHE_VERSION = 'anhad-v9.5.0'; // PERF: remove all card backdrop-filter blur; fix tab slider data-active sync; unified day sky-blue gradient; no white borders on cards
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 const DATA_CACHE = `${CACHE_VERSION}-data`;

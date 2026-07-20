@@ -122,6 +122,12 @@
       tabsEl.appendChild(btn);
     });
 
+    // ── CRITICAL: sync data-active so the golden slider pill sits on the correct tab ──
+    // The CSS slider position is driven by [data-active="N"] on .gr-tabs, NOT by .active class.
+    var activeSlotIdx = slots.indexOf(currentStream);
+    if (activeSlotIdx < 0) activeSlotIdx = 0; // fallback to first slot
+    tabsEl.setAttribute('data-active', activeSlotIdx);
+
     // Check for overflow on DOM layout to trigger marquee animation if needed
     setTimeout(function () {
       var activeTab = tabsEl.querySelector('.gr-tab.active');
