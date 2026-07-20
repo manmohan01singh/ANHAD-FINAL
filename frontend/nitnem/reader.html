@@ -52,6 +52,48 @@
         if (document.documentElement.hasAttribute('data-anhad-home')) {
           try { sessionStorage.removeItem('gurbaniKhoj_state'); } catch(e) {}
         }
+
+        // Apply saved font settings blocking before paint
+        try {
+          const saved = localStorage.getItem('anhad_reader_v5');
+          if (saved) {
+            const settings = JSON.parse(saved);
+            const fontMap = {
+              'noto': "'Noto Sans Gurmukhi', sans-serif",
+              'pg-serif': "'PG Serif', 'Noto Sans Gurmukhi', sans-serif",
+              'mfjashan': "'MFJashan', 'Noto Sans Gurmukhi', sans-serif",
+              'pg-khanna': "'PG Khanna', 'Noto Sans Gurmukhi', sans-serif",
+              'pixel-r': "'Pixel R', 'Noto Sans Gurmukhi', sans-serif",
+              'riyasti': "'RiyastiHastlikhat', 'Noto Sans Gurmukhi', sans-serif",
+              'pg-muskan': "'PGMuskan', 'Noto Sans Gurmukhi', sans-serif"
+            };
+            const fontKey = settings.fontFamily || 'noto';
+            const fontFamily = fontMap[fontKey] || fontMap.noto;
+            const fontWeight = settings.fontWeight || '500';
+            const fontSize = settings.gurbaniFontSize || 28;
+            const textAlign = settings.textAlign || 'center';
+
+            const root = document.documentElement;
+            root.style.setProperty('--font-gurmukhi', fontFamily);
+            root.style.setProperty('--gurmukhi-size', fontSize + 'px');
+            root.style.setProperty('--font-weight', fontWeight);
+            root.style.setProperty('--text-align', textAlign);
+
+            const palette = [
+              'currentColor', '#D4AF37', '#8E8E93', '#DC2626', '#F59E0B', 
+              '#2E8B57', '#3B82F6', '#8B5CF6', '#EC4899', '#000000', '#FFFFFF'
+            ];
+            
+            const gColor = palette[settings.gurmukhiColorIdx] || 'currentColor';
+            if (gColor !== 'currentColor') root.style.setProperty('--gurmukhi-text-color', gColor);
+            
+            const tColor = palette[settings.translationColorIdx] || 'currentColor';
+            if (tColor !== 'currentColor') root.style.setProperty('--translation-text-color', tColor);
+
+            const rColor = palette[settings.translitColorIdx] || 'currentColor';
+            if (rColor !== 'currentColor') root.style.setProperty('--translit-text-color', rColor);
+          }
+        } catch (e) {}
       } catch (e) {}
     })();
   </script>

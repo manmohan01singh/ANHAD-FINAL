@@ -1,7 +1,7 @@
-﻿{
-    "version":  "4.4.0",
-    "buildTime":  "2026-07-20T12:25:46.309Z",
-    "timestamp":  1784530546235,
-    "commitHash":  "a3f5a2b",
-    "branch":  "main"
+{
+    "version": "4.5.0",
+    "buildTime": "2026-07-20T08:09:00.000Z",
+    "timestamp": 1784537340000,
+    "commitHash": "b7e3c1f",
+    "branch": "main"
 }

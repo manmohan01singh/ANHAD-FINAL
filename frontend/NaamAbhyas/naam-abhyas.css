@@ -3912,3 +3912,230 @@ a {
   grid-template-columns: repeat(3, 1fr);
   gap: 10px;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   § 20. CLAYMORPHISM CUSHION OVERRIDES — Root & Time-of-Day Themes
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+/* Base Light Mode Cushion Card */
+[data-theme="light"] .glass-card {
+  background: var(--clay-surface);
+  border: none !important;
+  box-shadow:
+    10px 10px 24px rgba(0, 0, 0, 0.05),
+    -8px -8px 20px rgba(255, 255, 255, 0.9),
+    inset 4px 4px 12px rgba(255, 255, 255, 0.8),
+    inset -4px -4px 12px rgba(0, 0, 0, 0.03) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+[data-theme="light"] .glass-card::before {
+  display: none !important;
+}
+
+/* Hover & Active Lift */
+[data-theme="light"] .glass-card:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    12px 12px 30px rgba(0, 0, 0, 0.06),
+    -10px -10px 24px rgba(255, 255, 255, 0.95),
+    inset 4px 4px 12px rgba(255, 255, 255, 0.8) !important;
+}
+
+[data-theme="light"] .glass-card:active {
+  transform: translateY(0) scale(0.99);
+  box-shadow:
+    inset 6px 6px 12px rgba(0, 0, 0, 0.05),
+    inset -6px -6px 12px rgba(255, 255, 255, 0.9) !important;
+}
+
+/* ─── TIME OF DAY GRADIENTS (CUSHION EFFECT) ─── */
+
+/* Day mode — Sky Blue gradient */
+[data-time-of-day="day"] .glass-card,
+[data-theme-mode="light"] .glass-card {
+  background: linear-gradient(140deg, #EFF8FF 0%, #DBEAFE 100%) !important;
+  box-shadow:
+    10px 10px 24px rgba(186, 230, 253, 0.25),
+    -8px -8px 20px rgba(255, 255, 255, 0.9),
+    inset 4px 4px 12px rgba(255, 255, 255, 0.8),
+    inset -4px -4px 12px rgba(0, 0, 0, 0.02) !important;
+}
+
+/* Morning mode — Warm Gold gradient */
+[data-time-of-day="morning"] .glass-card {
+  background: linear-gradient(140deg, #FFF8EC 0%, #FFEAD4 100%) !important;
+  box-shadow:
+    10px 10px 24px rgba(212, 148, 58, 0.12),
+    -8px -8px 20px rgba(255, 255, 255, 0.95),
+    inset 4px 4px 12px rgba(255, 255, 255, 0.8),
+    inset -4px -4px 12px rgba(0, 0, 0, 0.02) !important;
+}
+
+/* Evening mode — Warm Amber/Peach gradient */
+[data-time-of-day="evening"] .glass-card {
+  background: linear-gradient(140deg, #FFF8E7 0%, #FFE4B5 100%) !important;
+  box-shadow:
+    10px 10px 24px rgba(184, 134, 11, 0.12),
+    -8px -8px 20px rgba(255, 255, 255, 0.95),
+    inset 4px 4px 12px rgba(255, 255, 255, 0.8),
+    inset -4px -4px 12px rgba(0, 0, 0, 0.02) !important;
+}
+
+/* ─── NEXT CARD OVERRIDES (ACTION GOLD CARD) ─── */
+.next-card {
+  border-radius: var(--radius-2xl) !important;
+  border: none !important;
+}
+
+/* ─── BUTTONS & Toggles OVERRIDES ─── */
+[data-theme="light"] .quick-actions .qa-btn {
+  background: linear-gradient(140deg, #EFF8FF 0%, #DBEAFE 100%) !important;
+  border: none !important;
+  box-shadow:
+    6px 6px 16px rgba(0, 0, 0, 0.04),
+    -6px -6px 16px rgba(255, 255, 255, 0.9),
+    inset 3px 3px 8px rgba(255, 255, 255, 0.8),
+    inset -3px -3px 8px rgba(0, 0, 0, 0.02) !important;
+  color: var(--clay-text) !important;
+}
+
+[data-theme="light"] .quick-actions .qa-btn.qa-primary {
+  background: linear-gradient(140deg, #FFEAD4 0%, #D4943A 100%) !important;
+  box-shadow:
+    6px 6px 16px rgba(212, 148, 58, 0.15),
+    -6px -6px 16px rgba(255, 255, 255, 0.9),
+    inset 3px 3px 8px rgba(255, 255, 255, 0.5) !important;
+  color: #3E2723 !important;
+}
+
+[data-theme="light"] .quick-actions .qa-btn:active {
+  transform: scale(0.96);
+  box-shadow:
+    inset 4px 4px 10px rgba(0, 0, 0, 0.05),
+    inset -4px -4px 10px rgba(255, 255, 255, 0.8) !important;
+}
+
+/* ─── COMPONENT CARD INTERIORS (LIGHT THEME) ─── */
+[data-theme="light"] .toggle-icon-wrap,
+[data-theme="light"] .sync-hub-icon-wrap,
+[data-theme="light"] .timeline-icon-wrap,
+[data-theme="light"] .stats-icon-wrap,
+[data-theme="light"] .ach-icon-wrap {
+  background: rgba(255, 255, 255, 0.8) !important;
+  box-shadow:
+    3px 3px 8px rgba(0, 0, 0, 0.03),
+    -3px -3px 8px rgba(255, 255, 255, 0.9),
+    inset 1px 1px 3px rgba(255, 255, 255, 0.9),
+    inset -1px -1px 3px rgba(0, 0, 0, 0.02) !important;
+  border: none !important;
+}
+
+[data-theme="light"] .sync-item {
+  background: rgba(255, 255, 255, 0.5) !important;
+  border: none !important;
+  box-shadow:
+    4px 4px 10px rgba(0, 0, 0, 0.02),
+    -4px -4px 10px rgba(255, 255, 255, 0.8),
+    inset 2px 2px 5px rgba(255, 255, 255, 0.8),
+    inset -2px -2px 5px rgba(0, 0, 0, 0.02) !important;
+  border-radius: var(--radius-md) !important;
+}
+
+[data-theme="light"] .sync-item:active {
+  box-shadow:
+    inset 3px 3px 6px rgba(0, 0, 0, 0.04),
+    inset -3px -3px 6px rgba(255, 255, 255, 0.8) !important;
+}
+
+/* Timeline/Schedule item overrides for claymorphism */
+[data-theme="light"] .sched-item {
+  background: rgba(255, 255, 255, 0.4) !important;
+  border: none !important;
+  box-shadow:
+    4px 4px 10px rgba(0, 0, 0, 0.02),
+    -4px -4px 10px rgba(255, 255, 255, 0.8),
+    inset 2px 2px 5px rgba(255, 255, 255, 0.8),
+    inset -2px -2px 5px rgba(0, 0, 0, 0.02) !important;
+  border-radius: var(--radius-md) !important;
+  margin-bottom: 10px !important;
+}
+
+[data-theme="light"] .sched-item.completed {
+  background: linear-gradient(140deg, #F0FDF4 0%, #DCFCE7 100%) !important;
+  box-shadow:
+    4px 4px 10px rgba(52, 199, 89, 0.05),
+    -4px -4px 10px rgba(255, 255, 255, 0.8),
+    inset 2px 2px 5px rgba(255, 255, 255, 0.8) !important;
+}
+
+[data-theme="light"] .sched-item.active {
+  background: linear-gradient(140deg, #FFF8EC 0%, #FFEAD4 100%) !important;
+  box-shadow:
+    4px 4px 10px rgba(212, 148, 58, 0.1),
+    -4px -4px 10px rgba(255, 255, 255, 0.8),
+    inset 2px 2px 5px rgba(255, 255, 255, 0.8) !important;
+}
+
+/* Stats dashboard elements override */
+[data-theme="light"] .stat-cell {
+  background: rgba(255, 255, 255, 0.5) !important;
+  border: none !important;
+  box-shadow:
+    4px 4px 10px rgba(0, 0, 0, 0.02),
+    -4px -4px 10px rgba(255, 255, 255, 0.8),
+    inset 2px 2px 5px rgba(255, 255, 255, 0.8),
+    inset -2px -2px 5px rgba(0, 0, 0, 0.02) !important;
+  border-radius: var(--radius-md) !important;
+}
+
+[data-theme="light"] .ring-container {
+  box-shadow:
+    6px 6px 16px rgba(0, 0, 0, 0.03),
+    -6px -6px 16px rgba(255, 255, 255, 0.9),
+    inset 3px 3px 8px rgba(255, 255, 255, 0.8),
+    inset -3px -3px 8px rgba(0, 0, 0, 0.02) !important;
+}
+
+[data-theme="light"] .today-bar-track {
+  background: rgba(0, 0, 0, 0.04) !important;
+  border: none !important;
+  box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.05) !important;
+}
+
+[data-theme="light"] .weekly-banner {
+  background: rgba(255, 255, 255, 0.5) !important;
+  border: none !important;
+  box-shadow:
+    4px 4px 10px rgba(0, 0, 0, 0.02),
+    -4px -4px 10px rgba(255, 255, 255, 0.8),
+    inset 2px 2px 5px rgba(255, 255, 255, 0.8),
+    inset -2px -2px 5px rgba(0, 0, 0, 0.02) !important;
+  border-radius: var(--radius-md) !important;
+}
+
+/* Header streak clock pill styling */
+[data-theme="light"] .status-pill {
+  background: rgba(255, 255, 255, 0.8) !important;
+  box-shadow:
+    4px 4px 10px rgba(0, 0, 0, 0.03),
+    -4px -4px 10px rgba(255, 255, 255, 0.9),
+    inset 2px 2px 5px rgba(255, 255, 255, 0.8) !important;
+  border: none !important;
+}
+
+[data-theme="light"] .hdr-btn {
+  background: rgba(255, 255, 255, 0.8) !important;
+  box-shadow:
+    4px 4px 10px rgba(0, 0, 0, 0.03),
+    -4px -4px 10px rgba(255, 255, 255, 0.9),
+    inset 2px 2px 5px rgba(255, 255, 255, 0.8) !important;
+  border: none !important;
+}
+
+[data-theme="light"] .hdr-btn:active {
+  box-shadow:
+    inset 3px 3px 6px rgba(0, 0, 0, 0.05),
+    inset -3px -3px 6px rgba(255, 255, 255, 0.8) !important;
+}

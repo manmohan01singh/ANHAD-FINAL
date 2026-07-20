@@ -12,7 +12,7 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
-const CACHE_VERSION = 'anhad-v9.5.0'; // PERF: remove all card backdrop-filter blur; fix tab slider data-active sync; unified day sky-blue gradient; no white borders on cards
+const CACHE_VERSION = 'anhad-v9.6.0'; // v9.6.0: Random spiritual notifications (5-6 daily nudges); random_spiritual_notifs IndexedDB store
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 const DATA_CACHE = `${CACHE_VERSION}-data`;
@@ -195,6 +195,7 @@ const STATIC_FILES = [
   'GurbaniRadio/gurbani-radio.css',
   'GurbaniRadio/ios17-player.css',
   'GurbaniRadio/ios17-player.js',
+  'GurbaniRadio/stream-library.js',
 
   // Notes
   'Notes/notes.html',
@@ -798,7 +799,8 @@ self.addEventListener('periodicsync', (event) => {
     event.waitUntil(
       Promise.all([
         checkAndFireScheduledNotifications(),
-        checkNaamAbhyasSchedule()
+        checkNaamAbhyasSchedule(),
+        checkRandomSpiritualNotifications()
       ])
     );
   }
@@ -929,6 +931,100 @@ async function scheduleDailyReminders() {
   // Re-check all notifications for the new day
   await checkAndFireScheduledNotifications();
   await checkNaamAbhyasSchedule();
+  await checkRandomSpiritualNotifications();
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// RANDOM SPIRITUAL NOTIFICATIONS CHECKER
+// Reads from IndexedDB 'random_spiritual_notifs' store and fires any due ones
+// ═══════════════════════════════════════════════════════════════════════════════
+async function checkRandomSpiritualNotifications() {
+  const DB_NAME = 'GurbaniRadioSW';
+  const STORE_NAME = 'random_spiritual_notifs';
+
+  try {
+    const db = await new Promise((resolve, reject) => {
+      const req = indexedDB.open(DB_NAME, 3);
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+      req.onupgradeneeded = (event) => {
+        const d = event.target.result;
+        if (!d.objectStoreNames.contains('notification_schedule')) {
+          const ns = d.createObjectStore('notification_schedule', { keyPath: 'id' });
+          ns.createIndex('scheduledTime', 'scheduledTime', { unique: false });
+          ns.createIndex('fired', 'fired', { unique: false });
+        }
+        if (!d.objectStoreNames.contains(STORE_NAME)) {
+          const rs = d.createObjectStore(STORE_NAME, { keyPath: 'id' });
+          rs.createIndex('scheduledTime', 'scheduledTime', { unique: false });
+          rs.createIndex('fired', 'fired', { unique: false });
+        }
+      };
+    });
+
+    if (!db.objectStoreNames.contains(STORE_NAME)) {
+      db.close();
+      return;
+    }
+
+    const now = Date.now();
+    const firedIds = [];
+
+    // Get all unfired notifications
+    const notifs = await new Promise((resolve, reject) => {
+      const tx = db.transaction(STORE_NAME, 'readonly');
+      const store = tx.objectStore(STORE_NAME);
+      const req = store.getAll();
+      req.onsuccess = () => resolve(req.result || []);
+      req.onerror = () => reject(req.error);
+    });
+
+    for (const notif of notifs) {
+      if (notif.fired) continue;
+      const timeDiff = now - notif.scheduledTime;
+      // Fire if within -1min to +20min window (generous to catch periodic sync gaps)
+      if (timeDiff >= -60000 && timeDiff <= 1200000) {
+        if (!_hasShownToday(notif.id)) {
+          await self.registration.showNotification(notif.title, {
+            body: notif.body,
+            icon: notif.icon || 'assets/icon-192x192.png',
+            badge: 'assets/icon-72x72.png',
+            tag: notif.tag || `spiritual-${notif.id}`,
+            renotify: true,
+            requireInteraction: false,
+            vibrate: [100, 50, 100],
+            data: notif.data || { url: 'index.html', type: 'spiritualNudge' },
+            actions: [
+              { action: 'open', title: 'Open' },
+              { action: 'dismiss', title: 'Later' }
+            ]
+          });
+          _markShownToday(notif.id);
+          firedIds.push(notif.id);
+          console.log(`[SW] 🔔 Random spiritual notif fired: ${notif.id}`);
+        }
+      }
+    }
+
+    // Mark fired notifications in DB
+    if (firedIds.length > 0) {
+      const tx2 = db.transaction(STORE_NAME, 'readwrite');
+      const store2 = tx2.objectStore(STORE_NAME);
+      for (const id of firedIds) {
+        const getReq = store2.get(id);
+        getReq.onsuccess = () => {
+          if (getReq.result) {
+            getReq.result.fired = true;
+            store2.put(getReq.result);
+          }
+        };
+      }
+    }
+
+    db.close();
+  } catch (e) {
+    console.warn('[SW] checkRandomSpiritualNotifications failed:', e);
+  }
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════

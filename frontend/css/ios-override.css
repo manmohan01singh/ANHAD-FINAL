@@ -2448,3 +2448,78 @@ html {
   -webkit-backdrop-filter: none !important;
   border: none !important;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   § 22. DYNAMIC DAY MODE - BACKGROUND DECORATIVE ORBS
+   Visible only in Day time-of-day mode, positioned above Gurpurab Calendar card
+   ═══════════════════════════════════════════════════════════════════════════════ */
+.day-orbs-container {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 900px;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Show only in dynamic day mode or when document has data-time-of-day="day" */
+[data-time-of-day="day"] .day-orbs-container,
+[data-theme="light"] .day-orbs-container {
+  display: block;
+}
+
+/* Hide orbs in dark mode unless it's auto theme and current day mode is active */
+.dark-mode .day-orbs-container,
+[data-theme="dark"] .day-orbs-container {
+  display: none !important;
+}
+[data-theme-mode="auto"][data-time-of-day="day"] .day-orbs-container {
+  display: block !important;
+}
+
+.day-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.12; /* extremely soft and elegant */
+  will-change: auto; /* no animation to save GPU */
+}
+
+/* Sky Blue Orb */
+.day-orb-1 {
+  width: 350px;
+  height: 350px;
+  background: radial-gradient(circle, #BAE6FD, transparent 70%);
+  top: -50px;
+  left: -50px;
+}
+
+/* Soft Green Orb */
+.day-orb-2 {
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, #D1FAE5, transparent 70%);
+  top: 150px;
+  right: -50px;
+}
+
+/* Soft Red Orb */
+.day-orb-3 {
+  width: 250px;
+  height: 250px;
+  background: radial-gradient(circle, #FEE2E2, transparent 70%);
+  top: 420px;
+  left: -30px;
+}
+
+/* Soft Yellow Orb */
+.day-orb-4 {
+  width: 280px;
+  height: 280px;
+  background: radial-gradient(circle, #FEF3C7, transparent 70%);
+  top: 580px;
+  right: -20px;
+}
