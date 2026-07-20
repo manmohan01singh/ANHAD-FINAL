@@ -99,35 +99,33 @@
   --clay-text-tertiary: #86868B;
 }
 
-/* DARK MODE FIX: White cards with black text on black background */
+/* ═══════════════════════════════════════════════════════════════
+   DARK MODE: Dark cards with white text
+   ═══════════════════════════════════════════════════════════════ */
 [data-theme="dark"] .glass-card,
 .theme-dark .glass-card,
 body.theme-dark .glass-card,
 html[data-theme="dark"] .glass-card {
-  background: rgba(255, 255, 255, 0.95) !important;
-  border: 1px solid rgba(0, 0, 0, 0.08) !important;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5) !important;
+  background: rgba(44, 44, 46, 0.85) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6) !important;
 }
 
-/* Force all text inside cards to be black in dark mode */
+/* White text in dark mode */
 [data-theme="dark"] .glass-card *,
 .theme-dark .glass-card *,
 body.theme-dark .glass-card *,
 html[data-theme="dark"] .glass-card * {
-  color: #000000 !important;
+  color: #FFFFFF !important;
 }
 
 [data-theme="dark"] .toggle-label,
-[data-theme="dark"] .toggle-desc,
 [data-theme="dark"] .next-title,
-[data-theme="dark"] .next-subtitle,
 [data-theme="dark"] .timeline-title,
-[data-theme="dark"] .timeline-subtitle,
 [data-theme="dark"] .qa-title,
-[data-theme="dark"] .qa-sub,
 [data-theme="dark"] .wisdom-translation,
 [data-theme="dark"] .schedule-time-value {
-  color: #000000 !important;
+  color: #FFFFFF !important;
 }
 
 [data-theme="dark"] .toggle-desc,
@@ -135,8 +133,62 @@ html[data-theme="dark"] .glass-card * {
 [data-theme="dark"] .timeline-subtitle,
 [data-theme="dark"] .qa-sub,
 [data-theme="dark"] .schedule-time-range {
-  color: #3C3C43 !important;
-  opacity: 0.8;
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TIME-BASED CARD COLORS (Auto Mode Only) - Match index.html
+   ═══════════════════════════════════════════════════════════════ */
+
+/* MORNING - Peach/Orange tint */
+[data-theme-mode="auto"][data-time-of-day="morning"] .glass-card {
+  background: linear-gradient(145deg, rgba(255, 250, 245, 0.92), rgba(255, 235, 215, 0.88)) !important;
+  border: 1px solid rgba(232, 168, 124, 0.2) !important;
+  box-shadow: 0 8px 32px rgba(232, 168, 124, 0.15) !important;
+}
+
+[data-theme-mode="auto"][data-time-of-day="morning"] .glass-card * {
+  color: #3E2723 !important;
+}
+
+[data-theme-mode="auto"][data-time-of-day="morning"] .toggle-desc,
+[data-theme-mode="auto"][data-time-of-day="morning"] .next-subtitle,
+[data-theme-mode="auto"][data-time-of-day="morning"] .timeline-subtitle {
+  color: #7D6B58 !important;
+}
+
+/* DAY - Neutral bright white */
+[data-theme-mode="auto"][data-time-of-day="day"] .glass-card {
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(250, 250, 252, 0.92)) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08) !important;
+}
+
+[data-theme-mode="auto"][data-time-of-day="day"] .glass-card * {
+  color: #1C1C1E !important;
+}
+
+[data-theme-mode="auto"][data-time-of-day="day"] .toggle-desc,
+[data-theme-mode="auto"][data-time-of-day="day"] .next-subtitle,
+[data-theme-mode="auto"][data-time-of-day="day"] .timeline-subtitle {
+  color: #8E8E93 !important;
+}
+
+/* EVENING - Golden/Sunset tint */
+[data-theme-mode="auto"][data-time-of-day="evening"] .glass-card {
+  background: linear-gradient(145deg, rgba(255, 252, 245, 0.92), rgba(255, 240, 220, 0.88)) !important;
+  border: 1px solid rgba(184, 134, 11, 0.25) !important;
+  box-shadow: 0 8px 32px rgba(184, 134, 11, 0.12) !important;
+}
+
+[data-theme-mode="auto"][data-time-of-day="evening"] .glass-card * {
+  color: #3B2A00 !important;
+}
+
+[data-theme-mode="auto"][data-time-of-day="evening"] .toggle-desc,
+[data-theme-mode="auto"][data-time-of-day="evening"] .next-subtitle,
+[data-theme-mode="auto"][data-time-of-day="evening"] .timeline-subtitle {
+  color: #7A6A4F !important;
 }
 
 /* ─── NOISE TEXTURE OVERLAY ─── */

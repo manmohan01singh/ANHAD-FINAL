@@ -26,69 +26,69 @@
   opacity: 1;
 }
 
-/* DAY TIME ORBS — Sky Blue, Soft Green, Soft Yellow */
+/* DAY TIME ORBS — Sky Blue, Soft Green, Soft Yellow - POSITIONED AT TOP (GREETING AREA) */
 [data-theme-mode="auto"][data-time-of-day="day"] .time-orb-1 {
   width: 400px;
   height: 400px;
-  background: radial-gradient(circle, rgba(135, 206, 250, 0.15) 0%, transparent 70%);
-  top: -100px;
-  right: 10%;
-  opacity: 0.12;
+  background: radial-gradient(circle, rgba(135, 206, 250, 0.18) 0%, transparent 70%);
+  top: 50px;
+  right: -80px;
+  opacity: 0.15;
 }
 
 [data-theme-mode="auto"][data-time-of-day="day"] .time-orb-2 {
   width: 350px;
   height: 350px;
-  background: radial-gradient(circle, rgba(144, 238, 144, 0.12) 0%, transparent 70%);
-  top: 20%;
-  left: -80px;
-  opacity: 0.1;
+  background: radial-gradient(circle, rgba(144, 238, 144, 0.15) 0%, transparent 70%);
+  top: 120px;
+  left: -100px;
+  opacity: 0.12;
 }
 
 [data-theme-mode="auto"][data-time-of-day="day"] .time-orb-3 {
   width: 320px;
   height: 320px;
-  background: radial-gradient(circle, rgba(255, 255, 150, 0.1) 0%, transparent 70%);
-  top: 40%;
-  right: -60px;
-  opacity: 0.08;
+  background: radial-gradient(circle, rgba(255, 255, 150, 0.12) 0%, transparent 70%);
+  top: 200px;
+  right: 10%;
+  opacity: 0.1;
 }
 
-/* NIGHT TIME ORBS — Soft Red, Sky Blue, Soft Purple, Soft Yellow */
+/* NIGHT TIME ORBS — Soft Red, Sky Blue, Soft Purple, Soft Yellow - POSITIONED AT TOP */
 [data-theme-mode="auto"][data-time-of-day="night"] .time-orb-1 {
   width: 380px;
   height: 380px;
-  background: radial-gradient(circle, rgba(255, 99, 132, 0.08) 0%, transparent 70%);
-  top: -80px;
-  right: 15%;
-  opacity: 0.08;
+  background: radial-gradient(circle, rgba(255, 99, 132, 0.12) 0%, transparent 70%);
+  top: 40px;
+  right: -70px;
+  opacity: 0.1;
 }
 
 [data-theme-mode="auto"][data-time-of-day="night"] .time-orb-2 {
   width: 340px;
   height: 340px;
-  background: radial-gradient(circle, rgba(135, 206, 250, 0.06) 0%, transparent 70%);
-  top: 30%;
-  left: -70px;
-  opacity: 0.06;
+  background: radial-gradient(circle, rgba(135, 206, 250, 0.1) 0%, transparent 70%);
+  top: 100px;
+  left: -90px;
+  opacity: 0.08;
 }
 
 [data-theme-mode="auto"][data-time-of-day="night"] .time-orb-3 {
   width: 300px;
   height: 300px;
-  background: radial-gradient(circle, rgba(186, 85, 211, 0.05) 0%, transparent 70%);
-  top: 50%;
-  right: -50px;
-  opacity: 0.05;
+  background: radial-gradient(circle, rgba(186, 85, 211, 0.08) 0%, transparent 70%);
+  top: 180px;
+  right: 15%;
+  opacity: 0.07;
 }
 
 [data-theme-mode="auto"][data-time-of-day="night"] .time-orb-4 {
   width: 280px;
   height: 280px;
-  background: radial-gradient(circle, rgba(255, 223, 128, 0.04) 0%, transparent 70%);
-  bottom: 10%;
+  background: radial-gradient(circle, rgba(255, 223, 128, 0.06) 0%, transparent 70%);
+  top: 260px;
   left: 20%;
-  opacity: 0.04;
+  opacity: 0.05;
 }
 
 /* ─── Design token fallbacks (resolved by trendora-premium.css if loaded) ─── */
