@@ -12,7 +12,7 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
-const CACHE_VERSION = 'anhad-v9.0.1'; // Increment to force cache clear and apply Gurbani Radio & My Pothi updates
+const CACHE_VERSION = 'anhad-v9.0.2'; // Stream proxy fix: HTTP streams now proxied via /api/stream on HTTPS web
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 const DATA_CACHE = `${CACHE_VERSION}-data`;

@@ -22,7 +22,22 @@
   const CDN_BASE_R2 = 'https://pub-525228169e0c44e38a67c306ba1a458c.r2.dev';
   const CDN_BASE_SIMRAN = 'https://pub-8bf31fc1f2a44451b40a3ded7e07fac2.r2.dev/waheguru';
   const SGPC_LIVE = 'https://live.sgpc.net:8443/;nocache=1';
-  
+
+  // ── HTTPS proxy for HTTP Icecast streams ──
+  // On HTTPS web (Vercel), browsers block http:// audio (mixed content).
+  // We proxy via /api/stream?url=... edge function.
+  // On Capacitor (Android/iOS), http is allowed via usesCleartextTraffic.
+  const IS_CAPACITOR = !!(window.Capacitor && window.Capacitor.isNative);
+  const IS_HTTPS_WEB  = !IS_CAPACITOR && location.protocol === 'https:';
+
+  function toProxiedUrl(rawUrl) {
+    if (!rawUrl) return rawUrl;
+    if (!IS_HTTPS_WEB) return rawUrl;          // Capacitor / http:// local – use as-is
+    if (rawUrl.startsWith('https://')) return rawUrl; // already HTTPS – no proxy needed
+    // HTTP stream on HTTPS web → route through edge proxy
+    return '/api/stream?url=' + encodeURIComponent(rawUrl);
+  }
+
   const VIRTUAL_LIVE_EPOCH_START = 1704067200; // 2024-01-01 00:00:00 UTC
   
   const AMRITVELA_KNOWN_DURATIONS = {
@@ -630,7 +645,9 @@
   const DarbarLiveManager = {
     play(streamName) {
       const streamObj = streamName ? STREAMS[streamName] : null;
-      const url = (streamObj && streamObj.url) ? streamObj.url : (SGPC_LIVE + '?t=' + Math.floor(Date.now() / 5000) * 5000);
+      const rawUrl = (streamObj && streamObj.url) ? streamObj.url : (SGPC_LIVE + '?t=' + Math.floor(Date.now() / 5000) * 5000);
+      const url = toProxiedUrl(rawUrl);
+
       currentTrackTitle = streamObj ? streamObj.name : 'Darbar Sahib Live';
       currentTrackArtist = streamObj ? (streamObj.subtitle || streamObj.artist || '') : 'Sri Harmandir Sahib Ji, Amritsar';
       updateMediaSession();
