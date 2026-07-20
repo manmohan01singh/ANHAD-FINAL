@@ -12,7 +12,7 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
-const CACHE_VERSION = 'anhad-v10.4.0'; // v10.4.0: Sky blue orb opacity 0.5, stream tabs slider positioning FIXED
+const CACHE_VERSION = 'anhad-v10.5.0'; // v10.5.0: ONLY Sky Blue orb (opacity 1.3), stream pill shows proper names (DARBAR SAHIB, AMRITVELA KIRTAN, WAHEGURU SIMRAN)
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 const DATA_CACHE = `${CACHE_VERSION}-data`;

@@ -209,11 +209,16 @@
 
     // 4. Update Banner & Recording controls
     if (state.streamType === 'live' || stream === 'darbar') {
-      DOM.listeningLiveText.textContent = 'LIVE';
+      DOM.listeningLiveText.textContent = 'DARBAR SAHIB';
       DOM.listeningLiveText.style.color = '#E24C4C';
       DOM.listeningTimeBadge.textContent = 'LIVE';
     } else {
-      DOM.listeningLiveText.textContent = stream.toUpperCase();
+      // Use proper stream names from METADATA
+      var streamNames = {
+        'amritvela': 'AMRITVELA KIRTAN',
+        'simran': 'WAHEGURU SIMRAN'
+      };
+      DOM.listeningLiveText.textContent = streamNames[stream] || stream.toUpperCase();
       DOM.listeningLiveText.style.color = 'var(--accent-gold)';
       DOM.listeningTimeBadge.textContent = formatSeconds(state.currentTime);
     }
