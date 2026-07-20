@@ -100,15 +100,17 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   DARK MODE: Dark cards with white text
+   DARK MODE: DARK/BLACK cards with white text
    ═══════════════════════════════════════════════════════════════ */
 [data-theme="dark"] .glass-card,
 .theme-dark .glass-card,
 body.theme-dark .glass-card,
 html[data-theme="dark"] .glass-card {
-  background: rgba(44, 44, 46, 0.85) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6) !important;
+  background: rgba(28, 28, 30, 0.98) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.8),
+    inset 0 1px 1px rgba(255, 255, 255, 0.05) !important;
 }
 
 /* White text in dark mode */
@@ -189,6 +191,25 @@ html[data-theme="dark"] .glass-card * {
 [data-theme-mode="auto"][data-time-of-day="evening"] .next-subtitle,
 [data-theme-mode="auto"][data-time-of-day="evening"] .timeline-subtitle {
   color: #7A6A4F !important;
+}
+
+/* NIGHT - Dark cards like dark mode */
+[data-theme-mode="auto"][data-time-of-day="night"] .glass-card {
+  background: rgba(28, 28, 30, 0.98) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.8),
+    inset 0 1px 1px rgba(255, 255, 255, 0.05) !important;
+}
+
+[data-theme-mode="auto"][data-time-of-day="night"] .glass-card * {
+  color: #FFFFFF !important;
+}
+
+[data-theme-mode="auto"][data-time-of-day="night"] .toggle-desc,
+[data-theme-mode="auto"][data-time-of-day="night"] .next-subtitle,
+[data-theme-mode="auto"][data-time-of-day="night"] .timeline-subtitle {
+  color: rgba(255, 255, 255, 0.7) !important;
 }
 
 /* ─── NOISE TEXTURE OVERLAY ─── */

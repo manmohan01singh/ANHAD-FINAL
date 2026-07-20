@@ -12,7 +12,7 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
-const CACHE_VERSION = 'anhad-v10.7.0'; // v10.7.0: Orb opacity 1.3→0.6, Stream tabs CACHE-BUSTED (gurbani-radio.css?v=10.7.0), FORCE CLEAR OLD CACHES
+const CACHE_VERSION = 'anhad-v10.8.0'; // v10.8.0: Marcellus font, Header orb (day/night), Naam Abhyas dark cards FIXED (black bg + white text)
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 const DATA_CACHE = `${CACHE_VERSION}-data`;

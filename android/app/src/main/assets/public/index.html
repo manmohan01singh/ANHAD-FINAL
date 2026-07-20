@@ -352,13 +352,8 @@
 
   <!-- CRITICAL: ANHAD Adaptive Title - Changes with background -->
   <style id="anhad-header-title-override">
-    /* Import Trajan Pro font (local) - Universal for ANHAD */
-    @font-face {
-      font-family: 'Trajan Pro';
-      src: url('../assets/fonts/TrajanPro-Bold.otf') format('opentype');
-      font-weight: bold;
-      font-display: swap;
-    }
+    /* Import Marcellus font from Google Fonts */
+    @import url('https://fonts.googleapis.com/css2?family=Marcellus&display=swap');
     
     /* HEADER WITH PERFECT CENTERING */
     .header {
@@ -539,16 +534,16 @@
         inset 0 1px 1px rgba(255, 255, 255, 0.08) !important;
     }
     
-    /* TRAJAN PRO FONT FOR ANHAD — Universal Across All Themes */
+    /* MARCELLUS FONT FOR ANHAD — Universal Across All Themes */
     .anhad-title-pill h1.header__title,
     h1.header__title {
       color: #FFEB3B !important;
       text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5) !important;
       background: none !important;
       -webkit-text-fill-color: #FFEB3B !important;
-      font-family: 'Trajan Pro', 'Times New Roman', serif !important;
-      font-weight: bold !important;
-      font-size: 19px !important;
+      font-family: 'Marcellus', 'Times New Roman', serif !important;
+      font-weight: 400 !important;
+      font-size: 20px !important;
       letter-spacing: 3px !important;
       filter: none !important;
       text-transform: uppercase !important;
@@ -2659,7 +2654,10 @@
     <!-- ════════════════════════════════════════════════════════════════════
          HEADER — Avatar | ANHAD | Emoji Actions
     ════════════════════════════════════════════════════════════════════ -->
-    <header class="header" role="banner" style="background: transparent !important;">
+    <header class="header" role="banner" style="background: transparent !important; position: relative;">
+      <!-- Orb behind header -->
+      <div class="time-orb time-orb-header" aria-hidden="true"></div>
+      
       <div class="header__left">
         <!-- Settings Button -->
         <button class="header__btn ios-haptic" id="settingsBtn"

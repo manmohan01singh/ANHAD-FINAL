@@ -7,9 +7,14 @@
  */
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   SUBTLE AMBIENT ORBS — Only in Greeting Section (2 orbs: Sky Blue + Yellow)
+   SUBTLE AMBIENT ORBS — Behind Header + Greeting (ONLY SKY BLUE)
    Matches "Your Practice" card color exactly
    ───────────────────────────────────────────────────────────────────────────── */
+
+/* Header must be positioned for orb */
+.header {
+  position: relative !important;
+}
 
 /* Greeting section must be positioned for orbs */
 .greeting {
@@ -74,6 +79,23 @@
 [data-theme-mode="auto"][data-time-of-day="night"] .time-orb-2 {
   display: none;
   opacity: 0;
+}
+
+/* HEADER ORB — Behind ANHAD title bar */
+.time-orb-header {
+  width: 500px;
+  height: 200px;
+  top: -50px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+[data-theme-mode="auto"][data-time-of-day="day"] .time-orb-header {
+  background: radial-gradient(ellipse, rgba(227, 242, 253, 1) 0%, rgba(187, 222, 251, 0.7) 40%, transparent 70%);
+}
+
+[data-theme-mode="auto"][data-time-of-day="night"] .time-orb-header {
+  background: radial-gradient(ellipse, rgba(28, 45, 61, 1) 0%, rgba(42, 61, 74, 0.7) 40%, transparent 70%);
 }
 
 /* ─── Design token fallbacks (resolved by trendora-premium.css if loaded) ─── */
