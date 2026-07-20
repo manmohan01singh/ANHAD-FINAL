@@ -12,7 +12,7 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
-const CACHE_VERSION = 'anhad-v10.3.0'; // v10.3.0: SUBTLE orbs - only 2 (Sky Blue exact card color + Yellow), greeting section only, low opacity 0.25
+const CACHE_VERSION = 'anhad-v10.4.0'; // v10.4.0: Sky blue orb opacity 0.5, stream tabs slider positioning FIXED
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 const DATA_CACHE = `${CACHE_VERSION}-data`;

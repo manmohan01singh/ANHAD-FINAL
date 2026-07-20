@@ -29,14 +29,14 @@
   pointer-events: none;
   z-index: 0;
   filter: blur(100px);
-  opacity: 0.25;
+  opacity: 0.5;
   transition: opacity 0.8s ease;
 }
 
 /* Show orbs only in DAY and NIGHT auto mode */
 [data-theme-mode="auto"][data-time-of-day="day"] .time-orb,
 [data-theme-mode="auto"][data-time-of-day="night"] .time-orb {
-  opacity: 0.25;
+  opacity: 0.5;
 }
 
 /* Hide orbs in other modes */
