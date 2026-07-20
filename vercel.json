@@ -11,10 +11,5 @@
         { "key": "Cache-Control", "value": "no-cache, no-store" }
       ]
     }
-  ],
-  "functions": {
-    "frontend/api/stream.js": {
-      "runtime": "edge"
-    }
-  }
+  ]
 }
