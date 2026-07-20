@@ -576,38 +576,49 @@
     },
 
     loadAndPlay(url, preloadMode) {
+      this.init();
+      isLoading = true;
+      emit('loading', { isLoading: true });
+
+      // Set preload type
+      this.audio.preload = preloadMode || 'auto';
+
+      // Set CORS policy: Only Amritvela R2 bucket supports CORS, others do not
+      if (url && url.indexOf('pub-525228169e0c44e38a67c306ba1a458c.r2.dev') !== -1) {
+        this.audio.crossOrigin = 'anonymous';
+      } else {
+        this.audio.removeAttribute('crossorigin');
+      }
+
+      if (this.audio.src !== url) {
+        this.audio.src = url;
+        // PWA only: call load() to reset pipeline
+        if (!window.Capacitor) {
+          try { this.audio.load(); } catch (e) { }
+        }
+      }
+
+      // Trigger playback synchronously on the main thread inside user gesture stack
+      let playPromise;
+      try {
+        playPromise = this.audio.play();
+      } catch (err) {
+        console.warn('[PlaybackQueueController] Sync play request failed:', err);
+      }
+
       return this.enqueue(async () => {
-        this.init();
-        isLoading = true;
-        emit('loading', { isLoading: true });
-
-        // Set preload type
-        this.audio.preload = preloadMode || 'auto';
-
-        // Set CORS policy: Only Amritvela R2 bucket supports CORS, others do not (causes playback errors)
-        if (url && url.indexOf('pub-525228169e0c44e38a67c306ba1a458c.r2.dev') !== -1) {
-          this.audio.crossOrigin = 'anonymous';
-        } else {
-          this.audio.removeAttribute('crossorigin');
-        }
-
-        if (this.audio.src !== url) {
-          this.audio.src = url;
-          // PWA only: call load() to reset pipeline
-          if (!window.Capacitor) {
-            try { this.audio.load(); } catch (e) { }
+        if (playPromise) {
+          try {
+            await playPromise;
+          } catch (e) {
+            console.warn('[PlaybackQueueController] play promise rejected or blocked:', e.message);
+            isPlaying = false;
+            emit('statechange', getPublicState());
+          } finally {
+            isLoading = false;
+            emit('loading', { isLoading: false });
           }
-        }
-
-        try {
-          await this.audio.play();
-          // Play succeeded — don't emit statechange here.
-          // The 'play' event listener will set isPlaying=true and emit statechange.
-        } catch (e) {
-          console.warn('[PlaybackQueueController] autoplay blocked or load failed:', e.message);
-          isPlaying = false;
-          emit('statechange', getPublicState());
-        } finally {
+        } else {
           isLoading = false;
           emit('loading', { isLoading: false });
         }
