@@ -531,7 +531,11 @@
       });
       this.audio.addEventListener('error', (e) => {
         console.error('[PlaybackQueueController] HTMLAudio Error:', e);
-        emit('error', { message: 'Audio playback error' });
+        emit('error', {
+          message: 'Audio playback error',
+          stream: currentStream,
+          trackTitle: currentTrackTitle
+        });
       });
 
       // Background capabilities

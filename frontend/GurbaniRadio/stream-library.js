@@ -20,21 +20,21 @@
     // ── GurbaniSewa streams ─
     { id: 'gs_akhand',      name: 'Akhand Paath',                   sub: 'Non-stop Paath',              emoji: '📖', url: 'http://radio.gurbanisewa.org:8000/stream' },
     { id: 'gs_simran_gm',   name: 'Simran — Gur Mantar',            sub: 'Gur Mantar Simran',           emoji: '🕉️',  url: 'http://radio.gurbanisewa.org:8003/stream' },
-    { id: 'gs_simran_mm',   name: 'Simran — Mool Mantar',           sub: 'Mool Mantar Simran',          emoji: '🙏', url: 'http://radio.gurbanisewa.org:8002/stream' },
+    { id: 'gs_simran_mm',   name: 'Simran — Mool Mantar',           sub: 'Mool Mantar Simran',          emoji: '🙏', url: 'http://radio.gurbanisewa.org:8002/stream', offline: true },
     { id: 'gs_kirtan',      name: 'Kirtan — Gurbani',               sub: 'Gurbani Kirtan',              emoji: '🎵', url: 'http://radio.gurbanisewa.org:8001/stream' },
     { id: 'gs_darbar_sgpc', name: 'Kirtan — Darbar Sahib (SGPC)',   sub: 'SGPC Live Stream',            emoji: '🎙️', url: 'http://sgpc.net:8000/listen.ols'           },
-    { id: 'gs_puratan',     name: 'Kirtan — Puratan',               sub: 'Classical Kirtan',            emoji: '🎶', url: 'http://radio.gurbanisewa.org:8008/stream' },
+    { id: 'gs_puratan',     name: 'Kirtan — Puratan',               sub: 'Classical Kirtan',            emoji: '🎶', url: 'http://radio.gurbanisewa.org:8008/stream', offline: true },
     { id: 'gs_raag',        name: 'Kirtan — Raag',                  sub: 'Raag Kirtan',                 emoji: '🎻', url: 'http://radio.gurbanisewa.org:8009/stream' },
     { id: 'gs_katha_g',     name: 'Katha — Gurbani',                sub: 'Gurbani Katha',               emoji: '📚', url: 'http://radio.gurbanisewa.org:8013/stream' },
     { id: 'gs_katha_sggs',  name: 'Katha — Sri Guru Granth Sahib',  sub: 'SGGS Katha',                  emoji: '📜', url: 'http://radio.gurbanisewa.org:8011/stream' },
-    { id: 'gs_katha_sdgs',  name: 'Katha — Sri Dasam Granth',       sub: 'Dasam Granth Katha',          emoji: '🗡️',  url: 'http://radio.gurbanisewa.org:8014/stream' },
-    { id: 'gs_katha_itihaas', name: 'Katha — Itihaas',             sub: 'Sikh History Katha',          emoji: '⚔️',  url: 'http://radio.gurbanisewa.org:8012/stream' },
-    { id: 'gs_katha_sawal',  name: 'Katha — Gurmat Sawal Jawab',    sub: 'Q&A Katha',                   emoji: '💬', url: 'http://radio.gurbanisewa.org:8015/stream' },
+    { id: 'gs_katha_sdgs',  name: 'Katha — Sri Dasam Granth',       sub: 'Dasam Granth Katha',          emoji: '🗡️',  url: 'http://radio.gurbanisewa.org:8014/stream', offline: true },
+    { id: 'gs_katha_itihaas', name: 'Katha — Itihaas',             sub: 'Sikh History Katha',          emoji: '⚔️',  url: 'http://radio.gurbanisewa.org:8012/stream', offline: true },
+    { id: 'gs_katha_sawal',  name: 'Katha — Gurmat Sawal Jawab',    sub: 'Q&A Katha',                   emoji: '💬', url: 'http://radio.gurbanisewa.org:8015/stream', offline: true },
     { id: 'gs_audiobooks',  name: 'Audio Books',                    sub: 'Sikh Literature',             emoji: '🎧', url: 'http://radio.gurbanisewa.org:8005/stream' },
     { id: 'gs_kavishri',    name: 'Kavishri / Dhadi',               sub: 'Kavishri & Dhadi Vaaran',     emoji: '🥁', url: 'http://radio.gurbanisewa.org:8007/stream' },
-    { id: 'gs_sarabrog',    name: 'Sarab Rog Ka Aukhad Naam',        sub: 'Healing Naam',                emoji: '✨', url: 'http://radio.gurbanisewa.org:8004/stream' },
+    { id: 'gs_sarabrog',    name: 'Sarab Rog Ka Aukhad Naam',        sub: 'Healing Naam',                emoji: '✨', url: 'http://radio.gurbanisewa.org:8004/stream', offline: true },
     { id: 'gs_sahibzadey',  name: 'Sahibzadey Sewa Dal',            sub: 'Sewa Dal Kirtan',             emoji: '🏹', url: 'http://radio.gurbanisewa.org:8016/stream' },
-    { id: 'gs_paath_sdgs',  name: 'Paath — Sri Dasam Granth',       sub: 'Dasam Granth Paath',          emoji: '📖', url: 'http://radio.gurbanisewa.org:8007/stream' },
+    { id: 'gs_paath_sdgs',  name: 'Paath — Sri Dasam Granth',       sub: 'Dasam Granth Paath',          emoji: '📖', url: 'http://radio.gurbanisewa.org:8017/stream' },
     { id: 'gs_sukhmani',    name: 'Paath — Sukhmani Sahib',         sub: 'Sukhmani Sahib Paath',        emoji: '🌸', url: 'http://radio.gurbanisewa.org:8017/stream' },
 
     // ── SikhNet gurdwaras ─
@@ -118,15 +118,16 @@
       btn.setAttribute('data-slot-index', idx);
       btn.setAttribute('aria-label', meta.name);
 
+      var isActive = streamId === currentStream;
       if (iconOnly) {
-        // Icon-only — show Khanda image
+        // Icon-only — show gold Khanda image
         btn.innerHTML =
-          '<img src="../assets/khanda.png" class="gr-tab-khanda-img" title="' + meta.name + '" style="width:22px;height:22px;object-fit:contain;filter:brightness(0) invert(1);">';
+          '<img src="../assets/khanda-gold.png" class="gr-tab-khanda-img" title="' + meta.name + '" style="width:22px;height:22px;object-fit:contain;filter:' + (isActive ? 'drop-shadow(0 0 4px rgba(200,168,75,0.8)) brightness(1.15)' : 'brightness(0.55) saturate(0.5)') + ';transition:filter 0.25s;">';
         btn.classList.add('icon-only');
       } else {
-        // Full label — with small Khanda icon
+        // Full label — with small gold Khanda icon
         btn.innerHTML =
-          '<img src="../assets/khanda.png" class="gr-tab-khanda-img" style="width:16px;height:16px;object-fit:contain;margin-right:6px;' + (streamId === currentStream ? 'filter:brightness(0) invert(1);' : 'filter:opacity(0.7);') + '">' + meta.name.split(' — ')[0].split(' (')[0];
+          '<img src="../assets/khanda-gold.png" class="gr-tab-khanda-img" style="width:16px;height:16px;object-fit:contain;margin-right:6px;filter:' + (isActive ? 'drop-shadow(0 0 3px rgba(200,168,75,0.7)) brightness(1.15)' : 'brightness(0.6) saturate(0.4)') + ';transition:filter 0.25s;">' + meta.name.split(' — ')[0].split(' (')[0];
       }
 
       btn.addEventListener('click', function () {
@@ -259,25 +260,25 @@
       streams.forEach(function (s) {
         var isInSlot = slots.includes(s.id);
         var isFixed  = s.id === FIXED_SLOT;
+        var isOffline = !!s.offline;
         var isPlaying = window.AnhadAudio && window.AnhadAudio.getState().currentStream === s.id;
         var isCustomPlaying = window._anhadCustomStream && window._anhadCustomStream.id === s.id;
 
         var card = document.createElement('div');
-        card.className = 'sl-card' + (isInSlot ? ' sl-card--active' : '') + (isFixed ? ' sl-card--fixed' : '');
+        card.className = 'sl-card' + (isInSlot ? ' sl-card--active' : '') + (isFixed ? ' sl-card--fixed' : '') + (isOffline ? ' sl-card--offline' : '');
 
         card.innerHTML = [
           '<div class="sl-card-left">',
-          '  <div class="sl-card-emoji" style="display:flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#C8842A,#E8A83A);flex-shrink:0;"><img src="../assets/khanda.png" style="width:26px;height:26px;object-fit:contain;filter:brightness(0) invert(1);"></div>',
+          '  <div class="sl-card-emoji" style="display:flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#C8842A,#E8A83A);flex-shrink:0;' + (isOffline ? 'opacity:0.45;' : '') + '"><img src="../assets/khanda-gold.png" style="width:26px;height:26px;object-fit:contain;"></div>',
           '  <div class="sl-card-info">',
-          '    <div class="sl-card-name">' + s.name + (isFixed ? ' <span class="sl-fixed-badge">Fixed</span>' : '') + '</div>',
+          '    <div class="sl-card-name">' + s.name + (isFixed ? ' <span class="sl-fixed-badge">Fixed</span>' : '') + (isOffline ? ' <span class="sl-offline-badge">Offline</span>' : '') + '</div>',
           '    <div class="sl-card-sub">' + s.sub + '</div>',
           '  </div>',
           '</div>',
           '<div class="sl-card-right">',
-          '  <button class="sl-card-play" data-stream-id="' + s.id + '" aria-label="Play ' + s.name + '">',
-          '    <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>',
-          '  </button>',
-          (!isFixed ? '<button class="sl-card-dots" data-stream-id="' + s.id + '" aria-label="Options">⋯</button>' : ''),
+          (isOffline ? '<span class="sl-offline-icon" title="Stream currently unavailable">📡</span>' :
+            '  <button class="sl-card-play" data-stream-id="' + s.id + '" aria-label="Play ' + s.name + '">    <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>  </button>'),
+          (!isFixed && !isOffline ? '<button class="sl-card-dots" data-stream-id="' + s.id + '" aria-label="Options">⋯</button>' : ''),
           '</div>'
         ].join('');
 
@@ -486,6 +487,9 @@
       '[data-theme="dark"] .sl-card-name,.dark-mode .sl-card-name { color:#F5F5F7; }',
       '.sl-card-sub { font-size:12px; color:var(--text-sec,#6E6E73); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:1px; }',
       '.sl-fixed-badge { font-size:10px; font-weight:600; background:rgba(212,148,58,0.18); color:var(--accent-gold,#D4943A); border-radius:4px; padding:1px 5px; margin-left:5px; vertical-align:middle; }',
+      '.sl-offline-badge { font-size:10px; font-weight:600; background:rgba(255,80,80,0.14); color:#E04040; border-radius:4px; padding:1px 5px; margin-left:5px; vertical-align:middle; }',
+      '.sl-card--offline { opacity:0.6; pointer-events:none; }',
+      '.sl-offline-icon { font-size:20px; opacity:0.5; padding:0 6px; }',
 
       '.sl-card-right { display:flex; align-items:center; gap:4px; flex-shrink:0; }',
       '.sl-card-play { width:36px; height:36px; border-radius:50%; border:none; background:var(--accent-gold,#D4943A); color:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:transform 0.2s,opacity 0.2s; }',

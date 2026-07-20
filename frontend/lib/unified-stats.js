@@ -333,6 +333,13 @@
             };
         },
 
+        syncStreak: function(nitnemStreak) {
+            const stats = getStats();
+            stats.streaks.nitnem = nitnemStreak;
+            saveStats(stats);
+            console.log('[UnifiedStats] Externally synced Nitnem streak to:', nitnemStreak);
+        },
+
         // Reset (for testing)
         reset: function() {
             localStorage.removeItem(STORAGE_KEY);

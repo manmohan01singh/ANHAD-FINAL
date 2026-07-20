@@ -889,6 +889,12 @@
           DOM.playBtn.classList.remove('loading');
         }
       });
+      audio.on('error', function (e) {
+        // Show helpful toast when a stream fails
+        var state = audio.getState();
+        var streamName = state.currentTrackTitle || state.currentStream || 'stream';
+        showToast('⚠️ Stream failed: ' + streamName + '. Stream may be offline.');
+      });
 
       // Update seek slider on timeupdate
       var audioEl = audio.getAudio();
