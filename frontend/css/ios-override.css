@@ -1727,8 +1727,8 @@ a,
 
 /* ── Quick Cards ── */
 .quick-card {
-  backdrop-filter: blur(20px) saturate(160%) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
 }
 
 /* ── Event / Practice Cards ── */
@@ -1744,20 +1744,20 @@ a,
 .goal-card,
 .milestone,
 .analytics-chart {
-  backdrop-filter: blur(20px) saturate(160%) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
 }
 
-/* ── Dark theme card backgrounds need slight transparency for blur to show ── */
+/* ── Dark theme card backgrounds — solid rich dark colors for 60fps performance ── */
 [data-theme="dark"] .quick-card,
 .dark-mode .quick-card {
-  background: rgba(30, 30, 35, 0.75) !important;
+  background: #1E1E24 !important;
   border: 1px solid rgba(255, 255, 255, 0.08) !important;
   box-shadow:
     0 8px 32px rgba(0, 0, 0, 0.4),
     inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
-  backdrop-filter: blur(20px) saturate(160%) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
 }
 
 [data-theme="dark"] .event-card,
@@ -1768,8 +1768,11 @@ a,
 .dark-mode .insight-card,
 [data-theme="dark"] .practice-card,
 .dark-mode .practice-card {
-  backdrop-filter: blur(20px) saturate(160%) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
+  background: #1C1C1E !important;
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
 }
 
 /* ── Auto theme MORNING + EVENING only — sky glass palette (NOT day/night) ── */
@@ -1813,36 +1816,36 @@ a,
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
 }
-/* Nitnem — distinct warm spiritual gold */
+/* Nitnem — white-to-sky-blue */
 [data-theme-mode="auto"][data-time-of-day="day"] .practice-card--nitnem {
-  background: linear-gradient(165deg, #FFF8F0 0%, #FFEFD8 50%, #FFE8D0 100%) !important;
+  background: linear-gradient(165deg, #FFFFFF 0%, #EFF8FF 55%, #BAE6FD 100%) !important;
   box-shadow:
-    8px 8px 20px rgba(212, 148, 58, 0.12),
+    8px 8px 20px rgba(59, 130, 246, 0.08),
     -6px -6px 18px rgba(255, 255, 255, 0.95),
     inset 4px 4px 10px rgba(255, 255, 255, 0.95),
-    inset -4px -4px 10px rgba(212, 148, 58, 0.07) !important;
+    inset -4px -4px 10px rgba(59, 130, 246, 0.05) !important;
   border: 2px solid rgba(255, 255, 255, 0.88) !important;
   border-radius: 30px !important;
 }
-/* Sehaj Paath — distinct soft lavender-purple */
+/* Sehaj Paath — white-to-sky-blue */
 [data-theme-mode="auto"][data-time-of-day="day"] .practice-card--sehaj {
-  background: linear-gradient(165deg, #F8F5FF 0%, #F0EBFF 50%, #E8E8FF 100%) !important;
+  background: linear-gradient(165deg, #FFFFFF 0%, #EFF8FF 55%, #BAE6FD 100%) !important;
   box-shadow:
-    8px 8px 20px rgba(88, 86, 214, 0.10),
+    8px 8px 20px rgba(59, 130, 246, 0.08),
     -6px -6px 18px rgba(255, 255, 255, 0.95),
     inset 4px 4px 10px rgba(255, 255, 255, 0.95),
-    inset -4px -4px 10px rgba(88, 86, 214, 0.06) !important;
+    inset -4px -4px 10px rgba(59, 130, 246, 0.05) !important;
   border: 2px solid rgba(255, 255, 255, 0.88) !important;
   border-radius: 30px !important;
 }
-/* Hukamnama — distinct warm peach-orange */
+/* Hukamnama — white-to-sky-blue */
 [data-theme-mode="auto"][data-time-of-day="day"] .practice-card--hukam {
-  background: linear-gradient(165deg, #FFF8F0 0%, #FFF0E8 50%, #FFE8D8 100%) !important;
+  background: linear-gradient(165deg, #FFFFFF 0%, #EFF8FF 55%, #BAE6FD 100%) !important;
   box-shadow:
-    8px 8px 20px rgba(255, 149, 0, 0.10),
+    8px 8px 20px rgba(59, 130, 246, 0.08),
     -6px -6px 18px rgba(255, 255, 255, 0.95),
     inset 4px 4px 10px rgba(255, 255, 255, 0.95),
-    inset -4px -4px 10px rgba(255, 149, 0, 0.06) !important;
+    inset -4px -4px 10px rgba(59, 130, 246, 0.05) !important;
   border: 2px solid rgba(255, 255, 255, 0.88) !important;
   border-radius: 30px !important;
 }
@@ -1922,7 +1925,7 @@ a,
   border-radius: 30px !important;
 }
 [data-theme-mode="auto"][data-time-of-day="night"] .practice-card {
-  background: #0D0D0F !important;
+  background: #1C1C1E !important;
   box-shadow:
     25px 25px 50px rgba(0, 0, 0, 0.7),
     15px 15px 30px rgba(0, 0, 0, 0.5),
@@ -1933,11 +1936,11 @@ a,
     inset -5px -5px 12px rgba(0, 0, 0, 0.4) !important;
   border: none !important;
   border-radius: 30px !important;
-  backdrop-filter: blur(20px) saturate(160%) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
 }
 [data-theme-mode="auto"][data-time-of-day="night"] .quick-card {
-  background: rgba(30, 30, 35, 0.75) !important;
+  background: #1E1E24 !important;
   box-shadow:
     25px 25px 50px rgba(0, 0, 0, 0.7),
     15px 15px 30px rgba(0, 0, 0, 0.5),
@@ -1947,8 +1950,8 @@ a,
     inset -10px -10px 25px rgba(0, 0, 0, 0.6),
     inset -5px -5px 12px rgba(0, 0, 0, 0.4) !important;
   border: none !important;
-  backdrop-filter: blur(20px) saturate(160%) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
 }
 [data-theme-mode="auto"][data-time-of-day="night"] .quick-card--green,
 [data-theme-mode="auto"][data-time-of-day="night"] .quick-card--gold,
@@ -1956,7 +1959,7 @@ a,
 [data-theme-mode="auto"][data-time-of-day="night"] .quick-card--blue,
 [data-theme-mode="auto"][data-time-of-day="night"] .quick-card--rose,
 [data-theme-mode="auto"][data-time-of-day="night"] .quick-card--teal {
-  background: rgba(18, 18, 22, 0.8) !important;
+  background: #18181C !important;
   border: none !important;
 }
 [data-theme-mode="auto"][data-time-of-day="night"] .progress-inline {
@@ -1966,19 +1969,19 @@ a,
     inset 4px 4px 12px rgba(255, 255, 255, 0.05),
     inset -4px -4px 12px rgba(0, 0, 0, 0.8) !important;
   border: 2px solid rgba(255, 255, 255, 0.03) !important;
-  backdrop-filter: blur(20px) !important;
-  -webkit-backdrop-filter: blur(20px) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
 }
 [data-theme-mode="auto"][data-time-of-day="night"] .event-card {
-  background: rgba(13, 13, 15, 0.85) !important;
+  background: #1C1C1E !important;
   box-shadow:
     25px 25px 50px rgba(0, 0, 0, 0.7),
     15px 15px 30px rgba(0, 0, 0, 0.5),
     inset 10px 10px 25px rgba(255, 255, 255, 0.08),
     inset -10px -10px 25px rgba(0, 0, 0, 0.6) !important;
   border: none !important;
-  backdrop-filter: blur(20px) saturate(160%) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
 }
 
 /* ── Morning Soft Cushion Claymorphism Override (5:00 AM to 9:00 AM) ── */

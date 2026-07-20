@@ -100,17 +100,19 @@
       btn.setAttribute('data-slot-index', idx);
       btn.setAttribute('aria-label', meta.name);
 
-      var isActive = streamId === currentStream;
-      if (iconOnly) {
-        // Icon-only — show gold Khanda image
-        btn.innerHTML =
-          '<img src="../assets/khanda-gold.png" class="gr-tab-khanda-img" title="' + meta.name + '" style="width:22px;height:22px;object-fit:contain;filter:' + (isActive ? 'drop-shadow(0 0 4px rgba(200,168,75,0.8)) brightness(1.15)' : 'brightness(0.55) saturate(0.5)') + ';transition:filter 0.25s;">';
-        btn.classList.add('icon-only');
+      var labelText = '';
+      if (slots.length > 3) {
+        // More than 3 streams: name them Stream 1 to N
+        labelText = 'Stream ' + (idx + 1);
       } else {
-        // Full label — with small gold Khanda icon
-        btn.innerHTML =
-          '<img src="../assets/khanda-gold.png" class="gr-tab-khanda-img" style="width:16px;height:16px;object-fit:contain;margin-right:6px;filter:' + (isActive ? 'drop-shadow(0 0 3px rgba(200,168,75,0.7)) brightness(1.15)' : 'brightness(0.6) saturate(0.4)') + ';transition:filter 0.25s;">' + meta.name.split(' — ')[0].split(' (')[0];
+        // 3 or fewer streams: name them correctly
+        var rawName = meta.name || '';
+        labelText = rawName.split(' — ')[0].split(' (')[0].split(' Live')[0].split(' Kirtan')[0].split(' Simran')[0];
+        // Clean up common long words to fit nicely
+        if (labelText === 'Waheguru') labelText = 'Simran';
       }
+
+      btn.innerHTML = '<span class="gr-tab-text-inner">' + labelText + '</span>';
 
       btn.addEventListener('click', function () {
         hapticLight();
@@ -119,6 +121,17 @@
 
       tabsEl.appendChild(btn);
     });
+
+    // Check for overflow on DOM layout to trigger marquee animation if needed
+    setTimeout(function () {
+      var activeTab = tabsEl.querySelector('.gr-tab.active');
+      if (activeTab) {
+        var inner = activeTab.querySelector('.gr-tab-text-inner');
+        if (inner && inner.scrollWidth > activeTab.clientWidth - 8) {
+          activeTab.classList.add('should-marquee');
+        }
+      }
+    }, 80);
   }
 
   function getTabIconSVG(meta) {
@@ -141,7 +154,15 @@
     if (tabsEl) tabsEl.setAttribute('data-active', slotIdx);
 
     document.querySelectorAll('.gr-tab').forEach(function (t) {
-      t.classList.toggle('active', t.getAttribute('data-stream') === streamId);
+      var isActive = t.getAttribute('data-stream') === streamId;
+      t.classList.toggle('active', isActive);
+      t.classList.remove('should-marquee'); // reset
+      if (isActive) {
+        var inner = t.querySelector('.gr-tab-text-inner');
+        if (inner && inner.scrollWidth > t.clientWidth - 8) {
+          t.classList.add('should-marquee');
+        }
+      }
     });
 
     var audio = window.AnhadAudio;
