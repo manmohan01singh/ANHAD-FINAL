@@ -119,16 +119,14 @@
       btn.setAttribute('aria-label', meta.name);
 
       if (iconOnly) {
-        // Icon-only — show emoji as the "icon"
+        // Icon-only — show Khanda image
         btn.innerHTML =
-          '<span class="gr-tab-emoji" title="' + meta.name + '">' + meta.emoji + '</span>';
+          '<img src="../assets/khanda.png" class="gr-tab-khanda-img" title="' + meta.name + '" style="width:22px;height:22px;object-fit:contain;filter:brightness(0) invert(1);">';
         btn.classList.add('icon-only');
       } else {
-        // Full label
+        // Full label — with small Khanda icon
         btn.innerHTML =
-          '<svg class="gr-tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">' +
-            getTabIconSVG(meta) +
-          '</svg>' + meta.name.split(' — ')[0].split(' (')[0];
+          '<img src="../assets/khanda.png" class="gr-tab-khanda-img" style="width:16px;height:16px;object-fit:contain;margin-right:6px;' + (streamId === currentStream ? 'filter:brightness(0) invert(1);' : 'filter:opacity(0.7);') + '">' + meta.name.split(' — ')[0].split(' (')[0];
       }
 
       btn.addEventListener('click', function () {
@@ -269,7 +267,7 @@
 
         card.innerHTML = [
           '<div class="sl-card-left">',
-          '  <div class="sl-card-emoji">' + s.emoji + '</div>',
+          '  <div class="sl-card-emoji" style="display:flex;align-items:center;justify-content:center;"><img src="../assets/khanda.png" style="width:32px;height:32px;object-fit:contain;"></div>',
           '  <div class="sl-card-info">',
           '    <div class="sl-card-name">' + s.name + (isFixed ? ' <span class="sl-fixed-badge">Fixed</span>' : '') + '</div>',
           '    <div class="sl-card-sub">' + s.sub + '</div>',
@@ -381,7 +379,7 @@
         var slotMeta = getStreamById(slotId);
         var btn = document.createElement('button');
         btn.className = 'sl-rp-slot';
-        btn.innerHTML = '<span class="sl-rp-emoji">' + (slotMeta ? slotMeta.emoji : '📻') + '</span>' +
+        btn.innerHTML = '<img src="../assets/khanda.png" style="width:20px;height:20px;object-fit:contain;margin-right:8px;">' +
                         '<span>' + (slotMeta ? slotMeta.name.split(' — ')[0].split(' (')[0] : slotId) + '</span>';
         btn.addEventListener('click', function () {
           var newSlots = slots.slice();
