@@ -711,24 +711,22 @@
                     <div class="subtitle" id="readingSubtitle">Your daily reading</div>
                 </div>
                 
-                <!-- Pending Banis Section -->
-                <div class="pending-banis-card" id="pendingBanisSection" style="display:none; margin: 16px; padding: 14px; background: rgba(255, 149, 0, 0.08); border: 1px solid rgba(255, 149, 0, 0.25); border-radius: 16px;">
-                    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom: 12px;">
-                        <div style="display:flex; align-items:center; gap: 10px;">
-                            <span style="font-size: 22px;">⚠️</span>
-                            <div>
-                                <h3 style="font-size: 16px; font-weight: 700; margin: 0; color: var(--text-primary);">ਬਾਕੀ ਨਿਤਨੇਮ (Pending Prayers)</h3>
-                                <p style="font-size: 12px; margin: 2px 0 0; color: var(--text-secondary);">Unfinished Nitnem from previous day</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="pendingBanisList" style="display:flex; flex-direction:column; gap: 8px;"></div>
-                </div>
-                
                 <div class="reorder-hint">
                     <span>☰</span> Long press & drag to reorder
                 </div>
                 <div class="pothi-list" id="pothiList"></div>
+                
+                <!-- Pending Banis Section -->
+                <div class="pending-banis-card" id="pendingBanisSection" style="display:none; margin: 16px; padding: 16px; background: linear-gradient(135deg, rgba(255, 149, 0, 0.1), rgba(255, 149, 0, 0.05)); border: 1px solid rgba(255, 149, 0, 0.3); border-radius: 20px; box-shadow: 0 4px 20px rgba(255, 149, 0, 0.15);">
+                    <div style="display:flex; align-items:center; gap: 12px; margin-bottom: 16px;">
+                        <span style="font-size: 28px; filter: drop-shadow(0 2px 4px rgba(255, 149, 0, 0.3));">⚠️</span>
+                        <div>
+                            <h3 style="font-size: 17px; font-weight: 700; margin: 0; color: var(--text-primary);">ਬਾਕੀ ਨਿਤਨੇਮ (Pending Prayers)</h3>
+                            <p style="font-size: 13px; margin: 4px 0 0; color: var(--text-secondary);">Complete unfinished Nitnem from yesterday</p>
+                        </div>
+                    </div>
+                    <div id="pendingBanisList" style="display:flex; flex-direction:column; gap: 10px;"></div>
+                </div>
             </div>
             
             <!-- Insights / Progress Charts -->
@@ -893,6 +891,16 @@
 
             saveCompletedBanis(completed);
             renderInsights();
+            renderPendingBanis(); // Update pending banis in real-time
+            
+            // Trigger Nitnem Tracker progress update if available
+            try {
+                if (window.NitnemManager && typeof window.NitnemManager.loadTodayProgress === 'function') {
+                    window.NitnemManager.loadTodayProgress();
+                    window.NitnemManager.renderAllLists();
+                    window.NitnemManager.updateProgress();
+                }
+            } catch(ex) {}
         }
 
         function syncCompletionToNitnemTracker(baniId, isComplete) {
@@ -1290,10 +1298,17 @@
                 list.innerHTML = pendingIds.map(id => {
                     const bani = ALL_BANIS.find(b => b.id === id);
                     const baniName = bani ? bani.english : `Bani #${id}`;
+                    const baniIcon = bani ? bani.icon : '📖';
                     return `
-                        <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 14px; background:rgba(255,255,255,0.06); border-radius:12px; border:1px solid rgba(255,149,0,0.2);">
-                            <span style="font-size:14px; font-weight:600; color:var(--text-primary);">${baniName}</span>
-                            <button onclick="markPendingBaniComplete(${id}, '${yestStr}')" style="padding:6px 14px; background:linear-gradient(135deg, #FF9500, #E65C00); color:#fff; font-size:12px; font-weight:700; border:none; border-radius:10px; cursor:pointer;">
+                        <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 16px; background:rgba(255,255,255,0.08); border-radius:14px; border:1px solid rgba(255,149,0,0.25); transition: all 0.2s ease;">
+                            <div style="display:flex; align-items:center; gap: 12px;">
+                                <span style="font-size: 24px;">${baniIcon}</span>
+                                <div>
+                                    <span style="font-size: 15px; font-weight: 600; color: var(--text-primary); display: block;">${baniName}</span>
+                                    <span style="font-size: 11px; color: var(--text-secondary);">From yesterday's Nitnem</span>
+                                </div>
+                            </div>
+                            <button onclick="markPendingBaniComplete(${id}, '${yestStr}')" style="padding:8px 16px; background:linear-gradient(135deg, #FF9500, #E65C00); color:#fff; font-size:13px; font-weight:700; border:none; border-radius:12px; cursor:pointer; box-shadow: 0 2px 8px rgba(255, 149, 0, 0.3); transition: transform 0.2s ease;">
                                 ✓ Complete
                             </button>
                         </div>
@@ -1311,7 +1326,23 @@
                 if (!completed[dateStr].includes(id)) completed[dateStr].push(id);
                 saveCompletedBanis(completed);
                 renderPendingBanis();
+                renderInsights();
                 showToast('✅ Bani marked complete!');
+                
+                // Sync with Nitnem Tracker if it's for today
+                const today = new Date().toLocaleDateString('en-CA');
+                if (dateStr === today) {
+                    syncCompletionToNitnemTracker(id, true);
+                }
+                
+                // Trigger Nitnem Tracker progress update if available
+                try {
+                    if (window.NitnemManager && typeof window.NitnemManager.loadTodayProgress === 'function') {
+                        window.NitnemManager.loadTodayProgress();
+                        window.NitnemManager.renderAllLists();
+                        window.NitnemManager.updateProgress();
+                    }
+                } catch(ex) {}
             } catch(e) {
                 console.error('Error marking pending bani complete:', e);
             }
@@ -1477,9 +1508,11 @@
                 }
             } catch(e) {}
 
-            // Fallback: If no snapshot recorded for past day, compare completed count against current pothi order or max completed
-            const totalForDay = Math.max(completedIds.length, pothiOrder.length || 1);
-            return Math.min(100, Math.round((completedIds.length / totalForDay) * 100));
+            // Fallback: Use current pothi order length as total
+            const totalForDay = pothiOrder.length || 1;
+            // Only count completed banis that are still in current pothi order
+            const matchingCompleted = completedIds.filter(id => pothiOrder.includes(id));
+            return Math.min(100, Math.round((matchingCompleted.length / totalForDay) * 100));
         }
 
         function renderWeeklyView(el, data) {
@@ -1529,6 +1562,8 @@
                 const dateStr = date.toLocaleDateString('en-CA');
                 
                 const completedIds = data[dateStr] || [];
+                // Only count completed banis that are still in current pothi order
+                const matchingCompleted = completedIds.filter(id => pothiOrder.includes(id));
                 const pct = getHistoricalPct(dateStr, data);
                 
                 let intensityClass = 'lvl-0';
@@ -1546,9 +1581,9 @@
                 let tooltipText = `${formattedDate}: ${pct}% completed`;
                 
                 if (hasNewBani) {
-                    const baniNames = newBaniOnDate.map(id => {
-                        const bani = ALL_BANIS.find(b => b.id === id);
-                        return bani ? bani.english : `Bani #${id}`;
+                    const baniNames = newBaniOnDate.map(item => {
+                        const bani = ALL_BANIS.find(b => b.id === item.id);
+                        return bani ? bani.english : `Bani #${item.id}`;
                     }).join(', ');
                     const addTime = newBaniOnDate[0].timestamp ? new Date(newBaniOnDate[0].timestamp).toLocaleTimeString() : '';
                     tooltipText = `${formattedDate}: Added ${baniNames} at ${addTime}`;
