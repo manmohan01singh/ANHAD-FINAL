@@ -99,6 +99,142 @@ button, .btn, .button {
     }
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════════
+   1. HEADER SIDE BUTTONS — REMOVE SCROLL ANIMATION & HORIZONTAL DISPLACEMENT
+   ═══════════════════════════════════════════════════════════════════════════════ */
+.header__left,
+.header__right,
+.header--compact .header__left,
+.header--compact .header__right,
+.scrolling .header__left,
+.scrolling .header__right,
+.is-scrolling .header__left,
+.is-scrolling .header__right {
+    transform: none !important;
+    transition: background 0.2s ease, border-color 0.2s ease !important;
+    animation: none !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    left: auto !important;
+    right: auto !important;
+}
+
+.header__btn,
+.header-btn--glass,
+.header__left .header__btn,
+.header__right .header__btn {
+    transform: none !important;
+    transition: background 0.2s ease, opacity 0.2s ease !important;
+    animation: none !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+.header__btn:active {
+    transform: scale(0.92) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   2. GURU PORTRAITS (GREETING IMAGES) — ENLARGED & VERTICALLY CENTERED
+   ═══════════════════════════════════════════════════════════════════════════════ */
+.greeting {
+    margin-top: -14px !important;
+    margin-bottom: 2px !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+.greeting__content {
+    padding-top: 0 !important;
+}
+
+/* Normal Light & Dark Mode Guru Portraits */
+.greeting__portrait-slider {
+    height: 185px !important;
+    touch-action: pan-y !important;
+}
+
+.greeting__guru-portrait {
+    width: 165px !important;
+    height: 165px !important;
+    min-width: 165px !important;
+    min-height: 165px !important;
+    border-radius: 50% !important;
+    margin-bottom: 0 !important;
+}
+
+.greeting__slide {
+    width: 165px !important;
+    height: 165px !important;
+}
+
+/* Dynamic Mode (Auto) Guru Portraits — Slightly Larger per user request */
+[data-theme-mode="auto"] .greeting__portrait-slider {
+    height: 195px !important;
+}
+
+[data-theme-mode="auto"] .greeting__guru-portrait {
+    width: 180px !important;
+    height: 180px !important;
+    min-width: 180px !important;
+    min-height: 180px !important;
+}
+
+[data-theme-mode="auto"] .greeting__slide {
+    width: 180px !important;
+    height: 180px !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   3. MAGICAL BLUE ORB — CLEAN GPU PROMOTION & NO RENDER LAG
+   ═══════════════════════════════════════════════════════════════════════════════ */
+.time-orb,
+.time-orb-1,
+.time-orb-2,
+.time-orb-header,
+.day-orb {
+    will-change: transform !important;
+    transform: translateZ(0) !important;
+    backface-visibility: hidden !important;
+    -webkit-backface-visibility: hidden !important;
+    pointer-events: none !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   4. DYNAMIC NIGHT MODE — ULTRA-STABILITY & ZERO SCROLL LAG FIX
+   Replaces complex 7-layer box shadows and radial repaints with clean 1-layer CSS
+   ═══════════════════════════════════════════════════════════════════════════════ */
+[data-theme-mode="auto"][data-time-of-day="night"] .card,
+[data-theme-mode="auto"][data-time-of-day="night"] .quick-card,
+[data-theme-mode="auto"][data-time-of-day="night"] .practice-card,
+[data-theme-mode="auto"][data-time-of-day="night"] .event-card,
+[data-theme-mode="auto"][data-time-of-day="night"] .hero-card,
+[data-theme-mode="auto"][data-time-of-day="night"] .progress-inline,
+[data-theme-mode="auto"][data-time-of-day="night"] .glass-card,
+[data-theme-mode="auto"][data-time-of-day="night"] .stat-card {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border: 0.5px solid rgba(255, 255, 255, 0.08) !important;
+    background: #161618 !important;
+    will-change: transform !important;
+    transform: translateZ(0) !important;
+    backface-visibility: hidden !important;
+    -webkit-backface-visibility: hidden !important;
+    transition: transform 0.15s ease !important;
+}
+
+[data-theme-mode="auto"][data-time-of-day="night"] .time-orb-1,
+[data-theme-mode="auto"][data-time-of-day="night"] .time-orb-header {
+    filter: blur(60px) !important;
+    opacity: 0.35 !important;
+}
+
+[data-theme-mode="auto"][data-time-of-day="night"] * {
+    text-shadow: none !important;
+}
+
+
 /* Landscape orientation fixes */
 @media (orientation: landscape) and (max-height: 600px) {
     /* Reduce vertical spacing in landscape */
@@ -123,7 +259,7 @@ button, .btn, .button {
     }
     
     .header {
-        padding-top: calc(env(safe-area-inset-top) + 8px);
+        padding-top: calc(max(env(safe-area-inset-top, 0px), 76px) + 20px) !important;
     }
     
     .footer {
@@ -156,8 +292,17 @@ button, a, input, select, textarea {
 }
 
 /* Prevent zoom on input focus (iOS) */
-input, select, textarea {
     font-size: 16px !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   GPU LAYER STABILITY: Prevent card content/icons from disappearing on scroll
+   ═══════════════════════════════════════════════════════════════════════════ */
+.hub-card, .quick-card, .menu-card, .glass-card, .card, .sync-item, .item-card, .quick-item {
+    -webkit-backface-visibility: hidden !important;
+    backface-visibility: hidden !important;
+    -webkit-transform: translateZ(0) !important;
+    transform: translateZ(0) !important;
 }
 
 /* Fix for sticky elements */

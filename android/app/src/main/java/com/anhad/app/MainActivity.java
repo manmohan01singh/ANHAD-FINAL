@@ -45,6 +45,21 @@ public class MainActivity extends BridgeActivity {
         super.onCreate(savedInstanceState);
 
         // ═══════════════════════════════════════════════════════════════════
+        // IMMERSIVE FULLSCREEN: Hide status bar completely when app opens
+        // ═══════════════════════════════════════════════════════════════════
+        if (getWindow() != null) {
+            getWindow().addFlags(android.view.WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+                if (getWindow().getInsetsController() != null) {
+                    getWindow().getInsetsController().hide(android.view.WindowInsets.Type.statusBars());
+                    getWindow().getInsetsController().setSystemBarsBehavior(
+                        android.view.WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+                    );
+                }
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════════════
         // NUCLEAR: Force-configure WebView for reliable audio streaming
         // Without these, <audio> elements silently refuse to play cross-origin media.
         // ═══════════════════════════════════════════════════════════════════

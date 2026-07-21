@@ -127,6 +127,60 @@ window.addEventListener('naamAbhyasSessionComplete', (e) => {
     syncNaamAbhyasIntoCanonicalStreak(e.detail);
 });
 
+// ═══ PENDING BANIS ROLLOVER LOGIC ═══
+function renderPendingBanis() {
+    try {
+        const sec = document.getElementById('pendingBanisSection');
+        const list = document.getElementById('pendingBanisList');
+        if (!sec || !list) return;
+
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        const yestStr = yesterday.toLocaleDateString('en-CA');
+
+        const pothiOrder = JSON.parse(localStorage.getItem('anhad_my_pothi') || '[2, 4, 6, 9, 10, 21, 23]');
+        const completed = JSON.parse(localStorage.getItem('anhad_my_pothi_completed') || '{}');
+        const yestCompleted = completed[yestStr] || [];
+
+        const ALL_BANIS_MAP = {
+            2: 'ਜਪੁਜੀ ਸਾਹਿਬ (Japji Sahib)', 4: 'ਜਾਪੁ ਸਾਹਿਬ (Jaap Sahib)', 6: 'ਤ੍ਵ ਪ੍ਰਸਾਦਿ ਸਵੱਯੇ (Savaiye)',
+            9: 'ਬੇਨਤੀ ਚੌਪਈ (Chaupai Sahib)', 10: 'ਅਨੰਦੁ ਸਾਹਿਬ (Anand Sahib)', 21: 'ਰਹਿਰਾਸਿ ਸਾਹਿਬ (Rehras Sahib)',
+            23: 'ਸੋਹਿਲਾ ਸਾਹਿਬ (Kirtan Sohila)', 31: 'ਸੁਖਮਨੀ ਸਾਹਿਬ (Sukhmani Sahib)', 24: 'ਅਰਦਾਸ (Ardas)'
+        };
+
+        const pendingIds = pothiOrder.filter(id => !yestCompleted.includes(id));
+
+        if (pendingIds.length === 0) {
+            sec.style.display = 'none';
+            return;
+        }
+
+        sec.style.display = 'block';
+        list.innerHTML = pendingIds.map(id => `
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 14px; background:rgba(255,255,255,0.06); border-radius:12px; border:1px solid rgba(255,149,0,0.2);">
+                <span style="font-size:14px; font-weight:600; color:var(--text-primary);">${ALL_BANIS_MAP[id] || ('Bani #' + id)}</span>
+                <button onclick="markPendingBaniComplete(${id}, '${yestStr}')" style="padding:6px 14px; background:linear-gradient(135deg, #FF9500, #E65C00); color:#fff; font-size:12px; font-weight:700; border:none; border-radius:10px; cursor:pointer;">
+                    ✓ Complete
+                </button>
+            </div>
+        `).join('');
+    } catch(e) {}
+}
+
+window.markPendingBaniComplete = function(id, dateStr) {
+    try {
+        const completed = JSON.parse(localStorage.getItem('anhad_my_pothi_completed') || '{}');
+        if (!completed[dateStr]) completed[dateStr] = [];
+        if (!completed[dateStr].includes(id)) completed[dateStr].push(id);
+        localStorage.setItem('anhad_my_pothi_completed', JSON.stringify(completed));
+        renderPendingBanis();
+    } catch(e) {}
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(renderPendingBanis, 500);
+});
+
 try {
     if (!localStorage.getItem(CONFIG.STORAGE_KEYS.STREAK_DATA)) {
         const legacyStreak = localStorage.getItem('nitnemTracker_streakData');

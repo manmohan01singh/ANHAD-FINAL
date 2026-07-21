@@ -102,129 +102,193 @@
 /* ═══════════════════════════════════════════════════════════════
    DARK MODE: DARK/BLACK cards with white text
    ═══════════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════
+   THEME & TIME-OF-DAY COLOR PALETTES
+   Ensures card text matches card background in light/day/morning/evening/dark modes
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ─── 1. DARK MODE & DEFAULT (Black cards, Pure White text) ─── */
+.glass-card,
 [data-theme="dark"] .glass-card,
 .theme-dark .glass-card,
 body.theme-dark .glass-card,
-html[data-theme="dark"] .glass-card {
-  background: rgba(28, 28, 30, 0.98) !important;
-  border: 1px solid rgba(255, 255, 255, 0.15) !important;
-  box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.8),
-    inset 0 1px 1px rgba(255, 255, 255, 0.05) !important;
+html[data-theme="dark"] .glass-card,
+[data-time-of-day="night"] .glass-card {
+  background: rgba(24, 24, 28, 0.95) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.05) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  will-change: transform;
 }
 
-/* White text in dark mode */
+.glass-card *,
 [data-theme="dark"] .glass-card *,
 .theme-dark .glass-card *,
 body.theme-dark .glass-card *,
-html[data-theme="dark"] .glass-card * {
+html[data-theme="dark"] .glass-card *,
+[data-time-of-day="night"] .glass-card * {
   color: #FFFFFF !important;
 }
 
-/* CRITICAL FIX: Specific elements in dark mode */
-[data-theme="dark"] .toggle-label,
-[data-theme="dark"] .next-title,
-[data-theme="dark"] .timeline-title,
-[data-theme="dark"] .sync-hub-title,
-[data-theme="dark"] .sync-item-label,
-[data-theme="dark"] .stats-title,
-[data-theme="dark"] .ach-title,
-[data-theme="dark"] .qa-title,
-[data-theme="dark"] .wisdom-translation,
-[data-theme="dark"] .schedule-time-value {
+.sync-item,
+[data-theme="dark"] .sync-item,
+.theme-dark .sync-item,
+body.theme-dark .sync-item,
+html[data-theme="dark"] .sync-item,
+[data-time-of-day="night"] .sync-item {
+  background: rgba(36, 36, 40, 0.9) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.sync-item *,
+[data-theme="dark"] .sync-item *,
+.theme-dark .sync-item *,
+body.theme-dark .sync-item *,
+html[data-theme="dark"] .sync-item *,
+[data-time-of-day="night"] .sync-item * {
   color: #FFFFFF !important;
 }
 
+.toggle-desc,
+.next-subtitle,
+.timeline-subtitle,
+.sync-hub-subtitle,
+.sync-item-desc,
+.stats-subtitle,
+.ach-subtitle,
+.qa-sub,
+.schedule-time-range,
+.progress-info,
+.countdown-label,
+.wisdom-source,
 [data-theme="dark"] .toggle-desc,
 [data-theme="dark"] .next-subtitle,
-[data-theme="dark"] .timeline-subtitle,
-[data-theme="dark"] .sync-hub-subtitle,
-[data-theme="dark"] .sync-item-desc,
-[data-theme="dark"] .stats-subtitle,
-[data-theme="dark"] .ach-subtitle,
-[data-theme="dark"] .qa-sub,
-[data-theme="dark"] .schedule-time-range,
-[data-theme="dark"] .progress-info,
-[data-theme="dark"] .countdown-label,
-[data-theme="dark"] .wisdom-source {
+[data-theme="dark"] .sync-item-desc {
   color: rgba(255, 255, 255, 0.7) !important;
 }
 
-/* CRITICAL FIX: SVG icons in dark mode should be white */
-[data-theme="dark"] .glass-card svg,
-[data-theme="dark"] .toggle-icon-wrap svg,
-[data-theme="dark"] .next-icon-wrap svg,
-[data-theme="dark"] .timeline-icon-wrap svg,
-[data-theme="dark"] .sync-hub-icon-wrap svg,
-[data-theme="dark"] .stats-icon-wrap svg,
-[data-theme="dark"] .ach-icon-wrap svg,
-[data-theme="dark"] .qa-btn svg {
+.glass-card svg:not(.streak-fire svg),
+.sync-arrow,
+[data-theme="dark"] .glass-card svg:not(.streak-fire svg),
+[data-theme="dark"] .sync-arrow {
   stroke: #FFFFFF !important;
   color: #FFFFFF !important;
 }
 
-/* CRITICAL FIX: Stat numbers in dark mode */
-[data-theme="dark"] .stat-number,
-[data-theme="dark"] .stat-name,
-[data-theme="dark"] .ring-value,
-[data-theme="dark"] .weekly-val,
-[data-theme="dark"] .weekly-lbl {
-  color: #FFFFFF !important;
+/* ─── 2. DAY TIME / LIGHT MODE (Only when data-theme="light" is explicitly active) ─── */
+[data-theme="light"] .glass-card,
+html[data-theme="light"] .glass-card,
+body[data-theme="light"] .glass-card,
+.theme-light .glass-card {
+  background: linear-gradient(145deg, rgba(235, 245, 255, 0.95), rgba(220, 238, 255, 0.92)) !important;
+  border: 1px solid rgba(0, 122, 255, 0.15) !important;
+  box-shadow: 0 8px 32px rgba(0, 122, 255, 0.08) !important;
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   TIME-BASED CARD COLORS (Auto Mode Only) - Match index.html
-   ═══════════════════════════════════════════════════════════════ */
+[data-theme="light"] .glass-card *,
+html[data-theme="light"] .glass-card *,
+body[data-theme="light"] .glass-card *,
+.theme-light .glass-card *,
+[data-theme="light"] .toggle-label,
+[data-theme="light"] .next-title,
+[data-theme="light"] .sync-hub-title,
+[data-theme="light"] .sync-item-label,
+[data-theme="light"] .session-time-display,
+[data-theme="light"] .countdown-value {
+  color: #0F172A !important; /* Dark Navy Slate */
+}
 
-/* MORNING - Peach/Orange tint */
+[data-theme="light"] .sync-item,
+html[data-theme="light"] .sync-item,
+body[data-theme="light"] .sync-item,
+.theme-light .sync-item {
+  background: rgba(255, 255, 255, 0.9) !important;
+  border: 1px solid rgba(0, 122, 255, 0.12) !important;
+}
+
+[data-theme="light"] .sync-item *,
+html[data-theme="light"] .sync-item * {
+  color: #0F172A !important;
+}
+
+[data-theme="light"] .toggle-desc,
+[data-theme="light"] .next-subtitle,
+[data-theme="light"] .sync-hub-subtitle,
+[data-theme="light"] .sync-item-desc,
+[data-theme="light"] .countdown-label,
+[data-theme="light"] .progress-info {
+  color: #475569 !important; /* Dark Slate Secondary */
+}
+
+[data-theme="light"] .glass-card svg:not(.streak-fire svg),
+[data-theme="light"] .sync-arrow {
+  stroke: #0F172A !important;
+  color: #0F172A !important;
+}
+
+/* ─── 3. MORNING MODE (Peach tint cards, Dark Brown text) ─── */
 [data-theme-mode="auto"][data-time-of-day="morning"] .glass-card {
-  background: linear-gradient(145deg, rgba(255, 250, 245, 0.92), rgba(255, 235, 215, 0.88)) !important;
-  border: 1px solid rgba(232, 168, 124, 0.2) !important;
+  background: linear-gradient(145deg, rgba(255, 250, 245, 0.95), rgba(255, 235, 215, 0.92)) !important;
+  border: 1px solid rgba(232, 168, 124, 0.25) !important;
   box-shadow: 0 8px 32px rgba(232, 168, 124, 0.15) !important;
 }
 
-[data-theme-mode="auto"][data-time-of-day="morning"] .glass-card * {
+[data-theme-mode="auto"][data-time-of-day="morning"] .glass-card *,
+[data-theme-mode="auto"][data-time-of-day="morning"] .session-time-display,
+[data-theme-mode="auto"][data-time-of-day="morning"] .countdown-value {
+  color: #3E2723 !important; /* Dark Brown */
+}
+
+[data-theme-mode="auto"][data-time-of-day="morning"] .sync-item {
+  background: rgba(255, 255, 255, 0.9) !important;
+}
+
+[data-theme-mode="auto"][data-time-of-day="morning"] .sync-item * {
   color: #3E2723 !important;
 }
 
 [data-theme-mode="auto"][data-time-of-day="morning"] .toggle-desc,
 [data-theme-mode="auto"][data-time-of-day="morning"] .next-subtitle,
-[data-theme-mode="auto"][data-time-of-day="morning"] .timeline-subtitle {
+[data-theme-mode="auto"][data-time-of-day="morning"] .sync-item-desc {
   color: #7D6B58 !important;
 }
 
-/* DAY - Neutral bright white */
-[data-theme-mode="auto"][data-time-of-day="day"] .glass-card {
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(250, 250, 252, 0.92)) !important;
-  border: 1px solid rgba(0, 0, 0, 0.08) !important;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08) !important;
+[data-theme-mode="auto"][data-time-of-day="morning"] .glass-card svg:not(.streak-fire svg) {
+  stroke: #3E2723 !important;
+  color: #3E2723 !important;
 }
 
-[data-theme-mode="auto"][data-time-of-day="day"] .glass-card * {
-  color: #1C1C1E !important;
-}
-
-[data-theme-mode="auto"][data-time-of-day="day"] .toggle-desc,
-[data-theme-mode="auto"][data-time-of-day="day"] .next-subtitle,
-[data-theme-mode="auto"][data-time-of-day="day"] .timeline-subtitle {
-  color: #8E8E93 !important;
-}
-
-/* EVENING - Golden/Sunset tint */
+/* ─── 4. EVENING MODE (Golden tint cards, Dark Amber text) ─── */
 [data-theme-mode="auto"][data-time-of-day="evening"] .glass-card {
-  background: linear-gradient(145deg, rgba(255, 252, 245, 0.92), rgba(255, 240, 220, 0.88)) !important;
+  background: linear-gradient(145deg, rgba(255, 252, 245, 0.95), rgba(255, 240, 220, 0.92)) !important;
   border: 1px solid rgba(184, 134, 11, 0.25) !important;
-  box-shadow: 0 8px 32px rgba(184, 134, 11, 0.12) !important;
+  box-shadow: 0 8px 32px rgba(184, 134, 11, 0.15) !important;
 }
 
-[data-theme-mode="auto"][data-time-of-day="evening"] .glass-card * {
+[data-theme-mode="auto"][data-time-of-day="evening"] .glass-card *,
+[data-theme-mode="auto"][data-time-of-day="evening"] .session-time-display,
+[data-theme-mode="auto"][data-time-of-day="evening"] .countdown-value {
+  color: #3B2A00 !important; /* Dark Amber */
+}
+
+[data-theme-mode="auto"][data-time-of-day="evening"] .sync-item {
+  background: rgba(255, 255, 255, 0.9) !important;
+}
+
+[data-theme-mode="auto"][data-time-of-day="evening"] .sync-item * {
   color: #3B2A00 !important;
 }
 
 [data-theme-mode="auto"][data-time-of-day="evening"] .toggle-desc,
 [data-theme-mode="auto"][data-time-of-day="evening"] .next-subtitle,
-[data-theme-mode="auto"][data-time-of-day="evening"] .timeline-subtitle {
+[data-theme-mode="auto"][data-time-of-day="evening"] .sync-item-desc {
   color: #7A6A4F !important;
+}
+
+[data-theme-mode="auto"][data-time-of-day="evening"] .glass-card svg:not(.streak-fire svg) {
+  stroke: #3B2A00 !important;
+  color: #3B2A00 !important;
 }
 
 /* NIGHT - Dark cards like dark mode */
@@ -2512,18 +2576,24 @@ a {
 /* ─── COMPLETION MODAL ─── */
 .completion-card-ios {
   position: relative;
-  background: var(--glass-bg-strong);
-  backdrop-filter: blur(var(--glass-blur-heavy));
-  -webkit-backdrop-filter: blur(var(--glass-blur-heavy));
+  background: var(--clay-surface, #FFFFFF);
   border-radius: var(--radius-3xl) var(--radius-3xl) 0 0;
-  padding: var(--space-2xl) var(--space-xl) calc(var(--safe-bottom) + var(--space-xl));
+  padding: 24px 20px calc(env(safe-area-inset-bottom, 16px) + 24px);
   width: 100%;
   max-width: 420px;
   text-align: center;
-  border: 1px solid var(--glass-border-strong);
+  border: 1px solid rgba(0, 0, 0, 0.08);
   border-bottom: none;
-  box-shadow: 0 -8px 48px rgba(0, 0, 0, 0.3);
-  animation: sheetIn 0.5s var(--ease-spring);
+  box-shadow: 0 -8px 48px rgba(0, 0, 0, 0.35);
+  animation: sheetIn 0.4s var(--ease-spring);
+  color: #1D1D1F;
+}
+
+[data-theme="dark"] .completion-card-ios,
+.dark-mode .completion-card-ios {
+  background: #1C1C1E;
+  border-color: rgba(255, 255, 255, 0.12);
+  color: #FFFFFF;
 }
 
 .completion-card-ios::before {
@@ -2533,7 +2603,7 @@ a {
   left: 0;
   right: 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent, var(--glass-border-strong), transparent);
+  background: linear-gradient(90deg, transparent, rgba(212, 148, 58, 0.4), transparent);
   pointer-events: none;
 }
 
@@ -2542,9 +2612,14 @@ a {
   display: block;
   width: 40px;
   height: 5px;
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(0, 0, 0, 0.15);
   border-radius: 3px;
   margin: 0 auto var(--space-xl);
+}
+
+[data-theme="dark"] .completion-card-ios::after,
+.dark-mode .completion-card-ios::after {
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .comp-header-ios {
@@ -2561,48 +2636,58 @@ a {
 .comp-icon-ios svg {
   width: 48px;
   height: 48px;
-  stroke: var(--clay-sacred);
+  stroke: var(--clay-sacred, #D4943A);
   fill: none;
   stroke-width: 2;
   stroke-linecap: round;
   stroke-linejoin: round;
-  filter: drop-shadow(0 0 16px var(--clay-sacred-glow));
+  filter: drop-shadow(0 0 16px rgba(212, 148, 58, 0.4));
 }
 
 .comp-title-ios {
   font-size: 26px;
   font-weight: 800;
-  background: linear-gradient(135deg, var(--clay-sacred-light), var(--clay-sacred));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--clay-sacred, #D4943A);
   margin: 0 0 var(--space-xs);
 }
 
 .comp-blessing-ios {
   font-size: 15px;
-  color: var(--clay-text-secondary);
+  color: #555555;
   line-height: 1.4;
+}
+
+[data-theme="dark"] .comp-blessing-ios,
+.dark-mode .comp-blessing-ios {
+  color: rgba(235, 235, 245, 0.85);
 }
 
 .comp-next-info {
   font-size: 13px;
-  color: var(--clay-text-tertiary);
+  color: #888888;
   margin-top: var(--space-xs);
   font-weight: 500;
+}
+
+[data-theme="dark"] .comp-next-info,
+.dark-mode .comp-next-info {
+  color: rgba(235, 235, 245, 0.6);
 }
 
 .comp-stats-row-ios {
   display: flex;
   justify-content: space-around;
-  background: var(--glass-bg-light);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  padding: var(--space-lg);
+  background: rgba(0, 0, 0, 0.04);
+  padding: 14px 16px;
   border-radius: var(--radius-lg);
   margin-bottom: var(--space-xl);
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--clay-inset);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="dark"] .comp-stats-row-ios,
+.dark-mode .comp-stats-row-ios {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
 .comp-stat-ios {

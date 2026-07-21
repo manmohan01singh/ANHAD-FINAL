@@ -666,7 +666,7 @@ ol {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: var(--space-3) var(--space-5) var(--space-4);
+    padding: calc(var(--safe-top) + var(--space-3)) var(--space-5) var(--space-4);
     max-width: var(--content-max-width);
     margin: 0 auto;
 }

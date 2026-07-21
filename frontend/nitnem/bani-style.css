@@ -731,6 +731,15 @@ body::after {
 /* ═══════════════════════════════════════════════════════════════
    HEADER - ENHANCED
 ═══════════════════════════════════════════════════════════════ */
+.bani-top-sticky-bar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  width: 100%;
+  box-shadow: var(--shadow-md);
+  background: var(--bg-card, #FFFDF9);
+}
+
 .bani-header {
   position: sticky;
   top: 0;
@@ -738,12 +747,17 @@ body::after {
   display: flex;
   align-items: center;
   gap: 1rem;
-  padding: 1rem 1.5rem;
+  /* Protect status bar & notch */
+  padding: calc(max(env(safe-area-inset-top, 0px), 32px) + 0.5rem) 1.25rem 0.5rem;
   background: var(--gradient-header);
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
   border-bottom: 1px solid var(--accent-border);
-  box-shadow: var(--shadow-md);
+}
+
+.bani-top-sticky-bar .bani-header {
+  position: relative !important;
+  top: auto !important;
 }
 
 .bani-header::before {
@@ -882,13 +896,21 @@ body::after {
   justify-content: center;
   flex-wrap: wrap;
   gap: 0.625rem;
-  padding: 1.25rem;
-  background: var(--bg-glass);
-  backdrop-filter: blur(10px);
+  padding: 0.5rem 1rem 0.625rem;
+  background: var(--bg-card, #FFFDF9);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--border-light);
   position: sticky;
-  top: 80px;
+  top: calc(60px + env(safe-area-inset-top, 0px));
   z-index: 90;
+  margin-top: 0;
+}
+
+.bani-top-sticky-bar .bani-controls {
+  position: relative !important;
+  top: auto !important;
+  border-top: none !important;
 }
 
 .control-toggle {
@@ -2099,7 +2121,7 @@ body.lens-mode .verse.pankti-active .verse__gurmukhi {
 ═══════════════════════════════════════════════════════════════ */
 @media (max-width: 768px) {
   .bani-header {
-    padding: 0.875rem 1rem;
+    padding: calc(env(safe-area-inset-top, 0px) + 0.625rem) 1rem 0.5rem;
   }
   
   .back-btn span {
@@ -2107,7 +2129,7 @@ body.lens-mode .verse.pankti-active .verse__gurmukhi {
   }
   
   .back-btn {
-    padding: 0.625rem;
+    padding: 0.5rem 0.75rem;
   }
   
   .bani-title__gurmukhi {
@@ -2119,9 +2141,8 @@ body.lens-mode .verse.pankti-active .verse__gurmukhi {
   }
   
   .bani-controls {
-    top: 70px;
-    padding: 1rem;
-    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    gap: 0.375rem;
   }
   
   .bani-content {
@@ -2342,4 +2363,33 @@ kbd {
   .theme-options {
     grid-template-columns: repeat(2, 1fr);
   }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   UNBREAKABLE UNIFIED STICKY CONTAINER
+   Ensures header & controls never detach on any device or viewport
+   ═══════════════════════════════════════════════════════════════ */
+.bani-top-sticky-bar {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 99999 !important;
+  width: 100% !important;
+  background: var(--bg-card, #FFFDF9) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+}
+
+.bani-top-sticky-bar .bani-header {
+  position: relative !important;
+  top: auto !important;
+  padding-top: calc(max(env(safe-area-inset-top, 0px), 36px) + 8px) !important;
+  padding-bottom: 6px !important;
+  border-bottom: none !important;
+}
+
+.bani-top-sticky-bar .bani-controls {
+  position: relative !important;
+  top: auto !important;
+  margin-top: 6px !important;
+  padding-top: 6px !important;
+  border-top: 1px solid var(--border-light, rgba(0, 0, 0, 0.06)) !important;
 }

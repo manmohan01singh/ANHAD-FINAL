@@ -1434,6 +1434,10 @@
         // Hide header & toggles on scroll DOWN, show on scroll UP
         const scrollingDown = scrollTop > lastScrollTop && scrollTop > SCROLL_THRESHOLD;
 
+        const stickyTopBar = document.getElementById('readerStickyTopBar');
+        if (stickyTopBar) {
+            stickyTopBar.classList.toggle('hidden', scrollingDown);
+        }
         if (els.readerHeader) {
             els.readerHeader.classList.toggle('hidden', scrollingDown);
         }

@@ -1,7 +1,8 @@
 {
-    "version": "4.5.0",
-    "buildTime": "2026-07-20T08:09:00.000Z",
-    "timestamp": 1784537340000,
-    "commitHash": "b7e3c1f",
-    "branch": "main"
+    "version": "4.5.1",
+    "buildTime": "2026-07-20T12:30:00.000Z",
+    "timestamp": 1784553000000,
+    "commitHash": "cache-fix-v10.9.0",
+    "branch": "main",
+    "changelog": "Fixed Gurbani Radio tab indicator alignment - Service Worker cache bust v10.9.0"
 }

@@ -21,6 +21,9 @@
         <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
         <!-- Do NOT let the OS add padding for system bars (CSS handles it) -->
         <item name="android:fitsSystemWindows">false</item>
+        <!-- Force fullscreen mode: hide status bar when app opens -->
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowLightStatusBar">false</item>
     </style>
 
     <style name="AppTheme.NoActionBarLaunch" parent="Theme.SplashScreen">

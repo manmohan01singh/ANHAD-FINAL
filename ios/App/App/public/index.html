@@ -280,39 +280,7 @@
   <!-- CRITICAL: SPA Navigation MUST load early to intercept clicks -->
   <script src="lib/smooth-navigation.js" defer></script>
   
-  <!-- CRITICAL: Remove all shadows added by JavaScript -->
-  <script>
-    (function() {
-      // Function to remove all shadows
-      function removeAllShadows() {
-        const allElements = document.querySelectorAll('*');
-        allElements.forEach(el => {
-          el.style.boxShadow = 'none';
-          el.style.webkitBoxShadow = 'none';
-          el.style.filter = 'none';
-        });
-      }
-      
-      // Remove shadows immediately on DOM load
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', removeAllShadows);
-      } else {
-        removeAllShadows();
-      }
-      
-      // Keep removing shadows every 100ms for dynamic content
-      setInterval(removeAllShadows, 100);
-      
-      // Also watch for DOM changes
-      const observer = new MutationObserver(removeAllShadows);
-      observer.observe(document.documentElement, {
-        childList: true,
-        subtree: true,
-        attributes: true,
-        attributeFilter: ['style', 'class']
-      });
-    })();
-  </script>
+  <!-- Clean static shadow prevention handled via css/no-shadows.css -->
 
   <!-- REMOVED: Broken inline script that tried to access document.body in <head> -->
   <!-- theme-loaded is now set by the MutationObserver in the first theme IIFE above -->
@@ -352,18 +320,22 @@
 
   <!-- CRITICAL: ANHAD Adaptive Title - Changes with background -->
   <style id="anhad-header-title-override">
-    /* Import Cinzel font */
-    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&display=swap');
+    /* Import Marcellus font from Google Fonts */
+    @import url('https://fonts.googleapis.com/css2?family=Marcellus&display=swap');
     
-    /* HEADER WITH PERFECT CENTERING */
+    /* HEADER WITH PERFECT CENTERING & FULL NOTCH CLEARANCE */
     .header {
       display: flex !important;
       align-items: center !important;
       justify-content: space-between !important;
-      padding: 0 12px !important;
+      padding-top: calc(max(env(safe-area-inset-top, 0px), 76px) + 20px) !important;
+      padding-bottom: 6px !important;
+      padding-left: 12px !important;
+      padding-right: 12px !important;
+      margin-top: 0 !important;
       gap: 0 !important;
       position: relative;
-      min-height: 52px;
+      min-height: calc(96px + max(env(safe-area-inset-top, 0px), 36px));
     }
     
     /* LEFT BUTTON PAIR - SEPARATE WATERDROPLET */
@@ -381,6 +353,8 @@
         inset 0 1px 1px rgba(255, 255, 255, 0.12) !important;
       position: relative;
       z-index: 2;
+      transform: none !important;
+      transition: background 0.2s ease, border-color 0.2s ease !important;
     }
     
     /* RIGHT BUTTON PAIR - SEPARATE WATERDROPLET */
@@ -398,8 +372,18 @@
         inset 0 1px 1px rgba(255, 255, 255, 0.12) !important;
       position: relative;
       z-index: 2;
+      transform: none !important;
+      transition: background 0.2s ease, border-color 0.2s ease !important;
     }
     
+    /* Ensure emoji buttons inside capsules are always clean & transparent */
+    .header__left .header__btn,
+    .header__right .header__btn {
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+    }
+
     /* DARK MODE BUTTON PAIRS */
     html.dark-mode .header__left,
     html.dark-mode .header__right {
@@ -460,13 +444,15 @@
     
     /* CENTER TITLE PILL TIME-BASED COLORS */
     
-    /* DAY TIME: Same as light mode — neutral white glass, no sky-blue tint */
+    /* DAY TIME: CLAYMORPHISM — Soft raised pill */
     [data-theme-mode="auto"][data-time-of-day="day"] .anhad-title-pill {
-      background: rgba(255, 255, 255, 0.68) !important;
-      border: 0.5px solid rgba(0, 0, 0, 0.07) !important;
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(240, 245, 250, 0.9)) !important;
+      border: 1px solid rgba(255, 255, 255, 0.95) !important;
       box-shadow: 
-        0 2px 12px rgba(0, 0, 0, 0.07),
-        inset 0 1px 1px rgba(255, 255, 255, 0.85) !important;
+        4px 4px 12px rgba(187, 222, 251, 0.15),
+        -4px -4px 12px rgba(255, 255, 255, 0.95),
+        inset 2px 2px 4px rgba(255, 255, 255, 0.95),
+        inset -2px -2px 4px rgba(187, 222, 251, 0.1) !important;
     }
     
     /* MORNING TIME: Soft cushion clay pill — white border */
@@ -491,13 +477,15 @@
         inset -1.5px -1.5px 3px rgba(184, 134, 11, 0.05) !important;
     }
     
-    /* NIGHT TIME: Dark mode glass — matches data-theme=dark styling */
+    /* NIGHT TIME: CLAYMORPHISM — Dark raised pill */
     [data-theme-mode="auto"][data-time-of-day="night"] .anhad-title-pill {
-      background: rgba(255, 255, 255, 0.04) !important;
-      border: 0.5px solid rgba(255, 255, 255, 0.08) !important;
+      background: linear-gradient(145deg, rgba(44, 44, 46, 0.95), rgba(28, 28, 30, 0.9)) !important;
+      border: 1px solid rgba(60, 60, 62, 0.95) !important;
       box-shadow: 
-        0 2px 12px rgba(0, 0, 0, 0.25),
-        inset 0 1px 1px rgba(255, 255, 255, 0.08) !important;
+        4px 4px 12px rgba(0, 0, 0, 0.4),
+        -4px -4px 12px rgba(60, 60, 62, 0.3),
+        inset 2px 2px 4px rgba(60, 60, 62, 0.3),
+        inset -2px -2px 4px rgba(0, 0, 0, 0.4) !important;
     }
     
     /* CENTER TITLE - SEPARATE WATERDROPLET */
@@ -530,17 +518,17 @@
         inset 0 1px 1px rgba(255, 255, 255, 0.08) !important;
     }
     
-    /* CINZEL FONT FOR ANHAD */
+    /* MARCELLUS FONT FOR ANHAD — Universal Across All Themes */
     .anhad-title-pill h1.header__title,
     h1.header__title {
       color: #FFEB3B !important;
-      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4) !important;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5) !important;
       background: none !important;
       -webkit-text-fill-color: #FFEB3B !important;
-      font-family: 'Cinzel', serif !important;
-      font-weight: 500 !important;
+      font-family: 'Marcellus', 'Times New Roman', serif !important;
+      font-weight: 400 !important;
       font-size: 20px !important;
-      letter-spacing: 2px !important;
+      letter-spacing: 3px !important;
       filter: none !important;
       text-transform: uppercase !important;
     }
@@ -874,7 +862,7 @@
       flex-direction: column !important;
       align-items: center !important;
       gap: 0 !important;
-      padding: 8px 0 0 !important;
+      padding: 4px 0 0 !important;
     }
     .greeting__portrait-wrapper {
       position: relative !important;
@@ -932,11 +920,22 @@
       50% { opacity: 1; transform: scale(1.1); }
     }
     
+    .header__left .header__btn,
+    .header__right .header__btn {
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+    }
+
+    .greeting {
+      margin-top: -24px !important;
+    }
+
     .greeting__guru-portrait {
-      width: 140px !important;
-      height: 140px !important;
-      min-width: 140px !important;
-      min-height: 140px !important;
+      width: 152px !important;
+      height: 152px !important;
+      min-width: 152px !important;
+      min-height: 152px !important;
       display: flex !important;
       align-items: center !important;
       justify-content: center !important;
@@ -965,8 +964,8 @@
     .greeting__portrait-slider {
       position: relative !important;
       width: 100% !important;
-      height: 160px !important;
-      margin-bottom: 24px !important;
+      height: 172px !important;
+      margin-bottom: 12px !important;
       display: flex !important;
       align-items: center !important;
       justify-content: center !important;
@@ -988,16 +987,12 @@
 
     .greeting__slide {
       position: absolute !important;
-      width: 140px !important;
-      height: 140px !important;
+      width: 152px !important;
+      height: 152px !important;
       transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) !important;
       opacity: 0;
       pointer-events: none;
       z-index: 0;
-      /* PERF FIX: Removed filter:blur() from transition states.
-         Transitioning filter:blur causes a software compositing layer with
-         a blur computation on every interpolation frame (60-120fps).
-         Replaced with scale+opacity only — visually equivalent, compositor-friendly. */
       transform: scale(0.6) translateX(0);
       filter: grayscale(1);
     }
@@ -1013,14 +1008,14 @@
     .greeting__slide--prev {
       opacity: 0.5 !important;
       z-index: 5 !important;
-      transform: scale(0.8) translateX(-110px) !important;
+      transform: scale(0.8) translateX(-115px) !important;
       filter: grayscale(0.5) !important;
     }
 
     .greeting__slide--next {
       opacity: 0.5 !important;
       z-index: 5 !important;
-      transform: scale(0.8) translateX(110px) !important;
+      transform: scale(0.8) translateX(115px) !important;
       filter: grayscale(0.5) !important;
     }
 
@@ -1035,8 +1030,8 @@
     }
 
     .greeting__slide .greeting__guru-portrait {
-      width: 140px !important;
-      height: 140px !important;
+      width: 152px !important;
+      height: 152px !important;
       margin: 0 !important;
       box-shadow: 0 10px 30px rgba(0,0,0,0.2) !important;
     }
@@ -1084,13 +1079,13 @@
       font-weight: 800 !important;
       color: #D4943A !important;
       line-height: 1.2 !important;
-      margin-bottom: 8px !important;
+      margin-bottom: 6px !important;
       letter-spacing: -0.3px !important;
     }
     #greetingGurbani {
       text-align: center !important;
       padding: 0 16px !important;
-      margin-top: 0 !important;
+      margin-top: -2px !important;
       font-size: 1.5rem !important;
     }
     /* Guru portrait wrapper - order removed, relying on HTML order */
@@ -1794,7 +1789,7 @@
     .progress-inline {
       height: 28px !important;
       padding: 3px 10px !important;
-      margin: 8px 16px 12px !important;
+      margin: 4px 16px 12px !important;
       background: #FFFFFF !important;
       border-radius: 14px !important;
       box-shadow: 
@@ -2352,7 +2347,7 @@
         .progress-inline {
           height: 28px !important;
           padding: 3px 10px !important;
-          margin: 8px 16px 12px !important;
+          margin: 4px 16px 12px !important;
           background: #FFFFFF !important;
           border-radius: 14px !important;
           box-shadow: 
@@ -2645,17 +2640,15 @@
     </defs>
   </svg>
 
-  <main class="app" id="app" style="position: relative;">
-    
-    <!-- Dynamic Time-Based Orbs — BEHIND ALL CONTENT (No Green) -->
-    <div class="time-orb time-orb-1" aria-hidden="true"></div>
-    <div class="time-orb time-orb-2" aria-hidden="true"></div>
-    <div class="time-orb time-orb-3" aria-hidden="true"></div>
+  <main class="app" id="app">
 
     <!-- ════════════════════════════════════════════════════════════════════
          HEADER — Avatar | ANHAD | Emoji Actions
     ════════════════════════════════════════════════════════════════════ -->
-    <header class="header" role="banner" style="background: transparent !important;">
+    <header class="header" role="banner" style="background: transparent !important; position: relative;">
+      <!-- Orb behind header -->
+      <div class="time-orb time-orb-header" aria-hidden="true"></div>
+      
       <div class="header__left">
         <!-- Settings Button -->
         <button class="header__btn ios-haptic" id="settingsBtn"
@@ -2689,7 +2682,11 @@
     <!-- ════════════════════════════════════════════════════════════════════
          GREETING — iOS Large Title Inspired
     ════════════════════════════════════════════════════════════════════ -->
-    <section class="greeting ios-animate-in" aria-label="Personal Greeting">
+    <section class="greeting ios-animate-in" aria-label="Personal Greeting" style="position: relative; overflow: visible;">
+      <!-- Subtle Ambient Orbs — ONLY 2: Sky Blue + Yellow -->
+      <div class="time-orb time-orb-1" aria-hidden="true"></div>
+      <div class="time-orb time-orb-2" aria-hidden="true"></div>
+      
       <div class="greeting__content">
         <!-- Portrait Slider for immersive experience -->
         <div class="greeting__portrait-slider" id="guruSlider">
@@ -2702,7 +2699,7 @@
         <div class="greeting__text">
           <div class="greeting__salutation" id="greetingSalutation">&nbsp;</div>
           <div class="greeting__gurbani" id="greetingGurbani" lang="pa">&nbsp;</div>
-          <div class="greeting__translation" id="greetingTranslation" style="font-size: 0.9rem; opacity: 0.8; margin-top: 4px;">&nbsp;</div>
+          <div class="greeting__translation" id="greetingTranslation" style="font-size: 0.9rem; opacity: 0.8; margin-top: 2px;">&nbsp;</div>
         </div>
       </div>
     </section>

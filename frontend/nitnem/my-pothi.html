@@ -433,10 +433,22 @@
         .grid-cell.lvl-0 { background: rgba(0,0,0,0.04); }
         [data-theme="dark"] .grid-cell.lvl-0 { background: rgba(255,255,255,0.05); }
         
-        .grid-cell.lvl-1 { background: rgba(212, 175, 55, 0.25); border: 1px solid rgba(212, 175, 55, 0.1); }
-        .grid-cell.lvl-2 { background: rgba(212, 175, 55, 0.55); border: 1px solid rgba(212, 175, 55, 0.2); }
-        .grid-cell.lvl-3 { background: rgba(212, 175, 55, 0.85); border: 1px solid rgba(212, 175, 55, 0.3); }
-        .grid-cell.lvl-full { background: var(--ios-green); border: 1px solid rgba(52, 199, 89, 0.2); box-shadow: 0 0 6px rgba(52, 199, 89, 0.2); }
+        /* GitHub/Leetcode-style green progression */
+        .grid-cell.lvl-1 { background: #9be9a8; border: 1px solid rgba(155, 233, 168, 0.3); }
+        .grid-cell.lvl-2 { background: #40c463; border: 1px solid rgba(64, 196, 99, 0.3); }
+        .grid-cell.lvl-3 { background: #30a14e; border: 1px solid rgba(48, 161, 78, 0.3); }
+        .grid-cell.lvl-full { background: #216e39; border: 1px solid rgba(33, 110, 57, 0.3); box-shadow: 0 0 6px rgba(33, 110, 57, 0.2); }
+        
+        /* Glowing effect for newly added bani */
+        .grid-cell.new-bani {
+            animation: newBaniGlow 2s ease-in-out infinite;
+            border: 2px solid #ffd700 !important;
+            box-shadow: 0 0 12px rgba(255, 215, 0, 0.6), 0 0 24px rgba(255, 215, 0, 0.3) !important;
+        }
+        @keyframes newBaniGlow {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 12px rgba(255, 215, 0, 0.6), 0 0 24px rgba(255, 215, 0, 0.3); }
+            50% { transform: scale(1.1); box-shadow: 0 0 20px rgba(255, 215, 0, 0.8), 0 0 40px rgba(255, 215, 0, 0.5); }
+        }
         
         .grid-legend {
             display: flex;
@@ -698,6 +710,21 @@
                     <h1>ਮੇਰੀ ਪੋਥੀ</h1>
                     <div class="subtitle" id="readingSubtitle">Your daily reading</div>
                 </div>
+                
+                <!-- Pending Banis Section -->
+                <div class="pending-banis-card" id="pendingBanisSection" style="display:none; margin: 16px; padding: 14px; background: rgba(255, 149, 0, 0.08); border: 1px solid rgba(255, 149, 0, 0.25); border-radius: 16px;">
+                    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom: 12px;">
+                        <div style="display:flex; align-items:center; gap: 10px;">
+                            <span style="font-size: 22px;">⚠️</span>
+                            <div>
+                                <h3 style="font-size: 16px; font-weight: 700; margin: 0; color: var(--text-primary);">ਬਾਕੀ ਨਿਤਨੇਮ (Pending Prayers)</h3>
+                                <p style="font-size: 12px; margin: 2px 0 0; color: var(--text-secondary);">Unfinished Nitnem from previous day</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="pendingBanisList" style="display:flex; flex-direction:column; gap: 8px;"></div>
+                </div>
+                
                 <div class="reorder-hint">
                     <span>☰</span> Long press & drag to reorder
                 </div>
@@ -808,6 +835,13 @@
 
         function saveCompletedBanis(completed) {
             localStorage.setItem('anhad_my_pothi_completed', JSON.stringify(completed));
+            // Record snapshot of total banis for today so past days stay locked
+            try {
+                const today = new Date().toLocaleDateString('en-CA');
+                const snapshots = JSON.parse(localStorage.getItem('anhad_pothi_snapshots') || '{}');
+                snapshots[today] = { totalBanis: pothiOrder.length, updatedAt: Date.now() };
+                localStorage.setItem('anhad_pothi_snapshots', JSON.stringify(snapshots));
+            } catch(e) {}
         }
 
         function isBaniCompleted(baniId) {
@@ -956,7 +990,22 @@
         }
 
         function savePothi() {
+            const previousOrder = JSON.parse(localStorage.getItem('anhad_my_pothi') || '[]');
             localStorage.setItem('anhad_my_pothi', JSON.stringify(pothiOrder));
+
+            // Track newly added banis for glowing effect
+            const newBanis = pothiOrder.filter(id => !previousOrder.includes(id));
+            if (newBanis.length > 0) {
+                const baniAdditions = JSON.parse(localStorage.getItem('anhad_pothi_bani_additions') || '{}');
+                const today = new Date().toLocaleDateString('en-CA');
+                if (!baniAdditions[today]) baniAdditions[today] = [];
+                newBanis.forEach(id => {
+                    if (!baniAdditions[today].find(item => item.id === id)) {
+                        baniAdditions[today].push({ id, timestamp: Date.now() });
+                    }
+                });
+                localStorage.setItem('anhad_pothi_bani_additions', JSON.stringify(baniAdditions));
+            }
 
             // Sync data array (in user's order)
             const pothiData = pothiOrder.map(id => {
@@ -1207,8 +1256,66 @@
             });
             list.innerHTML = html;
             initDragAndDrop();
+            renderPendingBanis();
             renderInsights();
         }
+
+        // ═══════════════════════════════════════════════════
+        // PENDING BANIS ROLLOVER (from Nitnem Tracker)
+        // ═══════════════════════════════════════════════════
+        function renderPendingBanis() {
+            try {
+                const sec = document.getElementById('pendingBanisSection');
+                const list = document.getElementById('pendingBanisList');
+                if (!sec || !list) return;
+
+                const yesterday = new Date();
+                yesterday.setDate(yesterday.getDate() - 1);
+                const yestStr = yesterday.toLocaleDateString('en-CA');
+
+                const completed = loadCompletedBanis();
+                const yestCompleted = completed[yestStr] || [];
+
+                const ALL_BANIS_MAP = {};
+                ALL_BANIS.forEach(b => { ALL_BANIS_MAP[b.id] = b.english; });
+
+                const pendingIds = pothiOrder.filter(id => !yestCompleted.includes(id));
+
+                if (pendingIds.length === 0) {
+                    sec.style.display = 'none';
+                    return;
+                }
+
+                sec.style.display = 'block';
+                list.innerHTML = pendingIds.map(id => {
+                    const bani = ALL_BANIS.find(b => b.id === id);
+                    const baniName = bani ? bani.english : `Bani #${id}`;
+                    return `
+                        <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 14px; background:rgba(255,255,255,0.06); border-radius:12px; border:1px solid rgba(255,149,0,0.2);">
+                            <span style="font-size:14px; font-weight:600; color:var(--text-primary);">${baniName}</span>
+                            <button onclick="markPendingBaniComplete(${id}, '${yestStr}')" style="padding:6px 14px; background:linear-gradient(135deg, #FF9500, #E65C00); color:#fff; font-size:12px; font-weight:700; border:none; border-radius:10px; cursor:pointer;">
+                                ✓ Complete
+                            </button>
+                        </div>
+                    `;
+                }).join('');
+            } catch(e) {
+                console.error('Error rendering pending banis:', e);
+            }
+        }
+
+        window.markPendingBaniComplete = function(id, dateStr) {
+            try {
+                const completed = loadCompletedBanis();
+                if (!completed[dateStr]) completed[dateStr] = [];
+                if (!completed[dateStr].includes(id)) completed[dateStr].push(id);
+                saveCompletedBanis(completed);
+                renderPendingBanis();
+                showToast('✅ Bani marked complete!');
+            } catch(e) {
+                console.error('Error marking pending bani complete:', e);
+            }
+        };
 
         // ═══════════════════════════════════════════════════════════════
         // DRAG & DROP REORDER (Touch + Mouse)
@@ -1357,6 +1464,24 @@
             renderInsights();
         };
 
+        function getHistoricalPct(dateStr, data) {
+            const completedIds = data[dateStr] || [];
+            if (completedIds.length === 0) return 0;
+            
+            // Read saved snapshot for that specific historical day
+            try {
+                const snapshots = JSON.parse(localStorage.getItem('anhad_pothi_snapshots') || '{}');
+                if (snapshots[dateStr] && snapshots[dateStr].totalBanis > 0) {
+                    const snap = snapshots[dateStr];
+                    return Math.min(100, Math.round((completedIds.length / snap.totalBanis) * 100));
+                }
+            } catch(e) {}
+
+            // Fallback: If no snapshot recorded for past day, compare completed count against current pothi order or max completed
+            const totalForDay = Math.max(completedIds.length, pothiOrder.length || 1);
+            return Math.min(100, Math.round((completedIds.length / totalForDay) * 100));
+        }
+
         function renderWeeklyView(el, data) {
             let html = '<div class="weekly-bars-container">';
             const today = new Date();
@@ -1367,10 +1492,7 @@
                 const dateStr = date.toLocaleDateString('en-CA');
                 const dayName = date.toLocaleDateString('pa-IN', { weekday: 'short' });
                 
-                const completedIds = data[dateStr] || [];
-                const matchingCompleted = completedIds.filter(id => pothiOrder.includes(id));
-                const pct = pothiOrder.length > 0 ? Math.round((matchingCompleted.length / pothiOrder.length) * 100) : 0;
-                
+                const pct = getHistoricalPct(dateStr, data);
                 const dayLabel = i === 0 ? 'ਅੱਜ (Today)' : (i === 1 ? 'ਕੱਲ੍ਹ (Yest.)' : dayName);
                 
                 html += `
@@ -1389,7 +1511,7 @@
 
         function renderMonthlyView(el, data) {
             let html = `
-                <div class="monthly-grid-desc">Last 35 days reading consistency (GitHub / LeetCode style)</div>
+                <div class="monthly-grid-desc">Last 35 days reading consistency</div>
                 <div class="monthly-grid-wrapper">
                     <div class="monthly-grid">
             `;
@@ -1398,16 +1520,16 @@
             const daysToShow = 35;
             const cells = [];
             
+            // Track when banis were added for glowing effect
+            const baniAdditions = JSON.parse(localStorage.getItem('anhad_pothi_bani_additions') || '{}');
+            
             for (let i = daysToShow - 1; i >= 0; i--) {
                 const date = new Date(today);
                 date.setDate(today.getDate() - i);
                 const dateStr = date.toLocaleDateString('en-CA');
                 
                 const completedIds = data[dateStr] || [];
-                const matchingCompleted = completedIds.filter(id => pothiOrder.includes(id));
-                const completedCount = matchingCompleted.length;
-                const totalCount = pothiOrder.length;
-                const pct = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
+                const pct = getHistoricalPct(dateStr, data);
                 
                 let intensityClass = 'lvl-0';
                 if (pct === 100) intensityClass = 'lvl-full';
@@ -1415,11 +1537,25 @@
                 else if (pct > 33) intensityClass = 'lvl-2';
                 else if (pct > 0) intensityClass = 'lvl-1';
                 
+                // Check if any bani was added on this date (for glowing effect)
+                const newBaniOnDate = baniAdditions[dateStr];
+                const hasNewBani = newBaniOnDate && newBaniOnDate.length > 0;
+                const newBaniClass = hasNewBani ? 'new-bani' : '';
+                
                 const formattedDate = date.toLocaleDateString('pa-IN', { month: 'short', day: 'numeric' });
-                const tooltipText = `${formattedDate}: ${completedCount}/${totalCount} Banis (${pct}%)`;
+                let tooltipText = `${formattedDate}: ${pct}% completed`;
+                
+                if (hasNewBani) {
+                    const baniNames = newBaniOnDate.map(id => {
+                        const bani = ALL_BANIS.find(b => b.id === id);
+                        return bani ? bani.english : `Bani #${id}`;
+                    }).join(', ');
+                    const addTime = newBaniOnDate[0].timestamp ? new Date(newBaniOnDate[0].timestamp).toLocaleTimeString() : '';
+                    tooltipText = `${formattedDate}: Added ${baniNames} at ${addTime}`;
+                }
                 
                 cells.push(`
-                    <div class="grid-cell ${intensityClass}" title="${tooltipText}" onclick="showInsightsTooltip('${tooltipText}', this)"></div>
+                    <div class="grid-cell ${intensityClass} ${newBaniClass}" title="${tooltipText}" onclick="showInsightsTooltip('${tooltipText}', this)"></div>
                 `);
             }
             

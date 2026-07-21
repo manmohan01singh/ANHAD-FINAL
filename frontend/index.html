@@ -280,39 +280,7 @@
   <!-- CRITICAL: SPA Navigation MUST load early to intercept clicks -->
   <script src="lib/smooth-navigation.js" defer></script>
   
-  <!-- CRITICAL: Remove all shadows added by JavaScript -->
-  <script>
-    (function() {
-      // Function to remove all shadows
-      function removeAllShadows() {
-        const allElements = document.querySelectorAll('*');
-        allElements.forEach(el => {
-          el.style.boxShadow = 'none';
-          el.style.webkitBoxShadow = 'none';
-          el.style.filter = 'none';
-        });
-      }
-      
-      // Remove shadows immediately on DOM load
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', removeAllShadows);
-      } else {
-        removeAllShadows();
-      }
-      
-      // Keep removing shadows every 100ms for dynamic content
-      setInterval(removeAllShadows, 100);
-      
-      // Also watch for DOM changes
-      const observer = new MutationObserver(removeAllShadows);
-      observer.observe(document.documentElement, {
-        childList: true,
-        subtree: true,
-        attributes: true,
-        attributeFilter: ['style', 'class']
-      });
-    })();
-  </script>
+  <!-- Clean static shadow prevention handled via css/no-shadows.css -->
 
   <!-- REMOVED: Broken inline script that tried to access document.body in <head> -->
   <!-- theme-loaded is now set by the MutationObserver in the first theme IIFE above -->
@@ -355,15 +323,19 @@
     /* Import Marcellus font from Google Fonts */
     @import url('https://fonts.googleapis.com/css2?family=Marcellus&display=swap');
     
-    /* HEADER WITH PERFECT CENTERING */
+    /* HEADER WITH PERFECT CENTERING & FULL NOTCH CLEARANCE */
     .header {
       display: flex !important;
       align-items: center !important;
       justify-content: space-between !important;
-      padding: 0 12px !important;
+      padding-top: calc(max(env(safe-area-inset-top, 0px), 76px) + 20px) !important;
+      padding-bottom: 6px !important;
+      padding-left: 12px !important;
+      padding-right: 12px !important;
+      margin-top: 0 !important;
       gap: 0 !important;
       position: relative;
-      min-height: 52px;
+      min-height: calc(96px + max(env(safe-area-inset-top, 0px), 36px));
     }
     
     /* LEFT BUTTON PAIR - SEPARATE WATERDROPLET */
@@ -381,6 +353,8 @@
         inset 0 1px 1px rgba(255, 255, 255, 0.12) !important;
       position: relative;
       z-index: 2;
+      transform: none !important;
+      transition: background 0.2s ease, border-color 0.2s ease !important;
     }
     
     /* RIGHT BUTTON PAIR - SEPARATE WATERDROPLET */
@@ -398,8 +372,18 @@
         inset 0 1px 1px rgba(255, 255, 255, 0.12) !important;
       position: relative;
       z-index: 2;
+      transform: none !important;
+      transition: background 0.2s ease, border-color 0.2s ease !important;
     }
     
+    /* Ensure emoji buttons inside capsules are always clean & transparent */
+    .header__left .header__btn,
+    .header__right .header__btn {
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+    }
+
     /* DARK MODE BUTTON PAIRS */
     html.dark-mode .header__left,
     html.dark-mode .header__right {
@@ -878,7 +862,7 @@
       flex-direction: column !important;
       align-items: center !important;
       gap: 0 !important;
-      padding: 8px 0 0 !important;
+      padding: 4px 0 0 !important;
     }
     .greeting__portrait-wrapper {
       position: relative !important;
@@ -936,11 +920,22 @@
       50% { opacity: 1; transform: scale(1.1); }
     }
     
+    .header__left .header__btn,
+    .header__right .header__btn {
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+    }
+
+    .greeting {
+      margin-top: -24px !important;
+    }
+
     .greeting__guru-portrait {
-      width: 140px !important;
-      height: 140px !important;
-      min-width: 140px !important;
-      min-height: 140px !important;
+      width: 152px !important;
+      height: 152px !important;
+      min-width: 152px !important;
+      min-height: 152px !important;
       display: flex !important;
       align-items: center !important;
       justify-content: center !important;
@@ -969,8 +964,8 @@
     .greeting__portrait-slider {
       position: relative !important;
       width: 100% !important;
-      height: 160px !important;
-      margin-bottom: 24px !important;
+      height: 172px !important;
+      margin-bottom: 12px !important;
       display: flex !important;
       align-items: center !important;
       justify-content: center !important;
@@ -992,16 +987,12 @@
 
     .greeting__slide {
       position: absolute !important;
-      width: 140px !important;
-      height: 140px !important;
+      width: 152px !important;
+      height: 152px !important;
       transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) !important;
       opacity: 0;
       pointer-events: none;
       z-index: 0;
-      /* PERF FIX: Removed filter:blur() from transition states.
-         Transitioning filter:blur causes a software compositing layer with
-         a blur computation on every interpolation frame (60-120fps).
-         Replaced with scale+opacity only — visually equivalent, compositor-friendly. */
       transform: scale(0.6) translateX(0);
       filter: grayscale(1);
     }
@@ -1017,14 +1008,14 @@
     .greeting__slide--prev {
       opacity: 0.5 !important;
       z-index: 5 !important;
-      transform: scale(0.8) translateX(-110px) !important;
+      transform: scale(0.8) translateX(-115px) !important;
       filter: grayscale(0.5) !important;
     }
 
     .greeting__slide--next {
       opacity: 0.5 !important;
       z-index: 5 !important;
-      transform: scale(0.8) translateX(110px) !important;
+      transform: scale(0.8) translateX(115px) !important;
       filter: grayscale(0.5) !important;
     }
 
@@ -1039,8 +1030,8 @@
     }
 
     .greeting__slide .greeting__guru-portrait {
-      width: 140px !important;
-      height: 140px !important;
+      width: 152px !important;
+      height: 152px !important;
       margin: 0 !important;
       box-shadow: 0 10px 30px rgba(0,0,0,0.2) !important;
     }
@@ -1088,13 +1079,13 @@
       font-weight: 800 !important;
       color: #D4943A !important;
       line-height: 1.2 !important;
-      margin-bottom: 8px !important;
+      margin-bottom: 6px !important;
       letter-spacing: -0.3px !important;
     }
     #greetingGurbani {
       text-align: center !important;
       padding: 0 16px !important;
-      margin-top: 0 !important;
+      margin-top: -2px !important;
       font-size: 1.5rem !important;
     }
     /* Guru portrait wrapper - order removed, relying on HTML order */
@@ -1798,7 +1789,7 @@
     .progress-inline {
       height: 28px !important;
       padding: 3px 10px !important;
-      margin: 8px 16px 12px !important;
+      margin: 4px 16px 12px !important;
       background: #FFFFFF !important;
       border-radius: 14px !important;
       box-shadow: 
@@ -2356,7 +2347,7 @@
         .progress-inline {
           height: 28px !important;
           padding: 3px 10px !important;
-          margin: 8px 16px 12px !important;
+          margin: 4px 16px 12px !important;
           background: #FFFFFF !important;
           border-radius: 14px !important;
           box-shadow: 
@@ -2708,7 +2699,7 @@
         <div class="greeting__text">
           <div class="greeting__salutation" id="greetingSalutation">&nbsp;</div>
           <div class="greeting__gurbani" id="greetingGurbani" lang="pa">&nbsp;</div>
-          <div class="greeting__translation" id="greetingTranslation" style="font-size: 0.9rem; opacity: 0.8; margin-top: 4px;">&nbsp;</div>
+          <div class="greeting__translation" id="greetingTranslation" style="font-size: 0.9rem; opacity: 0.8; margin-top: 2px;">&nbsp;</div>
         </div>
       </div>
     </section>

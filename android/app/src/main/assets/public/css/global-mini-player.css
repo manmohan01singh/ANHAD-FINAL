@@ -13,8 +13,8 @@
 
 .gmp {
   position: fixed;
-  /* Position snugly above the floating tab bar (tab bar: bottom:32px + ~68px height) */
-  bottom: calc(108px + env(safe-area-inset-bottom, 0px));
+  /* Position snugly right above floating tab bar (bottom: 32px + height ~60px = 92px top edge) */
+  bottom: calc(98px + max(env(safe-area-inset-bottom, 0px), 4px)) !important;
   left: 12px;
   right: 12px;
   z-index: 9000;

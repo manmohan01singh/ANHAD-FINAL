@@ -631,8 +631,8 @@ body {
 ═══════════════════════════════════════════════════════════════════════════════ */
 .mini-player {
   position: fixed;
-  /* Place it above the navigation bar */
-  bottom: calc(var(--nav-height, 84px) + env(safe-area-inset-bottom, 34px) + 8px);
+  /* Place it snugly directly above the navigation bar */
+  bottom: calc(98px + max(env(safe-area-inset-bottom, 0px), 4px)) !important;
   left: 50%;
   transform: translateX(-50%) translateY(200%);
   border-radius: 22px;
@@ -1899,41 +1899,25 @@ a,
 /* ── NIGHT AUTO: Dark mode claymorphism — mirrors [data-theme="dark"] ── */
 [data-theme-mode="auto"][data-time-of-day="night"] .practice-card--nitnem {
   background: linear-gradient(165deg, #2C2315 0%, #3A2D1A 100%) !important;
-  box-shadow:
-    15px 15px 35px rgba(0, 0, 0, 0.5),
-    inset 6px 6px 15px rgba(255, 255, 255, 0.06),
-    inset -6px -6px 15px rgba(0, 0, 0, 0.5) !important;
-  border: 2px solid rgba(255, 255, 255, 0.05) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
   border-radius: 30px !important;
 }
 [data-theme-mode="auto"][data-time-of-day="night"] .practice-card--sehaj {
   background: linear-gradient(165deg, #1E1B2E 0%, #2A2545 100%) !important;
-  box-shadow:
-    15px 15px 35px rgba(0, 0, 0, 0.5),
-    inset 6px 6px 15px rgba(255, 255, 255, 0.06),
-    inset -6px -6px 15px rgba(0, 0, 0, 0.5) !important;
-  border: 2px solid rgba(255, 255, 255, 0.05) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
   border-radius: 30px !important;
 }
 [data-theme-mode="auto"][data-time-of-day="night"] .practice-card--hukam {
   background: linear-gradient(165deg, #2C2112 0%, #3A2B16 100%) !important;
-  box-shadow:
-    15px 15px 35px rgba(0, 0, 0, 0.5),
-    inset 6px 6px 15px rgba(255, 255, 255, 0.06),
-    inset -6px -6px 15px rgba(0, 0, 0, 0.5) !important;
-  border: 2px solid rgba(255, 255, 255, 0.05) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
   border-radius: 30px !important;
 }
 [data-theme-mode="auto"][data-time-of-day="night"] .practice-card {
   background: #1C1C1E !important;
-  box-shadow:
-    25px 25px 50px rgba(0, 0, 0, 0.7),
-    15px 15px 30px rgba(0, 0, 0, 0.5),
-    -8px -8px 25px rgba(255, 255, 255, 0.04),
-    inset 10px 10px 25px rgba(255, 255, 255, 0.08),
-    inset 5px 5px 12px rgba(255, 255, 255, 0.05),
-    inset -10px -10px 25px rgba(0, 0, 0, 0.6),
-    inset -5px -5px 12px rgba(0, 0, 0, 0.4) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
   border: none !important;
   border-radius: 30px !important;
   backdrop-filter: none !important;
@@ -1941,14 +1925,7 @@ a,
 }
 [data-theme-mode="auto"][data-time-of-day="night"] .quick-card {
   background: #1E1E24 !important;
-  box-shadow:
-    25px 25px 50px rgba(0, 0, 0, 0.7),
-    15px 15px 30px rgba(0, 0, 0, 0.5),
-    -8px -8px 25px rgba(255, 255, 255, 0.04),
-    inset 10px 10px 25px rgba(255, 255, 255, 0.08),
-    inset 5px 5px 12px rgba(255, 255, 255, 0.05),
-    inset -10px -10px 25px rgba(0, 0, 0, 0.6),
-    inset -5px -5px 12px rgba(0, 0, 0, 0.4) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
   border: none !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
@@ -1964,21 +1941,14 @@ a,
 }
 [data-theme-mode="auto"][data-time-of-day="night"] .progress-inline {
   background: linear-gradient(165deg, #202022 0%, #151515 100%) !important;
-  box-shadow:
-    15px 15px 35px rgba(0, 0, 0, 0.6),
-    inset 4px 4px 12px rgba(255, 255, 255, 0.05),
-    inset -4px -4px 12px rgba(0, 0, 0, 0.8) !important;
-  border: 2px solid rgba(255, 255, 255, 0.03) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
 }
 [data-theme-mode="auto"][data-time-of-day="night"] .event-card {
   background: #1C1C1E !important;
-  box-shadow:
-    25px 25px 50px rgba(0, 0, 0, 0.7),
-    15px 15px 30px rgba(0, 0, 0, 0.5),
-    inset 10px 10px 25px rgba(255, 255, 255, 0.08),
-    inset -10px -10px 25px rgba(0, 0, 0, 0.6) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
   border: none !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
@@ -2348,7 +2318,7 @@ body,
 ———————————————————————————————————————————————————————————————————————————————
    ═══════════════════════════════════════════════════════════════════════════════ */
 
-/* Base GPU layer promotion for ALL cards — all themes */
+/* Smooth card rendering — allow normal document flow without layer clipping */
 .quick-card,
 .practice-card,
 .event-card,
@@ -2357,11 +2327,7 @@ body,
 .insight-card,
 .progress-inline,
 .hero-card {
-  transform: translateZ(0);
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
   will-change: auto;
-  contain: layout style;
 }
 
 /* Font smoothing — all themes */

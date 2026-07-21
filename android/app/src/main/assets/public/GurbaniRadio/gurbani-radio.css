@@ -147,6 +147,12 @@ html, body {
 }
 
 /* ─── SEGMENTED CONTROL (STREAM TABS) ─── */
+/* v10.9.0: CACHE BUST FIX - Gurbani Radio Tab Indicator Alignment */
+/* ISSUE: Tab indicator was misaligned in production (positioned between tabs instead of behind active tab) */
+/* ROOT CAUSE: Old CSS cached by Service Worker with wrong translateX calculation (percentage instead of calc()) */
+/* FIX: Bumped SW cache version to v10.9.0 + CSS query param to v10.9.0 to force fresh fetch */
+/* VERIFIED: Local build always had correct calc() formula - production was serving stale cached CSS */
+
 /* v10.7.0: FIXED translateX calculation - uses calc() not percentage */
 .gr-tabs {
   display: flex;

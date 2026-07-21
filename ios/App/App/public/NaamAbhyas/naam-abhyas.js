@@ -72,7 +72,8 @@ class NaamAbhyasThemeEngine {
     constructor() {
         // ALWAYS follow the global theme from anhad_theme key
         const globalTheme = localStorage.getItem('anhad_theme');
-        this.currentTheme = globalTheme || 'light';
+        // Default to dark theme to match dark cosmos background
+        this.currentTheme = globalTheme || 'dark';
 
         this.init();
     }
@@ -2827,9 +2828,17 @@ class NaamAbhyas {
     }
 
     updateStreak() {
-        this.history.statistics.currentStreak++;
+        const today = this.getTodayString();
+        // Guard: Streak increments AT MOST once per calendar day
+        if (this.history.statistics.lastStreakDate === today) {
+            console.log(`[NaamAbhyas] 🛡️ Streak already counted for today (${today}) — skipping extra increment`);
+            return;
+        }
 
-        if (this.history.statistics.currentStreak > this.history.statistics.longestStreak) {
+        this.history.statistics.lastStreakDate = today;
+        this.history.statistics.currentStreak = (this.history.statistics.currentStreak || 0) + 1;
+
+        if (this.history.statistics.currentStreak > (this.history.statistics.longestStreak || 0)) {
             this.history.statistics.longestStreak = this.history.statistics.currentStreak;
         }
 
@@ -3262,13 +3271,16 @@ class NaamAbhyas {
     showSettingsModal() {
         const modal = document.getElementById('settingsModal');
         if (modal) {
-            modal.classList.add('active');
-            document.body.style.overflow = 'hidden';
+            // CRITICAL FIX: Use requestAnimationFrame to prevent lag
+            requestAnimationFrame(() => {
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
 
-            // Performance: Instead of hiding canvas (which causes reflow), 
-            // we just pause the starfield animation if it exists
-            const starsField = document.getElementById('starsField');
-            if (starsField) starsField.style.animationPlayState = 'paused';
+                // Performance: Instead of hiding canvas (which causes reflow), 
+                // we just pause the starfield animation if it exists
+                const starsField = document.getElementById('starsField');
+                if (starsField) starsField.style.animationPlayState = 'paused';
+            });
         }
     }
 

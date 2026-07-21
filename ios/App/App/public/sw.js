@@ -12,7 +12,7 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
-const CACHE_VERSION = 'anhad-v10.2.0'; // v10.2.0: Orbs behind ALL content (fixed position), removed green orb, only Sky Blue (major) + Red/Yellow/Purple
+const CACHE_VERSION = 'anhad-v10.11.0'; // v10.11.0: Fixed dark mode cards, settings panel lag, and nitnem font change
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 const DATA_CACHE = `${CACHE_VERSION}-data`;

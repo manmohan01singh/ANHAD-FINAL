@@ -1089,6 +1089,13 @@
         setInterval(checkAlarms, 10000);
         checkAlarms();
 
+        // ═══ FULLSCREEN: Hide status bar completely when app opens ═══
+        if (isNative() && window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.StatusBar) {
+            try {
+                window.Capacitor.Plugins.StatusBar.hide();
+                window.Capacitor.Plugins.StatusBar.setOverlaysWebView({ overlay: true });
+            } catch(e) {}
+        }
         if (isNative() && window.Capacitor.Plugins && window.Capacitor.Plugins.LocalNotifications) {
             checkBootFlag();
             scheduleAll();

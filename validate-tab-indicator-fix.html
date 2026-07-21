@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tab Indicator Fix Validator</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #0A0A0C;
+      color: #E8E6E3;
+    }
+    .container {
+      background: #1A1A1C;
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+    h1 {
+      color: #D4AF37;
+      margin-top: 0;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .status {
+      padding: 12px 20px;
+      border-radius: 8px;
+      margin: 16px 0;
+      font-weight: 600;
+    }
+    .status.loading {
+      background: rgba(100, 149, 237, 0.15);
+      border-left: 4px solid #6495ED;
+      color: #6495ED;
+    }
+    .status.success {
+      background: rgba(76, 175, 80, 0.15);
+      border-left: 4px solid #4CAF50;
+      color: #4CAF50;
+    }
+    .status.error {
+      background: rgba(244, 67, 54, 0.15);
+      border-left: 4px solid #F44336;
+      color: #F44336;
+    }
+    .status.warning {
+      background: rgba(255, 193, 7, 0.15);
+      border-left: 4px solid #FFC107;
+      color: #FFC107;
+    }
+    .check-item {
+      padding: 16px;
+      margin: 12px 0;
+      background: rgba(255,255,255,0.03);
+      border-radius: 8px;
+      border-left: 3px solid transparent;
+    }
+    .check-item.pass {
+      border-left-color: #4CAF50;
+    }
+    .check-item.fail {
+      border-left-color: #F44336;
+    }
+    .check-title {
+      font-weight: 600;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .check-detail {
+      font-size: 14px;
+      color: #999;
+      font-family: 'Consolas', monospace;
+      margin-top: 4px;
+    }
+    button {
+      background: #D4AF37;
+      color: #0A0A0C;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      margin: 8px 4px;
+    }
+    button:hover {
+      background: #E0BC4A;
+    }
+    button:active {
+      transform: scale(0.98);
+    }
+    .actions {
+      margin-top: 24px;
+      padding-top: 24px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+    .icon {
+      font-size: 20px;
+    }
+    pre {
+      background: rgba(0,0,0,0.3);
+      padding: 16px;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-size: 13px;
+      margin: 12px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>
+      <span class="icon">🔍</span>
+      Tab Indicator Fix Validator
+    </h1>
+    
+    <div class="status loading" id="mainStatus">
+      ⏳ Running validation checks...
+    </div>
+
+    <div id="results"></div>
+
+    <div class="actions">
+      <button onclick="runValidation()">🔄 Run Validation</button>
+      <button onclick="forceClearCache()">🧹 Clear All Caches</button>
+      <button onclick="forceUpdate()">⚡ Force Service Worker Update</button>
+      <button onclick="window.open('GurbaniRadio/gurbani-radio.html', '_blank')">▶️ Open Gurbani Radio</button>
+    </div>
+  </div>
+
+  <script>
+    async function runValidation() {
+      const resultsDiv = document.getElementById('results');
+      const mainStatus = document.getElementById('mainStatus');
+      resultsDiv.innerHTML = '';
+      mainStatus.className = 'status loading';
+      mainStatus.textContent = '⏳ Running validation checks...';
+
+      const checks = [];
+
+      // Check 1: Service Worker Version
+      try {
+        const reg = await navigator.serviceWorker.getRegistration();
+        if (reg && reg.active) {
+          const isCorrectVersion = await new Promise((resolve) => {
+            const mc = new MessageChannel();
+            mc.port1.onmessage = (event) => {
+              const version = event.data.version;
+              resolve(version === 'anhad-v10.9.0' || version.includes('v10.9'));
+            };
+            reg.active.postMessage({ type: 'VERSION_CHECK' }, [mc.port2]);
+            setTimeout(() => resolve(false), 1000);
+          });
+
+          checks.push({
+            title: 'Service Worker Version Check',
+            pass: isCorrectVersion,
+            detail: isCorrectVersion 
+              ? '✅ Version anhad-v10.9.0 detected' 
+              : '❌ Old version detected - needs update'
+          });
+        } else {
+          checks.push({
+            title: 'Service Worker Version Check',
+            pass: false,
+            detail: '⚠️ No active Service Worker found'
+          });
+        }
+      } catch (e) {
+        checks.push({
+          title: 'Service Worker Version Check',
+          pass: false,
+          detail: '❌ Error: ' + e.message
+        });
+      }
+
+      // Check 2: Cache Contents
+      try {
+        const cacheNames = await caches.keys();
+        const hasNewCache = cacheNames.some(name => name.includes('v10.9'));
+        const hasOldCache = cacheNames.some(name => 
+          name.includes('v10.8') || name.includes('v10.7')
+        );
+
+        checks.push({
+          title: 'Cache Version Check',
+          pass: hasNewCache && !hasOldCache,
+          detail: hasNewCache 
+            ? (hasOldCache 
+              ? '⚠️ New cache exists but old cache still present' 
+              : '✅ Only new cache (v10.9.0) detected')
+            : '❌ New cache (v10.9.0) not found'
+        });
+      } catch (e) {
+        checks.push({
+          title: 'Cache Version Check',
+          pass: false,
+          detail: '❌ Error: ' + e.message
+        });
+      }
+
+      // Check 3: CSS File Check
+      try {
+        const response = await fetch('GurbaniRadio/gurbani-radio.css?v=10.9.0', {
+          cache: 'no-cache'
+        });
+        const cssText = await response.text();
+        const hasCorrectFormula = cssText.includes('calc((100% - 8px) / 3)');
+
+        checks.push({
+          title: 'CSS Formula Check',
+          pass: hasCorrectFormula,
+          detail: hasCorrectFormula 
+            ? '✅ Correct calc() formula found in CSS' 
+            : '❌ Correct formula NOT found - old CSS may be cached'
+        });
+      } catch (e) {
+        checks.push({
+          title: 'CSS Formula Check',
+          pass: false,
+          detail: '❌ Error fetching CSS: ' + e.message
+        });
+      }
+
+      // Check 4: HTML Query Parameter
+      try {
+        const response = await fetch('GurbaniRadio/gurbani-radio.html', {
+          cache: 'no-cache'
+        });
+        const htmlText = await response.text();
+        const hasCorrectVersion = htmlText.includes('gurbani-radio.css?v=10.9.0');
+
+        checks.push({
+          title: 'HTML Version Parameter Check',
+          pass: hasCorrectVersion,
+          detail: hasCorrectVersion 
+            ? '✅ HTML references CSS v10.9.0' 
+            : '❌ HTML does not reference CSS v10.9.0'
+        });
+      } catch (e) {
+        checks.push({
+          title: 'HTML Version Parameter Check',
+          pass: false,
+          detail: '❌ Error fetching HTML: ' + e.message
+        });
+      }
+
+      // Check 5: Version.json
+      try {
+        const response = await fetch('version.json', {
+          cache: 'no-cache'
+        });
+        const versionData = await response.json();
+        const isUpdated = versionData.version === '4.5.1' || 
+                         (versionData.changelog && versionData.changelog.includes('tab indicator'));
+
+        checks.push({
+          title: 'App Version Check',
+          pass: isUpdated,
+          detail: isUpdated 
+            ? `✅ Version ${versionData.version} - ${versionData.changelog || 'Updated'}` 
+            : `⚠️ Version ${versionData.version} - may not include fix`
+        });
+      } catch (e) {
+        checks.push({
+          title: 'App Version Check',
+          pass: false,
+          detail: '⚠️ Could not fetch version.json'
+        });
+      }
+
+      // Render results
+      const allPassed = checks.every(c => c.pass);
+      const someFailed = checks.some(c => !c.pass);
+
+      checks.forEach(check => {
+        const div = document.createElement('div');
+        div.className = `check-item ${check.pass ? 'pass' : 'fail'}`;
+        div.innerHTML = `
+          <div class="check-title">
+            <span>${check.pass ? '✅' : '❌'}</span>
+            <span>${check.title}</span>
+          </div>
+          <div class="check-detail">${check.detail}</div>
+        `;
+        resultsDiv.appendChild(div);
+      });
+
+      // Update main status
+      if (allPassed) {
+        mainStatus.className = 'status success';
+        mainStatus.innerHTML = '✅ All checks passed! Tab indicator fix is properly deployed.';
+      } else if (someFailed) {
+        mainStatus.className = 'status error';
+        mainStatus.innerHTML = '❌ Some checks failed. The fix may not be fully deployed. Try clearing cache or forcing update.';
+      } else {
+        mainStatus.className = 'status warning';
+        mainStatus.innerHTML = '⚠️ Validation completed with warnings.';
+      }
+    }
+
+    async function forceClearCache() {
+      try {
+        const cacheNames = await caches.keys();
+        await Promise.all(cacheNames.map(name => caches.delete(name)));
+        alert('✅ All caches cleared! Now refreshing page...');
+        window.location.reload();
+      } catch (e) {
+        alert('❌ Error clearing caches: ' + e.message);
+      }
+    }
+
+    async function forceUpdate() {
+      try {
+        const reg = await navigator.serviceWorker.getRegistration();
+        if (reg) {
+          await reg.update();
+          if (reg.waiting) {
+            reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+          }
+          alert('✅ Service Worker update triggered! Page will reload when ready.');
+          navigator.serviceWorker.addEventListener('controllerchange', () => {
+            window.location.reload();
+          });
+        } else {
+          alert('⚠️ No Service Worker registered.');
+        }
+      } catch (e) {
+        alert('❌ Error forcing update: ' + e.message);
+      }
+    }
+
+    // Auto-run on load
+    window.addEventListener('load', runValidation);
+  </script>
+</body>
+</html>

@@ -7,30 +7,41 @@
  */
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   DYNAMIC TIME-BASED ORBS — BEHIND ALL CONTENT (Fixed Position)
-   Major: Sky Blue | Little: Soft Red, Soft Yellow, Soft Purple (NO GREEN)
+   SUBTLE AMBIENT ORBS — Behind Header + Greeting (ONLY SKY BLUE)
+   Matches "Your Practice" card color exactly
    ───────────────────────────────────────────────────────────────────────────── */
 
-/* App container must be positioned for orb layering */
-.app {
+/* Header must be positioned for orb */
+.header {
   position: relative !important;
-  z-index: 1;
+}
+
+/* Greeting section must be positioned for orbs */
+.greeting {
+  position: relative !important;
+  overflow: visible !important;
+}
+
+/* Greeting content above orbs */
+.greeting__content {
+  position: relative;
+  z-index: 2;
 }
 
 .time-orb {
-  position: fixed;
+  position: absolute;
   border-radius: 50%;
   pointer-events: none;
   z-index: 0;
-  filter: blur(140px);
-  opacity: 1;
+  filter: blur(100px);
+  opacity: 0.6;
   transition: opacity 0.8s ease;
 }
 
 /* Show orbs only in DAY and NIGHT auto mode */
 [data-theme-mode="auto"][data-time-of-day="day"] .time-orb,
 [data-theme-mode="auto"][data-time-of-day="night"] .time-orb {
-  opacity: 1;
+  opacity: 0.6;
 }
 
 /* Hide orbs in other modes */
@@ -42,54 +53,49 @@
   display: none;
 }
 
-/* DAY TIME ORBS — Major Sky Blue, Little Yellow, Little Red (3 orbs, NO GREEN) */
+/* DAY TIME — Only Sky Blue (Your Practice card color, NO YELLOW) */
 [data-theme-mode="auto"][data-time-of-day="day"] .time-orb-1 {
-  width: 700px;
-  height: 700px;
-  background: radial-gradient(circle, rgba(135, 206, 250, 0.7) 0%, rgba(135, 206, 250, 0.4) 50%, transparent 70%);
-  top: 100px;
-  right: -200px;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(227, 242, 253, 1) 0%, rgba(187, 222, 251, 0.8) 40%, transparent 70%);
+  top: -150px;
+  right: -100px;
 }
 
 [data-theme-mode="auto"][data-time-of-day="day"] .time-orb-2 {
-  width: 500px;
-  height: 500px;
-  background: radial-gradient(circle, rgba(255, 255, 140, 0.5) 0%, rgba(255, 255, 140, 0.25) 50%, transparent 70%);
-  top: 300px;
-  left: -150px;
+  display: none;
+  opacity: 0;
 }
 
-[data-theme-mode="auto"][data-time-of-day="day"] .time-orb-3 {
-  width: 450px;
-  height: 450px;
-  background: radial-gradient(circle, rgba(255, 99, 132, 0.45) 0%, rgba(255, 99, 132, 0.2) 50%, transparent 70%);
-  top: 500px;
-  right: 10%;
-}
-
-/* NIGHT TIME ORBS — Major Sky Blue, Little Red, Little Purple (3 orbs, NO GREEN) */
+/* NIGHT TIME — Only Dark Blue (Your Practice dark card, NO YELLOW) */
 [data-theme-mode="auto"][data-time-of-day="night"] .time-orb-1 {
-  width: 700px;
-  height: 700px;
-  background: radial-gradient(circle, rgba(135, 206, 250, 0.6) 0%, rgba(135, 206, 250, 0.35) 50%, transparent 70%);
-  top: 150px;
-  left: -180px;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(28, 45, 61, 1) 0%, rgba(42, 61, 74, 0.8) 40%, transparent 70%);
+  top: -150px;
+  left: -100px;
 }
 
 [data-theme-mode="auto"][data-time-of-day="night"] .time-orb-2 {
-  width: 550px;
-  height: 550px;
-  background: radial-gradient(circle, rgba(255, 99, 132, 0.5) 0%, rgba(255, 99, 132, 0.25) 50%, transparent 70%);
-  top: 250px;
-  right: -150px;
+  display: none;
+  opacity: 0;
 }
 
-[data-theme-mode="auto"][data-time-of-day="night"] .time-orb-3 {
-  width: 480px;
-  height: 480px;
-  background: radial-gradient(circle, rgba(186, 85, 211, 0.45) 0%, rgba(186, 85, 211, 0.22) 50%, transparent 70%);
-  top: 550px;
-  right: 15%;
+/* HEADER ORB — Behind ANHAD title bar */
+.time-orb-header {
+  width: 500px;
+  height: 200px;
+  top: -50px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+[data-theme-mode="auto"][data-time-of-day="day"] .time-orb-header {
+  background: radial-gradient(ellipse, rgba(227, 242, 253, 1) 0%, rgba(187, 222, 251, 0.7) 40%, transparent 70%);
+}
+
+[data-theme-mode="auto"][data-time-of-day="night"] .time-orb-header {
+  background: radial-gradient(ellipse, rgba(28, 45, 61, 1) 0%, rgba(42, 61, 74, 0.7) 40%, transparent 70%);
 }
 
 /* ─── Design token fallbacks (resolved by trendora-premium.css if loaded) ─── */

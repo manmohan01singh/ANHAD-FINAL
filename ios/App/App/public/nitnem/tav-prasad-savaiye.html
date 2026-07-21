@@ -83,35 +83,37 @@
 </head>
 
 <body>
-  <!-- Header -->
-  <header class="bani-header">
-    <button class="back-btn" id="backBtn">
-      <i class="fas fa-arrow-left"></i>
-      <span>Back</span>
-    </button>
-    <h1 class="bani-title">
-      <span class="bani-title__gurmukhi">ਤ੍ਵ ਪ੍ਰਸਾਦਿ ਸਵੱਯੇ (ਸ੍ਰਾਵਗ ਸੁਧ)</span>
-      <span class="bani-title__english">Tav Parsad Savaiye Sahib</span>
-    </h1>
-    <button class="settings-btn" id="settingsBtn">
-      <i class="fas fa-cog"></i>
-    </button>
-  </header>
+  <!-- Header & Controls Sticky Container -->
+  <div class="bani-top-sticky-bar">
+    <header class="bani-header">
+      <button class="back-btn" id="backBtn">
+        <i class="fas fa-arrow-left"></i>
+        <span>Back</span>
+      </button>
+      <h1 class="bani-title">
+        <span class="bani-title__gurmukhi">ਤ੍ਵ ਪ੍ਰਸਾਦਿ ਸਵੱਯੇ (ਸ੍ਰਾਵਗ ਸੁਧ)</span>
+        <span class="bani-title__english">Tav Parsad Savaiye Sahib</span>
+      </h1>
+      <button class="settings-btn" id="settingsBtn">
+        <i class="fas fa-cog"></i>
+      </button>
+    </header>
 
-  <!-- Display Controls -->
-  <div class="bani-controls">
-    <button class="control-toggle" id="toggleGurmukhi" data-active="true">
-      <span>ਗੁਰਮੁਖੀ</span>
-    </button>
-    <button class="control-toggle" id="toggleTransliteration" data-active="true">
-      <span>Roman</span>
-    </button>
-    <button class="control-toggle" id="toggleTranslation" data-active="true">
-      <span>English</span>
-    </button>
-    <button class="control-toggle" id="togglePunjabi" data-active="false">
-      <span>ਪੰਜਾਬੀ</span>
-    </button>
+    <!-- Display Controls -->
+    <div class="bani-controls">
+      <button class="control-toggle" id="toggleGurmukhi" data-active="true">
+        <span>ਗੁਰਮੁਖੀ</span>
+      </button>
+      <button class="control-toggle" id="toggleTransliteration" data-active="true">
+        <span>Roman</span>
+      </button>
+      <button class="control-toggle" id="toggleTranslation" data-active="true">
+        <span>English</span>
+      </button>
+      <button class="control-toggle" id="togglePunjabi" data-active="false">
+        <span>ਪੰਜਾਬੀ</span>
+      </button>
+    </div>
   </div>
 
   <!-- Main Content -->

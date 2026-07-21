@@ -1434,6 +1434,10 @@
         // Hide header & toggles on scroll DOWN, show on scroll UP
         const scrollingDown = scrollTop > lastScrollTop && scrollTop > SCROLL_THRESHOLD;
 
+        const stickyTopBar = document.getElementById('readerStickyTopBar');
+        if (stickyTopBar) {
+            stickyTopBar.classList.toggle('hidden', scrollingDown);
+        }
         if (els.readerHeader) {
             els.readerHeader.classList.toggle('hidden', scrollingDown);
         }
@@ -1725,7 +1729,21 @@
                 state.settings.gurbaniFontSize = FONT_SIZES[fontKey];
             }
             
+            // CRITICAL FIX: Force immediate style reflow so font changes without refresh
             applyFontToVerses();
+            
+            // Force browser to recalculate styles immediately
+            requestAnimationFrame(() => {
+                const versesContainer = document.getElementById('versesContainer');
+                if (versesContainer) {
+                    // Trigger reflow by reading a layout property
+                    void versesContainer.offsetHeight;
+                    
+                    // Re-apply font in case it didn't take
+                    applyFontToVerses();
+                }
+            });
+            
             saveSettings();
         });
 
