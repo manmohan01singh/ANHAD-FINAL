@@ -255,8 +255,15 @@
         }
         .pothi-bani-card .card-icon {
             width: 48px; height: 48px; display: flex; align-items: center; justify-content: center;
-            font-size: 26px; background: rgba(255, 255, 255, 0.06);
+            background: rgba(255, 255, 255, 0.06);
             border-radius: 14px; flex-shrink: 0;
+            overflow: hidden;
+            border: 2px solid rgba(212, 175, 55, 0.2);
+        }
+        .pothi-bani-card .card-icon img {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            object-position: center 30%;
         }
         .pothi-bani-card .card-content { flex: 1; min-width: 0; z-index: 1; }
         .pothi-bani-card .card-name { font-family: var(--font-gurmukhi); font-size: 17px; font-weight: 600; margin-bottom: 2px; }
@@ -541,7 +548,20 @@
         .bani-select-card:active { transform: scale(0.98); }
         .bani-select-card.selected { border-color: var(--sacred-gold); background: rgba(212, 175, 55, 0.08); }
 
-        .bani-select-icon { font-size: 22px; flex-shrink: 0; }
+        .bani-select-icon { 
+            width: 40px; height: 40px; 
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0; 
+            border-radius: 10px;
+            overflow: hidden;
+            border: 2px solid rgba(212, 175, 55, 0.15);
+            background: rgba(255, 255, 255, 0.03);
+        }
+        .bani-select-icon img {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            object-position: center 30%;
+        }
         .bani-select-content { flex: 1; min-width: 0; }
         .bani-select-name { font-family: var(--font-gurmukhi); font-size: 15px; font-weight: 600; }
         .bani-select-english { font-size: 12px; color: var(--text-secondary); }
@@ -711,24 +731,22 @@
                     <div class="subtitle" id="readingSubtitle">Your daily reading</div>
                 </div>
                 
-                <!-- Pending Banis Section -->
-                <div class="pending-banis-card" id="pendingBanisSection" style="display:none; margin: 16px; padding: 14px; background: rgba(255, 149, 0, 0.08); border: 1px solid rgba(255, 149, 0, 0.25); border-radius: 16px;">
-                    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom: 12px;">
-                        <div style="display:flex; align-items:center; gap: 10px;">
-                            <span style="font-size: 22px;">⚠️</span>
-                            <div>
-                                <h3 style="font-size: 16px; font-weight: 700; margin: 0; color: var(--text-primary);">ਬਾਕੀ ਨਿਤਨੇਮ (Pending Prayers)</h3>
-                                <p style="font-size: 12px; margin: 2px 0 0; color: var(--text-secondary);">Unfinished Nitnem from previous day</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="pendingBanisList" style="display:flex; flex-direction:column; gap: 8px;"></div>
-                </div>
-                
                 <div class="reorder-hint">
                     <span>☰</span> Long press & drag to reorder
                 </div>
                 <div class="pothi-list" id="pothiList"></div>
+                
+                <!-- Pending Banis Section -->
+                <div class="pending-banis-card" id="pendingBanisSection" style="display:none; margin: 16px; padding: 16px; background: linear-gradient(135deg, rgba(255, 149, 0, 0.1), rgba(255, 149, 0, 0.05)); border: 1px solid rgba(255, 149, 0, 0.3); border-radius: 20px; box-shadow: 0 4px 20px rgba(255, 149, 0, 0.15);">
+                    <div style="display:flex; align-items:center; gap: 12px; margin-bottom: 16px;">
+                        <span style="font-size: 28px; filter: drop-shadow(0 2px 4px rgba(255, 149, 0, 0.3));">⚠️</span>
+                        <div>
+                            <h3 style="font-size: 17px; font-weight: 700; margin: 0; color: var(--text-primary);">ਬਾਕੀ ਨਿਤਨੇਮ (Pending Prayers)</h3>
+                            <p style="font-size: 13px; margin: 4px 0 0; color: var(--text-secondary);">Complete unfinished Nitnem from yesterday</p>
+                        </div>
+                    </div>
+                    <div id="pendingBanisList" style="display:flex; flex-direction:column; gap: 10px;"></div>
+                </div>
             </div>
             
             <!-- Insights / Progress Charts -->
@@ -768,37 +786,37 @@
         // BANI DATABASE
         // ═══════════════════════════════════════════════════════════════
         const ALL_BANIS = [
-            { id: 2, name: 'ਜਪੁਜੀ ਸਾਹਿਬ', english: 'Japji Sahib Ji', category: 'ਨਿਤਨੇਮ', icon: '🌅' },
-            { id: 4, name: 'ਜਾਪੁ ਸਾਹਿਬ', english: 'Jaap Sahib Ji', category: 'ਨਿਤਨੇਮ', icon: '⚔️' },
-            { id: 6, name: 'ਤ੍ਵ ਪ੍ਰਸਾਦਿ ਸਵੱਯੇ', english: 'Tav Prasad Savaiye', category: 'ਨਿਤਨੇਮ', icon: '🙏' },
-            { id: 7, name: 'ਤ੍ਵ ਪ੍ਰਸਾਦਿ ਸਵੱਯੇ (ਦੀਨਨ ਕੀ)', english: 'Tav Prasad Savaiye (Deenan Ki)', category: 'ਨਿਤਨੇਮ', icon: '🙏' },
-            { id: 9, name: 'ਬੇਨਤੀ ਚੌਪਈ ਸਾਹਿਬ', english: 'Chaupai Sahib Ji', category: 'ਨਿਤਨੇਮ', icon: '🛡️' },
-            { id: 10, name: 'ਅਨੰਦੁ ਸਾਹਿਬ', english: 'Anand Sahib Ji', category: 'ਨਿਤਨੇਮ', icon: '😊' },
-            { id: 21, name: 'ਰਹਿਰਾਸਿ ਸਾਹਿਬ', english: 'Rehras Sahib Ji', category: 'ਨਿਤਨੇਮ', icon: '🌇' },
-            { id: 23, name: 'ਸੋਹਿਲਾ ਸਾਹਿਬ', english: 'Kirtan Sohila', category: 'ਨਿਤਨੇਮ', icon: '🌙' },
-            { id: 24, name: 'ਅਰਦਾਸ', english: 'Ardas', category: 'ਨਿਤਨੇਮ', icon: '🙏' },
-            { id: 31, name: 'ਸੁਖਮਨੀ ਸਾਹਿਬ', english: 'Sukhmani Sahib Ji', category: 'ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ', icon: '🕊️' },
-            { id: 90, name: 'ਆਸਾ ਦੀ ਵਾਰ', english: 'Asa Di Vaar', category: 'ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ', icon: '☀️' },
-            { id: 36, name: 'ਦੁਖ ਭੰਜਨੀ ਸਾਹਿਬ', english: 'Dukh Bhanjani Sahib Ji', category: 'ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ', icon: '💚' },
-            { id: 3, name: 'ਸ਼ਬਦ ਹਜ਼ਾਰੇ', english: 'Shabad Hazare', category: 'ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ', icon: '💎' },
-            { id: 27, name: 'ਬਾਰਹ ਮਾਹਾ', english: 'Barah Maha', category: 'ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ', icon: '📅' },
-            { id: 30, name: 'ਸਲੋਕ ਮਹਲਾ ੯', english: 'Salok Mahalla 9', category: 'ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ', icon: '📜' },
-            { id: 22, name: 'ਆਰਤੀ', english: 'Aarti', category: 'ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ', icon: '🪔' },
-            { id: 11, name: 'ਲਾਵਾਂ', english: 'Lavan', category: 'ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ', icon: '💍' },
-            { id: 33, name: 'ਬਾਵਨ ਅਖਰੀ', english: 'Bavan Akhri', category: 'ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ', icon: '📖' },
-            { id: 34, name: 'ਸਿਧ ਗੋਸਟਿ', english: 'Sidh Gosht', category: 'ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ', icon: '🧘' },
-            { id: 35, name: 'ਦਖਣੀ ਓਅੰਕਾਰੁ', english: 'Dakhni Oankar', category: 'ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ', icon: '🕉️' },
-            { id: 32, name: 'ਸੁਖਮਨਾ ਸਾਹਿਬ', english: 'Sukhmana Sahib Ji', category: 'ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ', icon: '🕊️' },
-            { id: 38, name: 'ਰਾਗ ਮਾਲਾ', english: 'Raag Mala', category: 'ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ', icon: '🎵' },
-            { id: 77, name: 'ਸਲੋਕ ਭਗਤ ਕਬੀਰ ਜੀ', english: 'Salok Bhagat Kabir Ji', category: 'ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ', icon: '📿' },
-            { id: 78, name: 'ਸਲੋਕ ਸੇਖ ਫਰੀਦ ਕੇ', english: 'Salok Sheikh Farid', category: 'ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ', icon: '🤲' },
-            { id: 5, name: 'ਸ਼ਬਦ ਹਜ਼ਾਰੇ ਪਾਤਿਸ਼ਾਹੀ ੧੦', english: 'Shabad Hazare P10', category: 'ਸ੍ਰੀ ਦਸਮ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ', icon: '💎' },
-            { id: 8, name: 'ਅਕਾਲ ਉਸਤਤ ਚੌਪਈ', english: 'Akal Ustat Chaupai', category: 'ਸ੍ਰੀ ਦਸਮ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ', icon: '✨' },
-            { id: 29, name: 'ਅਕਾਲ ਉਸਤਤ', english: 'Akal Ustat (Full)', category: 'ਸ੍ਰੀ ਦਸਮ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ', icon: '🌟' },
-            { id: 12, name: 'ਅਥ ਚੰਡੀਚਰਿਤ੍ਰ', english: 'Chandi Charitra', category: 'ਸ੍ਰੀ ਦਸਮ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ', icon: '⚔️' },
-            { id: 13, name: 'ਚੰਡੀ ਦੀ ਵਾਰ', english: 'Chandi Di Vaar', category: 'ਸ੍ਰੀ ਦਸਮ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ', icon: '🗡️' },
-            { id: 19, name: 'ਸ਼ਸਤ੍ਰ ਨਾਮ ਮਾਲਾ', english: 'Shastar Naam Mala', category: 'ਸ੍ਰੀ ਦਸਮ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ', icon: '🔱' },
-            { id: 53, name: 'ਉਗ੍ਰਦੰਤੀ', english: 'Ugardanti', category: 'ਸ੍ਰੀ ਦਸਮ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ', icon: '🔥' },
+            { id: 2, name: 'ਜਪੁਜੀ ਸਾਹਿਬ', english: 'Japji Sahib Ji', category: 'ਨਿਤਨੇਮ', guruImage: '../guruimages/gurunanakdevsahebji.jpeg', guruAlt: 'Guru Nanak Dev Ji' },
+            { id: 4, name: 'ਜਾਪੁ ਸਾਹਿਬ', english: 'Jaap Sahib Ji', category: 'ਨਿਤਨੇਮ', guruImage: '../guruimages/gurugobindsinghsahebji.jpeg', guruAlt: 'Guru Gobind Singh Ji' },
+            { id: 6, name: 'ਤ੍ਵ ਪ੍ਰਸਾਦਿ ਸਵੱਯੇ', english: 'Tav Prasad Savaiye', category: 'ਨਿਤਨੇਮ', guruImage: '../guruimages/gurugobindsinghsahebji.jpeg', guruAlt: 'Guru Gobind Singh Ji' },
+            { id: 7, name: 'ਤ੍ਵ ਪ੍ਰਸਾਦਿ ਸਵੱਯੇ (ਦੀਨਨ ਕੀ)', english: 'Tav Prasad Savaiye (Deenan Ki)', category: 'ਨਿਤਨੇਮ', guruImage: '../guruimages/gurugobindsinghsahebji.jpeg', guruAlt: 'Guru Gobind Singh Ji' },
+            { id: 9, name: 'ਬੇਨਤੀ ਚੌਪਈ ਸਾਹਿਬ', english: 'Chaupai Sahib Ji', category: 'ਨਿਤਨੇਮ', guruImage: '../guruimages/gurugobindsinghsahebji.jpeg', guruAlt: 'Guru Gobind Singh Ji' },
+            { id: 10, name: 'ਅਨੰਦੁ ਸਾਹਿਬ', english: 'Anand Sahib Ji', category: 'ਨਿਤਨੇਮ', guruImage: '../guruimages/guruamardasji.jpeg', guruAlt: 'Guru Amar Das Ji' },
+            { id: 21, name: 'ਰਹਿਰਾਸਿ ਸਾਹਿਬ', english: 'Rehras Sahib Ji', category: 'ਨਿਤਨੇਮ', guruImage: '../guruimages/gururamdassahebji.jpeg', guruAlt: 'Guru Ram Das Ji' },
+            { id: 23, name: 'ਸੋਹਿਲਾ ਸਾਹਿਬ', english: 'Kirtan Sohila', category: 'ਨਿਤਨੇਮ', guruImage: '../guruimages/gurunanakdevsahebji.jpeg', guruAlt: 'Guru Nanak Dev Ji' },
+            { id: 24, name: 'ਅਰਦਾਸ', english: 'Ardas', category: 'ਨਿਤਨੇਮ', guruImage: '../guruimages/gurugranthsahebji.jpeg', guruAlt: 'Sri Guru Granth Sahib Ji' },
+            { id: 31, name: 'ਸੁਖਮਨੀ ਸਾਹਿਬ', english: 'Sukhmani Sahib Ji', category: 'ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ', guruImage: '../guruimages/guruarjanddevsahebji.jpeg', guruAlt: 'Guru Arjan Dev Ji' },
+            { id: 90, name: 'ਆਸਾ ਦੀ ਵਾਰ', english: 'Asa Di Vaar', category: 'ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ', guruImage: '../guruimages/gurunanakdevsahebji.jpeg', guruAlt: 'Guru Nanak Dev Ji' },
+            { id: 36, name: 'ਦੁਖ ਭੰਜਨੀ ਸਾਹਿਬ', english: 'Dukh Bhanjani Sahib Ji', category: 'ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ', guruImage: '../guruimages/guruarjanddevsahebji.jpeg', guruAlt: 'Guru Arjan Dev Ji' },
+            { id: 3, name: 'ਸ਼ਬਦ ਹਜ਼ਾਰੇ', english: 'Shabad Hazare', category: 'ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ', guruImage: '../guruimages/guruarjanddevsahebji.jpeg', guruAlt: 'Guru Arjan Dev Ji' },
+            { id: 27, name: 'ਬਾਰਹ ਮਾਹਾ', english: 'Barah Maha', category: 'ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ', guruImage: '../guruimages/guruarjanddevsahebji.jpeg', guruAlt: 'Guru Arjan Dev Ji' },
+            { id: 30, name: 'ਸਲੋਕ ਮਹਲਾ ੯', english: 'Salok Mahalla 9', category: 'ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ', guruImage: '../guruimages/gurutegbahadursahebji.jpeg', guruAlt: 'Guru Tegh Bahadur Ji' },
+            { id: 22, name: 'ਆਰਤੀ', english: 'Aarti', category: 'ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ', guruImage: '../guruimages/gurunanakdevsahebji.jpeg', guruAlt: 'Guru Nanak Dev Ji' },
+            { id: 11, name: 'ਲਾਵਾਂ', english: 'Lavan', category: 'ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ', guruImage: '../guruimages/gururamdassahebji.jpeg', guruAlt: 'Guru Ram Das Ji' },
+            { id: 33, name: 'ਬਾਵਨ ਅਖਰੀ', english: 'Bavan Akhri', category: 'ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ', guruImage: '../guruimages/guruarjanddevsahebji.jpeg', guruAlt: 'Guru Arjan Dev Ji' },
+            { id: 34, name: 'ਸਿਧ ਗੋਸਟਿ', english: 'Sidh Gosht', category: 'ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ', guruImage: '../guruimages/gurunanakdevsahebji.jpeg', guruAlt: 'Guru Nanak Dev Ji' },
+            { id: 35, name: 'ਦਖਣੀ ਓਅੰਕਾਰੁ', english: 'Dakhni Oankar', category: 'ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ', guruImage: '../guruimages/gurunanakdevsahebji.jpeg', guruAlt: 'Guru Nanak Dev Ji' },
+            { id: 32, name: 'ਸੁਖਮਨਾ ਸਾਹਿਬ', english: 'Sukhmana Sahib Ji', category: 'ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ', guruImage: '../guruimages/guruarjanddevsahebji.jpeg', guruAlt: 'Guru Arjan Dev Ji' },
+            { id: 38, name: 'ਰਾਗ ਮਾਲਾ', english: 'Raag Mala', category: 'ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ', guruImage: '../guruimages/gurugranthsahebji.jpeg', guruAlt: 'Sri Guru Granth Sahib Ji' },
+            { id: 77, name: 'ਸਲੋਕ ਭਗਤ ਕਬੀਰ ਜੀ', english: 'Salok Bhagat Kabir Ji', category: 'ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ', guruImage: '../guruimages/gurugranthsahebji.jpeg', guruAlt: 'Sri Guru Granth Sahib Ji' },
+            { id: 78, name: 'ਸਲੋਕ ਸੇਖ ਫਰੀਦ ਕੇ', english: 'Salok Sheikh Farid', category: 'ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ', guruImage: '../guruimages/gurugranthsahebji.jpeg', guruAlt: 'Sri Guru Granth Sahib Ji' },
+            { id: 5, name: 'ਸ਼ਬਦ ਹਜ਼ਾਰੇ ਪਾਤਿਸ਼ਾਹੀ ੧੦', english: 'Shabad Hazare P10', category: 'ਸ੍ਰੀ ਦਸਮ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ', guruImage: '../guruimages/gurugobindsinghsahebji.jpeg', guruAlt: 'Guru Gobind Singh Ji' },
+            { id: 8, name: 'ਅਕਾਲ ਉਸਤਤ ਚੌਪਈ', english: 'Akal Ustat Chaupai', category: 'ਸ੍ਰੀ ਦਸਮ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ', guruImage: '../guruimages/gurugobindsinghsahebji.jpeg', guruAlt: 'Guru Gobind Singh Ji' },
+            { id: 29, name: 'ਅਕਾਲ ਉਸਤਤ', english: 'Akal Ustat (Full)', category: 'ਸ੍ਰੀ ਦਸਮ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ', guruImage: '../guruimages/gurugobindsinghsahebji.jpeg', guruAlt: 'Guru Gobind Singh Ji' },
+            { id: 12, name: 'ਅਥ ਚੰਡੀਚਰਿਤ੍ਰ', english: 'Chandi Charitra', category: 'ਸ੍ਰੀ ਦਸਮ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ', guruImage: '../guruimages/gurugobindsinghsahebji.jpeg', guruAlt: 'Guru Gobind Singh Ji' },
+            { id: 13, name: 'ਚੰਡੀ ਦੀ ਵਾਰ', english: 'Chandi Di Vaar', category: 'ਸ੍ਰੀ ਦਸਮ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ', guruImage: '../guruimages/gurugobindsinghsahebji.jpeg', guruAlt: 'Guru Gobind Singh Ji' },
+            { id: 19, name: 'ਸ਼ਸਤ੍ਰ ਨਾਮ ਮਾਲਾ', english: 'Shastar Naam Mala', category: 'ਸ੍ਰੀ ਦਸਮ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ', guruImage: '../guruimages/gurugobindsinghsahebji.jpeg', guruAlt: 'Guru Gobind Singh Ji' },
+            { id: 53, name: 'ਉਗ੍ਰਦੰਤੀ', english: 'Ugardanti', category: 'ਸ੍ਰੀ ਦਸਮ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ', guruImage: '../guruimages/gurugobindsinghsahebji.jpeg', guruAlt: 'Guru Gobind Singh Ji' },
         ];
 
         // ═══════════════════════════════════════════════════════════════
@@ -893,6 +911,16 @@
 
             saveCompletedBanis(completed);
             renderInsights();
+            renderPendingBanis(); // Update pending banis in real-time
+            
+            // Trigger Nitnem Tracker progress update if available
+            try {
+                if (window.NitnemManager && typeof window.NitnemManager.loadTodayProgress === 'function') {
+                    window.NitnemManager.loadTodayProgress();
+                    window.NitnemManager.renderAllLists();
+                    window.NitnemManager.updateProgress();
+                }
+            } catch(ex) {}
         }
 
         function syncCompletionToNitnemTracker(baniId, isComplete) {
@@ -1227,7 +1255,7 @@
                          style="cursor:pointer" onclick="if(!this.classList.contains('dragging'))window.location.href='reader.html?id=${bani.id}&from=pothi'">
                         <div class="card-glow"></div>
                         <div class="card-num">${idx + 1}</div>
-                        <div class="card-icon">${bani.icon}</div>
+                        <div class="card-icon"><img decoding="async" src="${bani.guruImage}" alt="${bani.guruAlt}" loading="lazy"></div>
                         <div class="card-content">
                             <div class="card-name">${bani.name}</div>
                             <div class="card-english">${bani.english}</div>
@@ -1272,6 +1300,7 @@
                 const yesterday = new Date();
                 yesterday.setDate(yesterday.getDate() - 1);
                 const yestStr = yesterday.toLocaleDateString('en-CA');
+                const today = new Date().toLocaleDateString('en-CA');
 
                 const completed = loadCompletedBanis();
                 const yestCompleted = completed[yestStr] || [];
@@ -1279,7 +1308,22 @@
                 const ALL_BANIS_MAP = {};
                 ALL_BANIS.forEach(b => { ALL_BANIS_MAP[b.id] = b.english; });
 
-                const pendingIds = pothiOrder.filter(id => !yestCompleted.includes(id));
+                // Get snapshot of yesterday's pothi to know which banis existed yesterday
+                const snapshots = JSON.parse(localStorage.getItem('anhad_pothi_snapshots') || '{}');
+                const yesterdaySnapshot = snapshots[yestStr];
+                
+                // Get list of banis that were added today
+                const baniAdditions = JSON.parse(localStorage.getItem('anhad_pothi_bani_additions') || '{}');
+                const todayAdditions = (baniAdditions[today] || []).map(item => item.id);
+
+                // Only show banis that:
+                // 1. Were NOT completed yesterday
+                // 2. Were NOT added today (existed yesterday)
+                const pendingIds = pothiOrder.filter(id => {
+                    const wasNotCompletedYesterday = !yestCompleted.includes(id);
+                    const wasNotAddedToday = !todayAdditions.includes(id);
+                    return wasNotCompletedYesterday && wasNotAddedToday;
+                });
 
                 if (pendingIds.length === 0) {
                     sec.style.display = 'none';
@@ -1290,10 +1334,20 @@
                 list.innerHTML = pendingIds.map(id => {
                     const bani = ALL_BANIS.find(b => b.id === id);
                     const baniName = bani ? bani.english : `Bani #${id}`;
+                    const baniImage = bani ? bani.guruImage : '../guruimages/gurugranthsahebji.jpeg';
+                    const baniAlt = bani ? bani.guruAlt : 'Guru Sahib Ji';
                     return `
-                        <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 14px; background:rgba(255,255,255,0.06); border-radius:12px; border:1px solid rgba(255,149,0,0.2);">
-                            <span style="font-size:14px; font-weight:600; color:var(--text-primary);">${baniName}</span>
-                            <button onclick="markPendingBaniComplete(${id}, '${yestStr}')" style="padding:6px 14px; background:linear-gradient(135deg, #FF9500, #E65C00); color:#fff; font-size:12px; font-weight:700; border:none; border-radius:10px; cursor:pointer;">
+                        <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 16px; background:rgba(255,255,255,0.08); border-radius:14px; border:1px solid rgba(255,149,0,0.25); transition: all 0.2s ease;">
+                            <div style="display:flex; align-items:center; gap: 12px;">
+                                <div style="width: 40px; height: 40px; border-radius: 10px; overflow: hidden; border: 2px solid rgba(212, 175, 55, 0.2); flex-shrink: 0;">
+                                    <img decoding="async" src="${baniImage}" alt="${baniAlt}" loading="lazy" style="width: 100%; height: 100%; object-fit: cover; object-position: center 30%;">
+                                </div>
+                                <div>
+                                    <span style="font-size: 15px; font-weight: 600; color: var(--text-primary); display: block;">${baniName}</span>
+                                    <span style="font-size: 11px; color: var(--text-secondary);">From yesterday's Nitnem</span>
+                                </div>
+                            </div>
+                            <button onclick="markPendingBaniComplete(${id}, '${yestStr}')" style="padding:8px 16px; background:linear-gradient(135deg, #FF9500, #E65C00); color:#fff; font-size:13px; font-weight:700; border:none; border-radius:12px; cursor:pointer; box-shadow: 0 2px 8px rgba(255, 149, 0, 0.3); transition: transform 0.2s ease;">
                                 ✓ Complete
                             </button>
                         </div>
@@ -1311,7 +1365,23 @@
                 if (!completed[dateStr].includes(id)) completed[dateStr].push(id);
                 saveCompletedBanis(completed);
                 renderPendingBanis();
+                renderInsights();
                 showToast('✅ Bani marked complete!');
+                
+                // Sync with Nitnem Tracker if it's for today
+                const today = new Date().toLocaleDateString('en-CA');
+                if (dateStr === today) {
+                    syncCompletionToNitnemTracker(id, true);
+                }
+                
+                // Trigger Nitnem Tracker progress update if available
+                try {
+                    if (window.NitnemManager && typeof window.NitnemManager.loadTodayProgress === 'function') {
+                        window.NitnemManager.loadTodayProgress();
+                        window.NitnemManager.renderAllLists();
+                        window.NitnemManager.updateProgress();
+                    }
+                } catch(ex) {}
             } catch(e) {
                 console.error('Error marking pending bani complete:', e);
             }
@@ -1477,9 +1547,11 @@
                 }
             } catch(e) {}
 
-            // Fallback: If no snapshot recorded for past day, compare completed count against current pothi order or max completed
-            const totalForDay = Math.max(completedIds.length, pothiOrder.length || 1);
-            return Math.min(100, Math.round((completedIds.length / totalForDay) * 100));
+            // Fallback: Use current pothi order length as total
+            const totalForDay = pothiOrder.length || 1;
+            // Only count completed banis that are still in current pothi order
+            const matchingCompleted = completedIds.filter(id => pothiOrder.includes(id));
+            return Math.min(100, Math.round((matchingCompleted.length / totalForDay) * 100));
         }
 
         function renderWeeklyView(el, data) {
@@ -1529,6 +1601,8 @@
                 const dateStr = date.toLocaleDateString('en-CA');
                 
                 const completedIds = data[dateStr] || [];
+                // Only count completed banis that are still in current pothi order
+                const matchingCompleted = completedIds.filter(id => pothiOrder.includes(id));
                 const pct = getHistoricalPct(dateStr, data);
                 
                 let intensityClass = 'lvl-0';
@@ -1546,9 +1620,9 @@
                 let tooltipText = `${formattedDate}: ${pct}% completed`;
                 
                 if (hasNewBani) {
-                    const baniNames = newBaniOnDate.map(id => {
-                        const bani = ALL_BANIS.find(b => b.id === id);
-                        return bani ? bani.english : `Bani #${id}`;
+                    const baniNames = newBaniOnDate.map(item => {
+                        const bani = ALL_BANIS.find(b => b.id === item.id);
+                        return bani ? bani.english : `Bani #${item.id}`;
                     }).join(', ');
                     const addTime = newBaniOnDate[0].timestamp ? new Date(newBaniOnDate[0].timestamp).toLocaleTimeString() : '';
                     tooltipText = `${formattedDate}: Added ${baniNames} at ${addTime}`;
@@ -1694,7 +1768,7 @@
                     const sel = selectedSet.has(bani.id);
                     html += `
                         <div class="bani-select-card ${sel ? 'selected' : ''}" data-id="${bani.id}" onclick="toggleBani(${bani.id}, this)">
-                            <span class="bani-select-icon">${bani.icon}</span>
+                            <div class="bani-select-icon"><img decoding="async" src="${bani.guruImage}" alt="${bani.guruAlt}" loading="lazy"></div>
                             <div class="bani-select-content">
                                 <div class="bani-select-name">${bani.name}</div>
                                 <div class="bani-select-english">${bani.english}</div>

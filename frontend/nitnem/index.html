@@ -74,8 +74,6 @@
     <meta http-equiv="Expires" content="0">
     
     <!-- AUTO CACHE BUST - Forces reload when app updates -->
-    
-    
     <script>
         // Module Version Check (Lightweight)
         (function() {
@@ -85,10 +83,10 @@
                 localStorage.setItem('anhad_nitnem_version', MOD_VERSION);
             }
         })();
-
-
+    </script>
+    
     <script>
-        // Module Version Check (Lightweight)
+        // Module Version Check (Lightweight)......................................................................
         (function() {
             const MOD_VERSION = '1.0.1';
             const stored = localStorage.getItem('anhad_nitnem_version');
@@ -125,7 +123,7 @@
         }
     </style>
     
-    <style>
+    <style id="search-ui-v2">
         /* ═══════════════════════════════════════════════════════════════
            ULTRA iOS 18+ DESIGN SYSTEM - ANHAD NITNEM HUB
            Pure Apple-level aesthetics with sacred elements
@@ -492,6 +490,16 @@
             object-fit: contain;
         }
         
+        /* Light mode: Invert image so it's visible */
+        [data-theme="light"] .hero-ikonkar img {
+            filter: invert(1) brightness(0.2) sepia(1) saturate(10) hue-rotate(5deg);
+        }
+        
+        /* Dark mode: Keep original white */
+        [data-theme="dark"] .hero-ikonkar img {
+            filter: none;
+        }
+        
         /* Background Ik Onkar - HIDDEN */
         .hero-bg-ikonkar {
             display: none;
@@ -576,6 +584,117 @@
             width: 18px;
             height: 18px;
             opacity: 0.5;
+        }
+        
+        /* ═══════════════════════════════════════════════════════════════
+           INLINE SEARCH (Expandable)
+        ═══════════════════════════════════════════════════════════════ */
+        
+        .inline-search-container {
+            width: 100%;
+            animation: slideDown 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .inline-search-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            padding: 10px 14px;
+            background: var(--card-bg-gradient);
+            border: 2px solid var(--ios-blue);
+            border-radius: 18px;
+            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1), var(--card-shadow);
+            transition: all 0.3s ease;
+        }
+        
+        .inline-search-bar svg {
+            width: 18px;
+            height: 18px;
+            color: var(--ios-blue);
+            flex-shrink: 0;
+        }
+        
+        .inline-search-input {
+            flex: 1;
+            border: none;
+            outline: none;
+            background: transparent;
+            font-size: 15px;
+            color: var(--text-primary);
+            font-weight: 400;
+        }
+        
+        .inline-search-input::placeholder {
+            color: var(--text-tertiary);
+        }
+        
+        .inline-search-close {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            background: rgba(120, 120, 128, 0.16);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: all 0.2s ease;
+        }
+        
+        .inline-search-close:hover {
+            background: rgba(120, 120, 128, 0.24);
+        }
+        
+        .inline-search-close:active {
+            transform: scale(0.9);
+        }
+        
+        .inline-search-close svg {
+            width: 14px;
+            height: 14px;
+            color: var(--text-secondary);
+        }
+        
+        .inline-search-results {
+            margin-top: 12px;
+            max-height: 60vh;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .inline-search-results:empty {
+            display: none;
+        }
+        
+        /* Dark mode for inline search */
+        [data-theme="dark"] .inline-search-bar {
+            border-color: var(--ios-blue);
+            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.15), var(--card-shadow);
+        }
+        
+        [data-theme="dark"] .inline-search-input {
+            color: #F5F5F7;
+        }
+        
+        [data-theme="dark"] .inline-search-close {
+            background: rgba(255, 255, 255, 0.16);
+        }
+        
+        [data-theme="dark"] .inline-search-close:hover {
+            background: rgba(255, 255, 255, 0.24);
         }
         
         /* ═══════════════════════════════════════════════════════════════
@@ -935,6 +1054,61 @@
             border-bottom: 1px solid rgba(0, 0, 0, 0.1);
         }
         
+        /* NEW: Integrated Search Header */
+        .modal-header-search {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 20px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+            background: #FFFFFF;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        [data-theme="dark"] .modal-header-search {
+            background: #1C1C1E;
+            border-bottom-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .search-input-header {
+            flex: 1;
+            font-size: 17px;
+            font-weight: 500;
+            padding: 14px 18px;
+            border: 2px solid rgba(0, 122, 255, 0.2);
+            border-radius: 12px;
+            background: #F5F5F7;
+            outline: none;
+            transition: all 0.2s ease;
+            font-family: var(--font-primary);
+        }
+        
+        .search-input-header:focus {
+            border-color: #007AFF;
+            background: #FFFFFF;
+            box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.1);
+        }
+        
+        [data-theme="dark"] .search-input-header {
+            background: #2C2C2E;
+            border-color: rgba(10, 132, 255, 0.3);
+            color: #FFFFFF;
+        }
+        
+        [data-theme="dark"] .search-input-header:focus {
+            background: #3A3A3C;
+            border-color: #0A84FF;
+            box-shadow: 0 0 0 4px rgba(10, 132, 255, 0.15);
+        }
+        
+        .modal-body-search {
+            padding: 16px 20px;
+            overflow-y: auto;
+            max-height: calc(80vh - 80px);
+        }
+        
         .modal-header h2 {
             font-size: 20px;
             font-weight: 700;
@@ -997,37 +1171,65 @@
             display: flex;
             align-items: center;
             gap: 16px;
-            padding: 16px;
-            background: #F8F9FA;
-            border-radius: 14px;
+            padding: 18px 16px;
+            background: #FFFFFF;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            border-radius: 16px;
             text-decoration: none;
             color: inherit;
-            transition: all 0.2s;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
         }
         
         .search-result-item:active {
             transform: scale(0.98);
-            background: #E5E5EA;
+            background: #F5F5F7;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
         }
         
         .result-icon {
-            font-size: 28px;
+            font-size: 32px;
+            flex-shrink: 0;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #FFD54F15, #FFC10715);
+            border-radius: 12px;
+            border: 1px solid rgba(212, 175, 55, 0.15);
         }
         
         .result-info {
             flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
         }
         
         .result-name {
             font-family: var(--font-gurmukhi);
-            font-size: 17px;
+            font-size: 18px;
             font-weight: 600;
-            margin-bottom: 4px;
+            line-height: 1.3;
+            color: #1C1C1E;
+            margin: 0;
         }
         
         .result-english {
-            font-size: 13px;
-            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+            color: #8E8E93;
+            line-height: 1.3;
+            margin: 0;
+        }
+        
+        .result-meta {
+            font-size: 12px;
+            color: #007AFF;
+            font-weight: 600;
+            margin-top: 2px;
         }
         
         /* ═══════════════════════════════════════════════════════════════
@@ -1056,14 +1258,41 @@
         [data-theme="dark"] .hero-greeting,
         [data-theme="dark"] .search-trigger,
         [data-theme="dark"] .quick-card,
-        [data-theme="dark"] .category-card,
-        [data-theme="dark"] .search-result-item {
+        [data-theme="dark"] .category-card {
             background: linear-gradient(160deg, #1C1C1E 0%, #121214 100%) !important;
             border-color: rgba(255, 255, 255, 0.1) !important;
             color: #FFFFFF !important;
             box-shadow: 
                 0 4px 16px rgba(0, 0, 0, 0.4),
                 inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+        }
+        
+        [data-theme="dark"] .search-result-item {
+            background: #1C1C1E !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+        }
+        
+        [data-theme="dark"] .search-result-item:active {
+            background: #2C2C2E !important;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4) !important;
+        }
+        
+        [data-theme="dark"] .result-icon {
+            background: linear-gradient(135deg, rgba(255, 213, 79, 0.15), rgba(255, 193, 7, 0.1)) !important;
+            border-color: rgba(212, 175, 55, 0.2) !important;
+        }
+        
+        [data-theme="dark"] .result-name {
+            color: #FFFFFF !important;
+        }
+        
+        [data-theme="dark"] .result-english {
+            color: #8E8E93 !important;
+        }
+        
+        [data-theme="dark"] .result-meta {
+            color: #0A84FF !important;
         }
         
         [data-theme="dark"] .theme-toggle {
@@ -1178,12 +1407,28 @@
         
         <!-- Search -->
         <div class="search-section stagger-item">
-            <button class="search-trigger" id="searchTrigger" onclick="document.getElementById('searchModal').setAttribute('aria-hidden', 'false'); document.getElementById('searchInput').focus(); document.body.style.overflow = 'hidden';">
+            <button class="search-trigger" id="searchTrigger">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
                 </svg>
                 <span>Search Banis...</span>
             </button>
+            
+            <!-- Inline Search Bar (Hidden by default) -->
+            <div class="inline-search-container" id="inlineSearchContainer" style="display: none;">
+                <div class="inline-search-bar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+                    </svg>
+                    <input type="text" class="inline-search-input" id="inlineSearchInput" placeholder="Search Banis..." autocomplete="off">
+                    <button class="inline-search-close" id="inlineSearchClose">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <path d="M18 6L6 18M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="inline-search-results" id="inlineSearchResults"></div>
+            </div>
         </div>
         
         <!-- Main Content -->
@@ -1320,27 +1565,6 @@
                             <path d="M9 18l6-6-6-6"/>
                         </svg>
                     </a>
-                    
-                    <!-- Sarbloh -->
-                    <a href="category/sarbloh.html" class="category-card sarbloh stagger-item">
-                        <div class="category-glow"></div>
-                        <div class="category-icon">
-                            <img decoding="async" src="../assets/sarbloh-granth-transparent.webp" alt="Sarbloh Granth" />
-                        </div>
-                        <div class="category-content">
-                            <div class="category-title">
-                                <span class="gurmukhi">ਸ੍ਰੀ ਸਰਬਲੋਹ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ</span>
-                                <span class="english">Sri Sarbloh Granth Sahib Ji</span>
-                            </div>
-                            <p class="category-desc">The Granth of All-Steel</p>
-                            <div class="category-badges">
-                                <span class="badge">13 Banis</span>
-                            </div>
-                        </div>
-                        <svg class="category-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M9 18l6-6-6-6"/>
-                        </svg>
-                    </a>
                 </div>
             </section>
             
@@ -1381,27 +1605,6 @@
             <span class="tab-label">Tracker</span>
         </a>
     </nav>
-    
-    <!-- Search Modal -->
-    <div class="modal" id="searchModal" aria-hidden="true">
-        <div class="modal-backdrop"></div>
-        <div class="modal-content search-modal-content">
-            <div class="modal-header">
-                <h2>Search Banis</h2>
-                <button class="modal-close" id="searchCancel" onclick="document.getElementById('searchModal').setAttribute('aria-hidden', 'true'); document.getElementById('searchInput').value = ''; document.body.style.overflow = '';">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M18 6L6 18M6 6l12 12"/>
-                    </svg>
-                </button>
-            </div>
-            <div class="modal-body">
-                <input type="text" class="search-input" id="searchInput" placeholder="Search by name in Gurmukhi, English, or Hindi..." autocomplete="off">
-                <div class="search-results" id="searchResults">
-                    <p class="search-hint">Type to search for banis...</p>
-                </div>
-            </div>
-        </div>
-    </div>
     
     <!-- Offline-First Gurbani DB -->
     <script src="../lib/gurbani-local-db.js"></script>
@@ -1475,63 +1678,96 @@
             });
         }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
         
+    </script>
+
+    <script>
         // ═══════════════════════════════════════════════════════════════
-        // SEARCH FUNCTIONALITY
+        // INLINE SEARCH (Expandable)
         // ═══════════════════════════════════════════════════════════════
         
-        const banis = [
-            { id: 2, name: 'ਜਪੁਜੀ ਸਾਹਿਬ', english: 'Japji Sahib', icon: '🌅' },
-            { id: 21, name: 'ਰਹਿਰਾਸ ਸਾਹਿਬ', english: 'Rehras Sahib', icon: '🌇' },
-            { id: 23, name: 'ਸੋਹਿਲਾ ਸਾਹਿਬ', english: 'Sohila Sahib', icon: '🌙' },
-            { id: 31, name: 'ਸੁਖਮਨੀ ਸਾਹਿਬ', english: 'Sukhmani Sahib', icon: '🕊️' },
-            { id: 1, name: 'ਜਾਪੁ ਸਾਹਿਬ', english: 'Jaap Sahib', icon: '⚔️' },
-            { id: 3, name: 'ਤਵਪ੍ਰਸਾਦਿ ਸਵਯੇ', english: 'Tav Prasad Swaye', icon: '📜' },
-            { id: 4, name: 'ਬੇਨਤੀ ਚੌਪਈ', english: 'Benti Chaupai', icon: '🛡️' },
-            { id: 5, name: 'ਅਨੰਦੁ ਸਾਹਿਬ', english: 'Anand Sahib', icon: '😊' },
-            { id: 6, name: 'ਅਸਾ ਕੀ ਵਾਰ', english: 'Asa Ki Var', icon: '🎵' },
-            { id: 7, name: 'ਸਲੋਕ ਮਹਲਾ ੯', english: 'Salok Mahala 9', icon: '🙏' }
-        ];
-        
-        const searchInput = document.getElementById('searchInput');
-        const searchResults = document.getElementById('searchResults');
-        
-        function performSearch(query) {
-            if (!query.trim()) {
-                searchResults.innerHTML = '<p class="search-hint">Type to search for banis...</p>';
-                return;
+        document.addEventListener('DOMContentLoaded', () => {
+            const searchTrigger = document.getElementById('searchTrigger');
+            const inlineSearchContainer = document.getElementById('inlineSearchContainer');
+            const inlineSearchInput = document.getElementById('inlineSearchInput');
+            const inlineSearchResults = document.getElementById('inlineSearchResults');
+            const inlineSearchClose = document.getElementById('inlineSearchClose');
+            
+            // Toggle inline search
+            searchTrigger?.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                searchTrigger.style.display = 'none';
+                inlineSearchContainer.style.display = 'block';
+                inlineSearchInput.focus();
+            });
+            
+            // Close inline search
+            inlineSearchClose?.addEventListener('click', () => {
+                inlineSearchContainer.style.display = 'none';
+                searchTrigger.style.display = 'flex';
+                inlineSearchInput.value = '';
+                inlineSearchResults.innerHTML = '';
+            });
+            
+            // Perform inline search
+            function performInlineSearch(query) {
+                if (!query.trim()) {
+                    inlineSearchResults.innerHTML = '';
+                    return;
+                }
+                
+                // Use hub-app.js global search if available
+                if (window.HubApp && window.HubApp.allBanis) {
+                    const lowerQuery = query.toLowerCase().trim();
+                    const matches = window.HubApp.allBanis.filter(bani => 
+                        bani.nameGurmukhi?.toLowerCase().includes(lowerQuery) ||
+                        bani.nameEnglish?.toLowerCase().includes(lowerQuery)
+                    );
+                    
+                    if (matches.length === 0) {
+                        inlineSearchResults.innerHTML = '<p style="text-align:center;padding:24px;color:var(--text-secondary);font-size:14px;">No banis found</p>';
+                        return;
+                    }
+                    
+                    // Use createBaniCard from hub-app.js if available
+                    if (window.HubApp.createBaniCard) {
+                        inlineSearchResults.innerHTML = '';
+                        matches.forEach(bani => {
+                            inlineSearchResults.appendChild(window.HubApp.createBaniCard(bani));
+                        });
+                    } else {
+                        // Fallback: Generate cards with inline styles
+                        inlineSearchResults.innerHTML = matches.map(bani => {
+                            const meta = window.HubApp.baniMeta ? (window.HubApp.baniMeta[bani.id] || {}) : {};
+                            return `
+                                <a href="reader.html?id=${bani.id}" class="bani-card" data-bani-id="${bani.id}" style="display:flex;flex-direction:column;gap:8px;padding:18px 16px;background:#FFFFFF;border:1px solid rgba(0,0,0,0.06);border-radius:16px;text-decoration:none;color:inherit;box-shadow:0 2px 8px rgba(0,0,0,0.04);margin-bottom:12px;transition:all 0.2s ease;">
+                                    <div class="bani-card__header" style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+                                        <h3 class="bani-card__title" style="font-family:var(--font-gurmukhi);font-size:18px;font-weight:600;line-height:1.3;color:#1C1C1E;margin:0;flex:1;">${bani.nameGurmukhi || bani.nameEnglish}</h3>
+                                        ${meta.featured ? '<span class="bani-card__badge" style="font-size:11px;font-weight:700;color:#007AFF;background:rgba(0,122,255,0.1);padding:4px 10px;border-radius:8px;">Featured</span>' : ''}
+                                    </div>
+                                    <p class="bani-card__english" style="font-size:14px;font-weight:500;color:#8E8E93;line-height:1.3;margin:0;">${bani.nameEnglish}</p>
+                                    <div class="bani-card__meta" style="display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:#8E8E93;">
+                                        ${meta.author ? `<span class="bani-card__meta-item" style="display:flex;align-items:center;gap:4px;">👤 ${meta.author}</span>` : ''}
+                                        ${meta.time ? `<span class="bani-card__meta-item" style="display:flex;align-items:center;gap:4px;color:#007AFF;font-weight:600;">⏱ ${meta.time}</span>` : ''}
+                                    </div>
+                                </a>
+                            `;
+                        }).join('');
+                    }
+                }
             }
             
-            const lowerQuery = query.toLowerCase().trim();
-            const matches = banis.filter(bani => 
-                bani.name.toLowerCase().includes(lowerQuery) ||
-                bani.english.toLowerCase().includes(lowerQuery)
-            );
+            // Real-time search
+            inlineSearchInput?.addEventListener('input', (e) => {
+                performInlineSearch(e.target.value);
+            });
             
-            if (matches.length === 0) {
-                searchResults.innerHTML = '<p class="search-hint">No banis found. Try another search...</p>';
-                return;
-            }
-            
-            searchResults.innerHTML = matches.map(bani => `
-                <a href="reader.html?id=${bani.id}" class="search-result-item">
-                    <span class="result-icon">${bani.icon}</span>
-                    <div class="result-info">
-                        <div class="result-name">${bani.name}</div>
-                        <div class="result-english">${bani.english}</div>
-                    </div>
-                </a>
-            `).join('');
-        }
-        
-        // Real-time search on input
-        searchInput?.addEventListener('input', (e) => {
-            performSearch(e.target.value);
-        });
-        
-        // Clear search on close
-        document.getElementById('searchCancel')?.addEventListener('click', () => {
-            searchInput.value = '';
-            searchResults.innerHTML = '<p class="search-hint">Type to search for banis...</p>';
+            // Close on escape key
+            inlineSearchInput?.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    inlineSearchClose.click();
+                }
+            });
         });
     </script>
 

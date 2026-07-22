@@ -465,15 +465,21 @@ a:active {
   }
 }
 
-/* Crossfade transition for SPA page swaps */
+/* SPA page swaps - ULTRA INSTANT MODE (Phase 3) */
 .app--fade-out {
   opacity: 0;
-  transition: opacity 0.08s ease; /* Reduced from 0.12s for faster feel */
+  transition: none !important; /* No fade - instant hide */
   pointer-events: none;
 }
 .app--fade-in {
   opacity: 1;
-  transition: opacity 0.1s ease; /* Reduced from 0.15s for snappier feel */
+  transition: none !important; /* No fade - instant show */
+}
+
+/* Keep content visible during swap */
+.app {
+  opacity: 1 !important;
+}
 }
 
 /* CAPACITOR INSTANT MODE: Zero transition for cached page returns */

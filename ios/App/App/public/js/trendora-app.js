@@ -42,6 +42,8 @@
     NITNEM_STREAK: 'anhad_streak_data',
     NITNEM_USER: 'nitnemTracker_userData',
     NITNEM_SELECTED: 'nitnemTracker_selectedBanis',
+    POTHI_ORDER: 'anhad_my_pothi',
+    POTHI_COMPLETED: 'anhad_my_pothi_completed',
     SEHAJ_STATE: 'sehajPaathState',
     SEHAJ_STATS: 'sehajPaathStats',
     SEHAJ_BACKUP: 'gurbani_sehajPaath_progress',
@@ -269,17 +271,17 @@
     _startX: 0,
     _isDragging: false,
     _gurus: [
-      { id: 'guru-nanak', name: 'Sri Guru Nanak Dev Sahib Ji', img: 'guruimages/gurunanakdevsahebji.jpeg', pos: 'center 20%' },
-      { id: 'guru-angad', name: 'Sri Guru Angad Dev Sahib Ji', img: 'guruimages/guruangaddevsahebji.jpeg', pos: 'center 25%' },
-      { id: 'guru-amar-das', name: 'Sri Guru Amar Das Sahib Ji', img: 'guruimages/guruamardasji.jpeg', pos: 'center 25%' },
-      { id: 'guru-ram-das', name: 'Sri Guru Ram Das Sahib Ji', img: 'guruimages/gururamdassahebji.jpeg', pos: 'center 25%' },
-      { id: 'guru-arjan', name: 'Sri Guru Arjan Dev Sahib Ji', img: 'guruimages/guruarjanddevsahebji.jpeg', gurbani: 'ਅੰਮ੍ਰਿਤ ਵੇਲਾ ਸਚੁ ਨਾਉ ਵਡਿਆਈ ਵੀਚਾਰੁ ॥', translation: 'In the Amrit Vela, chant the True Name, and contemplate His Glorious Greatness.', pos: 'center 25%' },
-      { id: 'guru-hargobind', name: 'Sri Guru Hargobind Sahib Ji', img: 'guruimages/guruhargobindsahebji.jpeg', pos: 'center 25%' },
-      { id: 'guru-har-rai', name: 'Sri Guru Har Rai Sahib Ji', img: 'guruimages/guruharraisahebji.jpeg', pos: 'center 25%' },
-      { id: 'guru-harkrishan', name: 'Sri Guru Har Krishan Sahib Ji', img: 'guruimages/guruharkrishansahebji.jpeg', pos: 'center 25%' },
-      { id: 'guru-teg-bahadur', name: 'Sri Guru Tegh Bahadur Sahib Ji', img: 'guruimages/gurutegbahadursahebji.jpeg', pos: 'center 45%' },
-      { id: 'guru-gobind', name: 'Sri Guru Gobind Singh Sahib Ji', img: 'guruimages/gurugobindsinghsahebji.jpeg', pos: 'center 25%' },
-      { id: 'sggs', name: 'Sri Guru Granth Sahib Ji', img: 'guruimages/gurugranthsahebji.jpeg', pos: 'center 25%' }
+      { id: 'guru-nanak', name: 'Sri Guru Nanak Dev Sahib Ji', img: 'guruimages/gurunanakdevsahebji.jpeg', pos: 'center 20%', colors: ['#ddcdb3', '#c9b89f', '#b8a88e'] },
+      { id: 'guru-angad', name: 'Sri Guru Angad Dev Sahib Ji', img: 'guruimages/guruangaddevsahebji.jpeg', pos: 'center 25%', colors: ['#ab9468', '#e6d8bf', '#624d31'] },
+      { id: 'guru-amar-das', name: 'Sri Guru Amar Das Sahib Ji', img: 'guruimages/guruamardasji.jpeg', pos: 'center 25%', colors: ['#e7be7f', '#e4dccd', '#a37f4f'] },
+      { id: 'guru-ram-das', name: 'Sri Guru Ram Das Sahib Ji', img: 'guruimages/gururamdassahebji.jpeg', pos: 'center 25%', colors: ['#a97634', '#e3bc7b', '#8b5e28'] },
+      { id: 'guru-arjan', name: 'Sri Guru Arjan Dev Sahib Ji', img: 'guruimages/guruarjanddevsahebji.jpeg', gurbani: 'ਅੰਮ੍ਰਿਤ ਵੇਲਾ ਸਚੁ ਨਾਉ ਵਡਿਆਈ ਵੀਚਾਰੁ ॥', translation: 'In the Amrit Vela, chant the True Name, and contemplate His Glorious Greatness.', pos: 'center 25%', colors: ['#edeef0', '#e0c195', '#c9a876'] },
+      { id: 'guru-hargobind', name: 'Sri Guru Hargobind Sahib Ji', img: 'guruimages/guruhargobindsahebji.jpeg', pos: 'center 25%', colors: ['#ecedef', '#c0c0bf', '#916026'] },
+      { id: 'guru-har-rai', name: 'Sri Guru Har Rai Sahib Ji', img: 'guruimages/guruharraisahebji.jpeg', pos: 'center 25%', colors: ['#ac7d3d', '#afab85', '#875515'] },
+      { id: 'guru-harkrishan', name: 'Sri Guru Har Krishan Sahib Ji', img: 'guruimages/guruharkrishansahebji.jpeg', pos: 'center 25%', colors: ['#ece5d5', '#d9d0c0', '#c6bbab'] },
+      { id: 'guru-teg-bahadur', name: 'Sri Guru Tegh Bahadur Sahib Ji', img: 'guruimages/gurutegbahadursahebji.jpeg', pos: 'center 45%', colors: ['#2f3d46', '#4a5a63', '#5d6d76'] },
+      { id: 'guru-gobind', name: 'Sri Guru Gobind Singh Sahib Ji', img: 'guruimages/gurugobindsinghsahebji.jpeg', pos: 'center 25%', colors: ['#b77928', '#e1cdac', '#8e5f1f'] },
+      { id: 'sggs', name: 'Sri Guru Granth Sahib Ji', img: 'guruimages/gurugranthsahebji.jpeg', pos: 'center 25%', colors: ['#a06f2c', '#53371e', '#c89035'] }
     ],
 
     init() {
@@ -413,7 +415,38 @@
         else if (diff > 1) slide.classList.add('greeting__slide--far-next');
       });
 
+      // Update background orb colors based on current Guru
+      this._updateOrbColors();
+      
       this._syncText();
+    },
+
+    _updateOrbColors() {
+      const guru = this._gurus[this._currentIndex];
+      if (!guru || !guru.colors || guru.colors.length === 0) return;
+
+      const orb1 = document.querySelector('.greeting-orb-1');
+      const orb2 = document.querySelector('.greeting-orb-2');
+      const orb3 = document.querySelector('.greeting-orb-3');
+
+      if (!orb1 || !orb2 || !orb3) return;
+
+      // Helper function to convert hex to rgba
+      const hexToRgba = (hex, alpha) => {
+        const r = parseInt(hex.slice(1, 3), 16);
+        const g = parseInt(hex.slice(3, 5), 16);
+        const b = parseInt(hex.slice(5, 7), 16);
+        return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+      };
+
+      const color1 = guru.colors[0] || '#ddcdb3';
+      const color2 = guru.colors[1] || guru.colors[0] || '#ddcdb3';
+      const color3 = guru.colors[2] || guru.colors[1] || guru.colors[0] || '#ddcdb3';
+
+      // Apply gradient backgrounds with smooth transition
+      orb1.style.background = `radial-gradient(circle, ${hexToRgba(color1, 0.7)}, ${hexToRgba(color1, 0.4)}, transparent)`;
+      orb2.style.background = `radial-gradient(circle, ${hexToRgba(color2, 0.7)}, ${hexToRgba(color2, 0.4)}, transparent)`;
+      orb3.style.background = `radial-gradient(circle, ${hexToRgba(color3, 0.6)}, ${hexToRgba(color3, 0.3)}, transparent)`;
     },
 
     _syncText() {
@@ -441,6 +474,13 @@
   // ═══════════════════════════════════════════════════════════════════════════
   const DataManager = {
     getTotalBanis() {
+      // Read from My Pothi order (user's custom bani collection)
+      const pothiOrder = Store.get(KEYS.POTHI_ORDER);
+      if (pothiOrder && Array.isArray(pothiOrder) && pothiOrder.length > 0) {
+        return pothiOrder.length;
+      }
+      
+      // Fallback to Nitnem Tracker if Pothi is empty
       const selected = Store.get(KEYS.NITNEM_SELECTED);
       if (!selected) return 11;
       const total = (selected.amritvela?.length || 0) +
@@ -451,6 +491,15 @@
 
     getCompletedToday() {
       const today = new Date().toLocaleDateString('en-CA');
+      
+      // Read from My Pothi completion data
+      const pothiCompleted = Store.get(KEYS.POTHI_COMPLETED);
+      if (pothiCompleted && pothiCompleted[today]) {
+        const todayCompleted = pothiCompleted[today];
+        return Array.isArray(todayCompleted) ? todayCompleted.length : 0;
+      }
+      
+      // Fallback to Nitnem Tracker log
       const log = Store.get(KEYS.NITNEM_LOG);
       if (!log || !log[today]) return 0;
       const todayData = log[today];
@@ -1542,9 +1591,16 @@
           const isDark = getIsDark(localStorage.getItem('anhad_theme'));
           this._apply(isDark);
         }
+        // Update on Nitnem Tracker changes
         if (e.key === 'nitnemTracker_nitnemLog' || e.key === 'nitnemTracker_selectedBanis' || e.key === 'anhad_streak_data' || e.key === 'anhad_unified_stats') {
           Store.clearCache();
           UIController.updateNitnemCard();
+          UIController.updateProgressBar();
+        }
+        // Update on My Pothi changes
+        if (e.key === 'anhad_my_pothi' || e.key === 'anhad_my_pothi_completed') {
+          Store.clearCache();
+          UIController.updateProgressBar();
         }
       });
 
@@ -1553,12 +1609,20 @@
         console.log('[AnhadHome] Page shown (restored from cache:', e.persisted, '), refreshing card displays...');
         Store.clearCache();
         UIController.updateNitnemCard();
+        UIController.updateProgressBar();
       });
 
       // Listen for in-page nitnem updates (same page, e.g. My Pothi dispatches this)
       window.addEventListener('nitnemUpdated', () => {
         Store.clearCache();
         UIController.updateNitnemCard();
+        UIController.updateProgressBar();
+      });
+
+      // Listen for Pothi completion updates from My Pothi page
+      window.addEventListener('nitnemCompletionUpdated', () => {
+        Store.clearCache();
+        UIController.updateProgressBar();
       });
 
       // Listen for UnifiedStats events so streak updates live on the dashboard

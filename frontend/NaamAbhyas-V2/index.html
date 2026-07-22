@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="color-scheme" content="light dark">
+  
+  <!-- CRITICAL: Theme blocker -->
+  <script>
+    (function() {
+      try {
+        if (!window._anhadThemeCache) {
+          window._anhadThemeCache = {
+            theme: localStorage.getItem('anhad_theme') || 'auto',
+            timeOfDay: localStorage.getItem('anhad_forced_time_of_day')
+          };
+        }
+        
+        const { theme, timeOfDay } = window._anhadThemeCache;
+        let effectiveTheme = theme;
+        let currentTimeOfDay = timeOfDay;
+        
+        if (theme === 'auto') {
+          if (currentTimeOfDay && ['morning', 'day', 'evening', 'night'].includes(currentTimeOfDay)) {
+            effectiveTheme = (currentTimeOfDay === 'night') ? 'dark' : 'light';
+          } else {
+            const hour = new Date().getHours();
+            effectiveTheme = (hour >= 5 && hour < 20) ? 'light' : 'dark';
+            
+            if (hour >= 5 && hour < 9) currentTimeOfDay = 'morning';
+            else if (hour >= 9 && hour < 16) currentTimeOfDay = 'day';
+            else if (hour >= 16 && hour < 20) currentTimeOfDay = 'evening';
+            else currentTimeOfDay = 'night';
+            
+            window._anhadThemeCache.timeOfDay = currentTimeOfDay;
+          }
+        }
+        
+        const doc = document.documentElement;
+        doc.setAttribute('data-theme', effectiveTheme);
+        doc.setAttribute('data-theme-mode', theme);
+        if (theme === 'auto') {
+          doc.setAttribute('data-time-of-day', currentTimeOfDay);
+        }
+        doc.style.colorScheme = effectiveTheme;
+        
+        if (effectiveTheme === 'dark') {
+          doc.classList.add('dark', 'dark-mode');
+        } else {
+          doc.classList.remove('dark', 'dark-mode');
+        }
+        
+        let bg = (effectiveTheme === 'dark') ? '#0D0D0F' : '#FAF8F5';
+        if (theme === 'auto') {
+          if (currentTimeOfDay === 'morning') bg = '#FFF5EC';
+          else if (currentTimeOfDay === 'day') bg = '#FAF8F5';
+          else if (currentTimeOfDay === 'evening') bg = '#FFF8E7';
+          else if (currentTimeOfDay === 'night') bg = '#0D0D0F';
+        }
+        doc.style.setProperty('background-color', bg, 'important');
+      } catch (e) {}
+    })();
+  </script>
+  
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  
+  <title>ਨਾਮ ਅਭਿਆਸ | Naam Abhyas</title>
+  
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🙏</text></svg>">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+Gurmukhi:wght@300;400;500;600;700&display=optional" rel="stylesheet">
+  
+  <!-- Core styles -->
+  <link rel="stylesheet" href="css/naam-abhyas.css">
+  
+  <!-- Core modules -->
+  <script src="js/core/SessionState.js"></script>
+  <script src="js/core/StateStore.js"></script>
+  <script src="js/core/AudioController.js"></script>
+  <script src="js/core/SessionController.js"></script>
+  <script src="js/core/NaamAbhyasEngine.js"></script>
+  
+  <!-- Data -->
+  <script src="js/data/gurbani-quotes.js"></script>
+  
+  <!-- UI -->
+  <script src="js/ui/NaamAbhyasUI.js" defer></script>
+</head>
+<body>
+  
+  <!-- Main container -->
+  <div class="naam-container">
+    
+    <!-- Header -->
+    <header class="naam-header">
+      <button class="naam-back-btn" id="backBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M15 18l-6-6 6-6" />
+        </svg>
+        <span>Home</span>
+      </button>
+      
+      <div class="naam-header-pill">
+        <span style="font-size: 14px;">🪯</span>
+        <span id="headerStreak">0</span>
+      </div>
+      
+      <button class="naam-settings-btn" id="settingsBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+      </button>
+    </header>
+    
+    <!-- Hero -->
+    <section class="naam-hero">
+      <h1 class="naam-hero-title">ਵਾਹਿਗੁਰੂ</h1>
+      <p class="naam-hero-subtitle">Sacred Hourly Practice</p>
+    </section>
+    
+    <!-- Enable Toggle -->
+    <section class="naam-card naam-toggle-card">
+      <div class="toggle-row">
+        <div class="toggle-info">
+          <div class="toggle-icon">🔔</div>
+          <div>
+            <h3>Enable Naam Abhyas</h3>
+            <p id="toggleStatus">Currently disabled</p>
+          </div>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="enableToggle">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    </section>
+    
+    <!-- Sacred Day Timeline -->
+    <section class="naam-card naam-timeline-card">
+      <div class="card-header">
+        <div class="card-icon">📅</div>
+        <div>
+          <h3>Sacred Day Timeline</h3>
+          <p>Your hourly Waheguru reminders</p>
+        </div>
+      </div>
+      <div class="timeline-subtitle">HOURLY REMINDERS</div>
+      <div class="timeline-scroll" id="timelineScroll">
+        <!-- Timeline items will be generated by JS -->
+      </div>
+    </section>
+    
+    <!-- Gurbani Quote Card -->
+    <section class="naam-card naam-quote-card">
+      <div class="quote-header">
+        <span class="quote-icon">💡</span>
+        <button class="quote-refresh-btn" id="quoteRefresh">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M1 4v6h6M23 20v-6h-6"/>
+            <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/>
+          </svg>
+        </button>
+      </div>
+      <p class="quote-gurmukhi" id="quoteGurmukhi">"ਰਾਤਿ ਕਾ ਨਾਮੁ ਜਪਿ ਦਿਨਸੁ ਰਾਤਿ"</p>
+      <p class="quote-english" id="quoteEnglish">Chant the Lord's Name, day and night</p>
+      <p class="quote-source" id="quoteSource">— Sri Guru Granth Sahib Ji, Ang 185</p>
+    </section>
+    
+    <!-- Extra Naam Simran -->
+    <section class="naam-card naam-extra-card">
+      <div class="card-header">
+        <div class="card-icon">⚡</div>
+        <h3>Extra Naam Simran</h3>
+      </div>
+      <div class="extra-buttons">
+        <button class="extra-btn extra-btn-primary" id="startNowBtn">
+          <svg class="extra-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M8 5v14l11-7z"/>
+          </svg>
+          <span class="extra-text">Start Now</span>
+          <span class="extra-duration">2 min</span>
+        </button>
+        <button class="extra-btn extra-btn-secondary" id="quickBtn">
+          <span class="extra-icon">🕐</span>
+          <span class="extra-text">Quick</span>
+        </button>
+        <button class="extra-btn extra-btn-secondary" id="deepBtn">
+          <span class="extra-icon">🧘</span>
+          <span class="extra-text">Deep</span>
+        </button>
+      </div>
+    </section>
+    
+    <!-- Discipline Dashboard -->
+    <section class="naam-card naam-dashboard-card">
+      <div class="card-header">
+        <img src="../assets/khanda-gold.png" alt="⭐" class="card-icon-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+        <span class="card-icon" style="display:none;">⭐</span>
+        <div>
+          <h3>Discipline Dashboard</h3>
+          <p>Discipline thrives on visibility</p>
+        </div>
+      </div>
+      
+      <div class="progress-ring-wrapper">
+        <svg class="progress-ring" viewBox="0 0 200 200">
+          <defs>
+            <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#D4943A;stop-opacity:1" />
+              <stop offset="100%" style="stop-color:#C17F2E;stop-opacity:1" />
+            </linearGradient>
+          </defs>
+          <circle class="progress-ring-track" cx="100" cy="100" r="85" />
+          <circle class="progress-ring-fill" id="progressRingFill" cx="100" cy="100" r="85" />
+        </svg>
+        <div class="progress-text">
+          <span class="progress-value" id="progressValue">0%</span>
+        </div>
+      </div>
+      
+      <div class="dashboard-label">COMPLETION</div>
+      
+      <div class="dashboard-stats">
+        <div class="dashboard-stat">
+          <img src="../assets/khanda-gold.png" alt="⭐" class="stat-icon-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+          <span class="stat-icon-fallback" style="display:none;">⭐</span>
+          <div class="stat-value" id="dashStreak">0</div>
+          <div class="stat-label">HOUR STREAK</div>
+        </div>
+        <div class="dashboard-stat">
+          <span class="stat-icon">📅</span>
+          <div class="stat-value" id="dashToday">0</div>
+          <div class="stat-label">TODAY</div>
+        </div>
+      </div>
+    </section>
+    
+  </div>
+  
+  <!-- Session Popup -->
+  <div class="naam-popup" id="sessionPopup">
+    <div class="popup-backdrop"></div>
+    <div class="popup-card">
+      <div class="popup-icon">🙏</div>
+      <h2 class="popup-title">ਨਾਮ ਅਭਿਆਸ</h2>
+      <p class="popup-subtitle">Time for Simran</p>
+      <p class="popup-message">Take 2 minutes to remember Waheguru Ji</p>
+      <div class="popup-actions">
+        <button class="popup-btn popup-btn-primary" id="startBtn">
+          <span>Start</span>
+        </button>
+        <button class="popup-btn popup-btn-secondary" id="laterBtn">
+          <span>Later</span>
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Session Active -->
+  <div class="naam-session" id="sessionView">
+    <div class="session-bg">
+      <div class="session-orb session-orb-1"></div>
+      <div class="session-orb session-orb-2"></div>
+    </div>
+    <div class="session-content">
+      <div class="session-icon-wrap">
+        <div class="session-icon">🙏</div>
+      </div>
+      <h2 class="session-title">ਵਾਹਿਗੁਰੂ</h2>
+      <p class="session-subtitle">Naam Simran in Progress</p>
+      
+      <div class="session-timer">
+        <svg class="timer-ring" viewBox="0 0 200 200">
+          <circle class="timer-bg" cx="100" cy="100" r="90" />
+          <circle class="timer-progress" id="timerProgress" cx="100" cy="100" r="90" />
+        </svg>
+        <div class="timer-text">
+          <span class="timer-value" id="timerValue">2:00</span>
+          <span class="timer-label">remaining</span>
+        </div>
+      </div>
+      
+      <button class="session-end-btn" id="endBtn">End Session</button>
+    </div>
+  </div>
+  
+  <!-- Completion Popup -->
+  <div class="naam-popup" id="completePopup">
+    <div class="popup-backdrop"></div>
+    <div class="popup-card">
+      <div class="popup-check">
+        <svg viewBox="0 0 50 50">
+          <circle class="check-circle" cx="25" cy="25" r="20"/>
+          <path class="check-path" d="M14 25l7 7 14-14"/>
+        </svg>
+      </div>
+      <h2 class="popup-title">ਵਾਹਿਗੁਰੂ ਜੀ ਕਾ ਖਾਲਸਾ</h2>
+      <p class="popup-subtitle">ਵਾਹਿਗੁਰੂ ਜੀ ਕੀ ਫ਼ਤਿਹ</p>
+      <p class="popup-message">Naam Abhyas Complete<br>✓ One more hour completed</p>
+      <button class="popup-btn popup-btn-primary" id="continueBtn">
+        <span>Continue</span>
+      </button>
+    </div>
+  </div>
+  
+  <!-- Settings Modal -->
+  <div class="settings-modal" id="settingsModal">
+    <div class="settings-backdrop"></div>
+    <div class="settings-content">
+      <div class="settings-header">
+        <h2 class="settings-title">Settings</h2>
+        <button class="settings-close" id="settingsClose">×</button>
+      </div>
+      
+      <div class="settings-section">
+        <div class="settings-section-title">Appearance</div>
+        <p class="settings-section-subtitle">Choose your preferred look</p>
+        <div class="theme-pills">
+          <button class="theme-pill" data-theme="auto">
+            <span class="theme-icon">☀️</span>
+            <span class="theme-label">System</span>
+          </button>
+          <button class="theme-pill" data-theme="light">
+            <span class="theme-icon">💡</span>
+            <span class="theme-label">Light</span>
+          </button>
+          <button class="theme-pill" data-theme="dark">
+            <span class="theme-icon">🌙</span>
+            <span class="theme-label">Dark</span>
+          </button>
+        </div>
+      </div>
+      
+      <div class="settings-section">
+        <div class="settings-section-title">Session Duration</div>
+        <p class="settings-section-subtitle">How long for each Simran session?</p>
+        <div class="duration-pills">
+          <button class="duration-pill active" data-duration="2">2m</button>
+          <button class="duration-pill" data-duration="5">5m</button>
+          <button class="duration-pill" data-duration="11">11m</button>
+        </div>
+        <div class="duration-custom-row">
+          <input type="number" id="durationCustom" class="duration-custom-input" min="1" max="60" placeholder="2">
+          <span class="duration-custom-label">mins</span>
+        </div>
+      </div>
+      
+      <div class="settings-section">
+        <div class="settings-section-title">Active Hours</div>
+        <p class="settings-section-subtitle">When reminders are active</p>
+        <div class="active-hours-row">
+          <div class="hours-select-wrapper">
+            <label class="hours-label">From</label>
+            <select id="startHourSelect" class="hours-select">
+              <option value="0">12:00 AM</option>
+              <option value="1">1:00 AM</option>
+              <option value="2">2:00 AM</option>
+              <option value="3">3:00 AM</option>
+              <option value="4">4:00 AM</option>
+              <option value="5" selected>5:00 AM</option>
+              <option value="6">6:00 AM</option>
+              <option value="7">7:00 AM</option>
+              <option value="8">8:00 AM</option>
+              <option value="9">9:00 AM</option>
+              <option value="10">10:00 AM</option>
+              <option value="11">11:00 AM</option>
+              <option value="12">12:00 PM</option>
+              <option value="13">1:00 PM</option>
+              <option value="14">2:00 PM</option>
+              <option value="15">3:00 PM</option>
+              <option value="16">4:00 PM</option>
+              <option value="17">5:00 PM</option>
+              <option value="18">6:00 PM</option>
+              <option value="19">7:00 PM</option>
+              <option value="20">8:00 PM</option>
+              <option value="21">9:00 PM</option>
+              <option value="22">10:00 PM</option>
+              <option value="23">11:00 PM</option>
+            </select>
+          </div>
+          <span class="hours-to">to</span>
+          <div class="hours-select-wrapper">
+            <label class="hours-label">Until</label>
+            <select id="endHourSelect" class="hours-select">
+              <option value="0">12:00 AM</option>
+              <option value="1">1:00 AM</option>
+              <option value="2">2:00 AM</option>
+              <option value="3">3:00 AM</option>
+              <option value="4">4:00 AM</option>
+              <option value="5">5:00 AM</option>
+              <option value="6">6:00 AM</option>
+              <option value="7">7:00 AM</option>
+              <option value="8">8:00 AM</option>
+              <option value="9">9:00 AM</option>
+              <option value="10">10:00 AM</option>
+              <option value="11">11:00 AM</option>
+              <option value="12">12:00 PM</option>
+              <option value="13">1:00 PM</option>
+              <option value="14">2:00 PM</option>
+              <option value="15">3:00 PM</option>
+              <option value="16">4:00 PM</option>
+              <option value="17">5:00 PM</option>
+              <option value="18">6:00 PM</option>
+              <option value="19">7:00 PM</option>
+              <option value="20">8:00 PM</option>
+              <option value="21">9:00 PM</option>
+              <option value="22" selected>10:00 PM</option>
+              <option value="23">11:00 PM</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      
+      <div class="settings-section">
+        <div class="settings-section-title">Notifications</div>
+        <p class="settings-section-subtitle">How you're reminded</p>
+        <div class="notification-toggles">
+          <div class="notif-toggle-row">
+            <span class="notif-label">Hour start notification</span>
+            <label class="toggle-switch-small">
+              <input type="checkbox" id="notifHourStart" checked>
+              <span class="toggle-slider-small"></span>
+            </label>
+          </div>
+          <div class="notif-toggle-row">
+            <span class="notif-label">2-minute warning</span>
+            <label class="toggle-switch-small">
+              <input type="checkbox" id="notifWarning" checked>
+              <span class="toggle-slider-small"></span>
+            </label>
+          </div>
+          <div class="notif-toggle-row">
+            <span class="notif-label">Vibration</span>
+            <label class="toggle-switch-small">
+              <input type="checkbox" id="notifVibration" checked>
+              <span class="toggle-slider-small"></span>
+            </label>
+          </div>
+          <div class="notif-toggle-row">
+            <span class="notif-label">Sound</span>
+            <label class="toggle-switch-small">
+              <input type="checkbox" id="notifSound" checked>
+              <span class="toggle-slider-small"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+      
+      <div class="settings-section">
+        <div class="settings-section-title">Notification Sound</div>
+        <p class="settings-section-subtitle">Choose your reminder sound</p>
+        <div class="sound-picker-row">
+          <select id="soundSelect" class="sound-select">
+            <option value="gentle-bell">Gentle Bell</option>
+            <option value="soft-chime">Soft Chime</option>
+            <option value="temple-bell">Temple Bell</option>
+            <option value="singing-bowl">Singing Bowl</option>
+            <option value="om-chant">Om Chant</option>
+          </select>
+          <button class="sound-play-btn" id="soundPlayBtn">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M8 5v14l11-7z"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+      
+      <div class="settings-section">
+        <div class="settings-section-title">Auto-start Timer</div>
+        <p class="settings-section-subtitle">Automatically start meditation</p>
+        <div class="notif-toggle-row">
+          <span class="notif-label">Auto-start when notification appears</span>
+          <label class="toggle-switch-small">
+            <input type="checkbox" id="autoStart">
+            <span class="toggle-slider-small"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+</body>
+</html>

@@ -243,6 +243,7 @@
   let currentTrackArtist = '';
   let manualOffset = 0; // seconds behind live edge
   let pauseAnchor = null; // { timestamp, offset }
+  let isTransitioning = false; // CRITICAL FIX: Prevent concurrent track transitions
 
   const listeners = {
     statechange: [],
@@ -396,6 +397,7 @@
   const PlaybackQueueController = {
     audio: null,
     promiseChain: Promise.resolve(),
+    endedDebounceTimer: null, // CRITICAL FIX: Debounce timer for 'ended' event
 
     init() {
       if (this.audio) return;
@@ -430,16 +432,84 @@
         }
       });
       this.audio.addEventListener('ended', () => {
-        console.log('[PlaybackQueueController] Track ended naturally');
-        handleTrackEnded();
+        console.log('[PlaybackQueueController] Track ended event fired');
+        
+        // CRITICAL FIX: Debounce to prevent duplicate 'ended' events (Android MediaSession bug)
+        if (this.endedDebounceTimer) {
+          console.warn('[PlaybackQueueController] ⚠️ Duplicate ended event detected within 200ms, ignoring');
+          clearTimeout(this.endedDebounceTimer);
+        }
+        
+        this.endedDebounceTimer = setTimeout(() => {
+          console.log('[PlaybackQueueController] ✅ Debounced ended event, calling handleTrackEnded()');
+          handleTrackEnded();
+          this.endedDebounceTimer = null;
+        }, 200); // 200ms debounce window
       });
       this.audio.addEventListener('error', (e) => {
-        console.error('[PlaybackQueueController] HTMLAudio Error:', e);
-        emit('error', {
-          message: 'Audio playback error',
-          stream: currentStream,
-          trackTitle: currentTrackTitle
+        console.error('[PlaybackQueueController] ❌ HTMLAudio Error Event:', {
+          error: e,
+          errorCode: this.audio.error?.code,
+          errorMessage: this.audio.error?.message,
+          networkState: this.audio.networkState,
+          readyState: this.audio.readyState,
+          currentSrc: this.audio.currentSrc,
+          currentStream: currentStream,
+          currentTrackIndex: currentTrackIndex,
+          currentTrackTitle: currentTrackTitle
         });
+        
+        // Determine error type
+        let errorMessage = 'Audio playback error';
+        let errorType = 'general';
+        
+        if (this.audio.error) {
+          switch (this.audio.error.code) {
+            case 1: // MEDIA_ERR_ABORTED
+              errorMessage = 'Playback was aborted';
+              errorType = 'aborted';
+              break;
+            case 2: // MEDIA_ERR_NETWORK
+              errorMessage = 'Network error - Please check your internet connection';
+              errorType = 'network';
+              break;
+            case 3: // MEDIA_ERR_DECODE
+              errorMessage = 'Stream format not supported or corrupted';
+              errorType = 'decode';
+              break;
+            case 4: // MEDIA_ERR_SRC_NOT_SUPPORTED
+              errorMessage = 'Stream source not available';
+              errorType = 'source';
+              break;
+          }
+        }
+        
+        // Check if network is offline
+        if (!navigator.onLine) {
+          errorMessage = 'No internet connection. Please check your network and try again.';
+          errorType = 'offline';
+        }
+        
+        emit('error', {
+          message: errorMessage,
+          type: errorType,
+          stream: currentStream,
+          trackTitle: currentTrackTitle,
+          errorCode: this.audio.error?.code,
+          networkState: this.audio.networkState,
+          readyState: this.audio.readyState
+        });
+        
+        // CRITICAL FIX: Auto-recovery for playlist errors
+        if (currentStream && STREAMS[currentStream]?.type === 'playlist') {
+          console.log('[PlaybackQueueController] 🔄 Error detected in playlist, attempting recovery in 3 seconds...');
+          setTimeout(() => {
+            if (!isPlaying) {
+              console.log('[PlaybackQueueController] ⏭️ Skipping to next track after error');
+              handleTrackEnded();
+            }
+          }, 3000);
+        }
       });
 
       // Background capabilities
@@ -512,12 +582,41 @@
 
       return this.enqueue(async () => {
         if (playPromise) {
+          // CRITICAL FIX: Add 15-second timeout to prevent infinite hangs
+          const timeoutPromise = new Promise((_, reject) => {
+            setTimeout(() => reject(new Error('TIMEOUT: Audio load exceeded 15 seconds')), 15000);
+          });
+          
           try {
-            await playPromise;
+            await Promise.race([playPromise, timeoutPromise]);
+            console.log('[PlaybackQueueController] ✅ Playback started successfully');
           } catch (e) {
-            console.warn('[PlaybackQueueController] play promise rejected or blocked:', e.message);
+            const isTimeout = e.message && e.message.includes('TIMEOUT');
+            console.warn('[PlaybackQueueController] ❌ Play failed:', isTimeout ? 'TIMEOUT' : e.message);
+            
             isPlaying = false;
             emit('statechange', getPublicState());
+            
+            // Emit error for UI handling
+            emit('error', {
+              message: isTimeout 
+                ? 'Track loading timed out. Check your internet connection.' 
+                : 'Audio playback failed',
+              type: isTimeout ? 'timeout' : 'playback',
+              stream: currentStream,
+              trackTitle: currentTrackTitle
+            });
+            
+            // CRITICAL FIX: Auto-recovery on timeout for playlists
+            if (isTimeout && currentStream && STREAMS[currentStream]?.type === 'playlist') {
+              console.log('[PlaybackQueueController] 🔄 Auto-recovering: Skipping to next track in 2 seconds...');
+              setTimeout(() => {
+                if (!isPlaying) { // Only recover if still not playing
+                  console.log('[PlaybackQueueController] ⏭️ Executing auto-recovery...');
+                  handleTrackEnded();
+                }
+              }, 2000);
+            }
           } finally {
             isLoading = false;
             emit('loading', { isLoading: false });
@@ -624,49 +723,69 @@
   function handleTrackEnded() {
     if (!currentStream || STREAMS[currentStream].type !== 'playlist') return;
 
-    // Reset manual offset to 0 if the user was close to LIVE (within 10s)
-    if (manualOffset < 10) {
-      manualOffset = 0;
-    }
-
-    const playlist = VirtualLiveEngine.getPlaylist(currentStream);
-    const totalTracks = playlist.length;
-    const liveTime = VirtualLiveEngine.getCurrentTimelineValue();
-    
-    // Find current cycle and shuffle index
-    const userTime = liveTime - manualOffset;
-    const currentCycle = Math.floor(userTime / VirtualLiveEngine.getPlaylistTotalDuration(playlist));
-    const shuffleOrder = regenerateShuffleOrder(VIRTUAL_LIVE_EPOCH_START, currentCycle, totalTracks);
-
-    let posInShuffle = shuffleOrder.indexOf(currentTrackIndex);
-    if (posInShuffle === -1) posInShuffle = 0;
-    
-    let nextPosInShuffle = (posInShuffle + 1) % totalTracks;
-    let nextCycle = currentCycle;
-    if (nextPosInShuffle === 0) {
-      nextCycle += 1;
+    // CRITICAL FIX: Prevent concurrent execution (race condition guard)
+    if (isTransitioning) {
+      console.warn('[AnhadAudio] ⚠️ Track transition already in progress, ignoring duplicate ended event');
+      return;
     }
     
-    const nextShuffleOrder = regenerateShuffleOrder(VIRTUAL_LIVE_EPOCH_START, nextCycle, totalTracks);
-    const nextTrackIndex = nextShuffleOrder[nextPosInShuffle];
+    isTransitioning = true;
+    console.log('[AnhadAudio] 🔄 Starting track transition...');
 
-    console.log(`[AnhadAudio] Track ended naturally. Advancing shuffle: ${currentTrackIndex+1} -> ${nextTrackIndex+1}`);
+    try {
+      // Reset manual offset to 0 if the user was close to LIVE (within 10s)
+      if (manualOffset < 10) {
+        manualOffset = 0;
+      }
 
-    currentTrackIndex = nextTrackIndex;
-    currentTrackTitle = playlist[nextTrackIndex].title;
-    currentTrackArtist = playlist[nextTrackIndex].artist;
+      const playlist = VirtualLiveEngine.getPlaylist(currentStream);
+      const totalTracks = playlist.length;
+      const liveTime = VirtualLiveEngine.getCurrentTimelineValue();
+      
+      // Find current cycle and shuffle index
+      const userTime = liveTime - manualOffset;
+      const currentCycle = Math.floor(userTime / VirtualLiveEngine.getPlaylistTotalDuration(playlist));
+      const shuffleOrder = regenerateShuffleOrder(VIRTUAL_LIVE_EPOCH_START, currentCycle, totalTracks);
 
-    // Recalibrate manual offset so user playhead starts at 0 of next track
-    const newU = VirtualLiveEngine.convertToTimelineCoordinate(currentStream, nextTrackIndex, 0, nextCycle);
-    manualOffset = Math.max(0, liveTime - newU);
-    persistState();
+      let posInShuffle = shuffleOrder.indexOf(currentTrackIndex);
+      if (posInShuffle === -1) posInShuffle = 0;
+      
+      let nextPosInShuffle = (posInShuffle + 1) % totalTracks;
+      let nextCycle = currentCycle;
+      if (nextPosInShuffle === 0) {
+        nextCycle += 1;
+      }
+      
+      const nextShuffleOrder = regenerateShuffleOrder(VIRTUAL_LIVE_EPOCH_START, nextCycle, totalTracks);
+      const nextTrackIndex = nextShuffleOrder[nextPosInShuffle];
 
-    const trackUrl = STREAMS[currentStream].getTrackUrl(currentTrackIndex);
-    updateMediaSession();
+      console.log(`[AnhadAudio] Track ended naturally. Advancing shuffle: ${currentTrackIndex+1} -> ${nextTrackIndex+1}`);
 
-    PlaybackQueueController.loadAndPlay(trackUrl, 'metadata').then(() => {
-      PlaybackQueueController.seek(0);
-    });
+      currentTrackIndex = nextTrackIndex;
+      currentTrackTitle = playlist[nextTrackIndex].title;
+      currentTrackArtist = playlist[nextTrackIndex].artist;
+
+      // Recalibrate manual offset so user playhead starts at 0 of next track
+      const newU = VirtualLiveEngine.convertToTimelineCoordinate(currentStream, nextTrackIndex, 0, nextCycle);
+      manualOffset = Math.max(0, liveTime - newU);
+      persistState();
+
+      const trackUrl = STREAMS[currentStream].getTrackUrl(currentTrackIndex);
+      updateMediaSession();
+
+      PlaybackQueueController.loadAndPlay(trackUrl, 'metadata').then(() => {
+        PlaybackQueueController.seek(0);
+      }).catch((err) => {
+        console.error('[AnhadAudio] ❌ Track transition failed:', err);
+      }).finally(() => {
+        // CRITICAL FIX: Always reset transition flag
+        isTransitioning = false;
+        console.log('[AnhadAudio] ✅ Track transition complete');
+      });
+    } catch (err) {
+      console.error('[AnhadAudio] ❌ Fatal error in handleTrackEnded:', err);
+      isTransitioning = false; // Reset flag on error
+    }
   }
 
   // ─── API CONTROL GATEWAYS ───

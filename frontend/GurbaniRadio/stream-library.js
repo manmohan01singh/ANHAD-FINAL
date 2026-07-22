@@ -278,7 +278,7 @@
 
         card.innerHTML = [
           '<div class="sl-card-left">',
-          '  <div class="sl-card-emoji" style="display:flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#C8842A,#E8A83A);flex-shrink:0;' + (isOffline ? 'opacity:0.45;' : '') + '"><img src="../assets/khanda-gold.png" style="width:26px;height:26px;object-fit:contain;"></div>',
+          '  <div class="sl-card-emoji" style="display:flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#C8842A,#E8A83A);flex-shrink:0;' + (isOffline ? 'opacity:0.45;' : '') + '"><img src="../assets/khanda-gold.png" onerror="this.style.display=\'none\'" style="width:26px;height:26px;object-fit:contain;"></div>',
           '  <div class="sl-card-info">',
           '    <div class="sl-card-name">' + s.name + (isFixed ? ' <span class="sl-fixed-badge">Fixed</span>' : '') + (isOffline ? ' <span class="sl-offline-badge">Offline</span>' : '') + '</div>',
           '    <div class="sl-card-sub">' + s.sub + '</div>',
@@ -392,7 +392,7 @@
         var slotMeta = getStreamById(slotId);
         var btn = document.createElement('button');
         btn.className = 'sl-rp-slot';
-        btn.innerHTML = '<img src="../assets/khanda.png" style="width:20px;height:20px;object-fit:contain;margin-right:8px;">' +
+        btn.innerHTML = '<img src="../assets/khanda-gold.png" onerror="this.style.display=\'none\'" style="width:20px;height:20px;object-fit:contain;margin-right:8px;">' +
                         '<span>' + (slotMeta ? slotMeta.name.split(' — ')[0].split(' (')[0] : slotId) + '</span>';
         btn.addEventListener('click', function () {
           var newSlots = slots.slice();

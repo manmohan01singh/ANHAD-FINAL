@@ -1,0 +1,2607 @@
+{
+  "notifications": {
+    "amritvela": [
+      {
+        "category": "amritvela",
+        "title": "🌙 Waheguru Ji...",
+        "body": "Amritvela bakhshish da sama hai. Aao Naam naal din di shuruaat kariye. 🙏",
+        "emoji": "🌙",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Waheguru Ji... It's the blessed time of Amritvela. Come, let's start the day with Naam."
+      },
+      {
+        "category": "amritvela",
+        "title": "✨ Raat da andhera hatda ja reha hai",
+        "body": "Amritvela vich Guru Maharaj Ji nazdeek mehsoos hunde ne. 🌸",
+        "emoji": "✨",
+        "priority": "high",
+        "time": "morning",
+        "translation": "The darkness of night is fading. Guru Maharaj Ji feels closer during Amritvela."
+      },
+      {
+        "category": "amritvela",
+        "title": "🪷 Sab soye hoi ne...",
+        "body": "Par tusi Guru de charna vich baithne da sama paa sakte ho. 🙏",
+        "emoji": "🪷",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Everyone is asleep... But you can find time to sit at Guru's feet."
+      },
+      {
+        "category": "amritvela",
+        "title": "🌺 Subah da pehla vela",
+        "body": "Guru Sahib nu yaad karan da vela hai. Mann shant ho jayega. 🤍",
+        "emoji": "🌺",
+        "priority": "high",
+        "time": "morning",
+        "translation": "The first hour of morning. It's time to remember Guru Sahib. Your mind will find peace."
+      },
+      {
+        "category": "amritvela",
+        "title": "☀️ Suraj niklan ton pehle",
+        "body": "Naam Simran di roshni mann vich paida kariye. 🌸",
+        "emoji": "☀️",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Before sunrise. Create the light of Naam Simran within your mind."
+      },
+      {
+        "category": "amritvela",
+        "title": "🌙 Guru Ji bula rahe ne",
+        "body": "Amritvela vich Naam jap ke din nu bakhshish banao. 🙏",
+        "emoji": "🌙",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Guru Ji is calling. Chant Naam in Amritvela and make the day blessed."
+      },
+      {
+        "category": "amritvela",
+        "title": "✨ Anmol vela aa gaya",
+        "body": "Kujh pal Waheguru de Naam vich bitao. Ruh shant ho jayegi. 🪷",
+        "emoji": "✨",
+        "priority": "high",
+        "time": "morning",
+        "translation": "The precious time has arrived. Spend a few moments in Waheguru's Naam. Your soul will find peace."
+      },
+      {
+        "category": "amritvela",
+        "title": "🌸 Neend ton jagna hi kaafi nahi",
+        "body": "Ruh nu vi jagao Naam naal. Amritvela da vela hai. 🙏",
+        "emoji": "🌸",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Waking from sleep isn't enough. Awaken your soul with Naam. It's Amritvela time."
+      },
+      {
+        "category": "amritvela",
+        "title": "🤍 Guru Kirpa naal uthna ho gaya",
+        "body": "Hun kujh pal Naam Simran vich bithao. 🌺",
+        "emoji": "🤍",
+        "priority": "high",
+        "time": "morning",
+        "translation": "By Guru's grace, you've awakened. Now spend a few moments in Naam Simran."
+      },
+      {
+        "category": "amritvela",
+        "title": "🕊️ Hor sab intezaar kar sakda",
+        "body": "Pehle Guru Maharaj Ji naal kujh pal bitao. 🌸",
+        "emoji": "🕊️",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Everything else can wait. First spend a few moments with Guru Maharaj Ji."
+      },
+      {
+        "category": "amritvela",
+        "title": "🌙 Amritvela di mithaas",
+        "body": "Eh vela Guru de darshan da vela hai. Aao nazdeek aiye. 🙏",
+        "emoji": "🌙",
+        "priority": "high",
+        "time": "morning",
+        "translation": "The sweetness of Amritvela. This time is for Guru's darshan. Come closer."
+      },
+      {
+        "category": "amritvela",
+        "title": "✨ Andhera khatam hunda vekh rahe ho?",
+        "body": "Mann da andhera vi Naam naal khatam ho sakda. 🪷",
+        "emoji": "✨",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Watching the darkness end? The darkness of mind can also end with Naam."
+      },
+      {
+        "category": "amritvela",
+        "title": "🌸 Duniya nu shanti chahiye",
+        "body": "Par pehle apne mann nu Naam naal shant karo. Amritvela hai. 🙏",
+        "emoji": "🌸",
+        "priority": "high",
+        "time": "morning",
+        "translation": "The world needs peace. But first, calm your own mind with Naam. It's Amritvela."
+      },
+      {
+        "category": "amritvela",
+        "title": "🌺 Har din di ik navin shuruaat",
+        "body": "Guru de Naam naal kariye. Amritvela bakhshish hai. 🤍",
+        "emoji": "🌺",
+        "priority": "high",
+        "time": "morning",
+        "translation": "A fresh start to each day. Begin with Guru's Naam. Amritvela is a blessing."
+      },
+      {
+        "category": "amritvela",
+        "title": "☀️ Roshni aun wali hai",
+        "body": "Par Naam di roshni hamesha naal hai. Kujh pal jap laiyo. 🙏",
+        "emoji": "☀️",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Light is coming. But the light of Naam is always with you. Chant for a few moments."
+      },
+      {
+        "category": "amritvela",
+        "title": "🪷 Shant raato baad",
+        "body": "Amritvela vich Guru Sahib naal mann di gal karo. 🌸",
+        "emoji": "🪷",
+        "priority": "high",
+        "time": "morning",
+        "translation": "After a peaceful night. In Amritvela, speak to Guru Sahib from the heart."
+      },
+      {
+        "category": "amritvela",
+        "title": "🌙 Guru Ji yaad kar rahe ne",
+        "body": "Amritvela da eh anmol vela waste hi hai. Aao baithiye. 🙏",
+        "emoji": "🌙",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Guru Ji is remembering you. This precious time of Amritvela is just for this. Come, sit."
+      },
+      {
+        "category": "amritvela",
+        "title": "✨ Chup-chaap, shaant vela",
+        "body": "Sirf tusi te Waheguru. Kujh pal Naam Simran kariye. 🤍",
+        "emoji": "✨",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Silent, peaceful time. Just you and Waheguru. Do Naam Simran for a few moments."
+      },
+      {
+        "category": "amritvela",
+        "title": "🌸 Ajj di pehli yaad",
+        "body": "Waheguru di honi chahidi. Amritvela bakhshish vela hai. 🙏",
+        "emoji": "🌸",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Today's first thought. Should be of Waheguru. Amritvela is blessed time."
+      },
+      {
+        "category": "amritvela",
+        "title": "🌺 Guru Ghar di mehak",
+        "body": "Amritvela vich sabto zyada mehsoos hondi hai. 🙏",
+        "emoji": "🌺",
+        "priority": "high",
+        "time": "morning",
+        "translation": "The fragrance of Guru's house. Feels strongest in Amritvela."
+      },
+      {
+        "category": "amritvela",
+        "title": "🕊️ Mann vich hulchul hai?",
+        "body": "Amritvela vich Naam jap ke sukoon pao. 🌸",
+        "emoji": "🕊️",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Is your mind restless? Chant Naam in Amritvela and find peace."
+      },
+      {
+        "category": "amritvela",
+        "title": "🤍 Raat gayi, nava din aaya",
+        "body": "Guru Maharaj Ji de charna ton shuruaat karo. 🙏",
+        "emoji": "🤍",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Night passed, new day arrived. Start from Guru Maharaj Ji's feet."
+      },
+      {
+        "category": "amritvela",
+        "title": "🌙 Chanani nu alvida karo",
+        "body": "Naam di roshni naal din da swagat karo. Amritvela hai. 🌸",
+        "emoji": "🌙",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Say goodbye to moonlight. Welcome the day with the light of Naam. It's Amritvela."
+      },
+      {
+        "category": "amritvela",
+        "title": "✨ Subah da jadoo shuru ho gaya",
+        "body": "Naam Simran naal mann vich vi jadoo bhar do. 🪷",
+        "emoji": "✨",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Morning's magic has begun. Fill your mind with magic through Naam Simran too."
+      },
+      {
+        "category": "amritvela",
+        "title": "🌸 Parmatma nazdeek hai",
+        "body": "Amritvela vich Waheguru da darshan aasan hai. 🙏",
+        "emoji": "🌸",
+        "priority": "high",
+        "time": "morning",
+        "translation": "God is near. In Amritvela, Waheguru's vision is easier."
+      },
+      {
+        "category": "amritvela",
+        "title": "🌺 Koi jagda nahi, koi shor nahi",
+        "body": "Sirf Guru de Naam di awaaz. Amritvela da vela hai. 🤍",
+        "emoji": "🌺",
+        "priority": "high",
+        "time": "morning",
+        "translation": "No one awake, no noise. Only the sound of Guru's Naam. It's Amritvela time."
+      }
+    ],
+    "japji_sahib": [
+      {
+        "category": "japji_sahib",
+        "title": "📖 Waheguru Ji...",
+        "body": "Japji Sahib paath da sama aa gaya hai. Guru Kirpa prapat kariye. 🙏",
+        "emoji": "📖",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Waheguru Ji... Time for Japji Sahib has arrived. Receive Guru's grace."
+      },
+      {
+        "category": "japji_sahib",
+        "title": "🌸 Din di shuruaat Guru Nanak Ji naal",
+        "body": "Japji Sahib paath karke mann nu shanti bakhsho. 🙏",
+        "emoji": "🌸",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Start the day with Guru Nanak Ji. Give peace to your mind by reading Japji Sahib."
+      },
+      {
+        "category": "japji_sahib",
+        "title": "✨ 38 paurian, asankh bakhshishan",
+        "body": "Japji Sahib da vela hai. Aao Guru Ghar vich aiye. 🌺",
+        "emoji": "✨",
+        "priority": "high",
+        "time": "morning",
+        "translation": "38 pauris, countless blessings. It's time for Japji Sahib. Come to Guru's house."
+      },
+      {
+        "category": "japji_sahib",
+        "title": "🪷 Sachcha Naam, sachchi bani",
+        "body": "Japji Sahib paath da anmol vela aa gaya hai. 🙏",
+        "emoji": "🪷",
+        "priority": "high",
+        "time": "morning",
+        "translation": "True Naam, true word. The precious time for Japji Sahib has arrived."
+      },
+      {
+        "category": "japji_sahib",
+        "title": "🤍 Guru Nanak Ji bulare ne",
+        "body": "Japji Sahib naal din di roshni shuru kariye. 🌸",
+        "emoji": "🤍",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Guru Nanak Ji is calling. Start the day's light with Japji Sahib."
+      },
+      {
+        "category": "japji_sahib",
+        "title": "📖 Mann nu tayyar karo",
+        "body": "Japji Sahib de darshan da vela aa gaya. 🙏",
+        "emoji": "📖",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Prepare your mind. Time for Japji Sahib's vision has come."
+      },
+      {
+        "category": "japji_sahib",
+        "title": "🌺 Ik Onkar satnam",
+        "body": "Japji Sahib naal shuru karo ajj da safar. 🌸",
+        "emoji": "🌺",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Ik Onkar Satnam. Start today's journey with Japji Sahib."
+      },
+      {
+        "category": "japji_sahib",
+        "title": "✨ Pehla paath, pehli bakhshish",
+        "body": "Japji Sahib paath da sama hai. Aao shanti pao. 🙏",
+        "emoji": "✨",
+        "priority": "high",
+        "time": "morning",
+        "translation": "First prayer, first blessing. It's time for Japji Sahib. Come find peace."
+      },
+      {
+        "category": "japji_sahib",
+        "title": "🌸 Guru Granth Sahib Ji di pehli bani",
+        "body": "Japji Sahib paath karan da vela hai. Mann lagao. 🪷",
+        "emoji": "🌸",
+        "priority": "high",
+        "time": "morning",
+        "translation": "The first bani of Guru Granth Sahib. Time to read Japji Sahib. Focus your mind."
+      },
+      {
+        "category": "japji_sahib",
+        "title": "🙏 Nitnem di neev",
+        "body": "Japji Sahib naal rakho. Aao paath kariye. 🌺",
+        "emoji": "🙏",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Foundation of Nitnem. Lay it with Japji Sahib. Come, let's do paath."
+      },
+      {
+        "category": "japji_sahib",
+        "title": "🤍 Sach khand da raasta",
+        "body": "Japji Sahib vich likheya hai. Paath da vela aa gaya. 🌸",
+        "emoji": "🤍",
+        "priority": "high",
+        "time": "morning",
+        "translation": "The path to Sach Khand. Is written in Japji Sahib. Time for paath has come."
+      },
+      {
+        "category": "japji_sahib",
+        "title": "📖 Har pal ik navi seekh",
+        "body": "Japji Sahib vichon milde hai. Paath karan da sama hai. 🙏",
+        "emoji": "📖",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Every moment a new lesson. Comes from Japji Sahib. It's time for paath."
+      },
+      {
+        "category": "japji_sahib",
+        "title": "🌸 Mann da bojh utariye",
+        "body": "Japji Sahib paath naal. Vela aa gaya hai. 🪷",
+        "emoji": "🌸",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Remove the burden of the mind. With Japji Sahib paath. The time has come."
+      },
+      {
+        "category": "japji_sahib",
+        "title": "✨ Guru Ji de bachan",
+        "body": "Japji Sahib vich sunan da vela hai. Aao baithiye. 🙏",
+        "emoji": "✨",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Guru Ji's words. Time to listen in Japji Sahib. Come, sit."
+      },
+      {
+        "category": "japji_sahib",
+        "title": "🌺 Amrit ghol",
+        "body": "Japji Sahib paath hai. Pijiye te mann nu shanti do. 🌸",
+        "emoji": "🌺",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Nectar drink. Japji Sahib paath is. Drink it and give peace to your mind."
+      },
+      {
+        "category": "japji_sahib",
+        "title": "🪷 Panch khande to baad",
+        "body": "Japji Sahib paath karna na bhulo. Vela aa gaya. 🙏",
+        "emoji": "🪷",
+        "priority": "high",
+        "time": "morning",
+        "translation": "After the five khands. Don't forget to read Japji Sahib. Time has come."
+      },
+      {
+        "category": "japji_sahib",
+        "title": "🤍 Subah di pehli roshanai",
+        "body": "Japji Sahib de shabd ne. Aao paath kariye. 🌸",
+        "emoji": "🤍",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Morning's first light. Is Japji Sahib's words. Come, let's read."
+      },
+      {
+        "category": "japji_sahib",
+        "title": "🌸 Jithe jaiye, Guru naal",
+        "body": "Japji Sahib paath karan baad eh ahsaas hunda hai. 🙏",
+        "emoji": "🌸",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Wherever you go, with Guru. This feeling comes after Japji Sahib paath."
+      },
+      {
+        "category": "japji_sahib",
+        "title": "📖 Nitnem da mukh",
+        "body": "Japji Sahib hai. Aao paath karan da vela aa gaya. 🌺",
+        "emoji": "📖",
+        "priority": "high",
+        "time": "morning",
+        "translation": "The face of Nitnem. Is Japji Sahib. Come, time for paath has arrived."
+      },
+      {
+        "category": "japji_sahib",
+        "title": "✨ Mann ho shant, ruh ho khush",
+        "body": "Japji Sahib paath naal. Vela shuru ho gaya. 🙏",
+        "emoji": "✨",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Mind be calm, soul be happy. With Japji Sahib paath. Time has begun."
+      },
+      {
+        "category": "japji_sahib",
+        "title": "🪷 Satguru da prasad",
+        "body": "Japji Sahib hai. Laiyo, paath karan da vela aa gaya. 🌸",
+        "emoji": "🪷",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Satguru's blessing. Is Japji Sahib. Take it, time for paath has come."
+      },
+      {
+        "category": "japji_sahib",
+        "title": "🌺 Parmatma de darshan",
+        "body": "Japji Sahib paath vich hunde ne. Aao baithiye. 🙏",
+        "emoji": "🌺",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Vision of the Divine. Happens in Japji Sahib paath. Come, sit."
+      },
+      {
+        "category": "japji_sahib",
+        "title": "🤍 Jiwan di map",
+        "body": "Japji Sahib vich hai. Paath karan da sama aa gaya. 🌸",
+        "emoji": "🤍",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Life's measure. Is in Japji Sahib. Time for paath has arrived."
+      },
+      {
+        "category": "japji_sahib",
+        "title": "🌸 Parche asankh, bakhshishan asankh",
+        "body": "Japji Sahib da vela hai. Aao Guru Sahib naal jutiye. 🙏",
+        "emoji": "🌸",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Countless chapters, countless blessings. It's Japji Sahib time. Come connect with Guru Sahib."
+      },
+      {
+        "category": "japji_sahib",
+        "title": "📖 Sabse pyari bani",
+        "body": "Japji Sahib paath da vela aa gaya hai. Aao shanti pao. 🪷",
+        "emoji": "📖",
+        "priority": "high",
+        "time": "morning",
+        "translation": "The most beloved bani. Time for Japji Sahib paath has come. Come find peace."
+      },
+      {
+        "category": "japji_sahib",
+        "title": "✨ Guru Nanak Patshah Ji de mukh ton",
+        "body": "Japji Sahib sunne da vela hai. Paath kariye. 🙏",
+        "emoji": "✨",
+        "priority": "high",
+        "time": "morning",
+        "translation": "From Guru Nanak Patshah Ji's mouth. Time to hear Japji Sahib. Do paath."
+      },
+      {
+        "category": "japji_sahib",
+        "title": "🌺 Mann da rasta saaf kariye",
+        "body": "Japji Sahib paath naal. Vela aa gaya hai. 🌸",
+        "emoji": "🌺",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Clear the mind's path. With Japji Sahib paath. Time has come."
+      }
+    ],
+    "jaap_sahib": [
+      {
+        "category": "jaap_sahib",
+        "title": "⚔️ Waheguru Ji...",
+        "body": "Jaap Sahib paath da vela hai. Akal Purakh di mahima gao. 🙏",
+        "emoji": "⚔️",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Waheguru Ji... Time for Jaap Sahib. Sing the glory of Akal Purakh."
+      },
+      {
+        "category": "jaap_sahib",
+        "title": "✨ 199 bandna, 199 roop",
+        "body": "Jaap Sahib da vela hai. Guru Gobind Singh Ji naal jude. 🌸",
+        "emoji": "✨",
+        "priority": "high",
+        "time": "morning",
+        "translation": "199 salutations, 199 forms. It's Jaap Sahib time. Connect with Guru Gobind Singh Ji."
+      },
+      {
+        "category": "jaap_sahib",
+        "title": "🪷 Nirankar di mahima",
+        "body": "Jaap Sahib vich hai. Paath karan da sama aa gaya. 🙏",
+        "emoji": "🪷",
+        "priority": "high",
+        "time": "morning",
+        "translation": "The glory of the Formless. Is in Jaap Sahib. Time for paath has arrived."
+      },
+      {
+        "category": "jaap_sahib",
+        "title": "🌺 Dashmesh Pita Ji di rachna",
+        "body": "Jaap Sahib paath da vela hai. Aao mann lagao. 🌸",
+        "emoji": "🌺",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Tenth Master's creation. It's Jaap Sahib paath time. Come focus your mind."
+      },
+      {
+        "category": "jaap_sahib",
+        "title": "🤍 Shakti te shanti dono",
+        "body": "Jaap Sahib paath vich mildi hai. Vela aa gaya. 🙏",
+        "emoji": "🤍",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Both strength and peace. Come in Jaap Sahib paath. Time has arrived."
+      },
+      {
+        "category": "jaap_sahib",
+        "title": "✨ Khadag Kete Maha...",
+        "body": "Jaap Sahib di shuruaat da vela hai. Aao paath kariye. 🌸",
+        "emoji": "✨",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Khadag Kete Maha... Time to begin Jaap Sahib. Come, let's do paath."
+      },
+      {
+        "category": "jaap_sahib",
+        "title": "🌸 Mann vich bahaduri, dil vich pyar",
+        "body": "Jaap Sahib paath naal dono mildi hai. Vela aa gaya. 🙏",
+        "emoji": "🌸",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Courage in mind, love in heart. Both come with Jaap Sahib paath. Time has come."
+      },
+      {
+        "category": "jaap_sahib",
+        "title": "🪷 Akal Purakh de anant naam",
+        "body": "Jaap Sahib vich hain. Paath da sama hai. 🌺",
+        "emoji": "🪷",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Akal Purakh's infinite names. Are in Jaap Sahib. It's time for paath."
+      },
+      {
+        "category": "jaap_sahib",
+        "title": "✨ Roop anoot, gun asankh",
+        "body": "Jaap Sahib paath karo te mehsoos karo. 🙏",
+        "emoji": "✨",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Unique form, countless virtues. Do Jaap Sahib paath and feel it."
+      },
+      {
+        "category": "jaap_sahib",
+        "title": "🤍 Guru Gobind Singh Ji di awaaz",
+        "body": "Jaap Sahib vich suno. Paath da vela aa gaya. 🌸",
+        "emoji": "🤍",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Guru Gobind Singh Ji's voice. Listen in Jaap Sahib. Time for paath has come."
+      },
+      {
+        "category": "jaap_sahib",
+        "title": "🌺 Dar mitao, hausla vadao",
+        "body": "Jaap Sahib paath naal. Aao shuru kariye. 🙏",
+        "emoji": "🌺",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Remove fear, increase courage. With Jaap Sahib paath. Come, let's begin."
+      },
+      {
+        "category": "jaap_sahib",
+        "title": "🌸 Asa anant, man anant",
+        "body": "Jaap Sahib paath da vela hai. Mann lagao. 🪷",
+        "emoji": "🌸",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Infinite hope, infinite mind. It's Jaap Sahib paath time. Focus."
+      },
+      {
+        "category": "jaap_sahib",
+        "title": "✨ Nirankar, niranjan, nirmaan",
+        "body": "Jaap Sahib vich hain sabh naam. Paath kariye. 🙏",
+        "emoji": "✨",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Formless, spotless, prideless. All names are in Jaap Sahib. Do paath."
+      },
+      {
+        "category": "jaap_sahib",
+        "title": "🤍 Nitnew da duja hira",
+        "body": "Jaap Sahib hai. Aao paath karan da vela aa gaya. 🌸",
+        "emoji": "🤍",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Nitnem's second diamond. Is Jaap Sahib. Come, time for paath has arrived."
+      },
+      {
+        "category": "jaap_sahib",
+        "title": "🪷 Har awaaz vich Waheguru",
+        "body": "Jaap Sahib paath karke dekho. Vela shuru ho gaya. 🙏",
+        "emoji": "🪷",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Waheguru in every voice. Do Jaap Sahib paath and see. Time has begun."
+      },
+      {
+        "category": "jaap_sahib",
+        "title": "🌺 Srisht da malik",
+        "body": "Jaap Sahib vich bandeya hai. Paath da sama aa gaya. 🌸",
+        "emoji": "🌺",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Lord of creation. Is praised in Jaap Sahib. Time for paath has come."
+      },
+      {
+        "category": "jaap_sahib",
+        "title": "✨ Khalsa da zor",
+        "body": "Jaap Sahib paath hai. Aao shakti prapt kariye. 🙏",
+        "emoji": "✨",
+        "priority": "high",
+        "time": "morning",
+        "translation": "The Khalsa's strength. Is Jaap Sahib paath. Come receive power."
+      },
+      {
+        "category": "jaap_sahib",
+        "title": "🌸 Rog kate, sog kate",
+        "body": "Jaap Sahib paath naal. Vela aa gaya hai. 🪷",
+        "emoji": "🌸",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Remove disease, remove sorrow. With Jaap Sahib paath. Time has come."
+      },
+      {
+        "category": "jaap_sahib",
+        "title": "🤍 Dashmesh Pita Ji di meharbani",
+        "body": "Jaap Sahib paath vich hai. Aao laiyo. 🙏",
+        "emoji": "🤍",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Tenth Master's blessing. Is in Jaap Sahib paath. Come receive it."
+      },
+      {
+        "category": "jaap_sahib",
+        "title": "🌺 Parmatma de gun gao",
+        "body": "Jaap Sahib naal. Paath da vela aa gaya. 🌸",
+        "emoji": "🌺",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Sing God's virtues. With Jaap Sahib. Time for paath has arrived."
+      },
+      {
+        "category": "jaap_sahib",
+        "title": "✨ Mann nirvair, mann nirankaar",
+        "body": "Jaap Sahib paath naal banao. Vela hai. 🙏",
+        "emoji": "✨",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Mind without enmity, mind formless. Make it with Jaap Sahib paath. It's time."
+      },
+      {
+        "category": "jaap_sahib",
+        "title": "🪷 Bir ras, shanti ras",
+        "body": "Jaap Sahib vich dono ne. Paath karo. 🌸",
+        "emoji": "🪷",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Essence of courage, essence of peace. Both are in Jaap Sahib. Do paath."
+      },
+      {
+        "category": "jaap_sahib",
+        "title": "🌸 Anant shakti da srot",
+        "body": "Jaap Sahib hai. Aao paath karan da sama aa gaya. 🙏",
+        "emoji": "🌸",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Source of infinite power. Is Jaap Sahib. Come, time for paath has arrived."
+      },
+      {
+        "category": "jaap_sahib",
+        "title": "🤍 Waheguru de roop",
+        "body": "Jaap Sahib vich dekho. Paath da vela hai. 🌺",
+        "emoji": "🤍",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Forms of Waheguru. See in Jaap Sahib. It's paath time."
+      },
+      {
+        "category": "jaap_sahib",
+        "title": "✨ Guru Ji de hathan likhi",
+        "body": "Jaap Sahib paath karo. Vela aa gaya. 🙏",
+        "emoji": "✨",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Written by Guru Ji's hands. Do Jaap Sahib paath. Time has come."
+      },
+      {
+        "category": "jaap_sahib",
+        "title": "🪷 Jit baar parhiye, navi taqat",
+        "body": "Jaap Sahib har baar navi hai. Paath kariye. 🌸",
+        "emoji": "🪷",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Each time you read, new strength. Jaap Sahib is new each time. Do paath."
+      }
+    ],
+    "tav_prasad_swaye": [
+      {
+        "category": "tav_prasad_swaye",
+        "title": "🌸 Waheguru Ji...",
+        "body": "Tav Prasad Swaye paath da vela hai. Khalsa di mahima suno. 🙏",
+        "emoji": "🌸",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Waheguru Ji... Time for Tav Prasad Swaye. Listen to the glory of Khalsa."
+      },
+      {
+        "category": "tav_prasad_swaye",
+        "title": "✨ Khalsa di pehchan",
+        "body": "Tav Prasad Swaye vich hai. Paath karan da sama aa gaya. 🌺",
+        "emoji": "✨",
+        "priority": "high",
+        "time": "morning",
+        "translation": "The identity of Khalsa. Is in Tav Prasad Swaye. Time for paath has arrived."
+      },
+      {
+        "category": "tav_prasad_swaye",
+        "title": "🪷 Sant sipahi da darja",
+        "body": "Tav Prasad Swaye paath vich mildi hai. Vela hai. 🙏",
+        "emoji": "🪷",
+        "priority": "high",
+        "time": "morning",
+        "translation": "The rank of saint-soldier. Comes in Tav Prasad Swaye paath. It's time."
+      },
+      {
+        "category": "tav_prasad_swaye",
+        "title": "🌺 Dashmesh Pita Ji da updesh",
+        "body": "Tav Prasad Swaye paath da vela aa gaya. Aao suno. 🌸",
+        "emoji": "🌺",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Tenth Master's teaching. Time for Tav Prasad Swaye paath has come. Come listen."
+      },
+      {
+        "category": "tav_prasad_swaye",
+        "title": "🤍 Pyar te tyag, dono saath",
+        "body": "Tav Prasad Swaye vich sikhaya hai. Paath kariye. 🙏",
+        "emoji": "🤍",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Love and sacrifice, both together. Taught in Tav Prasad Swaye. Do paath."
+      },
+      {
+        "category": "tav_prasad_swaye",
+        "title": "✨ Mitthe bol, kathor iraade",
+        "body": "Tav Prasad Swaye paath da vela hai. Mann lagao. 🌸",
+        "emoji": "✨",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Sweet words, strong resolve. It's Tav Prasad Swaye paath time. Focus your mind."
+      },
+      {
+        "category": "tav_prasad_swaye",
+        "title": "🌸 Khalsa di shaan",
+        "body": "Tav Prasad Swaye vich hai. Paath da sama aa gaya. 🙏",
+        "emoji": "🌸",
+        "priority": "high",
+        "time": "morning",
+        "translation": "The pride of Khalsa. Is in Tav Prasad Swaye. Time for paath has arrived."
+      },
+      {
+        "category": "tav_prasad_swaye",
+        "title": "🪷 Guru Ji di kirpa naal",
+        "body": "Tav Prasad Swaye paath karo. Vela aa gaya. 🌺",
+        "emoji": "🪷",
+        "priority": "high",
+        "time": "morning",
+        "translation": "With Guru Ji's grace. Do Tav Prasad Swaye paath. Time has come."
+      },
+      {
+        "category": "tav_prasad_swaye",
+        "title": "🌺 Nimrata te nidar",
+        "body": "Tav Prasad Swaye vich hai raasta. Paath kariye. 🙏",
+        "emoji": "🌺",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Humility and fearlessness. The path is in Tav Prasad Swaye. Do paath."
+      },
+      {
+        "category": "tav_prasad_swaye",
+        "title": "✨ Khalsa ki sikhya",
+        "body": "Tav Prasad Swaye paath da vela hai. Aao suno. 🌸",
+        "emoji": "✨",
+        "priority": "high",
+        "time": "morning",
+        "translation": "The teaching of Khalsa. It's Tav Prasad Swaye paath time. Come listen."
+      },
+      {
+        "category": "tav_prasad_swaye",
+        "title": "🤍 Guru Gobind Singh Ji di awaaz",
+        "body": "Tav Prasad Swaye vich goonjdi hai. Paath karo. 🙏",
+        "emoji": "🤍",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Guru Gobind Singh Ji's voice. Echoes in Tav Prasad Swaye. Do paath."
+      },
+      {
+        "category": "tav_prasad_swaye",
+        "title": "🌸 Sat te nyaa da sang",
+        "body": "Tav Prasad Swaye paath vich hai. Vela aa gaya. 🪷",
+        "emoji": "🌸",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Union of truth and justice. Is in Tav Prasad Swaye paath. Time has come."
+      },
+      {
+        "category": "tav_prasad_swaye",
+        "title": "🪷 Akal Purakh di mehar",
+        "body": "Tav Prasad Swaye paath naal mildi hai. Aao kariye. 🙏",
+        "emoji": "🪷",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Akal Purakh's blessings. Come with Tav Prasad Swaye paath. Come do it."
+      },
+      {
+        "category": "tav_prasad_swaye",
+        "title": "🌺 Chotta paath, vade arth",
+        "body": "Tav Prasad Swaye hai. Paath da sama aa gaya. 🌸",
+        "emoji": "🌺",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Short paath, deep meanings. Is Tav Prasad Swaye. Time for paath has arrived."
+      },
+      {
+        "category": "tav_prasad_swaye",
+        "title": "✨ Khalsa bano, Khalsa banaao",
+        "body": "Tav Prasad Swaye paath vich sikh. Vela hai. 🙏",
+        "emoji": "✨",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Become Khalsa, create Khalsa. Learn in Tav Prasad Swaye paath. It's time."
+      },
+      {
+        "category": "tav_prasad_swaye",
+        "title": "🤍 Guru ki fauj da jazba",
+        "body": "Tav Prasad Swaye vich hai. Paath kariye. 🌺",
+        "emoji": "🤍",
+        "priority": "high",
+        "time": "morning",
+        "translation": "The spirit of Guru's army. Is in Tav Prasad Swaye. Do paath."
+      },
+      {
+        "category": "tav_prasad_swaye",
+        "title": "🌸 Sarb kala da malik",
+        "body": "Tav Prasad Swaye paath da vela aa gaya. Aao shuru kariye. 🙏",
+        "emoji": "🌸",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Master of all powers. Time for Tav Prasad Swaye paath has come. Come, let's begin."
+      },
+      {
+        "category": "tav_prasad_swaye",
+        "title": "🪷 Mann vich sakoon, tan vich shakti",
+        "body": "Tav Prasad Swaye paath naal. Vela hai. 🌸",
+        "emoji": "🪷",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Peace in mind, power in body. With Tav Prasad Swaye paath. It's time."
+      },
+      {
+        "category": "tav_prasad_swaye",
+        "title": "🌺 Guru Ji da aashirwad",
+        "body": "Tav Prasad Swaye paath vich prapat karo. Sama aa gaya. 🙏",
+        "emoji": "🌺",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Guru Ji's blessing. Receive in Tav Prasad Swaye paath. Time has arrived."
+      },
+      {
+        "category": "tav_prasad_swaye",
+        "title": "✨ Khalsa ji ka bol bala",
+        "body": "Tav Prasad Swaye paath da vela hai. Aao kariye. 🌸",
+        "emoji": "✨",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Victory to the Khalsa. It's Tav Prasad Swaye paath time. Come do it."
+      }
+    ],
+    "chaupai_sahib": [
+      {
+        "category": "chaupai_sahib",
+        "title": "🛡️ Waheguru Ji...",
+        "body": "Chaupai Sahib paath da vela hai. Raksha da dhaal lao. 🙏",
+        "emoji": "🛡️",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Waheguru Ji... Time for Chaupai Sahib. Take the shield of protection."
+      },
+      {
+        "category": "chaupai_sahib",
+        "title": "✨ Har taraf Guru Ji di chhaaya",
+        "body": "Chaupai Sahib paath naal mehsoos karo. Vela aa gaya. 🌸",
+        "emoji": "✨",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Guru Ji's shelter everywhere. Feel it with Chaupai Sahib paath. Time has come."
+      },
+      {
+        "category": "chaupai_sahib",
+        "title": "🪷 Dar khatam, shanti hazir",
+        "body": "Chaupai Sahib paath da sama hai. Aao kariye. 🙏",
+        "emoji": "🪷",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Fear gone, peace present. It's Chaupai Sahib paath time. Come do it."
+      },
+      {
+        "category": "chaupai_sahib",
+        "title": "🌺 Guru Ji rakhan vaale",
+        "body": "Chaupai Sahib vich bandiye. Paath karan da vela hai. 🌸",
+        "emoji": "🌺",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Guru Ji the protector. Is praised in Chaupai Sahib. It's paath time."
+      },
+      {
+        "category": "chaupai_sahib",
+        "title": "🤍 Mann vich koi dar nahi",
+        "body": "Chaupai Sahib paath karan baad. Vela aa gaya. 🙏",
+        "emoji": "🤍",
+        "priority": "high",
+        "time": "morning",
+        "translation": "No fear in mind. After Chaupai Sahib paath. Time has come."
+      },
+      {
+        "category": "chaupai_sahib",
+        "title": "🌸 Raksha kavach",
+        "body": "Chaupai Sahib hai. Paath karan da sama aa gaya. 🪷",
+        "emoji": "🌸",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Protective armor. Is Chaupai Sahib. Time for paath has arrived."
+      },
+      {
+        "category": "chaupai_sahib",
+        "title": "✨ Sabh takaton nalo vada",
+        "body": "Guru Ji da naam hai. Chaupai Sahib paath kariye. 🙏",
+        "emoji": "✨",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Greater than all powers. Is Guru Ji's name. Do Chaupai Sahib paath."
+      },
+      {
+        "category": "chaupai_sahib",
+        "title": "🌺 Koi bhau nahi, koi shok nahi",
+        "body": "Chaupai Sahib paath da vela hai. Mann lagao. 🌸",
+        "emoji": "🌺",
+        "priority": "high",
+        "time": "morning",
+        "translation": "No fear, no sorrow. It's Chaupai Sahib paath time. Focus your mind."
+      },
+      {
+        "category": "chaupai_sahib",
+        "title": "🪷 Hamri karo haath de raksha",
+        "body": "Chaupai Sahib vich ardaas hai. Paath karo. 🙏",
+        "emoji": "🪷",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Protect us with Your hands. Prayer is in Chaupai Sahib. Do paath."
+      },
+      {
+        "category": "chaupai_sahib",
+        "title": "🤍 Guru Ji da haath sir te",
+        "body": "Chaupai Sahib paath naal mehsoos hunda. Vela hai. 🌸",
+        "emoji": "🤍",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Guru Ji's hand on your head. Feels it with Chaupai Sahib paath. It's time."
+      },
+      {
+        "category": "chaupai_sahib",
+        "title": "🌸 Dukh bhanjan tera naam",
+        "body": "Chaupai Sahib paath da vela aa gaya. Aao kariye. 🙏",
+        "emoji": "🌸",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Destroyer of pain is Your name. Time for Chaupai Sahib paath has come. Come do it."
+      },
+      {
+        "category": "chaupai_sahib",
+        "title": "✨ Sabh gobind hai, sabh gobind hai",
+        "body": "Chaupai Sahib paath vich yaad aunda. Sama hai. 🌺",
+        "emoji": "✨",
+        "priority": "high",
+        "time": "morning",
+        "translation": "All is Gobind, all is Gobind. Remembered in Chaupai Sahib paath. It's time."
+      },
+      {
+        "category": "chaupai_sahib",
+        "title": "🌺 Guru Gobind Singh Ji di bani",
+        "body": "Chaupai Sahib paath karo. Vela aa gaya. 🙏",
+        "emoji": "🌺",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Guru Gobind Singh Ji's word. Do Chaupai Sahib paath. Time has come."
+      },
+      {
+        "category": "chaupai_sahib",
+        "title": "🪷 Bhau kahu ko det nahi",
+        "body": "Chaupai Sahib paath da vela hai. Aao shanti pao. 🌸",
+        "emoji": "🪷",
+        "priority": "high",
+        "time": "morning",
+        "translation": "He frightens no one. It's Chaupai Sahib paath time. Come find peace."
+      },
+      {
+        "category": "chaupai_sahib",
+        "title": "🤍 Mann vich vishwaas",
+        "body": "Chaupai Sahib paath naal pucca hunda. Paath kariye. 🙏",
+        "emoji": "🤍",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Faith in mind. Becomes firm with Chaupai Sahib paath. Do paath."
+      },
+      {
+        "category": "chaupai_sahib",
+        "title": "✨ Rakshak te data",
+        "body": "Chaupai Sahib vich bandeya. Paath da sama hai. 🌺",
+        "emoji": "✨",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Protector and giver. Praised in Chaupai Sahib. It's paath time."
+      },
+      {
+        "category": "chaupai_sahib",
+        "title": "🌸 Apne das ki aap raksha",
+        "body": "Chaupai Sahib paath vich ardaas. Vela aa gaya. 🙏",
+        "emoji": "🌸",
+        "priority": "high",
+        "time": "morning",
+        "translation": "You Yourself protect Your servant. Prayer in Chaupai Sahib paath. Time has come."
+      },
+      {
+        "category": "chaupai_sahib",
+        "title": "🪷 Guru Ji da hath pakadiye",
+        "body": "Chaupai Sahib paath naal. Aao kariye. 🌸",
+        "emoji": "🪷",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Hold Guru Ji's hand. With Chaupai Sahib paath. Come do it."
+      },
+      {
+        "category": "chaupai_sahib",
+        "title": "🌺 Prabh hamesha naal hai",
+        "body": "Chaupai Sahib paath karan baad eh yakin. Vela hai. 🙏",
+        "emoji": "🌺",
+        "priority": "high",
+        "time": "morning",
+        "translation": "God is always with you. This certainty after Chaupai Sahib paath. It's time."
+      },
+      {
+        "category": "chaupai_sahib",
+        "title": "✨ Sahib da sahaara",
+        "body": "Chaupai Sahib paath hai. Paath da vela aa gaya. 🌸",
+        "emoji": "✨",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Master's support. Is Chaupai Sahib paath. Time for paath has arrived."
+      }
+    ],
+    "anand_sahib": [
+      {
+        "category": "anand_sahib",
+        "title": "🌸 Waheguru Ji...",
+        "body": "Anand Sahib paath da vela hai. Mann vich anand bharo. 🙏",
+        "emoji": "🌸",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Waheguru Ji... Time for Anand Sahib. Fill your mind with bliss."
+      },
+      {
+        "category": "anand_sahib",
+        "title": "✨ Anand bhaya meri maaye",
+        "body": "Anand Sahib paath karan da sama aa gaya. 🌺",
+        "emoji": "✨",
+        "priority": "high",
+        "time": "morning",
+        "translation": "I am in bliss, O my mother. Time for Anand Sahib paath has arrived."
+      },
+      {
+        "category": "anand_sahib",
+        "title": "🪷 Guru Amar Das Ji di bani",
+        "body": "Anand Sahib paath da vela hai. Aao khushi pao. 🙏",
+        "emoji": "🪷",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Guru Amar Das Ji's word. It's Anand Sahib paath time. Come find joy."
+      },
+      {
+        "category": "anand_sahib",
+        "title": "🌺 Satguru mileya meri maaye",
+        "body": "Anand Sahib vich gao. Paath da vela aa gaya. 🌸",
+        "emoji": "🌺",
+        "priority": "high",
+        "time": "morning",
+        "translation": "I have met the True Guru, O my mother. Sing in Anand Sahib. Time for paath has come."
+      },
+      {
+        "category": "anand_sahib",
+        "title": "🤍 Khushi da srot",
+        "body": "Anand Sahib paath hai. Aao kariye. 🙏",
+        "emoji": "🤍",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Source of happiness. Is Anand Sahib paath. Come do it."
+      },
+      {
+        "category": "anand_sahib",
+        "title": "🌸 Mann vich anand",
+        "body": "Anand Sahib paath naal aunda. Vela hai. 🪷",
+        "emoji": "🌸",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Bliss in mind. Comes with Anand Sahib paath. It's time."
+      },
+      {
+        "category": "anand_sahib",
+        "title": "✨ 40 paurian khushian di",
+        "body": "Anand Sahib paath da sama aa gaya. Aao kariye. 🙏",
+        "emoji": "✨",
+        "priority": "high",
+        "time": "morning",
+        "translation": "40 stanzas of happiness. Time for Anand Sahib paath has arrived. Come do it."
+      },
+      {
+        "category": "anand_sahib",
+        "title": "🌺 Nitnem da ant pyara",
+        "body": "Anand Sahib naal. Paath karan da vela aa gaya. 🌸",
+        "emoji": "🌺",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Nitnem's sweet ending. With Anand Sahib. Time for paath has arrived."
+      },
+      {
+        "category": "anand_sahib",
+        "title": "🪷 Ruh vich sukoon",
+        "body": "Anand Sahib paath naal mildi hai. Vela hai. 🙏",
+        "emoji": "🪷",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Peace in the soul. Comes with Anand Sahib paath. It's time."
+      },
+      {
+        "category": "anand_sahib",
+        "title": "🤍 Guru Ji di khushi",
+        "body": "Anand Sahib paath vich mehsoos karo. Sama hai. 🌸",
+        "emoji": "🤍",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Guru Ji's joy. Feel it in Anand Sahib paath. It's time."
+      },
+      {
+        "category": "anand_sahib",
+        "title": "🌸 Dukh mite, sukh aaye",
+        "body": "Anand Sahib paath naal. Vela aa gaya. 🙏",
+        "emoji": "🌸",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Pain removed, happiness comes. With Anand Sahib paath. Time has come."
+      },
+      {
+        "category": "anand_sahib",
+        "title": "✨ Sacha mool", "body": "Anand Sahib paath vich hai. Aao padhiye. 🌺",
+        "emoji": "✨",
+        "priority": "high",
+        "time": "morning",
+        "translation": "The true root. Is in Anand Sahib paath. Come read."
+      },
+      {
+        "category": "anand_sahib",
+        "title": "🌺 Mann maneya, tan thanda",
+        "body": "Anand Sahib paath naal. Vela aa gaya. 🙏",
+        "emoji": "🌺",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Mind content, body cool. With Anand Sahib paath. Time has come."
+      },
+      {
+        "category": "anand_sahib",
+        "title": "🪷 Guru Sahib ka prasad",
+        "body": "Anand Sahib paath hai. Paath karan da sama aa gaya. 🌸",
+        "emoji": "🪷",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Guru Sahib's blessing. Is Anand Sahib paath. Time for paath has arrived."
+      },
+      {
+        "category": "anand_sahib",
+        "title": "🤍 Sachkhand vich jana hai?",
+        "body": "Anand Sahib paath raasta hai. Aao kariye. 🙏",
+        "emoji": "🤍",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Want to reach Sachkhand? Anand Sahib paath is the path. Come do it."
+      },
+      {
+        "category": "anand_sahib",
+        "title": "🌸 Anand utsav",
+        "body": "Anand Sahib paath naal manao. Vela hai. 🌺",
+        "emoji": "🌸",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Festival of bliss. Celebrate with Anand Sahib paath. It's time."
+      },
+      {
+        "category": "anand_sahib",
+        "title": "✨ Guru Amar Das Patshah Ji",
+        "body": "Anand Sahib paath vich milange. Paath karo. 🙏",
+        "emoji": "✨",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Guru Amar Das Patshah Ji. Will meet in Anand Sahib paath. Do paath."
+      },
+      {
+        "category": "anand_sahib",
+        "title": "🌺 Prabh ka sukh anand",
+        "body": "Anand Sahib paath da vela aa gaya. Mann lagao. 🌸",
+        "emoji": "🌺",
+        "priority": "high",
+        "time": "morning",
+        "translation": "God's peace and bliss. Time for Anand Sahib paath has come. Focus your mind."
+      },
+      {
+        "category": "anand_sahib",
+        "title": "🪷 Ruh jagdi hai",
+        "body": "Anand Sahib paath naal. Aao kariye. 🙏",
+        "emoji": "🪷",
+        "priority": "high",
+        "time": "morning",
+        "translation": "The soul awakens. With Anand Sahib paath. Come do it."
+      },
+      {
+        "category": "anand_sahib",
+        "title": "🤍 Khushi da asman",
+        "body": "Anand Sahib paath vich hai. Vela aa gaya. 🌸",
+        "emoji": "🤍",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Sky of happiness. Is in Anand Sahib paath. Time has come."
+      },
+      {
+        "category": "anand_sahib",
+        "title": "🌸 Nitnem sampooran karo",
+        "body": "Anand Sahib paath naal. Sama hai. 🙏",
+        "emoji": "🌸",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Complete Nitnem. With Anand Sahib paath. It's time."
+      },
+      {
+        "category": "anand_sahib",
+        "title": "✨ Guru Ji di galgi",
+        "body": "Anand Sahib paath vich lao. Paath karo. 🌺",
+        "emoji": "✨",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Guru Ji's embrace. Take in Anand Sahib paath. Do paath."
+      }
+    ],
+    "rehras_sahib": [
+      {
+        "category": "rehras_sahib",
+        "title": "🌅 Waheguru Ji...",
+        "body": "Rehras Sahib da vela aa gaya. Guru Maharaj Ji di khushian lavo. 🙏",
+        "emoji": "🌅",
+        "priority": "high",
+        "time": "evening",
+        "translation": "Waheguru Ji... Time for Rehras Sahib has come. Receive Guru Maharaj Ji's blessings."
+      },
+      {
+        "category": "rehras_sahib",
+        "title": "🌸 Suraj dubda ja reha hai",
+        "body": "Par Guru Ji di roshni hamesha hai. Rehras Sahib paath kariye. 🌺",
+        "emoji": "🌸",
+        "priority": "high",
+        "time": "evening",
+        "translation": "The sun is setting. But Guru Ji's light is eternal. Do Rehras Sahib paath."
+      },
+      {
+        "category": "rehras_sahib",
+        "title": "✨ Shaam da sukoon",
+        "body": "Rehras Sahib paath naal aao. Vela aa gaya. 🙏",
+        "emoji": "✨",
+        "priority": "high",
+        "time": "evening",
+        "translation": "Evening's peace. Come with Rehras Sahib paath. Time has arrived."
+      },
+      {
+        "category": "rehras_sahib",
+        "title": "🪷 Din khatam hunda vekh rahe ho?",
+        "body": "Guru Maharaj Ji da shukar karo. Rehras Sahib da vela hai. 🌸",
+        "emoji": "🪷",
+        "priority": "high",
+        "time": "evening",
+        "translation": "Watching the day end? Thank Guru Maharaj Ji. It's Rehras Sahib time."
+      },
+      {
+        "category": "rehras_sahib",
+        "title": "🌺 Shaam di ardaas",
+        "body": "Rehras Sahib paath hai. Aao Guru Sahib naal jude. 🙏",
+        "emoji": "🌺",
+        "priority": "high",
+        "time": "evening",
+        "translation": "Evening prayer. Is Rehras Sahib paath. Come connect with Guru Sahib."
+      },
+      {
+        "category": "rehras_sahib",
+        "title": "🤍 Ajj da din Guru Kirpa naal guzreya",
+        "body": "Rehras Sahib paath naal shukar karo. Vela aa gaya. 🌸",
+        "emoji": "🤍",
+        "priority": "high",
+        "time": "evening",
+        "translation": "Today passed by Guru's grace. Give thanks with Rehras Sahib paath. Time has come."
+      },
+      {
+        "category": "rehras_sahib",
+        "title": "🌅 Shaad di vidayi",
+        "body": "Rehras Sahib paath naal karo. Sama hai. 🙏",
+        "emoji": "🌅",
+        "priority": "high",
+        "time": "evening",
+        "translation": "Farewell to the day. Do with Rehras Sahib paath. It's time."
+      },
+      {
+        "category": "rehras_sahib",
+        "title": "✨ So dar tera kehda",
+        "body": "Rehras Sahib paath vich gao. Vela aa gaya. 🌸",
+        "emoji": "✨",
+        "priority": "high",
+        "time": "evening",
+        "translation": "Where is that door of Yours? Sing in Rehras Sahib paath. Time has come."
+      },
+      {
+        "category": "rehras_sahib",
+        "title": "🌺 Thak gaye ho?",
+        "body": "Rehras Sahib paath naal sukoon pao. Aao kariye. 🙏",
+        "emoji": "🌺",
+        "priority": "high",
+        "time": "evening",
+        "translation": "Are you tired? Find rest with Rehras Sahib paath. Come do it."
+      },
+      {
+        "category": "rehras_sahib",
+        "title": "🪷 Shaam di roshni",
+        "body": "Rehras Sahib paath hai. Paath karan da vela aa gaya. 🌸",
+        "emoji": "🪷",
+        "priority": "high",
+        "time": "evening",
+        "translation": "Evening's light. Is Rehras Sahib paath. Time for paath has arrived."
+      },
+      {
+        "category": "rehras_sahib",
+        "title": "🤍 Guru Ji nu yaad karo",
+        "body": "Rehras Sahib paath naal. Sama hai. 🙏",
+        "emoji": "🤍",
+        "priority": "high",
+        "time": "evening",
+        "translation": "Remember Guru Ji. With Rehras Sahib paath. It's time."
+      },
+      {
+        "category": "rehras_sahib",
+        "title": "🌸 Din di khasusi karo",
+        "body": "Rehras Sahib paath vich. Vela aa gaya. 🌺",
+        "emoji": "🌸",
+        "priority": "high",
+        "time": "evening",
+        "translation": "End the day. In Rehras Sahib paath. Time has come."
+      },
+      {
+        "category": "rehras_sahib",
+        "title": "🌅 Rab da shukar ada karo",
+        "body": "Rehras Sahib paath naal. Aao kariye. 🙏",
+        "emoji": "🌅",
+        "priority": "high",
+        "time": "evening",
+        "translation": "Give thanks to God. With Rehras Sahib paath. Come do it."
+      },
+      {
+        "category": "rehras_sahib",
+        "title": "✨ Shaam ka darbar",
+        "body": "Rehras Sahib paath hai. Paath karan da sama aa gaya. 🌸",
+        "emoji": "✨",
+        "priority": "high",
+        "time": "evening",
+        "translation": "Evening's court. Is Rehras Sahib paath. Time for paath has arrived."
+      },
+      {
+        "category": "rehras_sahib",
+        "title": "🪷 Andhera aun ton pehle",
+        "body": "Rehras Sahib paath naal Guru Ji naal judo. Vela hai. 🙏",
+        "emoji": "🪷",
+        "priority": "high",
+        "time": "evening",
+        "translation": "Before darkness comes. Connect with Guru Ji through Rehras Sahib paath. It's time."
+      },
+      {
+        "category": "rehras_sahib",
+        "title": "🌺 Benanti paath",
+        "body": "Rehras Sahib paath da vela aa gaya. Mann lagao. 🌸",
+        "emoji": "🌺",
+        "priority": "high",
+        "time": "evening",
+        "translation": "Prayer of supplication. Time for Rehras Sahib paath has come. Focus your mind."
+      },
+      {
+        "category": "rehras_sahib",
+        "title": "🤍 Guru Ji hamesha saath ne",
+        "body": "Rehras Sahib paath naal eh yaad aunda. Aao kariye. 🙏",
+        "emoji": "🤍",
+        "priority": "high",
+        "time": "evening",
+        "translation": "Guru Ji is always with you. This is remembered with Rehras Sahib paath. Come do it."
+      },
+      {
+        "category": "rehras_sahib",
+        "title": "🌅 Shaam di mithaas",
+        "body": "Rehras Sahib paath vich hai. Vela aa gaya. 🌺",
+        "emoji": "🌅",
+        "priority": "high",
+        "time": "evening",
+        "translation": "Evening's sweetness. Is in Rehras Sahib paath. Time has come."
+      },
+      {
+        "category": "rehras_sahib",
+        "title": "✨ Panch banian, ik vela",
+        "body": "Rehras Sahib paath da sama hai. Aao baithiye. 🙏",
+        "emoji": "✨",
+        "priority": "high",
+        "time": "evening",
+        "translation": "Five banis, one time. It's Rehras Sahib paath time. Come sit."
+      },
+      {
+        "category": "rehras_sahib",
+        "title": "🌸 Din da hisaab kitaab",
+        "body": "Rehras Sahib paath naal Guru Sahib agge karo. Vela hai. 🌸",
+        "emoji": "🌸",
+        "priority": "high",
+        "time": "evening",
+        "translation": "The day's accounting. Do before Guru Sahib with Rehras Sahib paath. It's time."
+      },
+      {
+        "category": "rehras_sahib",
+        "title": "🪷 Sham nu shanti naal",
+        "body": "Rehras Sahib paath karan da vela aa gaya. 🙏",
+        "emoji": "🪷",
+        "priority": "high",
+        "time": "evening",
+        "translation": "Evening with peace. Time for Rehras Sahib paath has arrived."
+      },
+      {
+        "category": "rehras_sahib",
+        "title": "🌺 Guru Maharaj Ji di meharbani",
+        "body": "Rehras Sahib paath vich maango. Sama hai. 🌸",
+        "emoji": "🌺",
+        "priority": "high",
+        "time": "evening",
+        "translation": "Guru Maharaj Ji's mercy. Ask for in Rehras Sahib paath. It's time."
+      },
+      {
+        "category": "rehras_sahib",
+        "title": "🤍 Shaam da sangat",
+        "body": "Rehras Sahib paath naal Guru de charna vich. Aao kariye. 🙏",
+        "emoji": "🤍",
+        "priority": "high",
+        "time": "evening",
+        "translation": "Evening's congregation. At Guru's feet with Rehras Sahib paath. Come do it."
+      },
+      {
+        "category": "rehras_sahib",
+        "title": "🌅 Suraj dubiya, par mann jagde raho",
+        "body": "Rehras Sahib paath naal. Vela aa gaya. 🌺",
+        "emoji": "🌅",
+        "priority": "high",
+        "time": "evening",
+        "translation": "Sun has set, but keep your mind awake. With Rehras Sahib paath. Time has come."
+      },
+      {
+        "category": "rehras_sahib",
+        "title": "✨ Guru Ji de darbar vich",
+        "body": "Rehras Sahib paath karan da sama aa gaya. 🙏",
+        "emoji": "✨",
+        "priority": "high",
+        "time": "evening",
+        "translation": "In Guru Ji's court. Time for Rehras Sahib paath has arrived."
+      },
+      {
+        "category": "rehras_sahib",
+        "title": "🌸 Shaam di prarthna",
+        "body": "Rehras Sahib paath hai. Aao mann lagao. 🪷",
+        "emoji": "🌸",
+        "priority": "high",
+        "time": "evening",
+        "translation": "Evening prayer. Is Rehras Sahib paath. Come focus your mind."
+      }
+    ],
+    "kirtan_sohila": [
+      {
+        "category": "kirtan_sohila",
+        "title": "🌙 Waheguru Ji...",
+        "body": "Kirtan Sohila paath da vela hai. Raat nu shanti naal bitao. 🙏",
+        "emoji": "🌙",
+        "priority": "high",
+        "time": "night",
+        "translation": "Waheguru Ji... Time for Kirtan Sohila. Spend the night with peace."
+      },
+      {
+        "category": "kirtan_sohila",
+        "title": "✨ Neend aun ton pehle",
+        "body": "Kirtan Sohila paath karo. Guru Sahib de charna vich souvo. 🌸",
+        "emoji": "✨",
+        "priority": "high",
+        "time": "night",
+        "translation": "Before sleep comes. Do Kirtan Sohila paath. Sleep at Guru Sahib's feet."
+      },
+      {
+        "category": "kirtan_sohila",
+        "title": "🪷 Raat da pahra shuru",
+        "body": "Kirtan Sohila paath naal. Vela aa gaya hai. 🙏",
+        "emoji": "🪷",
+        "priority": "high",
+        "time": "night",
+        "translation": "Night's watch begins. With Kirtan Sohila paath. Time has come."
+      },
+      {
+        "category": "kirtan_sohila",
+        "title": "🌺 Guru Ji de hawaale karo ajj nu",
+        "body": "Kirtan Sohila paath da vela hai. Aao kariye. 🌸",
+        "emoji": "🌺",
+        "priority": "high",
+        "time": "night",
+        "translation": "Surrender today to Guru Ji. It's Kirtan Sohila paath time. Come do it."
+      },
+      {
+        "category": "kirtan_sohila",
+        "title": "🤍 Shant neend da raaz",
+        "body": "Kirtan Sohila paath vich hai. Paath karo. 🙏",
+        "emoji": "🤍",
+        "priority": "high",
+        "time": "night",
+        "translation": "Secret of peaceful sleep. Is in Kirtan Sohila paath. Do paath."
+      },
+      {
+        "category": "kirtan_sohila",
+        "title": "🌙 Raat di shuruwaat Guru naal",
+        "body": "Kirtan Sohila paath karan da sama aa gaya. 🌸",
+        "emoji": "🌙",
+        "priority": "high",
+        "time": "night",
+        "translation": "Start the night with Guru. Time for Kirtan Sohila paath has arrived."
+      },
+      {
+        "category": "kirtan_sohila",
+        "title": "✨ Ruh nu araam do",
+        "body": "Kirtan Sohila paath naal. Vela hai. 🙏",
+        "emoji": "✨",
+        "priority": "high",
+        "time": "night",
+        "translation": "Give rest to your soul. With Kirtan Sohila paath. It's time."
+      },
+      {
+        "category": "kirtan_sohila",
+        "title": "🌸 Din da akhiri paath",
+        "body": "Kirtan Sohila hai. Aao shanti naal khatam kariye. 🌺",
+        "emoji": "🌸",
+        "priority": "high",
+        "time": "night",
+        "translation": "Last paath of the day. Is Kirtan Sohila. Come end peacefully."
+      },
+      {
+        "category": "kirtan_sohila",
+        "title": "🪷 Guru Sahib nu goodnight kahiye",
+        "body": "Kirtan Sohila paath naal. Sama aa gaya. 🙏",
+        "emoji": "🪷",
+        "priority": "high",
+        "time": "night",
+        "translation": "Say goodnight to Guru Sahib. With Kirtan Sohila paath. Time has arrived."
+      },
+      {
+        "category": "kirtan_sohila",
+        "title": "🌙 Andhera gabhru ho reha hai",
+        "body": "Kirtan Sohila paath naal roshni bharo. Vela hai. 🌸",
+        "emoji": "🌙",
+        "priority": "high",
+        "time": "night",
+        "translation": "Darkness is deepening. Fill with light through Kirtan Sohila paath. It's time."
+      },
+      {
+        "category": "kirtan_sohila",
+        "title": "🤍 Nitnem da samapan",
+        "body": "Kirtan Sohila paath naal karo. Aao kariye. 🙏",
+        "emoji": "🤍",
+        "priority": "high",
+        "time": "night",
+        "translation": "Conclusion of Nitnem. Do with Kirtan Sohila paath. Come do it."
+      },
+      {
+        "category": "kirtan_sohila",
+        "title": "✨ Raat nu Guru de hawaale",
+        "body": "Kirtan Sohila paath da vela aa gaya. 🌺",
+        "emoji": "✨",
+        "priority": "high",
+        "time": "night",
+        "translation": "Surrender the night to Guru. Time for Kirtan Sohila paath has come."
+      },
+      {
+        "category": "kirtan_sohila",
+        "title": "🌸 Sukh neend da prasad",
+        "body": "Kirtan Sohila paath vich hai. Paath karo. 🙏",
+        "emoji": "🌸",
+        "priority": "high",
+        "time": "night",
+        "translation": "Gift of peaceful sleep. Is in Kirtan Sohila paath. Do paath."
+      },
+      {
+        "category": "kirtan_sohila",
+        "title": "🌙 Raat da Simran",
+        "body": "Kirtan Sohila paath hai. Vela aa gaya. 🌸",
+        "emoji": "🌙",
+        "priority": "high",
+        "time": "night",
+        "translation": "Night's meditation. Is Kirtan Sohila paath. Time has come."
+      },
+      {
+        "category": "kirtan_sohila",
+        "title": "🪷 Guru Ji de bachan sutt ton pehle",
+        "body": "Kirtan Sohila paath karo. Aao kariye. 🙏",
+        "emoji": "🪷",
+        "priority": "high",
+        "time": "night",
+        "translation": "Guru Ji's words before sleeping. Do Kirtan Sohila paath. Come do it."
+      },
+      {
+        "category": "kirtan_sohila",
+        "title": "🌺 Shanti naal so jao",
+        "body": "Kirtan Sohila paath baad. Vela aa gaya. 🌸",
+        "emoji": "🌺",
+        "priority": "high",
+        "time": "night",
+        "translation": "Sleep with peace. After Kirtan Sohila paath. Time has come."
+      },
+      {
+        "category": "kirtan_sohila",
+        "title": "🤍 Raat da aashirwad",
+        "body": "Kirtan Sohila paath vich prapat karo. Sama hai. 🙏",
+        "emoji": "🤍",
+        "priority": "high",
+        "time": "night",
+        "translation": "Night's blessing. Receive in Kirtan Sohila paath. It's time."
+      },
+      {
+        "category": "kirtan_sohila",
+        "title": "🌙 Raat bhar Guru rakhe",
+        "body": "Kirtan Sohila paath karan da vela hai. 🌸",
+        "emoji": "🌙",
+        "priority": "high",
+        "time": "night",
+        "translation": "Guru protects all night. It's Kirtan Sohila paath time."
+      }
+    ],
+    "random_spiritual_reminders": [
+      {
+        "category": "random_spiritual_reminders",
+        "title": "🌸 Ajj kujh pal Guru Maharaj Ji nu yaad kariye",
+        "body": "Bas ik gehra saah... Waheguru. 🙏",
+        "emoji": "🌸",
+        "priority": "normal",
+        "time": "random",
+        "translation": "Remember Guru Maharaj Ji for a few moments today. Just one deep breath... Waheguru."
+      },
+      {
+        "category": "random_spiritual_reminders",
+        "title": "🤍 Ik gehra saah",
+        "body": "Waheguru Waheguru... Mann shant ho jaanda hai. ✨",
+        "emoji": "🤍",
+        "priority": "normal",
+        "time": "random",
+        "translation": "One deep breath. Waheguru Waheguru... The mind becomes calm."
+      },
+      {
+        "category": "random_spiritual_reminders",
+        "title": "🌿 Dil shant ho janda hai",
+        "body": "Jad Naam naal jurde haan. 🌸",
+        "emoji": "🌿",
+        "priority": "normal",
+        "time": "random",
+        "translation": "The heart becomes peaceful. When we connect with Naam."
+      },
+      {
+        "category": "random_spiritual_reminders",
+        "title": "☀️ Ajj da sab ton sona pal",
+        "body": "Guru de charna vich hai. 🙏",
+        "emoji": "☀️",
+        "priority": "normal",
+        "time": "random",
+        "translation": "Today's most golden moment. Is at Guru's feet."
+      },
+      {
+        "category": "random_spiritual_reminders",
+        "title": "✨ Guru di kirpa hamesha naal hai",
+        "body": "Sirf dhyan dena zaruri hai. 🌸",
+        "emoji": "✨",
+        "priority": "normal",
+        "time": "random",
+        "translation": "Guru's grace is always with you. Just need to pay attention."
+      },
+      {
+        "category": "random_spiritual_reminders",
+        "title": "🪷 Kujh seconds Naam jap lo",
+        "body": "Poora din badal sakda hai. 🤍",
+        "emoji": "🪷",
+        "priority": "normal",
+        "time": "random",
+        "translation": "Chant Naam for a few seconds. The whole day can change."
+      },
+      {
+        "category": "random_spiritual_reminders",
+        "title": "🌺 Waheguru hamesha sunnde ne",
+        "body": "Chahe tusi bolo ya na bolo. 🙏",
+        "emoji": "🌺",
+        "priority": "normal",
+        "time": "random",
+        "translation": "Waheguru always listens. Whether you speak or not."
+      },
+      {
+        "category": "random_spiritual_reminders",
+        "title": "🌸 Jithe tusi ho",
+        "body": "Uthe hi Guru Ji hazir ne. ✨",
+        "emoji": "🌸",
+        "priority": "normal",
+        "time": "random",
+        "translation": "Wherever you are. Guru Ji is present there."
+      },
+      {
+        "category": "random_spiritual_reminders",
+        "title": "🤍 Mann vich hulchul hai?",
+        "body": "Ik pal Waheguru Waheguru jap lo. 🌿",
+        "emoji": "🤍",
+        "priority": "normal",
+        "time": "random",
+        "translation": "Is your mind restless? Chant Waheguru Waheguru for a moment."
+      },
+      {
+        "category": "random_spiritual_reminders",
+        "title": "🕊️ Shanti bahut nazdeek hai",
+        "body": "Sirf Naam di doori utte. 🙏",
+        "emoji": "🕊️",
+        "priority": "normal",
+        "time": "random",
+        "translation": "Peace is very close. Just one Naam away."
+      },
+      {
+        "category": "random_spiritual_reminders",
+        "title": "🌺 Guru Ji di yaad",
+        "body": "Sabse vadde sukoon da kaaran hai. 🌸",
+        "emoji": "🌺",
+        "priority": "normal",
+        "time": "random",
+        "translation": "Remembering Guru Ji. Is the greatest source of peace."
+      },
+      {
+        "category": "random_spiritual_reminders",
+        "title": "✨ Parmatma door nahi",
+        "body": "Tumhare dil vich hi hai. 🤍",
+        "emoji": "✨",
+        "priority": "normal",
+        "time": "random",
+        "translation": "God is not far. He is within your heart."
+      },
+      {
+        "category": "random_spiritual_reminders",
+        "title": "🪷 Saah lene vich vi Simran",
+        "body": "Waheguru aanda, Waheguru jaanda. 🌸",
+        "emoji": "🪷",
+        "priority": "normal",
+        "time": "random",
+        "translation": "Even in breathing is Simran. Waheguru comes in, Waheguru goes out."
+      },
+      {
+        "category": "random_spiritual_reminders",
+        "title": "🌿 Koi vada kaam nahi chaheeda",
+        "body": "Sirf Guru nu yaad karna kaafi hai. 🙏",
+        "emoji": "🌿",
+        "priority": "normal",
+        "time": "random",
+        "translation": "No grand action needed. Just remembering Guru is enough."
+      },
+      {
+        "category": "random_spiritual_reminders",
+        "title": "🌸 Ajj thank you kaho",
+        "body": "Waheguru Ji da. Lakh lakh shukar. ✨",
+        "emoji": "🌸",
+        "priority": "normal",
+        "time": "random",
+        "translation": "Say thank you today. To Waheguru Ji. A million thanks."
+      },
+      {
+        "category": "random_spiritual_reminders",
+        "title": "🤍 Ruh piyasi hai",
+        "body": "Naam da paani piyo. 🪷",
+        "emoji": "🤍",
+        "priority": "normal",
+        "time": "random",
+        "translation": "Your soul is thirsty. Drink the water of Naam."
+      },
+      {
+        "category": "random_spiritual_reminders",
+        "title": "🌺 Guru Ji hamesha sunni de ne",
+        "body": "Tusi bolna shuru karo. 🙏",
+        "emoji": "🌺",
+        "priority": "normal",
+        "time": "random",
+        "translation": "Guru Ji always listens. You just start speaking."
+      },
+      {
+        "category": "random_spiritual_reminders",
+        "title": "✨ Eh pal vi bakhshish hai",
+        "body": "Guru Kirpa naal mileya hai. 🌸",
+        "emoji": "✨",
+        "priority": "normal",
+        "time": "random",
+        "translation": "This moment is also a blessing. Received by Guru's grace."
+      },
+      {
+        "category": "random_spiritual_reminders",
+        "title": "🌿 Mann nu taaza karo",
+        "body": "Waheguru Waheguru... bas itna hi. 🤍",
+        "emoji": "🌿",
+        "priority": "normal",
+        "time": "random",
+        "translation": "Refresh your mind. Waheguru Waheguru... just this much."
+      },
+      {
+        "category": "random_spiritual_reminders",
+        "title": "🪷 Satguru rakhe naal",
+        "body": "Har gadi, har pal. 🙏",
+        "emoji": "🪷",
+        "priority": "normal",
+        "time": "random",
+        "translation": "Satguru keeps you with Him. Every moment, every instant."
+      },
+      {
+        "category": "random_spiritual_reminders",
+        "title": "🌸 Thaka mahesoos kar rahe ho?",
+        "body": "Guru de charna vich 2 pal baitho. ✨",
+        "emoji": "🌸",
+        "priority": "normal",
+        "time": "random",
+        "translation": "Feeling tired? Sit at Guru's feet for 2 moments."
+      },
+      {
+        "category": "random_spiritual_reminders",
+        "title": "🌺 Jo vi ho reha hai",
+        "body": "Guru Kirpa hai. Vishwaas rakho. 🤍",
+        "emoji": "🌺",
+        "priority": "normal",
+        "time": "random",
+        "translation": "Whatever is happening. Is Guru's grace. Keep faith."
+      },
+      {
+        "category": "random_spiritual_reminders",
+        "title": "🕊️ Parmatma de bachan sunna chaunde ho?",
+        "body": "Chup ho jao, sunai denge. 🌸",
+        "emoji": "🕊️",
+        "priority": "normal",
+        "time": "random",
+        "translation": "Want to hear God's words? Become silent, you'll hear."
+      },
+      {
+        "category": "random_spiritual_reminders",
+        "title": "🤍 Ajj nu khaas banao",
+        "body": "Kujh pal Naam Simran kar ke. 🙏",
+        "emoji": "🤍",
+        "priority": "normal",
+        "time": "random",
+        "translation": "Make today special. By doing Naam Simran for a few moments."
+      },
+      {
+        "category": "random_spiritual_reminders",
+        "title": "🌸 Guru Ji tuhanu pyar karde ne",
+        "body": "Tusi jaande ho ya nahi. ✨",
+        "emoji": "🌸",
+        "priority": "normal",
+        "time": "random",
+        "translation": "Guru Ji loves you. Whether you know it or not."
+      },
+      {
+        "category": "random_spiritual_reminders",
+        "title": "🌿 Waheguru da Naam",
+        "body": "Sabse vada hazara hai. 🪷",
+        "emoji": "🌿",
+        "priority": "normal",
+        "time": "random",
+        "translation": "Waheguru's Naam. Is the greatest treasure."
+      },
+      {
+        "category": "random_spiritual_reminders",
+        "title": "🌺 Mann nu pyaas lagi hai?",
+        "body": "Naam da paani pi lo. 🤍",
+        "emoji": "🌺",
+        "priority": "normal",
+        "time": "random",
+        "translation": "Is your mind thirsty? Drink the water of Naam."
+      },
+      {
+        "category": "random_spiritual_reminders",
+        "title": "✨ Khush rehne ka raaz",
+        "body": "Guru Maharaj Ji di yaad vich hai. 🌸",
+        "emoji": "✨",
+        "priority": "normal",
+        "time": "random",
+        "translation": "Secret of staying happy. Is in remembering Guru Maharaj Ji."
+      },
+      {
+        "category": "random_spiritual_reminders",
+        "title": "🪷 Koi gall pareshan kar rahi hai?",
+        "body": "Guru Ji nu dass do. Sunn lenge. 🙏",
+        "emoji": "🪷",
+        "priority": "normal",
+        "time": "random",
+        "translation": "Is something troubling you? Tell Guru Ji. He will listen."
+      },
+      {
+        "category": "random_spiritual_reminders",
+        "title": "🕊️ Ruh shant ho jandi hai",
+        "body": "Jad Guru de charna vich baithe. 🌸",
+        "emoji": "🕊️",
+        "priority": "normal",
+        "time": "random",
+        "translation": "The soul becomes peaceful. When sitting at Guru's feet."
+      },
+      {
+        "category": "random_spiritual_reminders",
+        "title": "🌸 Tuhaada hona ik bakhshish hai",
+        "body": "Waheguru da shukar hai. ✨",
+        "emoji": "🌸",
+        "priority": "normal",
+        "time": "random",
+        "translation": "Your existence is a blessing. Thanks to Waheguru."
+      },
+      {
+        "category": "random_spiritual_reminders",
+        "title": "🤍 Chinta khatam karna hai?",
+        "body": "Waheguru te bharosa rakho. 🌿",
+        "emoji": "🤍",
+        "priority": "normal",
+        "time": "random",
+        "translation": "Want to end worry? Trust in Waheguru."
+      },
+      {
+        "category": "random_spiritual_reminders",
+        "title": "🌺 Akal Purakh sada naal hai",
+        "body": "Sirf mehsoos karna sikho. 🙏",
+        "emoji": "🌺",
+        "priority": "normal",
+        "time": "random",
+        "translation": "Akal Purakh is always with you. Just learn to feel it."
+      },
+      {
+        "category": "random_spiritual_reminders",
+        "title": "✨ Bas ik pal ruk jao",
+        "body": "Te Waheguru Waheguru jap lo. 🌸",
+        "emoji": "✨",
+        "priority": "normal",
+        "time": "random",
+        "translation": "Just stop for one moment. And chant Waheguru Waheguru."
+      },
+      {
+        "category": "random_spiritual_reminders",
+        "title": "🌿 Parmatma di bakhshish",
+        "body": "Har saah vich hai. 🪷",
+        "emoji": "🌿",
+        "priority": "normal",
+        "time": "random",
+        "translation": "God's blessing. Is in every breath."
+      },
+      {
+        "category": "random_spiritual_reminders",
+        "title": "🌸 Pyaar naal yaad karo",
+        "body": "Guru Maharaj Ji nu. Zaroor milange. 🤍",
+        "emoji": "🌸",
+        "priority": "normal",
+        "time": "random",
+        "translation": "Remember with love. Guru Maharaj Ji. You will surely meet Him."
+      },
+      {
+        "category": "random_spiritual_reminders",
+        "title": "🪷 Khushiyan bhaal rahe ho?",
+        "body": "Naam Simran karo. Mil jayengi. 🙏",
+        "emoji": "🪷",
+        "priority": "normal",
+        "time": "random",
+        "translation": "Looking for happiness? Do Naam Simran. You'll find it."
+      },
+      {
+        "category": "random_spiritual_reminders",
+        "title": "🌺 Guru Ji da hath pakad ke chalo",
+        "body": "Raasta aasan ho jayega. ✨",
+        "emoji": "🌺",
+        "priority": "normal",
+        "time": "random",
+        "translation": "Walk holding Guru Ji's hand. The path will become easier."
+      },
+      {
+        "category": "random_spiritual_reminders",
+        "title": "🕊️ Shanti door nahi",
+        "body": "Sirf Waheguru di doori utte. 🌸",
+        "emoji": "🕊️",
+        "priority": "normal",
+        "time": "random",
+        "translation": "Peace is not far. Just one Waheguru away."
+      },
+      {
+        "category": "random_spiritual_reminders",
+        "title": "🤍 Ajj Guru Ji nu miss kar rahe ho?",
+        "body": "Oh vi tuhaanu miss kar rahe ne. 🌿",
+        "emoji": "🤍",
+        "priority": "normal",
+        "time": "random",
+        "translation": "Missing Guru Ji today? He's missing you too."
+      },
+      {
+        "category": "random_spiritual_reminders",
+        "title": "✨ Mann vich duvidha hai?",
+        "body": "Guru Granth Sahib Ji khol ke dekho. 🙏",
+        "emoji": "✨",
+        "priority": "normal",
+        "time": "random",
+        "translation": "Doubt in your mind? Open Guru Granth Sahib Ji and see."
+      },
+      {
+        "category": "random_spiritual_reminders",
+        "title": "🌸 Ruh nu jagao",
+        "body": "Naam Simran naal. Aao shuru kariye. 🪷",
+        "emoji": "🌸",
+        "priority": "normal",
+        "time": "random",
+        "translation": "Awaken your soul. With Naam Simran. Come, let's begin."
+      },
+      {
+        "category": "random_spiritual_reminders",
+        "title": "🌺 Tusi akele nahi ho",
+        "body": "Waheguru hamesha naal hai. 🤍",
+        "emoji": "🌺",
+        "priority": "normal",
+        "time": "random",
+        "translation": "You are not alone. Waheguru is always with you."
+      },
+      {
+        "category": "random_spiritual_reminders",
+        "title": "🌿 Ik chhoti jihi smile",
+        "body": "Waheguru nu yaad kar ke. Dil khush ho jayega. 🌸",
+        "emoji": "🌿",
+        "priority": "normal",
+        "time": "random",
+        "translation": "One small smile. Remembering Waheguru. Your heart will be happy."
+      },
+      {
+        "category": "random_spiritual_reminders",
+        "title": "✨ Guru Ji di meherbani",
+        "body": "Har jagah dikhdi hai. Nazron nu kholo. 🙏",
+        "emoji": "✨",
+        "priority": "normal",
+        "time": "random",
+        "translation": "Guru Ji's kindness. Is visible everywhere. Open your eyes."
+      },
+      {
+        "category": "random_spiritual_reminders",
+        "title": "🪷 Mann pura dol reha hai?",
+        "body": "Naam da sahara lo. Thehr jayega. 🤍",
+        "emoji": "🪷",
+        "priority": "normal",
+        "time": "random",
+        "translation": "Mind swaying completely? Take support of Naam. It will steady."
+      },
+      {
+        "category": "random_spiritual_reminders",
+        "title": "🌸 Ajj pyaar naal jio",
+        "body": "Waheguru sab vich hai. ✨",
+        "emoji": "🌸",
+        "priority": "normal",
+        "time": "random",
+        "translation": "Live with love today. Waheguru is in everyone."
+      },
+      {
+        "category": "random_spiritual_reminders",
+        "title": "🌺 Raah bhul gaye ho?",
+        "body": "Guru Granth Sahib Ji raasta dikhaunge. 🙏",
+        "emoji": "🌺",
+        "priority": "normal",
+        "time": "random",
+        "translation": "Lost your way? Guru Granth Sahib Ji will show the path."
+      },
+      {
+        "category": "random_spiritual_reminders",
+        "title": "🕊️ Dukh aaye te ghabrao na",
+        "body": "Guru Ji naal khade ho. Theek ho jayega. 🌿",
+        "emoji": "🕊️",
+        "priority": "normal",
+        "time": "random",
+        "translation": "If pain comes, don't panic. Stand with Guru Ji. It will be okay."
+      },
+      {
+        "category": "random_spiritual_reminders",
+        "title": "🤍 Ajj kise nu maaf kar do",
+        "body": "Mann halka ho jayega. 🌸",
+        "emoji": "🤍",
+        "priority": "normal",
+        "time": "random",
+        "translation": "Forgive someone today. Your mind will feel lighter."
+      },
+      {
+        "category": "random_spiritual_reminders",
+        "title": "✨ Parmatma di raza vich raho",
+        "body": "Sukh hamesha naal honge. 🪷",
+        "emoji": "✨",
+        "priority": "normal",
+        "time": "random",
+        "translation": "Stay in God's will. Happiness will always be with you."
+      },
+      {
+        "category": "random_spiritual_reminders",
+        "title": "🌸 Guru Ji bulare ne tuhanu",
+        "body": "Kujh pal unhan naal bitao. 🙏",
+        "emoji": "🌸",
+        "priority": "normal",
+        "time": "random",
+        "translation": "Guru Ji is calling you. Spend a few moments with Him."
+      },
+      {
+        "category": "random_spiritual_reminders",
+        "title": "🌺 Zindagi ik tohfa hai",
+        "body": "Waheguru da. Shukar ada karo. ✨",
+        "emoji": "🌺",
+        "priority": "normal",
+        "time": "random",
+        "translation": "Life is a gift. From Waheguru. Give thanks."
+      },
+      {
+        "category": "random_spiritual_reminders",
+        "title": "🌿 Chup chap baith ke",
+        "body": "Sirf Waheguru Waheguru jap lo. 🤍",
+        "emoji": "🌿",
+        "priority": "normal",
+        "time": "random",
+        "translation": "Sit quietly. Just chant Waheguru Waheguru."
+      },
+      {
+        "category": "random_spiritual_reminders",
+        "title": "🪷 Ajj di khushi nu pakad lo",
+        "body": "Guru Ji di yaad naal. 🌸",
+        "emoji": "🪷",
+        "priority": "normal",
+        "time": "random",
+        "translation": "Grasp today's happiness. With Guru Ji's remembrance."
+      },
+      {
+        "category": "random_spiritual_reminders",
+        "title": "✨ Shabad  dil vich vasao",
+        "body": "Gurbani da. Mann badal jayega. 🙏",
+        "emoji": "✨",
+        "priority": "normal",
+        "time": "random",
+        "translation": "Let the word dwell in your heart. Of Gurbani. Mind will change."
+      },
+      {
+        "category": "random_spiritual_reminders",
+        "title": "🌸 Pyaar te nafrat vich",
+        "body": "Tusi pyaar choose karo. Waheguru khush honge. 🌺",
+        "emoji": "🌸",
+        "priority": "normal",
+        "time": "random",
+        "translation": "Between love and hate. You choose love. Waheguru will be pleased."
+      },
+      {
+        "category": "random_spiritual_reminders",
+        "title": "🤍 Ruh nu shanti chahiye?",
+        "body": "Guru de darbar vich aao. 🕊️",
+        "emoji": "🤍",
+        "priority": "normal",
+        "time": "random",
+        "translation": "Soul needs peace? Come to Guru's court."
+      },
+      {
+        "category": "random_spiritual_reminders",
+        "title": "🌺 Guru Maharaj Ji da pyaar",
+        "body": "Ehna gehra hai ki samajh nahi aunda. 🙏",
+        "emoji": "🌺",
+        "priority": "normal",
+        "time": "random",
+        "translation": "Guru Maharaj Ji's love. Is so deep it's incomprehensible."
+      },
+      {
+        "category": "random_spiritual_reminders",
+        "title": "✨ Kujh minutes silence vich bitao",
+        "body": "Waheguru di awaaz sunai degi. 🌸",
+        "emoji": "✨",
+        "priority": "normal",
+        "time": "random",
+        "translation": "Spend a few minutes in silence. You'll hear Waheguru's voice."
+      },
+      {
+        "category": "random_spiritual_reminders",
+        "title": "🌿 Tension ho rahi hai?",
+        "body": "Naam jap lo. Sab theek ho jayega. 🪷",
+        "emoji": "🌿",
+        "priority": "normal",
+        "time": "random",
+        "translation": "Feeling tension? Chant Naam. Everything will be okay."
+      },
+      {
+        "category": "random_spiritual_reminders",
+        "title": "🌸 Akal Purakh di meherbani",
+        "body": "Tuhade utte hamesha barsat ho rahi hai. 🤍",
+        "emoji": "🌸",
+        "priority": "normal",
+        "time": "random",
+        "translation": "Akal Purakh's kindness. Is always raining upon you."
+      },
+      {
+        "category": "random_spiritual_reminders",
+        "title": "🕊️ Mann vich hulchul band karo",
+        "body": "Waheguru nu bulao. Aayenge. 🙏",
+        "emoji": "🕊️",
+        "priority": "normal",
+        "time": "random",
+        "translation": "Stop the restlessness in your mind. Call Waheguru. He'll come."
+      },
+      {
+        "category": "random_spiritual_reminders",
+        "title": "🪷 Guru Ji di galgi vich aao",
+        "body": "Bahut sukoon milega. 🌸",
+        "emoji": "🪷",
+        "priority": "normal",
+        "time": "random",
+        "translation": "Come into Guru Ji's embrace. You'll find great peace."
+      },
+      {
+        "category": "random_spiritual_reminders",
+        "title": "🌺 Darr nahi, pyaar hai",
+        "body": "Guru Maharaj Ji naal. Hamesha yaad rakho. ✨",
+        "emoji": "🌺",
+        "priority": "normal",
+        "time": "random",
+        "translation": "Not fear, but love. With Guru Maharaj Ji. Always remember."
+      },
+      {
+        "category": "random_spiritual_reminders",
+        "title": "🤍 Ajj kujh acha karo",
+        "body": "Kise de liye. Waheguru khush honge. 🙏",
+        "emoji": "🤍",
+        "priority": "normal",
+        "time": "random",
+        "translation": "Do something good today. For someone. Waheguru will be pleased."
+      },
+      {
+        "category": "random_spiritual_reminders",
+        "title": "🌸 Raah mushkil lagdi hai?",
+        "body": "Guru Ji hath pakad ke turde ne. 🌿",
+        "emoji": "🌸",
+        "priority": "normal",
+        "time": "random",
+        "translation": "Path seems difficult? Guru Ji walks holding your hand."
+      }
+    ],
+    "hukamnama": [
+      {
+        "category": "hukamnama",
+        "title": "📖 Waheguru Ji...",
+        "body": "Ajj da Hukamnama Sahib hazir hai. Guru Maharaj Ji da Hukam suno. 🙏",
+        "emoji": "📖",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Waheguru Ji... Today's Hukamnama Sahib is here. Listen to Guru Maharaj Ji's command."
+      },
+      {
+        "category": "hukamnama",
+        "title": "🌸 Guru Maharaj Ji da sandesh",
+        "body": "Ajj de liye aa gaya hai. Hukamnama Sahib padho. 🌺",
+        "emoji": "🌸",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Guru Maharaj Ji's message. Has arrived for today. Read the Hukamnama Sahib."
+      },
+      {
+        "category": "hukamnama",
+        "title": "✨ Ajj da divine hukam",
+        "body": "Tayar hai. Aao Guru Sahib di awaaz suno. 🙏",
+        "emoji": "✨",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Today's divine command. Is ready. Come listen to Guru Sahib's voice."
+      },
+      {
+        "category": "hukamnama",
+        "title": "🪷 Darbar Sahib ton aaya hukam",
+        "body": "Ajj de liye. Hukamnama Sahib suno. 🌸",
+        "emoji": "🪷",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Command has come from Darbar Sahib. For today. Listen to Hukamnama Sahib."
+      },
+      {
+        "category": "hukamnama",
+        "title": "🌺 Guru Ji ki bol rahe ne ajj?",
+        "body": "Hukamnama Sahib vich dekho. 🙏",
+        "emoji": "🌺",
+        "priority": "high",
+        "time": "morning",
+        "translation": "What is Guru Ji saying today? See in Hukamnama Sahib."
+      },
+      {
+        "category": "hukamnama",
+        "title": "🤍 Ajj di rehnumai",
+        "body": "Hukamnama Sahib vich hai. Aao padho. 🌸",
+        "emoji": "🤍",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Today's guidance. Is in Hukamnama Sahib. Come read."
+      },
+      {
+        "category": "hukamnama",
+        "title": "📖 Guru Granth Sahib Ji da hukam",
+        "body": "Ajj de liye tayar hai. Suno te mano. 🙏",
+        "emoji": "📖",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Guru Granth Sahib Ji's command. Is ready for today. Listen and obey."
+      },
+      {
+        "category": "hukamnama",
+        "title": "✨ Shabad Guru da updesh",
+        "body": "Hukamnama Sahib vich hai. Padho. 🌺",
+        "emoji": "✨",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Shabad Guru's teaching. Is in Hukamnama Sahib. Read it."
+      },
+      {
+        "category": "hukamnama",
+        "title": "🌸 Ajj tuhade liye khaas sandesh",
+        "body": "Hukamnama Sahib vich hai. 🙏",
+        "emoji": "🌸",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Today's special message for you. Is in Hukamnama Sahib."
+      },
+      {
+        "category": "hukamnama",
+        "title": "🪷 Guru Ji ton direct message",
+        "body": "Hukamnama Sahib hazir hai. Aao suno. 🌸",
+        "emoji": "🪷",
+        "priority": "high",
+        "time": "morning",
+        "translation": "Direct message from Guru Ji. Hukamnama Sahib is here. Come listen."
+      }
+    ],
+    "simran": [
+      {
+        "category": "simran",
+        "title": "🪷 Waheguru Ji...",
+        "body": "Sirf 5 minute... Waheguru Waheguru jap ke mann nu shanti bakhshiye. 🙏",
+        "emoji": "🪷",
+        "priority": "normal",
+        "time": "random",
+        "translation": "Waheguru Ji... Just 5 minutes... Chant Waheguru Waheguru and give peace to your mind."
+      },
+      {
+        "category": "simran",
+        "title": "✨ Kujh pal apne liye",
+        "body": "Naam Simran karo. Ruh taazi ho jayegi. 🌸",
+        "emoji": "✨",
+        "priority": "normal",
+        "time": "random",
+        "translation": "A few moments for yourself. Do Naam Simran. Your soul will be refreshed."
+      },
+      {
+        "category": "simran",
+        "title": "🌸 Mann bhatkda ja reha hai?",
+        "body": "5 minute Simran karo. Thehr jayega. 🙏",
+        "emoji": "🌸",
+        "priority": "normal",
+        "time": "random",
+        "translation": "Mind wandering away? Do 5 minutes Simran. It will steady."
+      },
+      {
+        "category": "simran",
+        "title": "🤍 Waheguru Waheguru...",
+        "body": "Bas itna hi. 5 minute liye. Mann badal jayega. 🪷",
+        "emoji": "🤍",
+        "priority": "normal",
+        "time": "random",
+        "translation": "Waheguru Waheguru... Just this much. For 5 minutes. Mind will change."
+      },
+      {
+        "category": "simran",
+        "title": "🌺 Thora samay nikalo",
+        "body": "Naam Simran waste. Bahut sukoon milega. 🌸",
+        "emoji": "🌺",
+        "priority": "normal",
+        "time": "random",
+        "translation": "Take out some time. For Naam Simran. Much peace will come."
+      },
+      {
+        "category": "simran",
+        "title": "🪷 Dil vich sukoon chahiye?",
+        "body": "Naam Simran shuru karo. Hamesha milega. 🙏",
+        "emoji": "🪷",
+        "priority": "normal",
+        "time": "random",
+        "translation": "Want peace in your heart? Start Naam Simran. You'll always find it."
+      },
+      {
+        "category": "simran",
+        "title": "✨ Busy din hai?",
+        "body": "5 minute Simran te kaafi hai. Aao kariye. 🌸",
+        "emoji": "✨",
+        "priority": "normal",
+        "time": "random",
+        "translation": "Busy day? 5 minutes Simran is enough. Come do it."
+      },
+      {
+        "category": "simran",
+        "title": "🌿 Ruh nu energy chahiye?",
+        "body": "Naam Simran karo. Taqat milegi. 🤍",
+        "emoji": "🌿",
+        "priority": "normal",
+        "time": "random",
+        "translation": "Soul needs energy? Do Naam Simran. You'll get strength."
+      },
+      {
+        "category": "simran",
+        "title": "🌸 Ajj 5 minute Guru de naal",
+        "body": "Bitao. Simran kar ke. 🙏",
+        "emoji": "🌸",
+        "priority": "normal",
+        "time": "random",
+        "translation": "Today spend 5 minutes with Guru. By doing Simran."
+      },
+      {
+        "category": "simran",
+        "title": "🌺 Mann ko chain do",
+        "body": "Naam Simran naal. Kujh minute hi kaafi ne. 🙏",
+        "emoji": "🌺",
+        "priority": "normal",
+        "time": "random",
+        "translation": "Give rest to your mind. With Naam Simran. Just a few minutes are enough."
+      }
+    ],
+    "nitnem_missed": [
+      {
+        "category": "nitnem_missed",
+        "title": "🤍 Je ajj sama na mil sakya",
+        "body": "Guru Maharaj Ji de charna vich kujh pal baithna vi bakhshish hai. 🌸",
+        "emoji": "🤍",
+        "priority": "normal",
+        "time": "evening",
+        "translation": "If you couldn't find time today. Even sitting at Guru Maharaj Ji's feet for a few moments is a blessing."
+      },
+      {
+        "category": "nitnem_missed",
+        "title": "🌿 Nitnem reh gaya?",
+        "body": "Koi gal nahi. Kujh pal Naam jap lo. Guru Ji samajhde ne. 🙏",
+        "emoji": "🌿",
+        "priority": "normal",
+        "time": "evening",
+        "translation": "Nitnem got left behind? It's okay. Chant Naam for a few moments. Guru Ji understands."
+      },
+      {
+        "category": "nitnem_missed",
+        "title": "✨ Kal da nava din aayega",
+        "body": "Ajj je Nitnem na ho sakya, koi gal nahi. Guru Ji hamesha naal ne. 🌸",
+        "emoji": "✨",
+        "priority": "normal",
+        "time": "evening",
+        "translation": "Tomorrow is a new day. If Nitnem couldn't happen today, it's okay. Guru Ji is always with you."
+      },
+      {
+        "category": "nitnem_missed",
+        "title": "🪷 Paath nu bojh na samjho",
+        "body": "Jinna ho sakya utna hi kaafi hai. Guru Ji khush ne. 🤍",
+        "emoji": "🪷",
+        "priority": "normal",
+        "time": "evening",
+        "translation": "Don't consider paath a burden. Whatever you could do is enough. Guru Ji is pleased."
+      }
+    ],
+    "bedtime": [
+      {
+        "category": "bedtime",
+        "title": "🌙 Waheguru Ji...",
+        "body": "Ajj da din Guru Kirpa naal guzreya. Shanti naal soyo. 🙏",
+        "emoji": "🌙",
+        "priority": "normal",
+        "time": "night",
+        "translation": "Waheguru Ji... Today passed by Guru's grace. Sleep peacefully."
+      },
+      {
+        "category": "bedtime",
+        "title": "✨ Raat nu Guru de hawaale karo",
+        "body": "Neend shant aayegi. Good night. 🌸",
+        "emoji": "✨",
+        "priority": "normal",
+        "time": "night",
+        "translation": "Surrender the night to Guru. Sleep will come peacefully. Good night."
+      },
+      {
+        "category": "bedtime",
+        "title": "🤍 Ajj nu thank you kaho",
+        "body": "Waheguru da. Shanti naal aaraam karo. 🌙",
+        "emoji": "🤍",
+        "priority": "normal",
+        "time": "night",
+        "translation": "Say thank you for today. To Waheguru. Rest peacefully."
+      },
+      {
+        "category": "bedtime",
+        "title": "🌺 Guru Ji tuhanu rakhe",
+        "body": "Raat bhar. Sukh neend aaye. 🙏",
+        "emoji": "🌺",
+        "priority": "normal",
+        "time": "night",
+        "translation": "Guru Ji keeps you. All night. May you have peaceful sleep."
+      },
+      {
+        "category": "bedtime",
+        "title": "🕊️ Aaraam karo",
+        "body": "Guru Ji de pyaar vich. Kal fir milange. 🌸",
+        "emoji": "🕊️",
+        "priority": "normal",
+        "time": "night",
+        "translation": "Rest. In Guru Ji's love. We'll meet again tomorrow."
+      }
+    ],
+    "evening_peace": [
+      {
+        "category": "evening_peace",
+        "title": "🌅 Din khatam hunda ja reha hai",
+        "body": "Kujh pal shanti naal bitao. Guru Ji nu yaad karo. 🙏",
+        "emoji": "🌅",
+        "priority": "normal",
+        "time": "evening",
+        "translation": "The day is ending. Spend a few moments peacefully. Remember Guru Ji."
+      },
+      {
+        "category": "evening_peace",
+        "title": "✨ Shaam da sukoon",
+        "body": "Naam Simran vich hai. Kujh pal layo. 🌸",
+        "emoji": "✨",
+        "priority": "normal",
+        "time": "evening",
+        "translation": "Evening's peace. Is in Naam Simran. Take a few moments."
+      },
+      {
+        "category": "evening_peace",
+        "title": "🤍 Ajj kinna acha din guzreya",
+        "body": "Waheguru da shukar hai. 🙏",
+        "emoji": "🤍",
+        "priority": "normal",
+        "time": "evening",
+        "translation": "What a good day passed. Thanks to Waheguru."
+      }
+    ],
+    "gurbani_radio": [
+      {
+        "category": "gurbani_radio",
+        "title": "🎧 Hazoori Kirtan live chal reha hai",
+        "body": "Aao Guru Ghar naal judie. 🌸",
+        "emoji": "🎧",
+        "priority": "normal",
+        "time": "random",
+        "translation": "Hazoori Kirtan is live. Come connect with Guru's house."
+      },
+      {
+        "category": "gurbani_radio",
+        "title": "📻 Gurbani Kirtan shuru ho gaya",
+        "body": "Aao suno te mann shant karo. 🙏",
+        "emoji": "📻",
+        "priority": "normal",
+        "time": "random",
+        "translation": "Gurbani Kirtan has started. Come listen and calm your mind."
+      }
+    ]
+  }
+}

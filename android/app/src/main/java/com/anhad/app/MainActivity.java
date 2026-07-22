@@ -8,10 +8,24 @@ import android.os.Bundle;
 import android.util.Log;
 import com.getcapacitor.BridgeActivity;
 import com.anhad.app.widgets.WidgetDataBridgePlugin;
+import com.google.android.play.core.appupdate.AppUpdateManager;
+import com.google.android.play.core.appupdate.AppUpdateManagerFactory;
+import com.google.android.play.core.appupdate.AppUpdateInfo;
+import com.google.android.play.core.install.model.AppUpdateType;
+import com.google.android.play.core.install.model.UpdateAvailability;
+import com.google.android.play.core.install.InstallStateUpdatedListener;
+import com.google.android.play.core.install.model.InstallStatus;
+import com.google.android.material.snackbar.Snackbar;
+import android.view.View;
 
 public class MainActivity extends BridgeActivity {
 
     private static final String TAG = "MainActivity";
+    private static final int UPDATE_REQUEST_CODE = 500;
+    
+    // In-App Update Manager
+    private AppUpdateManager appUpdateManager;
+    private InstallStateUpdatedListener installStateUpdatedListener;
 
     private BroadcastReceiver mediaCommandReceiver = new BroadcastReceiver() {
         @Override
@@ -43,6 +57,11 @@ public class MainActivity extends BridgeActivity {
         registerPlugin(StreakSaverPlugin.class);
         registerPlugin(AlarmReliabilityPlugin.class);
         super.onCreate(savedInstanceState);
+
+        // ═══════════════════════════════════════════════════════════════════
+        // IN-APP UPDATE: Check for updates on app launch
+        // ═══════════════════════════════════════════════════════════════════
+        initializeInAppUpdates();
 
         // ═══════════════════════════════════════════════════════════════════
         // IMMERSIVE FULLSCREEN: Hide status bar completely when app opens
@@ -103,16 +122,6 @@ public class MainActivity extends BridgeActivity {
         handleWidgetRoute(getIntent());
         // Handle notification click routing
         handleNotificationRoute(getIntent());
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        try {
-            unregisterReceiver(mediaCommandReceiver);
-        } catch (Exception e) {
-            // Ignored
-        }
     }
 
     @Override
@@ -332,6 +341,160 @@ public class MainActivity extends BridgeActivity {
             new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
                 navigateWhenReady(jsOrUrl, retryCount + 1);
             }, delay);
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════════════════
+    // IN-APP UPDATE IMPLEMENTATION
+    // ═══════════════════════════════════════════════════════════════════
+
+    /**
+     * Initialize In-App Updates system.
+     * Checks for available updates and prompts user.
+     */
+    private void initializeInAppUpdates() {
+        appUpdateManager = AppUpdateManagerFactory.create(this);
+        
+        // Listen for flexible update download status
+        installStateUpdatedListener = state -> {
+            if (state.installStatus() == InstallStatus.DOWNLOADED) {
+                popupSnackbarForCompleteUpdate();
+            }
+        };
+        
+        // Register listener
+        appUpdateManager.registerListener(installStateUpdatedListener);
+        
+        // Check for updates
+        checkForAppUpdate();
+    }
+
+    /**
+     * Check if an update is available on Google Play.
+     */
+    private void checkForAppUpdate() {
+        appUpdateManager.getAppUpdateInfo().addOnSuccessListener(appUpdateInfo -> {
+            if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE) {
+                // Check priority from Play Console
+                int priority = appUpdateInfo.updatePriority();
+                
+                // If priority >= 4, force immediate update (for critical fixes)
+                // Otherwise, use flexible update
+                if (priority >= 4 && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)) {
+                    startImmediateUpdate(appUpdateInfo);
+                } else if (appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE)) {
+                    startFlexibleUpdate(appUpdateInfo);
+                }
+            } else if (appUpdateInfo.installStatus() == InstallStatus.DOWNLOADED) {
+                popupSnackbarForCompleteUpdate();
+            }
+        }).addOnFailureListener(e -> {
+            Log.e(TAG, "Update check failed: " + e.getMessage());
+        });
+    }
+
+    /**
+     * Start FLEXIBLE update (user can continue using app while downloading).
+     */
+    private void startFlexibleUpdate(AppUpdateInfo appUpdateInfo) {
+        try {
+            appUpdateManager.startUpdateFlowForResult(
+                appUpdateInfo,
+                AppUpdateType.FLEXIBLE,
+                this,
+                UPDATE_REQUEST_CODE
+            );
+            Log.d(TAG, "✅ Flexible update started");
+        } catch (Exception e) {
+            Log.e(TAG, "Flexible update failed: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Start IMMEDIATE update (user must update before continuing).
+     * Use for critical bug fixes.
+     */
+    private void startImmediateUpdate(AppUpdateInfo appUpdateInfo) {
+        try {
+            appUpdateManager.startUpdateFlowForResult(
+                appUpdateInfo,
+                AppUpdateType.IMMEDIATE,
+                this,
+                UPDATE_REQUEST_CODE
+            );
+            Log.d(TAG, "✅ Immediate update started");
+        } catch (Exception e) {
+            Log.e(TAG, "Immediate update failed: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Show snackbar notification when flexible update is downloaded.
+     */
+    private void popupSnackbarForCompleteUpdate() {
+        View rootView = findViewById(android.R.id.content);
+        if (rootView != null) {
+            Snackbar snackbar = Snackbar.make(
+                rootView,
+                "🪯 New version of ANHAD downloaded!",
+                Snackbar.LENGTH_INDEFINITE
+            );
+            snackbar.setAction("RESTART", view -> {
+                appUpdateManager.completeUpdate();
+            });
+            snackbar.setActionTextColor(getResources().getColor(android.R.color.holo_orange_light));
+            snackbar.show();
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        
+        // Check for stalled in-progress updates
+        appUpdateManager.getAppUpdateInfo().addOnSuccessListener(appUpdateInfo -> {
+            if (appUpdateInfo.updateAvailability() == UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS) {
+                // If an immediate update was stalled, resume it
+                try {
+                    appUpdateManager.startUpdateFlowForResult(
+                        appUpdateInfo,
+                        AppUpdateType.IMMEDIATE,
+                        this,
+                        UPDATE_REQUEST_CODE
+                    );
+                } catch (Exception e) {
+                    Log.e(TAG, "Resume update failed: " + e.getMessage());
+                }
+            } else if (appUpdateInfo.installStatus() == InstallStatus.DOWNLOADED) {
+                popupSnackbarForCompleteUpdate();
+            }
+        });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        
+        if (requestCode == UPDATE_REQUEST_CODE) {
+            if (resultCode != RESULT_OK) {
+                Log.d(TAG, "Update flow failed! Result code: " + resultCode);
+                // User cancelled or update failed - you can retry or log
+            }
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        try {
+            unregisterReceiver(mediaCommandReceiver);
+        } catch (Exception e) {
+            // Ignored
+        }
+        
+        // Unregister update listener
+        if (appUpdateManager != null && installStateUpdatedListener != null) {
+            appUpdateManager.unregisterListener(installStateUpdatedListener);
         }
     }
 }

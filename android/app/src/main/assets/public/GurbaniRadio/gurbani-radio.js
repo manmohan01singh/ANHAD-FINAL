@@ -889,10 +889,37 @@
         }
       });
       audio.on('error', function (e) {
-        // Show helpful toast when a stream fails
+        // Show helpful toast when a stream fails with specific error details
         var state = audio.getState();
         var streamName = state.currentTrackTitle || state.currentStream || 'stream';
-        showToast('⚠️ Stream failed: ' + streamName + '. Stream may be offline.');
+        
+        var errorMsg = '⚠️ Stream failed: ' + streamName;
+        
+        // Provide specific error messages based on error type
+        if (e && e.type) {
+          switch (e.type) {
+            case 'network':
+              errorMsg = '🌐 No internet connection. Please check your network.';
+              break;
+            case 'offline':
+              errorMsg = '📡 You are offline. Connect to internet to stream.';
+              break;
+            case 'source':
+              errorMsg = '⚠️ ' + streamName + ' is currently unavailable.';
+              break;
+            case 'decode':
+              errorMsg = '⚠️ Stream format issue. Try another stream.';
+              break;
+            default:
+              errorMsg = '⚠️ ' + streamName + ' failed. Check connection or try another stream.';
+          }
+        } else if (!navigator.onLine) {
+          errorMsg = '📡 No internet connection. Please check your network.';
+        } else {
+          errorMsg = '⚠️ ' + streamName + ' may be offline. Try another stream.';
+        }
+        
+        showToast(errorMsg);
       });
 
       // Update seek slider on timeupdate
@@ -935,6 +962,36 @@
     } catch(e) {}
   }, 15000);
 
+  // ─── Network Status Monitor ───
+  function initNetworkMonitor() {
+    // Check initial network status
+    function updateNetworkStatus() {
+      var isOnline = navigator.onLine;
+      if (!isOnline) {
+        showToast('📡 No internet connection - Streams require network access');
+      }
+    }
+
+    // Monitor network changes
+    window.addEventListener('online', function() {
+      showToast('🌐 Back online! You can now stream Gurbani.');
+    });
+
+    window.addEventListener('offline', function() {
+      showToast('📡 Connection lost - Please check your network');
+      // Pause audio if playing
+      var audio = window.AnhadAudio;
+      if (audio && audio.isPlaying()) {
+        audio.pause();
+      }
+    });
+
+    // Check on load
+    if (!navigator.onLine) {
+      setTimeout(updateNetworkStatus, 1000);
+    }
+  }
+
   // ─── Initializer ───
   function boot() {
     cacheDom();
@@ -942,6 +999,7 @@
     bindEvents();
     setupSlider();
     syncUI();
+    initNetworkMonitor(); // Add network monitoring
 
     var urlParams = new URLSearchParams(window.location.search);
     var streamParam = urlParams.get('stream');

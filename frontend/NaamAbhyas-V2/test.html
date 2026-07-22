@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Naam Abhyas V2 - Core Test</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+      background: #1C1C1E;
+      color: #F5F5F7;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      color: #0A84FF;
+    }
+    
+    .card {
+      background: #2C2C2E;
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    
+    h2 {
+      font-size: 1.25rem;
+      margin-bottom: 1rem;
+      color: #8E8E93;
+    }
+    
+    button {
+      background: #0A84FF;
+      color: #fff;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-right: 10px;
+      margin-bottom: 10px;
+      transition: opacity 0.2s;
+    }
+    
+    button:hover {
+      opacity: 0.8;
+    }
+    
+    button:active {
+      transform: scale(0.95);
+    }
+    
+    button.secondary {
+      background: #48484A;
+    }
+    
+    button.danger {
+      background: #FF453A;
+    }
+    
+    .log {
+      background: #000;
+      border-radius: 8px;
+      padding: 15px;
+      font-family: 'Monaco', 'Courier New', monospace;
+      font-size: 0.875rem;
+      max-height: 400px;
+      overflow-y: auto;
+      color: #00FF00;
+    }
+    
+    .log-entry {
+      margin-bottom: 5px;
+    }
+    
+    .log-entry.info { color: #0A84FF; }
+    .log-entry.warn { color: #FFD60A; }
+    .log-entry.error { color: #FF453A; }
+    .log-entry.success { color: #30D158; }
+    
+    .state-display {
+      background: #3A3A3C;
+      border-radius: 8px;
+      padding: 15px;
+      font-family: 'Monaco', 'Courier New', monospace;
+      font-size: 0.875rem;
+    }
+    
+    .timer-display {
+      font-size: 3rem;
+      font-weight: 700;
+      text-align: center;
+      margin: 20px 0;
+      color: #0A84FF;
+    }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+      margin-top: 15px;
+    }
+    
+    .stat-item {
+      background: #3A3A3C;
+      border-radius: 8px;
+      padding: 15px;
+      text-align: center;
+    }
+    
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #0A84FF;
+    }
+    
+    .stat-label {
+      font-size: 0.875rem;
+      color: #8E8E93;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🙏 Naam Abhyas V2 - Core Test</h1>
+    
+    <!-- Controls -->
+    <div class="card">
+      <h2>Controls</h2>
+      <button onclick="enableSystem()">Enable System</button>
+      <button onclick="disableSystem()" class="secondary">Disable System</button>
+      <button onclick="simulateNotification()">Simulate Notification</button>
+      <button onclick="startSession()">Start Session</button>
+      <button onclick="getState()">Get State</button>
+      <button onclick="clearLogs()" class="secondary">Clear Logs</button>
+      <button onclick="resetSystem()" class="danger">Reset System</button>
+    </div>
+    
+    <!-- FSM State -->
+    <div class="card">
+      <h2>Finite State Machine</h2>
+      <div class="state-display">
+        <div>Current State: <span id="fsm-state" style="color: #0A84FF;">IDLE</span></div>
+      </div>
+    </div>
+    
+    <!-- Timer -->
+    <div class="card">
+      <h2>Session Timer</h2>
+      <div class="timer-display" id="timer">--:--</div>
+      <div style="text-align: center;">
+        <button onclick="testBackgroundRestore()">Test Background (30s)</button>
+      </div>
+    </div>
+    
+    <!-- Stats -->
+    <div class="card">
+      <h2>Statistics</h2>
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="stat-value" id="stat-streak">0</div>
+          <div class="stat-label">Streak</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" id="stat-today">0</div>
+          <div class="stat-label">Today</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" id="stat-total">0</div>
+          <div class="stat-label">Total</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" id="stat-best">0</div>
+          <div class="stat-label">Best</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Console Log -->
+    <div class="card">
+      <h2>Console</h2>
+      <div class="log" id="console"></div>
+    </div>
+  </div>
+
+  <!-- Load core modules -->
+  <script src="js/core/SessionState.js"></script>
+  <script src="js/core/StateStore.js"></script>
+  <script src="js/core/AudioController.js"></script>
+  <script src="js/core/SessionController.js"></script>
+  <script src="js/core/NaamAbhyasEngine.js"></script>
+  
+  <script>
+    // Custom logger
+    const logConsole = document.getElementById('console');
+    const originalLog = console.log;
+    const originalWarn = console.warn;
+    const originalError = console.error;
+    
+    function addLog(message, type = 'info') {
+      const entry = document.createElement('div');
+      entry.className = `log-entry ${type}`;
+      entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+      logConsole.appendChild(entry);
+      logConsole.scrollTop = logConsole.scrollHeight;
+    }
+    
+    console.log = function(...args) {
+      originalLog.apply(console, args);
+      addLog(args.join(' '), 'info');
+    };
+    
+    console.warn = function(...args) {
+      originalWarn.apply(console, args);
+      addLog(args.join(' '), 'warn');
+    };
+    
+    console.error = function(...args) {
+      originalError.apply(console, args);
+      addLog(args.join(' '), 'error');
+    };
+    
+    // Initialize engine
+    let engine;
+    
+    async function init() {
+      try {
+        addLog('Initializing Naam Abhyas Engine...', 'info');
+        engine = new NaamAbhyasEngine();
+        await engine.initialize();
+        addLog('Engine initialized successfully!', 'success');
+        updateUI();
+      } catch (error) {
+        addLog('Initialization failed: ' + error.message, 'error');
+        console.error('Init error:', error);
+      }
+    }
+    
+    // Update UI
+    function updateUI() {
+      if (!engine) return;
+      
+      const state = engine.getState();
+      
+      // FSM state
+      document.getElementById('fsm-state').textContent = state.fsm;
+      
+      // Stats
+      const stats = state.store.stats;
+      document.getElementById('stat-streak').textContent = stats.currentStreak;
+      document.getElementById('stat-today').textContent = stats.todayCompleted;
+      document.getElementById('stat-total').textContent = stats.totalSessions;
+      document.getElementById('stat-best').textContent = stats.longestStreak;
+    }
+    
+    // Listen to events
+    window.addEventListener('naamAbhyasFSMTransition', (e) => {
+      addLog(`FSM: ${e.detail.from} → ${e.detail.to}`, 'success');
+      updateUI();
+    });
+    
+    window.addEventListener('naamAbhyasTimerUpdate', (e) => {
+      const minutes = Math.floor(e.detail.remaining / 60);
+      const seconds = e.detail.remaining % 60;
+      document.getElementById('timer').textContent = 
+        `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    });
+    
+    window.addEventListener('naamAbhyasSessionComplete', (e) => {
+      addLog(`Session completed! Hour: ${e.detail.hour}`, 'success');
+      updateUI();
+    });
+    
+    // Control functions
+    async function enableSystem() {
+      if (!engine) {
+        addLog('Engine not initialized yet', 'error');
+        return;
+      }
+      await engine.setEnabled(true);
+      addLog('System enabled', 'success');
+    }
+    
+    async function disableSystem() {
+      if (!engine) return;
+      await engine.setEnabled(false);
+      addLog('System disabled', 'warn');
+    }
+    
+    function simulateNotification() {
+      if (!engine) return;
+      engine.fsm.transition(SessionEvents.NOTIFICATION_RECEIVED);
+      engine.fsm.transition(SessionEvents.POPUP_OPENED);
+      addLog('Notification simulated → Popup opened', 'info');
+    }
+    
+    async function startSession() {
+      if (!engine) return;
+      const success = await engine.startSession();
+      if (success) {
+        addLog('Session started!', 'success');
+      } else {
+        addLog('Failed to start session', 'error');
+      }
+    }
+    
+    function getState() {
+      if (!engine) return;
+      const state = engine.getState();
+      addLog(JSON.stringify(state, null, 2), 'info');
+    }
+    
+    function clearLogs() {
+      logConsole.innerHTML = '';
+      addLog('Logs cleared', 'info');
+    }
+    
+    function resetSystem() {
+      if (!engine) return;
+      if (confirm('Reset all data?')) {
+        engine.store.clearState();
+        engine.fsm.reset();
+        addLog('System reset', 'warn');
+        updateUI();
+      }
+    }
+    
+    function testBackgroundRestore() {
+      if (!engine) return;
+      addLog('Testing background restoration (30s)...', 'info');
+      engine.handleBackground();
+      
+      setTimeout(() => {
+        addLog('Simulating foreground return...', 'info');
+        engine.handleForeground();
+      }, 30000);
+    }
+    
+    // Initialize on load
+    init();
+  </script>
+</body>
+</html>

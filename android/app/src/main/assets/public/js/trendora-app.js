@@ -42,6 +42,8 @@
     NITNEM_STREAK: 'anhad_streak_data',
     NITNEM_USER: 'nitnemTracker_userData',
     NITNEM_SELECTED: 'nitnemTracker_selectedBanis',
+    POTHI_ORDER: 'anhad_my_pothi',
+    POTHI_COMPLETED: 'anhad_my_pothi_completed',
     SEHAJ_STATE: 'sehajPaathState',
     SEHAJ_STATS: 'sehajPaathStats',
     SEHAJ_BACKUP: 'gurbani_sehajPaath_progress',
@@ -441,6 +443,13 @@
   // ═══════════════════════════════════════════════════════════════════════════
   const DataManager = {
     getTotalBanis() {
+      // Read from My Pothi order (user's custom bani collection)
+      const pothiOrder = Store.get(KEYS.POTHI_ORDER);
+      if (pothiOrder && Array.isArray(pothiOrder) && pothiOrder.length > 0) {
+        return pothiOrder.length;
+      }
+      
+      // Fallback to Nitnem Tracker if Pothi is empty
       const selected = Store.get(KEYS.NITNEM_SELECTED);
       if (!selected) return 11;
       const total = (selected.amritvela?.length || 0) +
@@ -451,6 +460,15 @@
 
     getCompletedToday() {
       const today = new Date().toLocaleDateString('en-CA');
+      
+      // Read from My Pothi completion data
+      const pothiCompleted = Store.get(KEYS.POTHI_COMPLETED);
+      if (pothiCompleted && pothiCompleted[today]) {
+        const todayCompleted = pothiCompleted[today];
+        return Array.isArray(todayCompleted) ? todayCompleted.length : 0;
+      }
+      
+      // Fallback to Nitnem Tracker log
       const log = Store.get(KEYS.NITNEM_LOG);
       if (!log || !log[today]) return 0;
       const todayData = log[today];
@@ -1542,9 +1560,16 @@
           const isDark = getIsDark(localStorage.getItem('anhad_theme'));
           this._apply(isDark);
         }
+        // Update on Nitnem Tracker changes
         if (e.key === 'nitnemTracker_nitnemLog' || e.key === 'nitnemTracker_selectedBanis' || e.key === 'anhad_streak_data' || e.key === 'anhad_unified_stats') {
           Store.clearCache();
           UIController.updateNitnemCard();
+          UIController.updateProgressBar();
+        }
+        // Update on My Pothi changes
+        if (e.key === 'anhad_my_pothi' || e.key === 'anhad_my_pothi_completed') {
+          Store.clearCache();
+          UIController.updateProgressBar();
         }
       });
 
@@ -1553,12 +1578,20 @@
         console.log('[AnhadHome] Page shown (restored from cache:', e.persisted, '), refreshing card displays...');
         Store.clearCache();
         UIController.updateNitnemCard();
+        UIController.updateProgressBar();
       });
 
       // Listen for in-page nitnem updates (same page, e.g. My Pothi dispatches this)
       window.addEventListener('nitnemUpdated', () => {
         Store.clearCache();
         UIController.updateNitnemCard();
+        UIController.updateProgressBar();
+      });
+
+      // Listen for Pothi completion updates from My Pothi page
+      window.addEventListener('nitnemCompletionUpdated', () => {
+        Store.clearCache();
+        UIController.updateProgressBar();
       });
 
       // Listen for UnifiedStats events so streak updates live on the dashboard

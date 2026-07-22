@@ -8,7 +8,7 @@
     <meta charset="UTF-8">
     <meta name="viewport"
         content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="description" content="???? ???? ????? ????? ?? � The Eternal Guru">
+    <meta name="description" content="???? ???? ????? ????? ??  The Eternal Guru">
     <meta name="theme-color" content="#000000">
 
     <title>ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ | ANHAD</title>
@@ -175,36 +175,51 @@
             position: sticky;
             top: 0;
             z-index: 100;
-            padding: calc(var(--safe-top) + 8px) 16px 12px;
+            padding: calc(var(--safe-top) + 12px) 16px 12px;
             display: flex;
             align-items: center;
+            justify-content: space-between;
             gap: 12px;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: var(--glass-blur);
-            -webkit-backdrop-filter: var(--glass-blur);
-            border-bottom: 1px solid var(--card-border);
-        }
-
-        [data-theme="light"] .header {
-            background: rgba(255, 255, 255, 0.8);
+            background: transparent;
+            border-bottom: none;
         }
 
         .back-btn {
             display: flex;
             align-items: center;
-            gap: 4px;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
             color: var(--ios-blue);
             text-decoration: none;
-            font-size: 17px;
+            font-size: 0;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 50%;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: all 0.2s ease;
+        }
+        
+        [data-theme="dark"] .back-btn {
+            background: rgba(28, 28, 30, 0.85);
         }
 
         .back-btn svg {
             width: 20px;
             height: 20px;
         }
+        
+        .back-btn:hover {
+            transform: scale(1.05);
+        }
+        
+        .back-btn:active {
+            transform: scale(0.95);
+        }
 
         .header h1 {
-            flex: 1;
+            flex: 0 0 auto;
             font-family: var(--font-gurmukhi);
             font-size: 14px;
             font-weight: 600;
@@ -212,10 +227,28 @@
             background: linear-gradient(135deg, var(--ios-red), var(--sacred-saffron));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            padding: 10px 32px;
+            background-color: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 100px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+        }
+        
+        [data-theme="dark"] .header h1 {
+            background-color: rgba(28, 28, 30, 0.85);
         }
 
         .header-spacer {
-            width: 50px;
+            display: none;
+        }
+        
+        .theme-toggle {
+            box-shadow: none !important;
         }
 
         /* Theme Toggle Button */
@@ -689,8 +722,7 @@
             </div>
             <h2>ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ</h2>
             <p class="hero-english">Sri Guru Granth Sahib Ji</p>
-            <p>The Eternal Living Guru � 1430 Ang of divine wisdom from 6 Sikh Gurus, 15 Bhagats, 11 Bhatts, and 4
-                Gursikhs</p>
+            <p>The Eternal Living Guru — 1430 Ang of divine wisdom from 6 Sikh Guru Sahibans, 15 Bhagats, 11 Bhatts, and 4 Gursikhs</p>
         </section>
 
         <main class="main">

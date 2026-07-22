@@ -138,34 +138,133 @@ function renderPendingBanis() {
         yesterday.setDate(yesterday.getDate() - 1);
         const yestStr = yesterday.toLocaleDateString('en-CA');
 
-        const pothiOrder = JSON.parse(localStorage.getItem('anhad_my_pothi') || '[2, 4, 6, 9, 10, 21, 23]');
-        const completed = JSON.parse(localStorage.getItem('anhad_my_pothi_completed') || '{}');
-        const yestCompleted = completed[yestStr] || [];
+        // CRITICAL FIX: Use Nitnem Tracker's historical data, not My Pothi
+        const selectedBanisHistory = JSON.parse(localStorage.getItem('nitnemTracker_selectedBanis_history') || '{}');
+        const yesterdaySelectedBanis = selectedBanisHistory[yestStr];
+        
+        // If no historical data exists for yesterday, don't show pending section
+        if (!yesterdaySelectedBanis) {
+            console.log('[Nitnem] No nitnem tracker history for yesterday, hiding pending section');
+            sec.style.display = 'none';
+            return;
+        }
+
+        // Get yesterday's completed banis from nitnem log
+        const nitnemLog = JSON.parse(localStorage.getItem('nitnemTracker_nitnemLog') || '{}');
+        const yestCompleted = nitnemLog[yestStr] || {};
+        
+        // Extract all completed UIDs from all periods
+        const completedUIDs = new Set();
+        ['amritvela', 'rehras', 'sohila'].forEach(period => {
+            if (Array.isArray(yestCompleted[period])) {
+                yestCompleted[period].forEach(uid => completedUIDs.add(uid));
+            }
+        });
 
         const ALL_BANIS_MAP = {
-            2: 'ਜਪੁਜੀ ਸਾਹਿਬ (Japji Sahib)', 4: 'ਜਾਪੁ ਸਾਹਿਬ (Jaap Sahib)', 6: 'ਤ੍ਵ ਪ੍ਰਸਾਦਿ ਸਵੱਯੇ (Savaiye)',
-            9: 'ਬੇਨਤੀ ਚੌਪਈ (Chaupai Sahib)', 10: 'ਅਨੰਦੁ ਸਾਹਿਬ (Anand Sahib)', 21: 'ਰਹਿਰਾਸਿ ਸਾਹਿਬ (Rehras Sahib)',
-            23: 'ਸੋਹਿਲਾ ਸਾਹਿਬ (Kirtan Sohila)', 31: 'ਸੁਖਮਨੀ ਸਾਹਿਬ (Sukhmani Sahib)', 24: 'ਅਰਦਾਸ (Ardas)'
+            2: 'ਜਪੁਜੀ ਸਾਹਿਬ (Japji Sahib)', 
+            4: 'ਜਾਪੁ ਸਾਹਿਬ (Jaap Sahib)', 
+            6: 'ਤ੍ਵ ਪ੍ਰਸਾਦਿ ਸਵੱਯੇ (Savaiye)',
+            9: 'ਬੇਨਤੀ ਚੌਪਈ (Chaupai Sahib)', 
+            10: 'ਅਨੰਦੁ ਸਾਹਿਬ (Anand Sahib)', 
+            21: 'ਰਹਿਰਾਸਿ ਸਾਹਿਬ (Rehras Sahib)',
+            23: 'ਸੋਹਿਲਾ ਸਾਹਿਬ (Kirtan Sohila)', 
+            31: 'ਸੁਖਮਨੀ ਸਾਹਿਬ (Sukhmani Sahib)', 
+            24: 'ਅਰਦਾਸ (Ardas)'
         };
 
-        const pendingIds = pothiOrder.filter(id => !yestCompleted.includes(id));
+        // Collect all pending banis from all periods that were in yesterday's list but not completed
+        const pendingBanis = [];
+        ['amritvela', 'rehras', 'sohila'].forEach(period => {
+            const periodBanis = yesterdaySelectedBanis[period] || [];
+            periodBanis.forEach(bani => {
+                // Check if this bani (by UID) was NOT completed
+                if (!completedUIDs.has(bani.uid)) {
+                    pendingBanis.push({
+                        id: bani.id,
+                        uid: bani.uid,
+                        name: ALL_BANIS_MAP[bani.id] || `Bani ${bani.id}`,
+                        period: period
+                    });
+                }
+            });
+        });
 
-        if (pendingIds.length === 0) {
+        if (pendingBanis.length === 0) {
             sec.style.display = 'none';
             return;
         }
 
         sec.style.display = 'block';
-        list.innerHTML = pendingIds.map(id => `
-            <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 14px; background:rgba(255,255,255,0.06); border-radius:12px; border:1px solid rgba(255,149,0,0.2);">
-                <span style="font-size:14px; font-weight:600; color:var(--text-primary);">${ALL_BANIS_MAP[id] || ('Bani #' + id)}</span>
-                <button onclick="markPendingBaniComplete(${id}, '${yestStr}')" style="padding:6px 14px; background:linear-gradient(135deg, #FF9500, #E65C00); color:#fff; font-size:12px; font-weight:700; border:none; border-radius:10px; cursor:pointer;">
-                    ✓ Complete
+        
+        // Group by bani ID to avoid showing duplicates
+        const uniquePendingBanis = [];
+        const seenIds = new Set();
+        pendingBanis.forEach(bani => {
+            if (!seenIds.has(bani.id)) {
+                seenIds.add(bani.id);
+                uniquePendingBanis.push(bani);
+            }
+        });
+        
+        // IMPROVED UI: Better styling with smooth animations and modern design
+        list.innerHTML = uniquePendingBanis.map(bani => `
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:14px 16px; background:var(--bg-secondary); border-radius:16px; border:1.5px solid rgba(255,149,0,0.25); transition: all 0.2s ease; box-shadow: 0 2px 8px rgba(255,149,0,0.08);" 
+                 onmouseenter="this.style.borderColor='rgba(255,149,0,0.4)'; this.style.boxShadow='0 4px 12px rgba(255,149,0,0.15)'"
+                 onmouseleave="this.style.borderColor='rgba(255,149,0,0.25)'; this.style.boxShadow='0 2px 8px rgba(255,149,0,0.08)'">
+                <div style="display:flex; flex-direction:column; gap:4px; flex:1;">
+                    <span style="font-size:15px; font-weight:600; color:var(--text-primary); font-family: 'Noto Sans Gurmukhi', sans-serif;">${bani.name}</span>
+                    <span style="font-size:11px; color:var(--text-secondary); font-weight:500;">Yesterday's pending prayer</span>
+                </div>
+                <button onclick="markPendingBaniComplete('${bani.uid}', '${yestStr}', '${bani.period}')" 
+                        style="padding:8px 18px; background:linear-gradient(135deg, #FF9500, #FF8000); color:#fff; font-size:13px; font-weight:700; border:none; border-radius:12px; cursor:pointer; box-shadow: 0 2px 8px rgba(255,149,0,0.3); transition: all 0.2s ease; white-space: nowrap;"
+                        onmouseenter="this.style.transform='scale(1.05)'; this.style.boxShadow='0 4px 12px rgba(255,149,0,0.4)'"
+                        onmouseleave="this.style.transform='scale(1)'; this.style.boxShadow='0 2px 8px rgba(255,149,0,0.3)'"
+                        ontouchstart="this.style.transform='scale(0.95)'"
+                        ontouchend="this.style.transform='scale(1)'">
+                    ✓ Mark Done
                 </button>
             </div>
         `).join('');
-    } catch(e) {}
+    } catch(e) {
+        console.error('[Nitnem] Error rendering pending banis:', e);
+    }
 }
+
+// CRITICAL FIX: Save nitnem tracker selected banis snapshot for historical tracking
+function saveNitnemTrackerSnapshot() {
+    try {
+        const today = new Date().toLocaleDateString('en-CA');
+        const currentSelectedBanis = JSON.parse(localStorage.getItem('nitnemTracker_selectedBanis') || '{"amritvela":[],"rehras":[],"sohila":[]}');
+        const history = JSON.parse(localStorage.getItem('nitnemTracker_selectedBanis_history') || '{}');
+        
+        // Only save if not already saved for today
+        if (!history[today]) {
+            history[today] = currentSelectedBanis;
+            localStorage.setItem('nitnemTracker_selectedBanis_history', JSON.stringify(history));
+            console.log('[Nitnem] Saved nitnem tracker snapshot for', today);
+        }
+        
+        // Clean up old history (keep only last 7 days)
+        const dates = Object.keys(history);
+        if (dates.length > 7) {
+            dates.sort().slice(0, dates.length - 7).forEach(oldDate => {
+                delete history[oldDate];
+            });
+            localStorage.setItem('nitnemTracker_selectedBanis_history', JSON.stringify(history));
+        }
+    } catch(e) {
+        console.error('[Nitnem] Error saving nitnem tracker snapshot:', e);
+    }
+}
+
+// Save snapshot when page loads (once per day)
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+        saveNitnemTrackerSnapshot();
+        renderPendingBanis();
+    }, 500);
+});
 
 window.markPendingBaniComplete = function(id, dateStr) {
     try {
@@ -174,7 +273,14 @@ window.markPendingBaniComplete = function(id, dateStr) {
         if (!completed[dateStr].includes(id)) completed[dateStr].push(id);
         localStorage.setItem('anhad_my_pothi_completed', JSON.stringify(completed));
         renderPendingBanis();
-    } catch(e) {}
+        
+        // Show success feedback
+        if (window.Toast) {
+            Toast.success('Bani Completed', 'Yesterday\'s bani marked as complete! 🙏');
+        }
+    } catch(e) {
+        console.error('[Nitnem] Error marking pending bani complete:', e);
+    }
 };
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -3809,7 +3915,11 @@ const NitnemManager = {
             // Update anhad_my_pothi (ordered array of IDs)
             localStorage.setItem('anhad_my_pothi', JSON.stringify(uniqueIds));
 
-            // Build data array for anhad_my_pothi_data
+            // CRITICAL FIX: Save snapshot for historical tracking
+            // This ensures newly added banis today won't show as "pending from yesterday"
+            saveDailyPothiSnapshot();
+
+            console.log('[Nitnem] Synced to My Pothi:', uniqueIds);            // Build data array for anhad_my_pothi_data
             var pothiData = [];
             uniqueIds.forEach(function (id) {
                 var bani = this.allBanis ? this.allBanis.find(function (b) { return b.id === id; }) : null;
@@ -4168,6 +4278,13 @@ const NitnemManager = {
         this.updateProgress();
         this.updateCounts();
 
+        // CRITICAL FIX: Dispatch storage event to update homepage cards in real-time
+        window.dispatchEvent(new StorageEvent('storage', {
+            key: 'nitnemTracker_nitnemLog',
+            newValue: localStorage.getItem('nitnemTracker_nitnemLog'),
+            url: window.location.href
+        }));
+
         // Dispatch event for dashboard updates
         window.dispatchEvent(new CustomEvent('nitnemUpdated', {
             detail: {
@@ -4177,6 +4294,11 @@ const NitnemManager = {
                 selected: this.selectedBanis
             }
         }));
+
+        // CRITICAL FIX: Trigger homepage data update if function exists
+        if (window.updateNitnemTracker) {
+            window.updateNitnemTracker();
+        }
 
         // Check if all complete
         this.checkAllComplete();
@@ -4271,6 +4393,13 @@ const NitnemManager = {
         this.updateCounts();
         this.checkAllComplete();
 
+        // CRITICAL FIX: Dispatch storage event to update homepage cards
+        window.dispatchEvent(new StorageEvent('storage', {
+            key: 'nitnemTracker_nitnemLog',
+            newValue: localStorage.getItem('nitnemTracker_nitnemLog'),
+            url: window.location.href
+        }));
+
         // Dispatch event for dashboard updates
         window.dispatchEvent(new CustomEvent('nitnemUpdated', {
             detail: {
@@ -4279,6 +4408,11 @@ const NitnemManager = {
                 selected: this.selectedBanis
             }
         }));
+
+        // CRITICAL FIX: Trigger homepage data update
+        if (window.updateNitnemTracker) {
+            window.updateNitnemTracker();
+        }
 
         if (btn) btn.disabled = false;
     },
@@ -4429,6 +4563,19 @@ const NitnemManager = {
         if (this.elements.completeAllBtn) {
             const currentBanis = this.selectedBanis[this.activePeriod] || [];
             this.elements.completeAllBtn.disabled = currentBanis.length === 0;
+        }
+
+        // CRITICAL FIX: Store updated progress in localStorage for homepage sync
+        try {
+            const progressData = {
+                totalBanis,
+                completedBanis,
+                percentage,
+                timestamp: Date.now()
+            };
+            localStorage.setItem('nitnemTracker_progress', JSON.stringify(progressData));
+        } catch (e) {
+            console.error('[Nitnem] Failed to save progress data:', e);
         }
     },
 

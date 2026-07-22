@@ -1244,8 +1244,8 @@ class NaamAbhyas {
                             if (scheduledTime > now) {
                                 store.put({
                                     id: `naam_${hour}_${session.startMinute}`,
-                                    title: '🙏 ਨਾਮ ਅਭਿਆਸ | Naam Abhyas',
-                                    body: `Leave all work. Remember Vaheguru for ${this.config.duration || 2} minutes.`,
+                                    title: '🌸 ਨਾਮ ਅਭਿਆਸ | Naam Abhyas 🌺',
+                                    body: `Leave all work. Remember Vaheguru for ${this.config.duration || 2} minutes. 🙏`,
                                     scheduledTime: scheduledTime.getTime(),
                                     hour: hourNum,
                                     startMinute: session.startMinute,
@@ -1600,8 +1600,8 @@ class NaamAbhyas {
 
                 const entry = {
                     id: alarmId,
-                    title: payload.title || '🙏 ਨਾਮ ਅਭਿਆਸ | Naam Abhyas',
-                    body: payload.body || `Leave all work. Remember Vaheguru for ${payload.data?.duration || 2} minutes.`,
+                    title: payload.title || '🌸 ਨਾਮ ਅਭਿਆਸ | Naam Abhyas 🌺',
+                    body: payload.body || `Leave all work. Remember Vaheguru for ${payload.data?.duration || 2} minutes. 🙏`,
                     scheduledTime: scheduledTime,
                     hour: payload.data?.hour || 0,
                     startMinute: payload.data?.startMinute || 0,
@@ -2258,6 +2258,7 @@ class NaamAbhyas {
             clearInterval(this.countdownInterval);
             this.countdownInterval = null;
         }
+        console.log('[NaamAbhyas] ✅ Countdown timer stopped safely');
     }
 
     updateCountdown() {
@@ -2479,7 +2480,7 @@ class NaamAbhyas {
             'Be still. Breathe. Remember the One. ' + (this.config.duration || 2) + ' minutes of Naam. ☬'
         ];
         const randomBody = spiritualBodies[Math.floor(Math.random() * spiritualBodies.length)];
-        this.showBrowserNotification('🙏 ਨਾਮ ਅਭਿਆਸ ਦਾ ਸਮਾਂ | Naam Abhyas', {
+        this.showBrowserNotification('🌸 ਨਾਮ ਅਭਿਆਸ ਦਾ ਸਮਾਂ | Naam Abhyas 🌺', {
             body: randomBody,
             tag: 'naam-abhyas-session',
             requireInteraction: true,
@@ -2567,6 +2568,13 @@ class NaamAbhyas {
 
         const timerDisplay = document.getElementById('timerDisplay');
         const progressBar = document.getElementById('timerProgressBar');
+
+        // Clear existing timer first to prevent race conditions
+        if (this.activeTimer) {
+            clearInterval(this.activeTimer);
+            this.activeTimer = null;
+            console.log('[NaamAbhyas] ⚠️ Cleared existing active timer before starting new one');
+        }
 
         this._completionInProgress = false;
         this.activeTimer = setInterval(() => {

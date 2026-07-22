@@ -231,7 +231,7 @@ document.addEventListener('DOMContentLoaded', function () {
     updateClock();
     updateGreeting();
     setInterval(updateClock, 10000);
-    setInterval(updateGreeting, 60000);
+    setInterval(updateGreeting(), 60000);
     
     // CRITICAL: Mark as initialized to prevent duplicate init on next SPA swap
     window._homepageDataInitialized = true;
@@ -330,10 +330,47 @@ document.addEventListener('DOMContentLoaded', function () {
     // This function only updates the text and calendar card styling
 
     if (!subtitleEl || !dateEl) return;
+    
+    // PHASE 1 OPTIMIZATION: Check cache first (saves ~300ms on returns)
+    const cacheKey = 'anhad_gurpurab_cache_2026';
+    const cacheTimeKey = 'anhad_gurpurab_cache_time';
+    const cachedData = sessionStorage.getItem(cacheKey);
+    const cacheTimestamp = sessionStorage.getItem(cacheTimeKey);
+    const cacheAge = Date.now() - (parseInt(cacheTimestamp) || 0);
+    
+    // Use cache if less than 1 hour old (instant load!)
+    if (cachedData && cacheAge < 3600000) {
+      try {
+        const data = JSON.parse(cachedData);
+        processGurpurabData(data, subtitleEl, dateEl, calendarCard);
+        return; // EXIT - No fetch needed! Saves ~300ms
+      } catch(e) {
+        // Cache corrupted, clear it and fetch fresh
+        sessionStorage.removeItem(cacheKey);
+        sessionStorage.removeItem(cacheTimeKey);
+      }
+    }
+    
+    // Fetch fresh data (first time or stale cache)
     try {
       const dataUrl = (window.ANHAD_ROOT || '') + 'data/gurpurab-events-2026.json';
       const response = await fetch(dataUrl);
       const data = await response.json();
+      
+      // Cache for next time
+      sessionStorage.setItem(cacheKey, JSON.stringify(data));
+      sessionStorage.setItem(cacheTimeKey, Date.now().toString());
+      
+      processGurpurabData(data, subtitleEl, dateEl, calendarCard);
+    } catch (e) {
+      subtitleEl.textContent = 'View Gurpurab Calendar';
+      dateEl.textContent = '📅 Open';
+    }
+  }
+  
+  // Helper function to process Gurpurab data (extracted for cache reuse)
+  function processGurpurabData(data, subtitleEl, dateEl, calendarCard) {
+    try {
       const events2026 = data.years['2026'] || [];
       const gurpurabs = events2026.map(e => {
         const [y, m, d] = e.gregorian_date.split('-');
@@ -507,14 +544,22 @@ document.addEventListener('DOMContentLoaded', function () {
   window.addEventListener('statsInitialized', updateNitnemTracker);
   window.addEventListener('statsChanged', updateNitnemTracker);
   window.addEventListener('nitnemDayCompleted', updateNitnemTracker);
+  window.addEventListener('nitnemUpdated', updateNitnemTracker);
 
   // Cross-page SPA synchronization
   window.addEventListener('streakUpdated', updateNitnemTracker);
   window.addEventListener('storage', (e) => {
-    if (e.key === 'anhad_streak_data' || e.key === 'nitnemTracker_nitnemLog') {
+    if (e.key === 'anhad_streak_data' || 
+        e.key === 'nitnemTracker_nitnemLog' || 
+        e.key === 'nitnemTracker_progress' ||
+        e.key === 'nitnemTracker_selectedBanis') {
+      console.log('[Homepage] Storage event detected, updating nitnem tracker');
       updateNitnemTracker();
     }
   });
+
+  // CRITICAL FIX: Expose updateNitnemTracker globally for cross-page updates
+  window.updateNitnemTracker = updateNitnemTracker;
 
   // ━━━ SEHAJ PAATH ━━━
   function updateSehajPaath() {
@@ -545,7 +590,20 @@ document.addEventListener('DOMContentLoaded', function () {
     if (pct) pct.textContent = `${percent}%`;
     if (txt) txt.textContent = completed === 0 ? suggestion : completed >= total ? 'Amazing! All banis completed today! 🎉' : `${completed} done! ${suggestion}`;
     if (fill) setTimeout(() => { fill.style.width = `${percent}%`; }, 600);
+    
+    console.log('[Homepage] Progress card updated:', { completed, total, percent });
   }
+
+  // CRITICAL FIX: Bind progress card updates to storage events
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'nitnemTracker_nitnemLog' || 
+        e.key === 'nitnemTracker_selectedBanis' ||
+        e.key === 'nitnemTracker_progress') {
+      console.log('[Homepage] Storage event detected, updating progress card');
+      updateProgressCard();
+    }
+  });
+  window.addEventListener('nitnemUpdated', updateProgressCard);
 
   // ━━━ NITNEM SUBTITLE ━━━
   function updateNitnemSubtitle() {
@@ -672,8 +730,44 @@ document.addEventListener('DOMContentLoaded', function () {
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && radioMenu?.classList.contains('active')) radioMenu.classList.remove('active'); });
 
   // ━━━ INIT ALL ━━━
-  updateGreeting(); updateClock(); updateListenerCount(); updateHukamDate(); updateNextGurpurab();
-  updateNextSession(); updateNitnemTracker(); updateSehajPaath(); updateProgressCard(); updateNitnemSubtitle(); updateNotificationBadge();
+  // PHASE 3: ULTRA-INSTANT - Only absolute essentials, defer everything else
+  
+  // INSTANT: Critical UI only (< 10ms)
+  updateGreeting();
+  updateClock();
+  
+  // DEFERRED: Everything else loads invisibly in idle time (0ms blocking)
+  if ('requestIdleCallback' in window) {
+    requestIdleCallback(() => {
+      updateListenerCount();
+      updateHukamDate();
+      updateNitnemTracker();
+      updateSehajPaath();
+      updateProgressCard();
+      updateNitnemSubtitle();
+      updateNotificationBadge();
+    }, { timeout: 50 });
+    
+    // Defer Gurpurab separately (can be slow)
+    requestIdleCallback(() => {
+      updateNextGurpurab();
+      updateNextSession();
+    }, { timeout: 200 });
+  } else {
+    // Minimal delay fallback
+    setTimeout(() => {
+      updateListenerCount();
+      updateHukamDate();
+      updateNitnemTracker();
+      updateSehajPaath();
+      updateProgressCard();
+      updateNitnemSubtitle();
+      updateNotificationBadge();
+      updateNextGurpurab();
+      updateNextSession();
+    }, 0); // Next tick - non-blocking
+  }
+  
   // FIX: Store interval IDs so they can be cleaned up on page unload
   _hpIntervals.push(
     setInterval(() => { if (!document.hidden) updateClock(); }, 15000),
