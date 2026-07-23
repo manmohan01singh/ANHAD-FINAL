@@ -1,8 +1,8 @@
 {
-    "version": "4.5.2",
-    "buildTime": "2026-07-23T14:45:00.000Z",
-    "timestamp": 1784834700000,
-    "commitHash": "nitnem-reader-fixes-v10.12.0",
+    "version": "4.5.3",
+    "buildTime": "2026-07-23T15:00:00.000Z",
+    "timestamp": 1784835600000,
+    "commitHash": "padding-fix-web-only-v10.12.1",
     "branch": "main",
-    "changelog": "Fixed SW navigation preload warning, font changes not applying in reader, reduced web padding - Service Worker v10.12.0"
+    "changelog": "Fixed padding - reduced web/Vercel only, kept Android/iOS original - Service Worker v10.12.1"
 }

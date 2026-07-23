@@ -12,7 +12,7 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
-const CACHE_VERSION = 'anhad-v10.12.0'; // v10.12.0: Fixed SW navigation preload warning, font changes not applying, reduced web padding
+const CACHE_VERSION = 'anhad-v10.12.1'; // v10.12.1: Fixed padding - reduced web/Vercel only, kept Android/iOS original
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 const DATA_CACHE = `${CACHE_VERSION}-data`;
