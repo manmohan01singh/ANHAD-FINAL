@@ -7586,14 +7586,13 @@ const StreakSaverManager = {
 
     STORAGE_KEY: 'nitnemTracker_streakSaver',
     ATTENDANCE_KEY: 'nitnemTracker_weakAttendance',
-    FREEZE_KEY: 'nitnemTracker_streakFreezes',
+    PUNISHMENT_USAGE_KEY: 'nitnemTracker_punishmentUsage',
     continuousCheckInterval: null,
 
-    // Snapchat-style Streak Freeze System
-    FREEZE_CONFIG: {
-        maxFreezesPerMonth: 5,        // Like Snapchat - 5 restores per month
-        freezeCost: 0,                 // Free (can add premium feature later)
-        monthlyResetDay: 1             // Reset on 1st of each month
+    // Punishment limit system (5 saves per month - like Snapchat)
+    PUNISHMENT_CONFIG: {
+        maxSavesPerMonth: 5,          // Only 5 punishment saves per month (like Snapchat)
+        monthlyResetDay: 1            // Reset on 1st of each month
     },
 
     /**
@@ -7601,7 +7600,7 @@ const StreakSaverManager = {
      */
     init() {
         this.checkAndCleanupExpired();
-        this.initializeFreezeSystem(); // Initialize Snapchat-style freezes
+        this.initializePunishmentLimitSystem(); // Initialize Snapchat-style monthly limits
 
         // ═══ 6 AM AUTO-CHECK: Ensure streak is evaluated on first app open ═══
         // If it's past 6 AM and we haven't checked today, run immediately.
@@ -7628,96 +7627,98 @@ const StreakSaverManager = {
     },
 
     /**
-     * Initialize Snapchat-style Freeze System
+     * Initialize Snapchat-style Punishment Limit System
+     * User gets 5 punishment saves per month - resets on 1st
      */
-    initializeFreezeSystem() {
-        const freezeData = this.getFreezeData();
+    initializePunishmentLimitSystem() {
+        const usageData = this.getPunishmentUsageData();
         const currentMonth = new Date().toISOString().slice(0, 7); // YYYY-MM
 
-        // Reset monthly freezes if new month
-        if (freezeData.month !== currentMonth) {
-            this.resetMonthlyFreezes();
-            console.log('[StreakSaver] 🔄 Monthly freezes reset');
+        // Reset monthly usage if new month
+        if (usageData.month !== currentMonth) {
+            this.resetMonthlyPunishmentUsage();
+            console.log('[StreakSaver] 🔄 Monthly punishment usage reset to 5');
         }
     },
 
     /**
-     * Get freeze data (Snapchat-style)
+     * Get punishment usage data (Snapchat-style monthly tracking)
      */
-    getFreezeData() {
+    getPunishmentUsageData() {
         try {
-            const raw = localStorage.getItem(this.FREEZE_KEY);
+            const raw = localStorage.getItem(this.PUNISHMENT_USAGE_KEY);
             if (!raw) {
-                return this.createDefaultFreezeData();
+                return this.createDefaultPunishmentUsageData();
             }
             return JSON.parse(raw);
         } catch (e) {
-            console.warn('[StreakSaver] Could not parse freeze data:', e);
-            return this.createDefaultFreezeData();
+            console.warn('[StreakSaver] Could not parse punishment usage data:', e);
+            return this.createDefaultPunishmentUsageData();
         }
     },
 
     /**
-     * Create default freeze data
+     * Create default punishment usage data
      */
-    createDefaultFreezeData() {
+    createDefaultPunishmentUsageData() {
         const currentMonth = new Date().toISOString().slice(0, 7);
         return {
             month: currentMonth,
-            freezesUsed: 0,
-            freezesRemaining: this.FREEZE_CONFIG.maxFreezesPerMonth,
+            savesUsed: 0,
+            savesRemaining: this.PUNISHMENT_CONFIG.maxSavesPerMonth,
             history: []
         };
     },
 
     /**
-     * Save freeze data
+     * Save punishment usage data
      */
-    saveFreezeData(data) {
-        localStorage.setItem(this.FREEZE_KEY, JSON.stringify(data));
+    savePunishmentUsageData(data) {
+        localStorage.setItem(this.PUNISHMENT_USAGE_KEY, JSON.stringify(data));
     },
 
     /**
-     * Reset monthly freezes (called on 1st of month)
+     * Reset monthly punishment usage (called on 1st of month)
      */
-    resetMonthlyFreezes() {
+    resetMonthlyPunishmentUsage() {
         const currentMonth = new Date().toISOString().slice(0, 7);
-        const freezeData = {
+        const usageData = {
             month: currentMonth,
-            freezesUsed: 0,
-            freezesRemaining: this.FREEZE_CONFIG.maxFreezesPerMonth,
+            savesUsed: 0,
+            savesRemaining: this.PUNISHMENT_CONFIG.maxSavesPerMonth,
             history: []
         };
-        this.saveFreezeData(freezeData);
+        this.savePunishmentUsageData(usageData);
     },
 
     /**
-     * Check if user has freezes available
+     * Check if user has punishment saves remaining this month
      */
-    hasFreezesAvailable() {
-        const freezeData = this.getFreezeData();
-        return freezeData.freezesRemaining > 0;
+    hasPunishmentSavesRemaining() {
+        const usageData = this.getPunishmentUsageData();
+        return usageData.savesRemaining > 0;
     },
 
     /**
-     * Use a freeze
+     * Use one punishment save (called when punishment is completed)
      */
-    useFreeze(reason) {
-        const freezeData = this.getFreezeData();
+    usePunishmentSave(reason) {
+        const usageData = this.getPunishmentUsageData();
         
-        if (freezeData.freezesRemaining <= 0) {
+        if (usageData.savesRemaining <= 0) {
             return false;
         }
 
-        freezeData.freezesUsed++;
-        freezeData.freezesRemaining--;
-        freezeData.history.push({
+        usageData.savesUsed++;
+        usageData.savesRemaining--;
+        usageData.history.push({
             date: new Date().toISOString(),
             reason: reason,
             streakSaved: StreakManager.state.currentStreak
         });
 
-        this.saveFreezeData(freezeData);
+        this.savePunishmentUsageData(usageData);
+        console.log(`[StreakSaver] Punishment save used - ${usageData.savesRemaining}/5 remaining this month`);
         return true;
     },
 
@@ -7897,9 +7898,18 @@ const StreakSaverManager = {
         const existing = this.getActivePunishment();
         if (existing) return;
 
-        // Check if user has streak freezes available (Snapchat-style)
-        const freezeData = this.getFreezeData();
-        const hasFreeze = freezeData.freezesRemaining > 0;
+        // Check if user has punishment saves remaining this month (Snapchat-style 5/month limit)
+        const usageData = this.getPunishmentUsageData();
+        const hasSavesRemaining = usageData.savesRemaining > 0;
+
+        // If no saves remaining, don't offer punishment - streak is lost
+        if (!hasSavesRemaining) {
+            Toast.error('❌ No Streak Saves Left', `You've used all 5 saves this month. Streak will reset. Saves reset on ${this.PUNISHMENT_CONFIG.monthlyResetDay}st.`);
+            StreakManager.state.currentStreak = 0;
+            StreakManager.saveStreakData();
+            StreakManager.recalculateStreak();
+            return;
+        }
 
         // Generate punishment based on tier
         const punishment = this.generatePunishment(brokenStreakCount);
@@ -7913,7 +7923,7 @@ const StreakSaverManager = {
             completed: false,
             punishmentBanisAdded: false,
             context: context || {},
-            freezesAvailable: freezeData.freezesRemaining  // Add freeze count
+            savesRemaining: usageData.savesRemaining  // Add remaining count
         };
 
         this.savePunishmentData(saverData);
@@ -7921,8 +7931,8 @@ const StreakSaverManager = {
         // Add punishment Banis to Ajadta Nitnem
         this.addPunishmentToNitnem(punishment);
 
-        // Show notification with freeze option
-        this.showStreakSaverOffer(saverData, hasFreeze);
+        // Show notification
+        this.showStreakSaverOffer(saverData);
 
         // Render UI
         this.renderPunishmentUI();
@@ -8064,11 +8074,19 @@ const StreakSaverManager = {
 
     /**
      * Complete punishment and save streak
-     * ENHANCED: Clean up ATTENDANCE_KEY to prevent stale state
+     * ENHANCED: Counts toward monthly 5-save limit
      */
     completePunishment() {
         const saverData = this.getActivePunishment();
         if (!saverData) return;
+
+        // ═══ USE ONE PUNISHMENT SAVE (counts toward 5/month limit) ═══
+        const saveUsed = this.usePunishmentSave(`Saved ${saverData.brokenStreak}-day streak via punishment`);
+        
+        if (!saveUsed) {
+            Toast.error('❌ Save Failed', 'Could not use punishment save. Please try again.');
+            return;
+        }
 
         saverData.completed = true;
         saverData.completedAt = new Date().toISOString();
@@ -8084,7 +8102,8 @@ const StreakSaverManager = {
             if (!amritvelaLog[missedDate]) {
                 amritvelaLog[missedDate] = {
                     timestamp: new Date().toISOString(),
-                    isStreakSaverPatch: true
+                    isStreakSaverPatch: true,
+                    usedPunishmentSave: true  // Mark as punishment-saved
                 };
                 StorageManager.save(CONFIG.STORAGE_KEYS.AMRITVELA_LOG, amritvelaLog);
             }
@@ -8101,8 +8120,12 @@ const StreakSaverManager = {
         // ═══ ENHANCED: Clean up ATTENDANCE_KEY to prevent stale state ═══
         localStorage.removeItem(this.ATTENDANCE_KEY);
 
-        // Show celebration
-        Toast.success('🎉 Streak Saved!', `Your ${restoredStreak}-day streak is restored!`);
+        // Get remaining saves for toast
+        const usageData = this.getPunishmentUsageData();
+        const remaining = usageData.savesRemaining;
+
+        // Show celebration with remaining count
+        Toast.success('🎉 Streak Saved!', `${restoredStreak}-day streak restored! ${remaining}/5 saves left this month.`);
         CelebrationManager.show('streakSaved');
 
         this.renderPunishmentUI();
@@ -8142,7 +8165,7 @@ const StreakSaverManager = {
     /**
      * Show streak saver offer notification
      */
-    showStreakSaverOffer(saverData, hasFreeze = false) {
+    showStreakSaverOffer(saverData) {
         const punishment = saverData.punishment;
         const baniName = this.PUNISHMENT_BANIS[punishment.type].name;
         const count = punishment.count;
@@ -8154,21 +8177,20 @@ const StreakSaverManager = {
             message = `Complete ${count}× ${baniName} within 24h to save your ${saverData.brokenStreak}-day streak!`;
         }
 
-        if (hasFreeze) {
-            message += ` Or use a Streak Freeze (${saverData.freezesAvailable} left).`;
-        }
+        // Add remaining saves info (Snapchat-style)
+        message += ` (${saverData.savesRemaining}/5 saves left this month)`;
 
         // Show toast notification
         Toast.warning('⚡ Streak Saver Available!', message, 10000);
 
         // Show modal with details
-        this.showStreakSaverModal(saverData, hasFreeze);
+        this.showStreakSaverModal(saverData);
     },
 
     /**
-     * Show streak saver modal
+     * Show streak saver modal (Snapchat-style - punishment only, shows X/5 saves)
      */
-    showStreakSaverModal(saverData, hasFreeze = false) {
+    showStreakSaverModal(saverData) {
         const punishment = saverData.punishment;
         const baniInfo = this.PUNISHMENT_BANIS[punishment.type];
         const expiresAt = new Date(saverData.expiresAt);
@@ -8180,13 +8202,6 @@ const StreakSaverManager = {
         } else {
             punishmentText = `Complete ${punishment.type} × ${punishment.count}`;
         }
-
-        // Freeze button HTML (Snapchat-style)
-        const freezeButton = hasFreeze ? `
-            <button class="modal-btn freeze-btn" onclick="StreakSaverManager.useStreakFreeze()">
-                ❄️ Use Streak Freeze (${saverData.freezesAvailable}/5)
-            </button>
-        ` : '';
 
         const modalHTML = `
             <div class="modal-overlay active" id="streakSaverModal" style="pointer-events: auto;">
@@ -8205,20 +8220,13 @@ const StreakSaverManager = {
                                 <p class="punishment-note">Complete within <strong>${timeRemaining} hours</strong></p>
                             </div>
                         </div>
-                        ${hasFreeze ? `
-                        <div class="freeze-info">
-                            <div class="freeze-icon">❄️</div>
-                            <div class="freeze-text">
-                                <strong>Streak Freeze Available</strong>
-                                <p>Save your streak instantly without punishment (${saverData.freezesAvailable} left this month)</p>
+                        <div class="punishment-saves-info">
+                            <div class="saves-icon">💾</div>
+                            <div class="saves-text">
+                                <strong>Streak Saves: ${saverData.savesRemaining}/5 left this month</strong>
+                                <p>Complete punishment to use 1 save. Resets on 1st of each month.</p>
                             </div>
                         </div>
-                        ` : `
-                        <div class="freeze-info-empty">
-                            <p>💡 No Streak Freezes remaining this month</p>
-                            <small>Resets on the 1st of each month</small>
-                        </div>
-                        `}
                         <div class="punishment-explanation">
                             <p>💡 Complete the punishment Bani to restore your ${saverData.brokenStreak}-day streak!</p>
                             <p class="punishment-warning">⚠️ If you decline, your streak will be reset to 0.</p>
@@ -8228,9 +8236,8 @@ const StreakSaverManager = {
                         <button class="modal-btn secondary" onclick="StreakSaverManager.declineStreakSaver()">
                             Decline (Lose Streak)
                         </button>
-                        ${freezeButton}
                         <button class="modal-btn primary" onclick="StreakSaverManager.acceptStreakSaver()">
-                            Accept Punishment
+                            Accept Punishment (${saverData.savesRemaining}/5)
                         </button>
                     </div>
                 </div>
@@ -8244,72 +8251,11 @@ const StreakSaverManager = {
      * Accept streak saver punishment
      */
     acceptStreakSaver() {
-        document.getElementById('streakSaverModal')?.remove();
-        Toast.success('✅ Punishment Accepted', 'Complete the Bani to save your streak!');
-    },
-
-    /**
-     * Use Streak Freeze (Snapchat-style instant save)
-     */
-    useStreakFreeze() {
         const saverData = this.getActivePunishment();
-        if (!saverData) return;
-
-        // Check if user has freezes
-        const freezeData = this.getFreezeData();
-        if (freezeData.freezesRemaining <= 0) {
-            Toast.error('❄️ No Freezes Left', 'You have used all 5 freezes this month. Complete the punishment instead.');
-            return;
-        }
-
-        // Use a freeze
-        const success = this.useFreeze(`Saved ${saverData.brokenStreak}-day streak`);
-        if (!success) {
-            Toast.error('❄️ Freeze Failed', 'Could not use freeze. Please try again.');
-            return;
-        }
-
-        // Remove punishment Banis
-        this.removePunishmentFromNitnem();
-
-        // Patch the missed date
-        const missedDate = saverData.context ? saverData.context.missedDate : null;
-        if (missedDate) {
-            const amritvelaLog = StorageManager.load(CONFIG.STORAGE_KEYS.AMRITVELA_LOG, {});
-            if (!amritvelaLog[missedDate]) {
-                amritvelaLog[missedDate] = {
-                    timestamp: new Date().toISOString(),
-                    isStreakSaverPatch: true,
-                    usedFreeze: true  // Mark as freeze-saved
-                };
-                StorageManager.save(CONFIG.STORAGE_KEYS.AMRITVELA_LOG, amritvelaLog);
-            }
-        }
-
-        // Restore streak immediately (no punishment needed!)
-        const restoredStreak = saverData.brokenStreak;
-        StreakManager.state.currentStreak = restoredStreak;
-        StreakManager.saveStreakData();
-        StreakManager.recalculateStreak();
-
-        // Clear punishment data
-        localStorage.removeItem(this.STORAGE_KEY);
-        localStorage.removeItem(this.ATTENDANCE_KEY);
-
-        // Close modal
+        const remaining = saverData ? saverData.savesRemaining : 5;
+        
         document.getElementById('streakSaverModal')?.remove();
-
-        // Show success with freeze count
-        const remaining = freezeData.freezesRemaining - 1;
-        Toast.success('❄️ Freeze Used!', `Streak saved! ${remaining} freezes left this month.`);
-        CelebrationManager.show('streakFrozen');
-
-        // Update UI
-        this.renderPunishmentUI();
-        HeaderManager.updatePenaltyState();
-        HeaderManager.updateStreakDisplay();
-
-        console.log(`[StreakSaver] ❄️ Freeze used - ${remaining} remaining`);
+        Toast.success('✅ Punishment Accepted', `Complete the Bani to save your streak! (${remaining}/5 saves left)`);
     },
 
     /**
