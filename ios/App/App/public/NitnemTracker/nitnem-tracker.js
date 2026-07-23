@@ -4278,6 +4278,11 @@ const NitnemManager = {
         this.updateProgress();
         this.updateCounts();
 
+        // CRITICAL FIX: Check if this completes a punishment task
+        if (typeof StreakSaverManager !== 'undefined') {
+            StreakSaverManager.checkPunishmentCompletion();
+        }
+
         // CRITICAL FIX: Dispatch storage event to update homepage cards in real-time
         window.dispatchEvent(new StorageEvent('storage', {
             key: 'nitnemTracker_nitnemLog',
@@ -4392,6 +4397,11 @@ const NitnemManager = {
         this.updateProgress();
         this.updateCounts();
         this.checkAllComplete();
+
+        // CRITICAL FIX: Check if completing all includes punishment banis
+        if (typeof StreakSaverManager !== 'undefined') {
+            StreakSaverManager.checkPunishmentCompletion();
+        }
 
         // CRITICAL FIX: Dispatch storage event to update homepage cards
         window.dispatchEvent(new StorageEvent('storage', {

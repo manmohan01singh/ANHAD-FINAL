@@ -526,19 +526,27 @@ self.addEventListener('fetch', (event) => {
  * Uses the Navigation Preload response if available (parallel fetch the browser
  * already started), otherwise falls back to staleWhileRevalidate.
  * This is the fastest possible navigation strategy — zero SW-boot overhead.
+ * FIX: Properly handle preloadResponse to avoid console warnings
  */
 async function navigateWithPreload(event) {
   try {
     // Try to use the Navigation Preload response (browser fetched this in parallel)
-    const preloadResponse = await event.preloadResponse;
-    if (preloadResponse && preloadResponse.ok) {
-      // Cache the preload response for next time
-      const cache = await caches.open(DYNAMIC_CACHE);
-      cache.put(event.request, preloadResponse.clone()).catch(() => null);
-      return preloadResponse;
+    // CRITICAL FIX: Check if preloadResponse exists before awaiting
+    if (event.preloadResponse) {
+      const preloadResponse = await event.preloadResponse;
+      if (preloadResponse && preloadResponse.ok) {
+        // Cache the preload response for next time
+        const cache = await caches.open(DYNAMIC_CACHE);
+        // Use waitUntil to ensure cache operation completes
+        event.waitUntil(
+          cache.put(event.request, preloadResponse.clone()).catch(() => null)
+        );
+        return preloadResponse;
+      }
     }
   } catch (e) {
     // preloadResponse not available or failed — fall through to SWR
+    console.log('[SW] Preload response unavailable or failed:', e.message);
   }
   return staleWhileRevalidate(event.request);
 }

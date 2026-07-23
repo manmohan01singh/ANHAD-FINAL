@@ -1979,3 +1979,28 @@ body.dark .ikonkar-background img {
 .reader-content {
     padding-top: calc(128px + max(env(safe-area-inset-top, 0px), 36px)) !important;
 }
+
+/* CAPACITOR APP FIX: Reduce excessive padding for mobile apps (Android/iOS) */
+@supports (-webkit-touch-callout: none) {
+    /* iOS Capacitor App - Reduce padding */
+    .reader-sticky-top-bar .reader-header {
+        padding-top: calc(env(safe-area-inset-top, 0px) + 8px) !important;
+    }
+    
+    .reader-content {
+        padding-top: calc(110px + env(safe-area-inset-top, 0px)) !important;
+    }
+}
+
+/* Android Capacitor App Detection - Further reduce padding */
+@media (max-width: 768px) {
+    html[data-capacitor="true"] .reader-sticky-top-bar .reader-header,
+    body[data-capacitor="true"] .reader-sticky-top-bar .reader-header {
+        padding-top: calc(env(safe-area-inset-top, 0px) + 8px) !important;
+    }
+    
+    html[data-capacitor="true"] .reader-content,
+    body[data-capacitor="true"] .reader-content {
+        padding-top: calc(110px + env(safe-area-inset-top, 0px)) !important;
+    }
+}
