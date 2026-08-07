@@ -322,7 +322,7 @@
     }, { passive: true });
   }
 
-  // ─── Gurbani Recording Engine (Multi-Tier Recorder: MediaStream / WebAudio / Direct Stream) ───
+  // ─── Gurbani Recording Engine (MediaRecorder exactly what plays) ───
   async function startRecording() {
     var audio = window.AnhadAudio;
     if (!audio) {
@@ -344,7 +344,6 @@
     recState.chunks = [];
     recState.startTime = Date.now();
     recState.streamType = stream;
-    recState.recordedMimeType = '';
 
     DOM.recordItem.classList.add('recording');
     DOM.recordLabel.textContent = '00:00';
@@ -359,133 +358,79 @@
       }
     }, 1000);
 
-    var mediaStream = null;
-
-    // Strategy 1: AnhadAudio capture stream or HTMLAudioElement captureStream
-    if (audio.getCaptureStream) {
-      mediaStream = audio.getCaptureStream();
-    }
-    if (!mediaStream && audioEl.captureStream) {
-      try {
-        mediaStream = audioEl.captureStream();
-      } catch (err) {
-        console.warn('audioEl.captureStream failed:', err);
-      }
-    }
-    if (!mediaStream && audioEl.mozCaptureStream) {
-      try {
+    try {
+      var mediaStream = null;
+      if (audioEl.captureStream) {
+        try {
+          mediaStream = audioEl.captureStream();
+        } catch (captureErr) {
+          if (captureErr.name === 'SecurityError') {
+            showToast('⚠️ Recording not supported for this stream (CORS)');
+            haptic('ERROR');
+          } else {
+            showToast('⚠️ Recording failed: ' + captureErr.message);
+          }
+          recState.isRecording = false;
+          DOM.recordItem.classList.remove('recording');
+          DOM.recordLabel.textContent = 'Record';
+          if (recState.intervalId) {
+            clearInterval(recState.intervalId);
+            recState.intervalId = null;
+          }
+          return;
+        }
+      } else if (audioEl.mozCaptureStream) {
         mediaStream = audioEl.mozCaptureStream();
-      } catch (err) {
-        console.warn('audioEl.mozCaptureStream failed:', err);
       }
-    }
 
-    // Strategy 2: Web Audio API MediaStreamDestination if captureStream is unavailable/empty
-    if (!mediaStream && (window.AudioContext || window.webkitAudioContext)) {
-      try {
-        var AudioCtx = window.AudioContext || window.webkitAudioContext;
-        if (!recState.webAudioCtx) {
-          recState.webAudioCtx = new AudioCtx();
-        }
-        if (recState.webAudioCtx.state === 'suspended') {
-          await recState.webAudioCtx.resume();
-        }
-        if (!recState.mediaSourceNode && audioEl) {
-          recState.mediaSourceNode = recState.webAudioCtx.createMediaElementSource(audioEl);
-          recState.destNode = recState.webAudioCtx.createMediaStreamDestination();
-          recState.mediaSourceNode.connect(recState.destNode);
-          recState.mediaSourceNode.connect(recState.webAudioCtx.destination);
-        }
-        if (recState.destNode) {
-          mediaStream = recState.destNode.stream;
-        }
-      } catch (webAudioErr) {
-        console.warn('Web Audio capture failed:', webAudioErr);
-      }
-    }
-
-    // Attempt MediaRecorder with mediaStream if available
-    if (mediaStream && typeof MediaRecorder !== 'undefined') {
-      try {
+      if (mediaStream) {
         var options = { audioBitsPerSecond: 128000 };
+        
+        // Try multiple mimeTypes for compatibility
         if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) {
           options.mimeType = 'audio/webm;codecs=opus';
         } else if (MediaRecorder.isTypeSupported('audio/webm')) {
           options.mimeType = 'audio/webm';
-        } else if (MediaRecorder.isTypeSupported('audio/mp4')) {
-          options.mimeType = 'audio/mp4';
         } else if (MediaRecorder.isTypeSupported('audio/ogg;codecs=opus')) {
           options.mimeType = 'audio/ogg;codecs=opus';
+        } else if (MediaRecorder.isTypeSupported('audio/mp4')) {
+          options.mimeType = 'audio/mp4';
         }
 
-        recState.recordedMimeType = options.mimeType || 'audio/webm';
         var mediaRecorder = new MediaRecorder(mediaStream, options);
         recState.mediaRecorder = mediaRecorder;
-
+        
         mediaRecorder.ondataavailable = function (e) {
           if (e.data && e.data.size > 0) {
+            console.log('Chunk recorded:', e.data.size, 'bytes');
             recState.chunks.push(e.data);
           }
         };
-
-        mediaRecorder.onerror = function (e) {
+        
+        mediaRecorder.onerror = function(e) {
           console.error('MediaRecorder error:', e);
+          showToast('⚠️ Recording error occurred');
+        };
+        
+        mediaRecorder.onstop = function() {
+          console.log('MediaRecorder stopped. Total chunks:', recState.chunks.length);
         };
 
+        // Start recording with smaller time slices for more frequent chunks
         mediaRecorder.start(500);
-        return;
-      } catch (mrErr) {
-        console.warn('MediaRecorder init failed, falling back to direct stream fetch:', mrErr);
+        console.log('MediaRecorder started with mimeType:', options.mimeType);
+      } else {
+        showToast('⚠️ Recording not supported on this device');
+        recState.isRecording = false;
+        DOM.recordItem.classList.remove('recording');
+        DOM.recordLabel.textContent = 'Record';
       }
-    }
-
-    // Strategy 3: Direct Stream Fetch Fallback
-    try {
-      var streamUrl = audio.getCurrentStreamUrl ? audio.getCurrentStreamUrl() : (audioEl ? audioEl.src : '');
-      if (!streamUrl) {
-        throw new Error('No active stream URL available');
-      }
-
-      recState.abortController = new AbortController();
-      recState.recordedMimeType = 'audio/mpeg';
-
-      fetch(streamUrl, { signal: recState.abortController.signal })
-        .then(function (res) {
-          if (!res.body) throw new Error('ReadableStream not supported');
-          var reader = res.body.getReader();
-          function readChunk() {
-            if (!recState.isRecording) return;
-            reader.read().then(function (result) {
-              if (result.done) return;
-              if (result.value && result.value.byteLength > 0) {
-                recState.chunks.push(result.value);
-              }
-              readChunk();
-            }).catch(function (err) {
-              if (err.name !== 'AbortError') console.warn('Fetch stream read error:', err);
-            });
-          }
-          readChunk();
-        })
-        .catch(function (err) {
-          if (err.name !== 'AbortError') {
-            console.error('Direct stream fetch error:', err);
-            if (recState.chunks.length === 0) {
-              showToast('⚠️ Recording failed: ' + err.message);
-              recState.isRecording = false;
-              DOM.recordItem.classList.remove('recording');
-              DOM.recordLabel.textContent = 'Record';
-              if (recState.intervalId) clearInterval(recState.intervalId);
-            }
-          }
-        });
-    } catch (fetchErr) {
-      console.error('Stream fetch fallback failed:', fetchErr);
-      showToast('⚠️ Recording not supported on this device/stream');
+    } catch (e) {
+      console.error('Recording start error:', e);
+      showToast('⚠️ Failed to start recording: ' + e.message);
       recState.isRecording = false;
       DOM.recordItem.classList.remove('recording');
       DOM.recordLabel.textContent = 'Record';
-      if (recState.intervalId) clearInterval(recState.intervalId);
     }
   }
 
@@ -494,20 +439,21 @@
     recState.isRecording = false;
 
     if (recState.intervalId) clearInterval(recState.intervalId);
-
+    
     // Wait for MediaRecorder to finish and collect final chunks
     if (recState.mediaRecorder && recState.mediaRecorder.state !== 'inactive') {
       try {
         recState.mediaRecorder.stop();
-        await new Promise(function(resolve) { setTimeout(resolve, 300); });
+        // Give MediaRecorder time to fire ondataavailable
+        await new Promise(function(resolve) {
+          setTimeout(resolve, 300);
+        });
       } catch(e) {
         console.error('MediaRecorder stop error:', e);
       }
     }
-
-    if (recState.abortController) {
-      try { recState.abortController.abort(); } catch(e) {}
-    }
+    
+    if (recState.abortController) recState.abortController.abort();
     if (recState.xhr) {
       try { recState.xhr.abort(); } catch(e) {}
     }
@@ -516,35 +462,31 @@
     DOM.recordLabel.textContent = 'Record';
     haptic('MEDIUM');
 
+    // Wait a bit longer for all chunks to be collected
     setTimeout(function() {
       if (recState.chunks.length === 0) {
-        showToast('⚠️ No audio recorded. Please try again.');
+        showToast('⚠️ No audio recorded. Please play radio first.');
         return;
       }
 
       showToast('💾 Saving Gurbani recording...');
 
-      var streamObj = window._anhadCustomStream || (window.AnhadAudio && window.AnhadAudio.getStreamInfo ? window.AnhadAudio.getStreamInfo(recState.streamType) : null);
-      var rawStreamName = streamObj ? streamObj.name : (recState.streamType || 'Gurbani');
-      var sanitizedStreamName = rawStreamName.replace(/[^a-zA-Z0-9]/g, '_').replace(/_+/g, '_');
-
-      var mimeType = recState.recordedMimeType || 'audio/webm';
-      var ext = '.webm';
-      if (mimeType.indexOf('mp4') !== -1) ext = '.m4a';
-      else if (mimeType.indexOf('mpeg') !== -1 || mimeType.indexOf('mp3') !== -1) ext = '.mp3';
-      else if (mimeType.indexOf('ogg') !== -1) ext = '.ogg';
-
+      var isSimran = recState.streamType === 'simran';
+      var mimeType = isSimran ? 'audio/mpeg' : 'audio/webm';
+      var ext = isSimran ? '.mp3' : '.webm';
+      
       // Create blob from all collected chunks
       var blob = new Blob(recState.chunks, { type: mimeType });
-
+      
+      // Verify blob has content
       if (blob.size === 0) {
         showToast('⚠️ Recording is empty. Please try again.');
         return;
       }
-
+      
       var dateStr = new Date().toISOString().slice(0,10);
       var timeStr = new Date().toISOString().slice(11,19).replace(/:/g, '-');
-      var filename = 'Gurbani_' + sanitizedStreamName + '_' + dateStr + '_' + timeStr + ext;
+      var filename = 'Gurbani_' + recState.streamType + '_' + dateStr + '_' + timeStr + ext;
 
       if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Filesystem) {
         try {
@@ -558,6 +500,7 @@
               directory: 'DOCUMENTS'
             }).then(function () {
               showToast('✅ Saved to Documents: ' + filename);
+              // Clear chunks after successful save
               recState.chunks = [];
             }).catch(function (err) {
               console.error('File write failed:', err);
@@ -576,7 +519,7 @@
       } else {
         triggerWebDownload(blob, filename);
       }
-    }, 400);
+    }, 500);
   }
 
   function triggerWebDownload(blob, filename) {

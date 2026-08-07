@@ -30,20 +30,11 @@
   const IS_CAPACITOR = !!(window.Capacitor && window.Capacitor.isNative);
   const IS_HTTPS_WEB  = !IS_CAPACITOR && location.protocol === 'https:';
 
-  function isCorsCdnUrl(rawUrl) {
-    if (!rawUrl) return false;
-    return rawUrl.includes('pub-525228169e0c44e38a67c306ba1a458c.r2.dev') ||
-           rawUrl.includes('pub-8bf31fc1f2a44451b40a3ded7e07fac2.r2.dev') ||
-           rawUrl.startsWith('/') ||
-           (typeof location !== 'undefined' && rawUrl.startsWith(location.origin));
-  }
-
   function toProxiedUrl(rawUrl) {
     if (!rawUrl) return rawUrl;
-    if (!IS_HTTPS_WEB && !IS_CAPACITOR) return rawUrl;
-    if (rawUrl.startsWith('/api/stream')) return rawUrl;
-    if (isCorsCdnUrl(rawUrl)) return rawUrl;
-    // Route external live streams through edge proxy so CORS Access-Control-Allow-Origin: * is present
+    if (!IS_HTTPS_WEB) return rawUrl;          // Capacitor / http:// local – use as-is
+    if (rawUrl.startsWith('https://')) return rawUrl; // already HTTPS – no proxy needed
+    // HTTP stream on HTTPS web → route through edge proxy
     return '/api/stream?url=' + encodeURIComponent(rawUrl);
   }
 
@@ -566,8 +557,12 @@
       // Set preload type
       this.audio.preload = preloadMode || 'auto';
 
-      // Set CORS policy: Always request anonymous CORS for proxied, R2 CDN, and local streams to allow clean recording
-      this.audio.crossOrigin = 'anonymous';
+      // Set CORS policy: Only Amritvela R2 bucket supports CORS, others do not
+      if (url && url.indexOf('pub-525228169e0c44e38a67c306ba1a458c.r2.dev') !== -1) {
+        this.audio.crossOrigin = 'anonymous';
+      } else {
+        this.audio.removeAttribute('crossorigin');
+      }
 
       if (this.audio.src !== url) {
         this.audio.src = url;
@@ -1122,26 +1117,6 @@
     off,
     get STREAMS() { return Object.keys(STREAMS); },
     getStreamInfo: (name) => STREAMS[name] ? { ...STREAMS[name] } : null,
-    getCaptureStream: () => {
-      const audioEl = PlaybackQueueController.audio;
-      if (!audioEl) return null;
-      try {
-        if (audioEl.captureStream) return audioEl.captureStream();
-        if (audioEl.mozCaptureStream) return audioEl.mozCaptureStream();
-      } catch (e) {
-        console.warn('[AnhadAudio] captureStream error:', e);
-      }
-      return null;
-    },
-    getCurrentStreamUrl: () => {
-      const state = getPublicState();
-      const s = STREAMS[state.currentStream];
-      if (s) {
-        if (s.type === 'live' && s.url) return toProxiedUrl(s.url);
-        if (s.type === 'playlist' && s.getTrackUrl) return toProxiedUrl(s.getTrackUrl(currentTrackIndex));
-      }
-      return PlaybackQueueController.audio ? PlaybackQueueController.audio.src : '';
-    },
     getLiveOffset,
     getLiveDrift,
     getLastTransitionProof: () => '',
