@@ -41,10 +41,10 @@
 
   function toProxiedUrl(rawUrl) {
     if (!rawUrl) return rawUrl;
-    if (!IS_HTTPS_WEB && !IS_CAPACITOR) return rawUrl;
+    if (rawUrl.startsWith('https://')) return rawUrl; // Direct HTTPS streams load directly natively
     if (rawUrl.startsWith('/api/stream')) return rawUrl;
-    if (isCorsCdnUrl(rawUrl)) return rawUrl;
-    // Route external live streams through edge proxy so CORS Access-Control-Allow-Origin: * is present
+    if (!IS_HTTPS_WEB && !IS_CAPACITOR) return rawUrl;
+    // Only route plain http:// streams through edge proxy for mixed content bypass
     return '/api/stream?url=' + encodeURIComponent(rawUrl);
   }
 

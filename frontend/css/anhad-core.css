@@ -31,17 +31,19 @@
 .time-orb {
   position: absolute;
   border-radius: 50%;
-  pointer-events: none;
+  pointer-events: none !important;
   z-index: 0;
-  filter: blur(100px);
-  opacity: 0.6;
+  filter: blur(60px);
+  opacity: 0.5;
   transition: opacity 0.8s ease;
+  max-width: 100vw;
+  overflow: hidden;
 }
 
 /* Show orbs only in DAY and NIGHT auto mode */
 [data-theme-mode="auto"][data-time-of-day="day"] .time-orb,
 [data-theme-mode="auto"][data-time-of-day="night"] .time-orb {
-  opacity: 0.6;
+  opacity: 0.5;
 }
 
 /* Hide orbs in other modes */
@@ -50,52 +52,54 @@
 [data-theme-mode="auto"][data-time-of-day="morning"] .time-orb,
 [data-theme-mode="auto"][data-time-of-day="evening"] .time-orb {
   opacity: 0;
-  display: none;
+  display: none !important;
 }
 
-/* DAY TIME — Only Sky Blue (Your Practice card color, NO YELLOW) */
+/* DAY TIME — Sky Blue ambient orb contained strictly inside viewport bounds */
 [data-theme-mode="auto"][data-time-of-day="day"] .time-orb-1 {
-  width: 400px;
-  height: 400px;
-  background: radial-gradient(circle, rgba(227, 242, 253, 1) 0%, rgba(187, 222, 251, 0.8) 40%, transparent 70%);
-  top: -150px;
-  right: -100px;
+  width: 280px;
+  height: 280px;
+  background: radial-gradient(circle, rgba(112, 181, 245, 0.45) 0%, rgba(70, 155, 235, 0.2) 50%, transparent 75%);
+  top: -60px;
+  right: 0px;
 }
 
 [data-theme-mode="auto"][data-time-of-day="day"] .time-orb-2 {
-  display: none;
+  display: none !important;
   opacity: 0;
 }
 
-/* NIGHT TIME — Only Dark Blue (Your Practice dark card, NO YELLOW) */
+/* NIGHT TIME — Dark Blue ambient orb */
 [data-theme-mode="auto"][data-time-of-day="night"] .time-orb-1 {
-  width: 400px;
-  height: 400px;
-  background: radial-gradient(circle, rgba(28, 45, 61, 1) 0%, rgba(42, 61, 74, 0.8) 40%, transparent 70%);
-  top: -150px;
-  left: -100px;
+  width: 280px;
+  height: 280px;
+  background: radial-gradient(circle, rgba(28, 45, 61, 0.8) 0%, rgba(42, 61, 74, 0.5) 50%, transparent 75%);
+  top: -60px;
+  left: 0px;
 }
 
 [data-theme-mode="auto"][data-time-of-day="night"] .time-orb-2 {
-  display: none;
+  display: none !important;
   opacity: 0;
 }
 
-/* HEADER ORB — Behind ANHAD title bar */
+/* HEADER ORB — Behind title bar */
 .time-orb-header {
-  width: 500px;
-  height: 200px;
-  top: -50px;
+  width: 100%;
+  max-width: 400px;
+  height: 150px;
+  top: -30px;
   left: 50%;
   transform: translateX(-50%);
+  pointer-events: none !important;
 }
 
 [data-theme-mode="auto"][data-time-of-day="day"] .time-orb-header {
-  background: radial-gradient(ellipse, rgba(227, 242, 253, 1) 0%, rgba(187, 222, 251, 0.7) 40%, transparent 70%);
+  background: radial-gradient(ellipse, rgba(112, 181, 245, 0.4) 0%, rgba(70, 155, 235, 0.15) 50%, transparent 75%);
 }
 
 [data-theme-mode="auto"][data-time-of-day="night"] .time-orb-header {
-  background: radial-gradient(ellipse, rgba(28, 45, 61, 1) 0%, rgba(42, 61, 74, 0.7) 40%, transparent 70%);
+  background: radial-gradient(ellipse, rgba(28, 45, 61, 0.8) 0%, rgba(42, 61, 74, 0.5) 50%, transparent 75%);
 }
 
 /* ─── Design token fallbacks (resolved by trendora-premium.css if loaded) ─── */
