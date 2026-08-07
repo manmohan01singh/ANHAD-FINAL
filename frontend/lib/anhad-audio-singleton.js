@@ -21,7 +21,8 @@
   
   const CDN_BASE_R2 = 'https://pub-525228169e0c44e38a67c306ba1a458c.r2.dev';
   const CDN_BASE_SIMRAN = 'https://pub-8bf31fc1f2a44451b40a3ded7e07fac2.r2.dev/waheguru';
-  const SGPC_LIVE = 'https://live.sgpc.net:8443/;nocache=1';
+  const SGPC_LIVE = 'https://radio.sikhnet.com/proxy/harmandirsahib/live';
+  const SGPC_LIVE_DIRECT = 'https://live.sgpc.net:8443/;nocache=1';
 
   // ── HTTPS proxy for HTTP Icecast streams ──
   // On HTTPS web (Vercel), browsers block http:// audio (mixed content).
@@ -30,11 +31,20 @@
   const IS_CAPACITOR = !!(window.Capacitor && window.Capacitor.isNative);
   const IS_HTTPS_WEB  = !IS_CAPACITOR && location.protocol === 'https:';
 
+  function isCorsCdnUrl(rawUrl) {
+    if (!rawUrl) return false;
+    return rawUrl.includes('pub-525228169e0c44e38a67c306ba1a458c.r2.dev') ||
+           rawUrl.includes('pub-8bf31fc1f2a44451b40a3ded7e07fac2.r2.dev') ||
+           rawUrl.startsWith('/') ||
+           (typeof location !== 'undefined' && rawUrl.startsWith(location.origin));
+  }
+
   function toProxiedUrl(rawUrl) {
     if (!rawUrl) return rawUrl;
-    if (!IS_HTTPS_WEB) return rawUrl;          // Capacitor / http:// local – use as-is
-    if (rawUrl.startsWith('https://')) return rawUrl; // already HTTPS – no proxy needed
-    // HTTP stream on HTTPS web → route through edge proxy
+    if (!IS_HTTPS_WEB && !IS_CAPACITOR) return rawUrl;
+    if (rawUrl.startsWith('/api/stream')) return rawUrl;
+    if (isCorsCdnUrl(rawUrl)) return rawUrl;
+    // Route external live streams through edge proxy so CORS Access-Control-Allow-Origin: * is present
     return '/api/stream?url=' + encodeURIComponent(rawUrl);
   }
 

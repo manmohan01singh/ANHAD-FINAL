@@ -485,7 +485,8 @@ self.addEventListener('fetch', (event) => {
   );
 
   if (isLiveStream) {
-    event.respondWith(fetch(event.request));
+    // Return without calling event.respondWith to bypass SW fetch interception completely!
+    // This allows browser native HTML5 Audio player to load streams without SW CORS errors.
     return;
   }
 
