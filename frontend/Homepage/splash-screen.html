@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+      <!-- CRITICAL: Theme blocker - MUST run before paint -->
+  <script>
+    (function() {
+      try {
+        const theme = localStorage.getItem('anhad_theme') || 'auto';
+        let effectiveTheme = theme;
+        let timeOfDay = localStorage.getItem('anhad_forced_time_of_day');
+        if (theme === 'auto') {
+          if (timeOfDay && ['morning', 'day', 'evening', 'night'].includes(timeOfDay)) {
+            effectiveTheme = (timeOfDay === 'night') ? 'dark' : 'light';
+          } else {
+            const hour = new Date().getHours();
+            effectiveTheme = (hour >= 5 && hour < 20) ? 'light' : 'dark';
+            
+            if (hour >= 5 && hour < 9) timeOfDay = 'morning';
+            else if (hour >= 9 && hour < 16) timeOfDay = 'day';
+            else if (hour >= 16 && hour < 20) timeOfDay = 'evening';
+            else timeOfDay = 'night';
+          }
+        }
+        document.documentElement.setAttribute('data-theme', effectiveTheme);
+        document.documentElement.setAttribute('data-theme-mode', theme);
+        if (theme === 'auto') {
+          document.documentElement.setAttribute('data-time-of-day', timeOfDay);
+        }
+        document.documentElement.style.colorScheme = effectiveTheme;
+        if (effectiveTheme === 'dark') {
+          document.documentElement.classList.add('dark', 'dark-mode');
+        } else {
+          document.documentElement.classList.remove('dark', 'dark-mode');
+        }
+        
+        let bg = (effectiveTheme === 'dark') ? '#0D0D0F' : '#FAF8F5';
+        if (theme === 'auto') {
+          if (timeOfDay === 'morning') bg = '#FFF5EC';
+          else if (timeOfDay === 'day') bg = '#FFFDF9';
+          else if (timeOfDay === 'evening') bg = '#FFF8E7';
+          else if (timeOfDay === 'night') bg = '#0F0F12';
+        }
+        document.documentElement.style.backgroundColor = bg;
+        document.documentElement.classList.add('theme-loaded');
+
+        document.addEventListener('DOMContentLoaded', function() {
+          if (effectiveTheme === 'dark') document.body.classList.add('dark-mode');
+          document.body.classList.add('theme-loaded');
+        }, { once: true });
+
+        if (document.documentElement.hasAttribute('data-anhad-home')) {
+          try { sessionStorage.removeItem('gurbaniKhoj_state'); } catch(e) {}
+        }
+      } catch (e) {}
+    })();
+  </script>
+  <meta name="color-scheme" content="light dark">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#000000">
+    <title>ANHAD</title>
+    
+    <!-- PERF: No navigation libraries needed on splash screen -->
+    <!-- These were blocking render by loading smooth-navigation, smart-back, etc. -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #000000;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* REDUCED: Background pulse slower */
+        .splash-bg {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(ellipse at center,
+                #1a1a2e 0%,
+                #0f0f1a 50%,
+                #000000 100%
+            );
+            animation: bgPulse 6s ease-in-out infinite;
+        }
+
+        @keyframes bgPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.85; }
+        }
+
+        /* Golden rays — composited rotation, GPU only */
+        .rays {
+            position: fixed;
+            inset: 0;
+            background: conic-gradient(
+                from 0deg at 50% 50%,
+                transparent 0deg,
+                rgba(212, 148, 58, 0.08) 30deg,
+                transparent 60deg,
+                rgba(212, 148, 58, 0.08) 90deg,
+                transparent 120deg,
+                rgba(212, 148, 58, 0.08) 150deg,
+                transparent 180deg,
+                rgba(212, 148, 58, 0.08) 210deg,
+                transparent 240deg,
+                rgba(212, 148, 58, 0.08) 270deg,
+                transparent 300deg,
+                rgba(212, 148, 58, 0.08) 330deg,
+                transparent 360deg
+            );
+            animation: raysRotate 80s linear infinite;
+            opacity: 0.3;
+            /* PERF: Explicit compositor promotion */
+            will-change: transform;
+        }
+
+        @keyframes raysRotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Ik Onkar symbol */
+        .ik-onkar {
+            font-family: 'Noto Sans Gurmukhi', 'Mukta Mahee', sans-serif;
+            font-size: 180px;
+            font-weight: 700;
+            color: transparent;
+            background: linear-gradient(135deg,
+                #FFD700 0%,
+                #FFA500 25%,
+                #FFD700 50%,
+                #FFA500 75%,
+                #FFD700 100%
+            );
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            animation: 
+                symbolReveal 1s cubic-bezier(0.34, 1.56, 0.64, 1) forwards,
+                shimmer 5s ease-in-out 1s infinite;
+            opacity: 0;
+            transform: scale(0.6) rotate(-10deg);
+            /* PERF: Reduced text-shadow spread — large spreads are expensive */
+            text-shadow: 0 0 60px rgba(255, 215, 0, 0.7);
+            filter: drop-shadow(0 10px 30px rgba(255, 215, 0, 0.5));
+            will-change: transform, opacity;
+        }
+
+        @keyframes symbolReveal {
+            to {
+                opacity: 1;
+                transform: scale(1) rotate(0deg);
+            }
+        }
+
+        @keyframes shimmer {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        /* ANHAD text */
+        .anhad-text {
+            font-size: 48px;
+            font-weight: 800;
+            letter-spacing: 12px;
+            color: transparent;
+            background: linear-gradient(90deg,
+                #D4943A 0%,
+                #E8A838 50%,
+                #D4943A 100%
+            );
+            background-size: 200% 100%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            animation: 
+                textReveal 1s ease 0.8s forwards,
+                textShimmer 2s ease-in-out 1.8s infinite;
+            opacity: 0;
+            transform: translateY(30px);
+            text-shadow: 0 0 40px rgba(212, 148, 58, 0.6);
+        }
+
+        @keyframes textReveal {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes textShimmer {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        /* Gurmukhi subtitle */
+        .gurmukhi-text {
+            font-family: 'Noto Sans Gurmukhi', sans-serif;
+            font-size: 24px;
+            font-weight: 600;
+            color: rgba(212, 148, 58, 0.9);
+            letter-spacing: 2px;
+            opacity: 0;
+            animation: fadeIn 1s ease 1.3s forwards;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        /* Loading dots */
+        .loading-dots {
+            display: flex;
+            gap: 12px;
+            margin-top: 40px;
+            opacity: 0;
+            animation: fadeIn 0.8s ease 1.8s forwards;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #D4943A, #E8A838);
+            box-shadow: 0 0 20px rgba(212, 148, 58, 0.6);
+            animation: dotPulse 1.4s ease-in-out infinite;
+        }
+
+        .dot:nth-child(1) { animation-delay: 0s; }
+        .dot:nth-child(2) { animation-delay: 0.2s; }
+        .dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes dotPulse {
+            0%, 100% { 
+                transform: scale(1); 
+                opacity: 1; 
+            }
+            50% { 
+                transform: scale(1.5); 
+                opacity: 0.5; 
+            }
+        }
+
+        /* Fade out animation */
+        .splash-container.fade-out {
+            animation: fadeOut 0.8s ease forwards;
+        }
+
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+        }
+
+        /* Mobile adjustments */
+        @media (max-width: 768px) {
+            .ik-onkar {
+                font-size: 120px;
+            }
+            .anhad-text {
+                font-size: 32px;
+                letter-spacing: 8px;
+            }
+            .gurmukhi-text {
+                font-size: 18px;
+            }
+        }
+    </style>
+    <!-- PERF: font-display=optional prevents FOIT; preconnect speeds up font load -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Gurmukhi:wght@400;600;700&display=optional" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Gurmukhi:wght@400;600;700&display=optional" rel="stylesheet"></noscript>
+</head>
+<body>
+    <div class="splash-bg"></div>
+    <div class="rays"></div>
+    
+    <div class="splash-container" id="splashContainer">
+        <div class="ik-onkar">ੴ</div>
+        <div class="anhad-text">ANHAD</div>
+        <div class="gurmukhi-text">ਅਨਹਦ</div>
+        <div class="loading-dots">
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+        </div>
+    </div>
+
+    <script>
+        // PERF: Reduced from 3000ms to 1500ms — users don't need to watch a
+        // loading screen for 3 seconds. 1.5s is enough for the symbol to reveal.
+        const SPLASH_DURATION = 1500;
+        const FADE_DURATION = 600;
+
+        setTimeout(() => {
+            const container = document.getElementById('splashContainer');
+            if (container) container.classList.add('fade-out');
+            setTimeout(() => {
+                // Use replace so back button doesn't return to splash
+                window.location.replace('ios-homepage.html');
+            }, FADE_DURATION);
+        }, SPLASH_DURATION);
+    </script>
+</body>
+</html>

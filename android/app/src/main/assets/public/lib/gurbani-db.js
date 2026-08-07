@@ -25,7 +25,7 @@
 
 class GurbaniDB {
     static DB_NAME = 'AnhadGurbaniDB';
-    static DB_VERSION = 4;  // Updated to match existing database version
+    static DB_VERSION = 1;
     static API_BASE = 'https://api.banidb.com/v2';
 
     // Singleton

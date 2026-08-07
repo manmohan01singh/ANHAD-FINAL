@@ -7215,53 +7215,6 @@ display: none;
     margin: 0;
 }
 
-.punishment-warning {
-    margin-top: var(--space-2);
-    color: var(--ios-red) !important;
-}
-
-/* Punishment Saves Info Box (Snapchat-style monthly limit display) */
-.punishment-saves-info {
-    display: flex;
-    align-items: flex-start;
-    gap: var(--space-3);
-    padding: var(--space-4);
-    background: linear-gradient(135deg, rgba(175, 82, 222, 0.08), rgba(88, 86, 214, 0.05));
-    border: 1px solid rgba(175, 82, 222, 0.2);
-    border-radius: var(--radius-lg);
-    margin-bottom: var(--space-4);
-}
-
-.saves-icon {
-    font-size: 32px;
-    animation: savesPulse 2s ease-in-out infinite;
-}
-
-.saves-text strong {
-    display: block;
-    font-size: var(--text-base);
-    font-weight: var(--font-semibold);
-    color: var(--text-primary);
-    margin-bottom: var(--space-1);
-}
-
-.saves-text p {
-    font-size: var(--text-sm);
-    color: var(--text-secondary);
-    margin: 0;
-}
-
-@keyframes savesPulse {
-    0%, 100% { 
-        transform: scale(1);
-        filter: drop-shadow(0 0 4px rgba(175, 82, 222, 0.3));
-    }
-    50% { 
-        transform: scale(1.1);
-        filter: drop-shadow(0 0 8px rgba(175, 82, 222, 0.5));
-    }
-}
-
 @keyframes bounce {
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-10px); }

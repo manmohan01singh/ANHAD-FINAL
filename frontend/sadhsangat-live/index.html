@@ -8331,7 +8331,7 @@
       };
     }
 
-    /* ── YOUTUBE-STYLE PLAYER SHEET CONTROLLER ───────────── */
+    /* ── WATCH PAGE SHEET PLAYER CONTROLLER ───────────── */
     function openPlayer(videoId, title, channelName, channelThumbnail, isLive = false) {
       // Save to watch history
       saveToWatchHistory({ videoId, title, channelName, channelThumbnail, isLive, duration: isLive ? 'LIVE' : '--:--', progress: '0%', watchedAt: Date.now() });
@@ -8340,47 +8340,45 @@
       // Pause Anhad background audio
       if (window.AnhadAudio && typeof window.AnhadAudio.pause === 'function') window.AnhadAudio.pause();
 
-      // Update player sheet UI
-      $('playerDetailTitle').textContent = title || 'Gurbani Kirtan';
-      $('playerDetailChannel').textContent = channelName || 'Channel';
-      $('playerMiniTitle').textContent = title || 'Gurbani Kirtan';
-      $('playerMiniChannel').textContent = channelName || 'Channel';
-      
-      if (channelThumbnail) {
-        $('playerChannelAvatar').src = channelThumbnail;
-      }
+      // Remove any existing overlay
+      const existing = document.getElementById('anhad-inline-player-overlay');
+      if (existing) existing.remove();
 
-      // Update subscribe button state
-      const channel = State.myChannels.find(c => c.channelName === channelName);
-      updateSubscribeBtnState(channel);
+      // Build clean fullscreen overlay
+      const overlay = document.createElement('div');
+      overlay.id = 'anhad-inline-player-overlay';
+      overlay.style.cssText = [
+        'position:fixed', 'inset:0', 'z-index:99999',
+        'background:rgba(0,0,0,0.96)',
+        'display:flex', 'flex-direction:column',
+        'align-items:center', 'justify-content:center',
+        'padding:env(safe-area-inset-top,16px) 12px env(safe-area-inset-bottom,16px)',
+        'animation:aipoFadeIn .2s ease'
+      ].join(';');
 
-      // Show/hide live badge
-      if (isLive) {
-        $('playerLiveBadgeRow').style.display = 'flex';
-        $('playerVideoViewsRow').textContent = 'Streaming Live';
-      } else {
-        $('playerLiveBadgeRow').style.display = 'none';
-        $('playerVideoViewsRow').textContent = 'Previous Recording';
-      }
+      overlay.innerHTML = `
+        <style>
+          @keyframes aipoFadeIn{from{opacity:0}to{opacity:1}}
+        </style>
+        <div style="width:100%;max-width:760px;display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;color:#fff;gap:8px;">
+          <div style="flex:1;font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#FFB300;">${title || 'Gurbani'}</div>
+          <button id="anhad-close-overlay" style="background:rgba(255,255,255,0.1);border:none;color:#fff;font-weight:800;font-size:13px;padding:8px 18px;border-radius:20px;cursor:pointer;flex-shrink:0;">✕ Close</button>
+        </div>
+        <div style="width:100%;max-width:760px;position:relative;padding-bottom:56.25%;background:#000;border-radius:14px;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,0.7);">
+          <iframe
+            src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&playsinline=1"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen
+            style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;">
+          </iframe>
+        </div>
+        <div style="margin-top:10px;color:rgba(255,255,255,0.45);font-size:11px;">${channelName || ''}</div>
+      `;
 
-      // Show player sheet
-      const playerSheet = $('playerSheet');
-      const playerBackdrop = $('playerBackdrop');
-      
-      playerBackdrop.style.display = 'block';
-      playerSheet.style.display = 'block';
-      document.body.classList.add('mini-player-active');
-      
-      requestAnimationFrame(() => {
-        playerSheet.className = 'player-sheet open';
-        playerBackdrop.classList.add('visible');
-      });
-
-      // Load YouTube video
-      loadYtIframePlayer(videoId);
-      
+      document.body.appendChild(overlay);
+      overlay.querySelector('#anhad-close-overlay').addEventListener('click', () => overlay.remove());
       haptic('medium');
-      window.dispatchEvent(new CustomEvent('sadhsangatPlayerOpened', { detail: { videoId, title, channelName } }));
     }
 
     /* ── INLINE CARD PLAYER (replaces thumbnail with iframe) ── */

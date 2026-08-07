@@ -17,9 +17,6 @@ const ALLOWED_HOSTS = [
   'radio.sikhnet.com',   // HTTPS proxy streams — no port restrictions
   'play.sikhnet.com',
   'www.sikhnet.com',
-  'r2.dev',
-  'pub-525228169e0c44e38a67c306ba1a458c.r2.dev',
-  'pub-8bf31fc1f2a44451b40a3ded7e07fac2.r2.dev'
 ];
 
 export default async function handler(req) {
@@ -43,22 +40,17 @@ export default async function handler(req) {
     return new Response('Host not allowed: ' + parsedUrl.hostname, { status: 403 });
   }
 
-  // Use AbortController with 12-second timeout to fail fast if stream is offline
+  // Use AbortController with 8-second timeout to fail fast if stream is offline
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 12000);
+  const timeoutId = setTimeout(() => controller.abort(), 8000);
 
   try {
-    const fetchHeaders = {
-      'User-Agent': 'ANHAD-Radio/5.0',
-      'Icy-MetaData': '0',
-      'Connection': 'keep-alive',
-    };
-    if (req.headers.get('range')) {
-      fetchHeaders['Range'] = req.headers.get('range');
-    }
-
     const upstream = await fetch(targetUrl, {
-      headers: fetchHeaders,
+      headers: {
+        'User-Agent': 'ANHAD-Radio/5.0',
+        'Icy-MetaData': '1',
+        'Connection': 'keep-alive',
+      },
       signal: controller.signal,
     });
 
@@ -69,17 +61,9 @@ export default async function handler(req) {
       'Content-Type': contentType,
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'GET, OPTIONS',
-      'Access-Control-Allow-Headers': 'Range',
       'Cache-Control': 'no-cache, no-store',
-      'Accept-Ranges': 'bytes',
+      'Transfer-Encoding': 'chunked',
     });
-
-    if (upstream.headers.get('content-range')) {
-      responseHeaders.set('Content-Range', upstream.headers.get('content-range'));
-    }
-    if (upstream.headers.get('content-length')) {
-      responseHeaders.set('Content-Length', upstream.headers.get('content-length'));
-    }
 
     // Forward ICY metadata headers if present
     for (const [key, value] of upstream.headers.entries()) {

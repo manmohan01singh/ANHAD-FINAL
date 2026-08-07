@@ -1977,31 +1977,5 @@ body.dark .ikonkar-background img {
 
 /* Adequate top margin so content clears the combined sticky top bar */
 .reader-content {
-    /* REDUCED PADDING FOR WEB/VERCEL VERSION - was too much */
-    padding-top: calc(110px + env(safe-area-inset-top, 0px)) !important;
-}
-
-/* CAPACITOR APP: Keep original larger padding for mobile apps (Android/iOS work fine) */
-@supports (-webkit-touch-callout: none) {
-    /* iOS Capacitor App - Keep original padding */
-    .reader-sticky-top-bar .reader-header {
-        padding-top: calc(max(env(safe-area-inset-top, 0px), 36px) + 8px) !important;
-    }
-    
-    .reader-content {
-        padding-top: calc(128px + max(env(safe-area-inset-top, 0px), 36px)) !important;
-    }
-}
-
-/* Android Capacitor App Detection - Keep original padding (works fine) */
-@media (max-width: 768px) {
-    html[data-capacitor="true"] .reader-sticky-top-bar .reader-header,
-    body[data-capacitor="true"] .reader-sticky-top-bar .reader-header {
-        padding-top: calc(max(env(safe-area-inset-top, 0px), 36px) + 8px) !important;
-    }
-    
-    html[data-capacitor="true"] .reader-content,
-    body[data-capacitor="true"] .reader-content {
-        padding-top: calc(128px + max(env(safe-area-inset-top, 0px), 36px)) !important;
-    }
+    padding-top: calc(128px + max(env(safe-area-inset-top, 0px), 36px)) !important;
 }

@@ -10,8 +10,10 @@
   <meta name="mobile-web-app-capable" content="yes">
   <title>ਮੇਰੀ ਪੋਥੀ - My Pothi</title>
   
-  <!-- Fonts - Local fonts for offline support -->
-  <link rel="stylesheet" href="css/fonts.css">
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Gurmukhi:wght@400;500;600;700&display=swap" rel="stylesheet">
   
   <!-- CRITICAL: Theme blocker - MUST run before paint -->
   <script>
@@ -438,38 +440,11 @@
         .grid-cell.lvl-0 { background: rgba(0,0,0,0.04); }
         [data-theme="dark"] .grid-cell.lvl-0 { background: rgba(255,255,255,0.05); }
         
-        /* iOS-style soft green/gold progression - Premium & Minimal */
-        .grid-cell.lvl-1 { 
-            background: linear-gradient(135deg, #D4F1D4, #C8E6C9); 
-            border: 1px solid rgba(200, 230, 201, 0.5); 
-        }
-        .grid-cell.lvl-2 { 
-            background: linear-gradient(135deg, #81C784, #66BB6A); 
-            border: 1px solid rgba(102, 187, 106, 0.6); 
-        }
-        .grid-cell.lvl-3 { 
-            background: linear-gradient(135deg, #4CAF50, #43A047); 
-            border: 1px solid rgba(67, 160, 71, 0.7); 
-        }
-        .grid-cell.lvl-full { 
-            background: linear-gradient(135deg, #FFD54F, #FFC107); 
-            border: 1px solid rgba(255, 193, 7, 0.8); 
-            box-shadow: 0 0 8px rgba(255, 193, 7, 0.3); 
-        }
-        
-        /* Dark mode - adjust for better visibility */
-        [data-theme="dark"] .grid-cell.lvl-1 { 
-            background: linear-gradient(135deg, #2D5A2D, #3D6A3D); 
-        }
-        [data-theme="dark"] .grid-cell.lvl-2 { 
-            background: linear-gradient(135deg, #4CAF50, #43A047); 
-        }
-        [data-theme="dark"] .grid-cell.lvl-3 { 
-            background: linear-gradient(135deg, #66BB6A, #4CAF50); 
-        }
-        [data-theme="dark"] .grid-cell.lvl-full { 
-            background: linear-gradient(135deg, #FFB300, #FFA000); 
-        }
+        /* GitHub/Leetcode-style green progression */
+        .grid-cell.lvl-1 { background: #9be9a8; border: 1px solid rgba(155, 233, 168, 0.3); }
+        .grid-cell.lvl-2 { background: #40c463; border: 1px solid rgba(64, 196, 99, 0.3); }
+        .grid-cell.lvl-3 { background: #30a14e; border: 1px solid rgba(48, 161, 78, 0.3); }
+        .grid-cell.lvl-full { background: #216e39; border: 1px solid rgba(33, 110, 57, 0.3); box-shadow: 0 0 6px rgba(33, 110, 57, 0.2); }
         
         /* Glowing effect for newly added bani */
         .grid-cell.new-bani {
@@ -1328,16 +1303,6 @@
                 const today = new Date().toLocaleDateString('en-CA');
 
                 const completed = loadCompletedBanis();
-                
-                // ✅ FIX: Don't show pending banis if user has NEVER used the app before today
-                // Check if there's any completion data from BEFORE today
-                const hasHistoryBeforeToday = Object.keys(completed).some(dateKey => dateKey < today);
-                if (!hasHistoryBeforeToday) {
-                    // First time user or only completed banis today - no pending banis
-                    sec.style.display = 'none';
-                    return;
-                }
-                
                 const yestCompleted = completed[yestStr] || [];
 
                 const ALL_BANIS_MAP = {};

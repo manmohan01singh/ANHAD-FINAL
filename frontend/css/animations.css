@@ -1,0 +1,128 @@
+/* ═══════════════════════════════════════════════════════════════════
+   ANHAD — Animations & Keyframes v2.0
+   REMOVED: aurora drift animations (caused constant GPU repaints)
+   REMOVED: mandana-spin (180s GPU animation)
+   REMOVED: View Transitions CSS (API disabled in smooth-navigation.js)
+   REMOVED: float-gentle, heading-breathe (ambient GPU waste)
+   KEPT: shimmer, spin, skeleton, sheet, modal, pulse — triggered by JS
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── AURORA BACKGROUND — STATIC (no animation, saves GPU) ── */
+.aurora-bg {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-below, -1);
+  background: var(--chardi-warm);
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* ── MANDANA WATERMARK — static, no spin ── */
+.mandana-watermark {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 90vmin;
+  height: 90vmin;
+  transform: translate(-50%, -50%);
+  opacity: 0.06;
+  pointer-events: none;
+  z-index: var(--z-below, -1);
+  filter: saturate(0.5);
+}
+
+/* ── SCROLL REVEAL ANIMATIONS (JS-triggered, once only) ── */
+[data-animate] {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: none;
+}
+[data-animate].animate-in {
+  animation: reveal-up 0.3s ease forwards;
+}
+@keyframes reveal-up {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── PULSE / BREATHE ── */
+@keyframes breathe {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50%      { opacity: 1; transform: scale(1.03); }
+}
+@keyframes pulse-dot {
+  0%   { opacity: 1; transform: scale(1); }
+  50%  { opacity: 0.5; transform: scale(1.5); }
+  100% { opacity: 1; transform: scale(1); }
+}
+@keyframes live-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+  70%  { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+
+/* ── WAVEFORM BARS ── */
+@keyframes waveform-1 { 0%, 100% { height: 30%; } 50% { height: 90%; } }
+@keyframes waveform-2 { 0%, 100% { height: 60%; } 50% { height: 35%; } }
+@keyframes waveform-3 { 0%, 100% { height: 45%; } 50% { height: 80%; } }
+@keyframes waveform-4 { 0%, 100% { height: 70%; } 50% { height: 25%; } }
+
+/* ── SHIMMER LOADING ── */
+.shimmer {
+  background: linear-gradient(90deg, rgba(212,134,10,0.04) 0%, rgba(212,134,10,0.14) 40%, rgba(212,134,10,0.04) 80%);
+  background-size: 200% 100%;
+  animation: shimmer-sweep 1.8s ease-in-out infinite;
+}
+.shimmer-dark {
+  background: linear-gradient(90deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.12) 40%, rgba(255,255,255,0.04) 80%);
+  background-size: 200% 100%;
+  animation: shimmer-sweep 1.8s ease-in-out infinite;
+}
+@keyframes shimmer-sweep {
+  from { background-position: 200% center; }
+  to   { background-position: -200% center; }
+}
+
+/* ── RIPPLE EXPAND ── */
+@keyframes ripple-expand { to { transform: scale(120); opacity: 0; } }
+
+/* ── MODAL / SHEET ANIMATIONS ── */
+@keyframes overlay-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes overlay-out { from { opacity: 1; } to { opacity: 0; } }
+@keyframes sheet-up   { from { transform: translateY(100%); } to { transform: translateY(0); } }
+@keyframes sheet-down { from { transform: translateY(0); } to { transform: translateY(100%); } }
+
+/* ── GLOW / SACRED ── */
+@keyframes temple-glow-pulse { 0% { opacity: 0.4; } 100% { opacity: 0.75; } }
+@keyframes sacred-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(212,134,10,0.1), 0 0 40px rgba(212,134,10,0.05); }
+  50%      { box-shadow: 0 0 30px rgba(212,134,10,0.2), 0 0 60px rgba(212,134,10,0.1); }
+}
+
+/* ── PROGRESS RING ── */
+@keyframes ring-fill { from { stroke-dashoffset: 163.36; } }
+
+/* ── SCALE SPRING ── */
+@keyframes scale-in {
+  from { transform: scale(0.95); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fade-out { from { opacity: 1; } to { opacity: 0; } }
+
+/* ── NOTIFICATION BADGE BOUNCE ── */
+@keyframes badge-bounce {
+  0%   { transform: scale(0); }
+  50%  { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+/* ── SKELETON LOADING ── */
+@keyframes skeleton-pulse { 0% { opacity: 0.6; } 50% { opacity: 0.3; } 100% { opacity: 0.6; } }
+
+/* ── ROTATE ── */
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+.spin { animation: spin 1s linear infinite; }
+
+/* ── SLIDE IN FROM BOTTOM ── */
+@keyframes slide-up-in { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+@keyframes slide-down-out { from { transform: translateY(0); opacity: 1; } to { transform: translateY(100%); opacity: 0; } }

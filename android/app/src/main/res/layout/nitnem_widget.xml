@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/nitnem_widget_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@drawable/widget_background"
+    android:gravity="center">
+
+    <!-- Header: Streak -->
+    <TextView
+        android:id="@+id/nitnem_streak"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="🔥 0"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        android:textColor="#FFFFFF"
+        android:gravity="center" />
+
+    <!-- Progress Percentage -->
+    <TextView
+        android:id="@+id/nitnem_percentage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0%"
+        android:textSize="36sp"
+        android:textStyle="bold"
+        android:textColor="#FFFFFF"
+        android:layout_marginTop="8dp"
+        android:gravity="center" />
+
+    <!-- Progress Bar -->
+    <ProgressBar
+        android:id="@+id/nitnem_progress"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="8dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginHorizontal="8dp"
+        android:progressDrawable="@drawable/widget_progress_orange"
+        android:max="100"
+        android:progress="0" />
+
+    <!-- Status -->
+    <TextView
+        android:id="@+id/nitnem_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0 of 5 banis"
+        android:textSize="14sp"
+        android:textColor="#B3FFFFFF"
+        android:layout_marginTop="8dp"
+        android:gravity="center" />
+
+    <!-- Bani Indicators -->
+    <TextView
+        android:id="@+id/nitnem_bani_indicators"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textSize="12sp"
+        android:textColor="#B3FFFFFF"
+        android:layout_marginTop="4dp"
+        android:gravity="center" />
+
+</LinearLayout>

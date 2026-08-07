@@ -422,11 +422,8 @@
     },
 
     _updateOrbColors() {
-      // User Directive: REMOVE background color changing on sliding Guru images.
-      // Add ambient sky blue orb ONLY in dynamic day theme mode.
-      const timeOfDay = document.documentElement.getAttribute('data-time-of-day') || localStorage.getItem('anhad_forced_time_of_day');
-      const theme = document.documentElement.getAttribute('data-theme') || localStorage.getItem('anhad_theme');
-      const isDayMode = (timeOfDay === 'day') || (theme === 'light' && timeOfDay !== 'morning' && timeOfDay !== 'evening' && timeOfDay !== 'night');
+      const guru = this._gurus[this._currentIndex];
+      if (!guru || !guru.colors || guru.colors.length === 0) return;
 
       const orb1 = document.querySelector('.greeting-orb-1');
       const orb2 = document.querySelector('.greeting-orb-2');
@@ -434,17 +431,22 @@
 
       if (!orb1 || !orb2 || !orb3) return;
 
-      if (isDayMode) {
-        // Ambient Sky Blue orbs for dynamic day mode
-        orb1.style.background = 'radial-gradient(circle, rgba(112, 181, 245, 0.55), rgba(70, 155, 235, 0.25), transparent)';
-        orb2.style.background = 'radial-gradient(circle, rgba(135, 206, 250, 0.45), rgba(90, 170, 240, 0.2), transparent)';
-        orb3.style.background = 'radial-gradient(circle, rgba(96, 165, 250, 0.4), rgba(60, 130, 220, 0.15), transparent)';
-      } else {
-        // Reset orbs to standard static styles (no background color changing on slide)
-        orb1.style.background = '';
-        orb2.style.background = '';
-        orb3.style.background = '';
-      }
+      // Helper function to convert hex to rgba
+      const hexToRgba = (hex, alpha) => {
+        const r = parseInt(hex.slice(1, 3), 16);
+        const g = parseInt(hex.slice(3, 5), 16);
+        const b = parseInt(hex.slice(5, 7), 16);
+        return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+      };
+
+      const color1 = guru.colors[0] || '#ddcdb3';
+      const color2 = guru.colors[1] || guru.colors[0] || '#ddcdb3';
+      const color3 = guru.colors[2] || guru.colors[1] || guru.colors[0] || '#ddcdb3';
+
+      // Apply gradient backgrounds with smooth transition
+      orb1.style.background = `radial-gradient(circle, ${hexToRgba(color1, 0.7)}, ${hexToRgba(color1, 0.4)}, transparent)`;
+      orb2.style.background = `radial-gradient(circle, ${hexToRgba(color2, 0.7)}, ${hexToRgba(color2, 0.4)}, transparent)`;
+      orb3.style.background = `radial-gradient(circle, ${hexToRgba(color3, 0.6)}, ${hexToRgba(color3, 0.3)}, transparent)`;
     },
 
     _syncText() {

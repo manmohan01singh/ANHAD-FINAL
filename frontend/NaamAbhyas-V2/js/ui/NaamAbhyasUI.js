@@ -298,64 +298,6 @@ class NaamAbhyasUI {
       });
     });
     
-    // CRITICAL FIX: Popup button handlers
-    if (this.startBtn) {
-      this.startBtn.addEventListener('click', () => {
-        this.hideSessionPopup();
-        this.engine.startSession();
-      });
-    }
-    
-    if (this.laterBtn) {
-      this.laterBtn.addEventListener('click', () => {
-        this.hideSessionPopup();
-      });
-    }
-    
-    if (this.endBtn) {
-      this.endBtn.addEventListener('click', () => {
-        this.engine.endSession();
-      });
-    }
-    
-    if (this.continueBtn) {
-      this.continueBtn.addEventListener('click', () => {
-        this.hideCompletePopup();
-      });
-    }
-    
-    // CRITICAL FIX: Extra Simran buttons
-    if (this.startNowBtn) {
-      this.startNowBtn.addEventListener('click', () => {
-        this.engine.startSession();
-      });
-    }
-    
-    if (this.quickBtn) {
-      this.quickBtn.addEventListener('click', () => {
-        localStorage.setItem('naam_duration', '1');
-        this.engine.startSession();
-      });
-    }
-    
-    if (this.deepBtn) {
-      this.deepBtn.addEventListener('click', () => {
-        localStorage.setItem('naam_duration', '11');
-        this.engine.startSession();
-      });
-    }
-    
-    // Back button
-    if (this.backBtn) {
-      this.backBtn.addEventListener('click', () => {
-        if (window.navigateTo) {
-          window.navigateTo('../index.html');
-        } else {
-          window.location.href = '../index.html';
-        }
-      });
-    }
-    
     // Custom duration input
     const durationCustom = document.getElementById('durationCustom');
     if (durationCustom) {

@@ -14,7 +14,6 @@
 :root {
     --bg-page: #f5f1eb;
     --bg-card: #ffffff;
-    --bg-secondary: #f0ece6;
     --text-primary: #1c1c1e;
     --text-secondary: #6e6e73;
     --text-tertiary: #8e8e93;
@@ -36,7 +35,6 @@
 [data-theme="dark"] {
     --bg-page: #121214;
     --bg-card: #1c1c1e;
-    --bg-secondary: #2c2c2e;
     --text-primary: #ffffff;
     --text-secondary: #a1a1a6;
     --text-tertiary: #767680;
@@ -796,25 +794,10 @@ body.has-results .main-content {
     word-break: break-word;
 }
 
-.search-highlight, mark {
-    background: #ffe082 !important;
-    color: #1a1a1a !important;
-    font-weight: 700 !important;
-    border-radius: 4px;
-    padding: 1px 4px;
-    display: inline-block;
-}
-
-/* Dark mode: high contrast bright gold background with solid black text */
-[data-theme="dark"] .search-highlight,
-[data-theme="dark"] mark {
-    background: #ffd54f !important;
-    color: #000000 !important;
-    font-weight: 700 !important;
-    border-radius: 4px;
-    padding: 1px 4px;
-    display: inline-block;
-    box-shadow: 0 0 10px rgba(255, 213, 79, 0.4);
+.search-highlight {
+    background: rgba(255, 215, 0, 0.25);
+    border-radius: 3px;
+    padding: 0 2px;
 }
 
 .result-meta {

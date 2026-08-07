@@ -194,7 +194,7 @@ document.addEventListener('DOMContentLoaded', function () {
     nitnemCard: 'nitnem/index.html',
     sehajPaathCard: 'SehajPaath/sehaj-paath.html',
     gurbaniKhojCard: 'GurbaniKhoj/gurbani-khoj.html',
-    // naamAbhyasCard: REMOVED - now shows "Under Development" popup
+    naamAbhyasCard: 'NaamAbhyas/naam-abhyas.html',
     calendarCard: 'Calendar/GurpurabCalendar-ios.html',
     nitnemTrackerCard: 'NitnemTracker/nitnem-tracker.html',
     remindersCard: 'reminders/smart-reminders-v7.html',
@@ -297,49 +297,6 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     }
   });
-
-  // ━━━ NAAM ABHYAS CARD — Show "Under Development" Popup ━━━
-  const naamCard = document.getElementById('naamCard');
-  const comingSoonOverlay = document.getElementById('anhadComingSoonOverlay');
-  const comingSoonClose = document.getElementById('comingSoonClose');
-  
-  if (naamCard && comingSoonOverlay) {
-    naamCard.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      if (navigator.vibrate) navigator.vibrate(10);
-      comingSoonOverlay.classList.add('active');
-      comingSoonOverlay.setAttribute('aria-hidden', 'false');
-    });
-  }
-  
-  if (comingSoonClose && comingSoonOverlay) {
-    comingSoonClose.addEventListener('click', () => {
-      if (navigator.vibrate) navigator.vibrate(10);
-      comingSoonOverlay.classList.remove('active');
-      comingSoonOverlay.setAttribute('aria-hidden', 'true');
-    });
-    
-    // Close on overlay click
-    comingSoonOverlay.addEventListener('click', (e) => {
-      if (e.target === comingSoonOverlay) {
-        comingSoonOverlay.classList.remove('active');
-        comingSoonOverlay.setAttribute('aria-hidden', 'true');
-      }
-    });
-  }
-
-  // ━━━ GURBANI GPT CARD — Show "Coming Soon" Popup ━━━
-  const gurbaniGptCard = document.getElementById('gurbaniGptCard');
-  if (gurbaniGptCard && comingSoonOverlay) {
-    gurbaniGptCard.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      if (navigator.vibrate) navigator.vibrate(10);
-      comingSoonOverlay.classList.add('active');
-      comingSoonOverlay.setAttribute('aria-hidden', 'false');
-    });
-  }
 
   // ━━━ REAL-TIME GREETING ━━━ (declared above at top of DOMContentLoaded — no duplicate)
   // ━━━ REAL-TIME CLOCK ━━━ (declared above at top of DOMContentLoaded — no duplicate)

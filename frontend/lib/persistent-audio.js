@@ -176,8 +176,7 @@
         if (audio) return audio;
 
         audio = new Audio();
-        // CORS REMOVED: R2 bucket doesn't have CORS headers configured.
-        // audio.crossOrigin = 'anonymous'; // REMOVED - causes CORS blocking
+        audio.crossOrigin = 'anonymous';
         audio.preload = 'none';
         
         // Setup user gesture detection for mobile browsers

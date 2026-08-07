@@ -347,8 +347,7 @@ class AudioEngine extends EventEmitter {
         this.audio = new Audio();
         this.audio.preload = 'auto';
         this.audio.volume = this.volume;
-        // CORS REMOVED: R2 bucket doesn't have CORS headers configured.
-        // this.audio.crossOrigin = 'anonymous'; // REMOVED - causes CORS blocking
+        this.audio.crossOrigin = 'anonymous';
 
         this._attachEvents();
         return this.audio;

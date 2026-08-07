@@ -21,8 +21,7 @@
   
   const CDN_BASE_R2 = 'https://pub-525228169e0c44e38a67c306ba1a458c.r2.dev';
   const CDN_BASE_SIMRAN = 'https://pub-8bf31fc1f2a44451b40a3ded7e07fac2.r2.dev/waheguru';
-  const SGPC_LIVE = 'https://radio.sikhnet.com/proxy/harmandirsahib/live';
-  const SGPC_LIVE_DIRECT = 'https://live.sgpc.net:8443/;nocache=1';
+  const SGPC_LIVE = 'https://live.sgpc.net:8443/;nocache=1';
 
   // ── HTTPS proxy for HTTP Icecast streams ──
   // On HTTPS web (Vercel), browsers block http:// audio (mixed content).
@@ -567,10 +566,8 @@
       // Set preload type
       this.audio.preload = preloadMode || 'auto';
 
-      // CORS REMOVED: R2 bucket doesn't have CORS headers configured.
-      // crossOrigin causes browser to require Access-Control-Allow-Origin header.
-      // Simple requests work fine without crossOrigin attribute.
-      // this.audio.crossOrigin = 'anonymous'; // REMOVED - causes CORS blocking
+      // Set CORS policy: Always request anonymous CORS for proxied, R2 CDN, and local streams to allow clean recording
+      this.audio.crossOrigin = 'anonymous';
 
       if (this.audio.src !== url) {
         this.audio.src = url;

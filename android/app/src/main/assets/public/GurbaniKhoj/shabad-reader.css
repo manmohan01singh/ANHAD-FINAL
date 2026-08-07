@@ -64,8 +64,8 @@
    THEME 1 — ROYAL ROSE (Default)
    Ivory · Champagne Gold · Muted Rose · Soft Maroon
    ═══════════════════════════════════════════════════════════════════════════ */
-[data-theme="light"][data-sacred-theme="royal-rose"],
-[data-theme="light"] {
+[data-sacred-theme="royal-rose"],
+:root {
     --bg:                  #fdf6ee;
     --bg-soft:             #fef9f2;
     --bg-card:             #fffcf5;
@@ -93,7 +93,11 @@
     --theme-switcher-glow: rgba(200, 145, 58, 0.35);
 }
 
-[data-theme="light"][data-sacred-theme="lotus-grace"] {
+/* ═══════════════════════════════════════════════════════════════════════════
+   THEME 2 — LOTUS GRACE
+   Soft Ivory · Lotus Pink · Pale Blue · Silver Gold
+   ═══════════════════════════════════════════════════════════════════════════ */
+[data-sacred-theme="lotus-grace"] {
     --bg:                  #f7f9fc;
     --bg-soft:             #f2f6fa;
     --bg-card:             #fafcff;
@@ -121,7 +125,11 @@
     --theme-switcher-glow: rgba(212, 168, 192, 0.4);
 }
 
-[data-theme="light"][data-sacred-theme="golden-marigold"] {
+/* ═══════════════════════════════════════════════════════════════════════════
+   THEME 3 — GOLDEN MARIGOLD
+   Warm Ivory · Deep Saffron Gold · Muted Orange · Antique Brass
+   ═══════════════════════════════════════════════════════════════════════════ */
+[data-sacred-theme="golden-marigold"] {
     --bg:                  #fdf5e6;
     --bg-soft:             #fef0d0;
     --bg-card:             #fffbf0;
@@ -149,7 +157,11 @@
     --theme-switcher-glow: rgba(212, 134, 10, 0.4);
 }
 
-[data-theme="light"][data-sacred-theme="blue-blossom"] {
+/* ═══════════════════════════════════════════════════════════════════════════
+   THEME 4 — BLUE BLOSSOM
+   Frost Ivory · Royal Blue · Silver Blue · Platinum
+   ═══════════════════════════════════════════════════════════════════════════ */
+[data-sacred-theme="blue-blossom"] {
     --bg:                  #f5f7fc;
     --bg-soft:             #eff2fa;
     --bg-card:             #fafbff;
@@ -298,7 +310,7 @@ html, body {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   NAVIGATION BAR — FLOATING SACRED HEADER (with hide on scroll)
+   NAVIGATION BAR — FLOATING SACRED HEADER
    ═══════════════════════════════════════════════════════════════════════════ */
 .ios-nav {
     position: fixed;
@@ -308,66 +320,14 @@ html, body {
     padding-top: var(--safe-top);
     background: var(--bg);
     border-bottom: 1px solid var(--border-soft);
-    display: grid;
-    grid-template-columns: 76px 1fr 76px;
+    display: flex;
     align-items: center;
-    padding-left: 14px;
-    padding-right: 14px;
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.4s, border-color 0.4s, opacity 0.3s;
+    justify-content: space-between;
+    padding-left: 16px;
+    padding-right: 16px;
+    transition: background-color 0.4s, border-color 0.4s;
+    /* Subtle sacred glow on bottom */
     box-shadow: 0 1px 0 var(--border-soft), 0 4px 20px -4px var(--shadow);
-}
-
-/* Hide header when scrolling down */
-.ios-nav.nav-hidden {
-    transform: translateY(-100%);
-    opacity: 0;
-    pointer-events: none;
-    border-bottom-color: transparent;
-    box-shadow: none;
-}
-
-/* Reading Progress Track - Attached to nav header so it disappears on scroll with header */
-.progress-track {
-    position: absolute;
-    bottom: -1px;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: transparent;
-    overflow: hidden;
-    pointer-events: none;
-    z-index: 101;
-}
-
-.progress-fill {
-    height: 100%;
-    width: 0%;
-    background: linear-gradient(90deg, #c8a96a, #007aff);
-    border-radius: 0 2px 2px 0;
-    transition: width 0.15s ease-out;
-}
-
-/* Search Term Highlighting */
-.search-highlight, mark {
-    background: #ffe082 !important;
-    color: #1a1a1a !important;
-    font-weight: 700 !important;
-    border-radius: 4px;
-    padding: 1px 4px;
-    display: inline-block;
-}
-
-[data-reader-theme="charcoal"] .search-highlight,
-[data-reader-theme="midnight"] .search-highlight,
-[data-theme="dark"] .search-highlight,
-[data-theme="dark"] mark {
-    background: #ffd54f !important;
-    color: #000000 !important;
-    font-weight: 700 !important;
-    border-radius: 4px;
-    padding: 1px 4px;
-    display: inline-block;
-    box-shadow: 0 0 10px rgba(255, 213, 79, 0.4);
 }
 
 /* Back Button */
@@ -384,7 +344,6 @@ html, body {
     transition: background-color 0.2s, transform 0.15s, box-shadow 0.2s;
     box-shadow: 0 2px 8px var(--shadow);
     flex-shrink: 0;
-    justify-self: start;
 }
 
 .nav-back-circle:hover  { background: var(--accent-light); box-shadow: 0 4px 14px var(--theme-switcher-glow); }
@@ -565,67 +524,42 @@ html, body {
     position: relative;
 }
 
-/*  Highlighted Verse (Pankti) Styling — Elegant Left Indicator, NO Background Box  */
+/*  Highlighted Verse (Pankti) Styling  */
 .shabad-line.highlighted {
-    background: transparent !important;
-    padding: 10px 0 10px 16px !important;
-    margin: 8px 0 !important;
-    border-left: 3.5px solid #c8913a !important;
-    border-radius: 0 !important;
-    box-shadow: none !important;
+    background: var(--accent-light);
+    border-radius: 12px;
+    padding: 12px 20px;
+    margin: 8px -8px;
 }
 
-/* Highlighted verse Gurmukhi & words — Rich Golden Tint */
-.shabad-line.highlighted .gurmukhi,
-.shabad-line.highlighted .g-word {
-    color: #b87a18 !important;
-    font-weight: 700 !important;
+/* Highlighted verse Gurmukhi */
+.shabad-line.highlighted .gurmukhi {
+    color: var(--accent);
+    font-weight: 700;
 }
 
-/* Highlighted verse other scripts */
+/* Highlighted verse other scripts — bold accent */
 .shabad-line.highlighted .hindi-gurbani {
-    color: #b87a18 !important;
-    font-weight: 700 !important;
+    color: var(--accent);
+    font-weight: 700;
+    letter-spacing: 0.02em;
 }
 
-/* Highlighted verse translations */
+/* Highlighted verse translations get subtle accent tint */
 .shabad-line.highlighted .translation {
-    color: var(--text) !important;
-    opacity: 0.95;
-    font-weight: 500;
+    color: var(--text);
+    opacity: 0.9;
 }
 
-/* Dark mode highlighted pankti — Clean Transparent Background with Glowing Gold Indicator */
-[data-theme="dark"] .shabad-line.highlighted,
+/* Dark mode adjustments for highlighted pankti */
 [data-reader-theme="charcoal"] .shabad-line.highlighted,
-[data-reader-theme="midnight"] .shabad-line.highlighted,
-body.dark-mode .shabad-line.highlighted {
-    background: transparent !important;
-    border-left: 3.5px solid #ffd54f !important;
-    border-radius: 0 !important;
-    box-shadow: none !important;
-    padding: 10px 0 10px 16px !important;
+[data-reader-theme="midnight"] .shabad-line.highlighted {
+    background: rgba(212, 175, 55, 0.12);
 }
 
-[data-theme="dark"] .shabad-line.highlighted .gurmukhi,
-[data-theme="dark"] .shabad-line.highlighted .g-word,
 [data-reader-theme="charcoal"] .shabad-line.highlighted .gurmukhi,
-[data-reader-theme="charcoal"] .shabad-line.highlighted .g-word,
-[data-reader-theme="midnight"] .shabad-line.highlighted .gurmukhi,
-[data-reader-theme="midnight"] .shabad-line.highlighted .g-word,
-body.dark-mode .shabad-line.highlighted .gurmukhi,
-body.dark-mode .shabad-line.highlighted .g-word {
-    color: #ffe082 !important; /* Luminous Warm Gold */
-    font-weight: 700 !important;
-    text-shadow: 0 0 14px rgba(255, 224, 130, 0.45) !important;
-}
-
-[data-theme="dark"] .shabad-line.highlighted .hindi-gurbani,
-[data-reader-theme="charcoal"] .shabad-line.highlighted .hindi-gurbani,
-[data-reader-theme="midnight"] .shabad-line.highlighted .hindi-gurbani,
-body.dark-mode .shabad-line.highlighted .hindi-gurbani {
-    color: #ffe082 !important;
-    font-weight: 700 !important;
+[data-reader-theme="midnight"] .shabad-line.highlighted .gurmukhi {
+    color: #d4af37;
 }
 
 /* Subtle text-shadow on all Gurmukhi for letterpress depth */
@@ -787,15 +721,17 @@ body.dark-mode .shabad-line.highlighted .hindi-gurbani {
     -webkit-backdrop-filter: blur(50px) saturate(300%);
     border: 1px solid var(--player-border);
     border-radius: 24px;
-    padding: 12px 18px;
+    padding: 16px 22px;
     box-shadow:
         0 -1px 0 var(--player-border),
-        0 8px 24px var(--shadow-deep),
-        0 2px 8px var(--shadow);
+        0 16px 48px var(--shadow-deep),
+        0 4px 12px var(--shadow),
+        /* Inner top glow */
+        inset 0 1px 0 rgba(255,255,255,0.08);
     z-index: 150;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
     transition:
         transform 0.45s cubic-bezier(0.19, 1, 0.22, 1),
         opacity 0.4s,
@@ -1223,42 +1159,6 @@ body.dark-mode .shabad-line.highlighted .hindi-gurbani {
     transform: scale(1.08);
 }
 
-/* Font Submenu */
-.font-submenu {
-    padding: 8px 16px;
-    flex-direction: column;
-    gap: 6px;
-}
-
-.font-option {
-    background: var(--bg-card);
-    border: 1px solid var(--border-soft);
-    padding: 12px 16px;
-    border-radius: 10px;
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--text);
-    cursor: pointer;
-    transition: background-color 0.2s, border-color 0.2s, transform 0.1s;
-    text-align: left;
-}
-
-.font-option:hover {
-    background: var(--accent-light);
-    border-color: var(--accent);
-}
-
-.font-option:active {
-    transform: scale(0.98);
-}
-
-.font-option.active {
-    background: var(--accent-light);
-    border-color: var(--accent);
-    color: var(--accent);
-    font-weight: 600;
-}
-
 /* ═══════════════════════════════════════════════════════════════════════════
    WORD CONTEMPLATION SHEET
    ═══════════════════════════════════════════════════════════════════════════ */
@@ -1627,49 +1527,46 @@ html[data-font="gurbani-akhar"] {
 /* ═══════════════════════════════════════════════════════════════════════════
    THEME-SPECIFIC PREMIUM TREATMENTS
    ═══════════════════════════════════════════════════════════════════════════ */
-/* Sacred themes text colors - LIGHT MODE ONLY */
-[data-theme="light"] [data-sacred-theme="royal-rose"] .shabad-line.highlighted .gurmukhi,
-[data-theme="light"] [data-sacred-theme="royal-rose"] .shabad-line.highlighted .g-word {
+/* Royal Rose — Deep warm amber */
+[data-sacred-theme="royal-rose"] .shabad-line.highlighted .gurmukhi {
     color: #a06020;
     font-weight: 800;
 }
 
-[data-theme="light"] [data-sacred-theme="lotus-grace"] .shabad-line.highlighted .gurmukhi,
-[data-theme="light"] [data-sacred-theme="lotus-grace"] .shabad-line.highlighted .g-word {
+/* Lotus Grace — Cool silver-blue */
+[data-sacred-theme="lotus-grace"] .shabad-line.highlighted .gurmukhi {
     color: #3a6a8a;
     font-weight: 800;
 }
 
-[data-theme="light"] [data-sacred-theme="golden-marigold"] .shabad-line.highlighted .gurmukhi,
-[data-theme="light"] [data-sacred-theme="golden-marigold"] .shabad-line.highlighted .g-word {
+/* Golden Marigold — Intense warm golden */
+[data-sacred-theme="golden-marigold"] .shabad-line.highlighted .gurmukhi {
     color: #b07000;
     font-weight: 800;
 }
 
-[data-theme="light"] [data-sacred-theme="blue-blossom"] .shabad-line.highlighted .gurmukhi,
-[data-theme="light"] [data-sacred-theme="blue-blossom"] .shabad-line.highlighted .g-word {
+/* Blue Blossom — Deep royal blue */
+[data-sacred-theme="blue-blossom"] .shabad-line.highlighted .gurmukhi {
     color: #2a5090;
     font-weight: 800;
 }
 
-/* Dark mode highlight text colors — GUARANTEE 100% CONTRAST BRIGHT GOLD IN ALL DARK THEMES */
-[data-theme="dark"] .shabad-line.highlighted .gurmukhi,
-[data-theme="dark"] .shabad-line.highlighted .g-word,
-[data-theme="dark"] [data-sacred-theme] .shabad-line.highlighted .gurmukhi,
-[data-theme="dark"] [data-sacred-theme] .shabad-line.highlighted .g-word,
-[data-reader-theme="charcoal"] .shabad-line.highlighted .gurmukhi,
-[data-reader-theme="charcoal"] .shabad-line.highlighted .g-word,
-[data-reader-theme="charcoal"] [data-sacred-theme] .shabad-line.highlighted .gurmukhi,
-[data-reader-theme="charcoal"] [data-sacred-theme] .shabad-line.highlighted .g-word,
-[data-reader-theme="midnight"] .shabad-line.highlighted .gurmukhi,
-[data-reader-theme="midnight"] .shabad-line.highlighted .g-word,
-[data-reader-theme="midnight"] [data-sacred-theme] .shabad-line.highlighted .gurmukhi,
-[data-reader-theme="midnight"] [data-sacred-theme] .shabad-line.highlighted .g-word,
-body.dark-mode .shabad-line.highlighted .gurmukhi,
-body.dark-mode .shabad-line.highlighted .g-word {
-    color: #ffd54f !important;
-    font-weight: 700 !important;
-    text-shadow: 0 0 12px rgba(255, 213, 79, 0.4) !important;
+/* Dark mode highlight text colors — lighter tones for readability */
+[data-theme="dark"] [data-sacred-theme="royal-rose"] .shabad-line.highlighted .gurmukhi,
+[data-reader-theme="charcoal"] [data-sacred-theme="royal-rose"] .shabad-line.highlighted .gurmukhi {
+    color: #e8b84a;
+}
+[data-theme="dark"] [data-sacred-theme="lotus-grace"] .shabad-line.highlighted .gurmukhi,
+[data-reader-theme="charcoal"] [data-sacred-theme="lotus-grace"] .shabad-line.highlighted .gurmukhi {
+    color: #90c8e0;
+}
+[data-theme="dark"] [data-sacred-theme="golden-marigold"] .shabad-line.highlighted .gurmukhi,
+[data-reader-theme="charcoal"] [data-sacred-theme="golden-marigold"] .shabad-line.highlighted .gurmukhi {
+    color: #e8a020;
+}
+[data-theme="dark"] [data-sacred-theme="blue-blossom"] .shabad-line.highlighted .gurmukhi,
+[data-reader-theme="charcoal"] [data-sacred-theme="blue-blossom"] .shabad-line.highlighted .gurmukhi {
+    color: #70a0d0;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -1749,10 +1646,44 @@ body.dark-mode .shabad-line.highlighted .g-word {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   FEATURE 2 — VERSE NUMBER BADGES (HIDDEN)
+   FEATURE 2 — VERSE NUMBER BADGES
    ═══════════════════════════════════════════════════════════════════════════ */
 .verse-number {
-    display: none !important;
+    position: absolute;
+    left: -8px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text-tertiary);
+    font-family: 'Inter', -apple-system, sans-serif;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.02em;
+    opacity: 0.4;
+    transition: opacity 0.3s, color 0.3s;
+    width: 24px;
+    text-align: right;
+    pointer-events: none;
+    user-select: none;
+}
+
+.shabad-line:hover .verse-number {
+    opacity: 0.8;
+    color: var(--accent);
+}
+
+.shabad-line.highlighted .verse-number {
+    opacity: 1;
+    color: var(--accent);
+    font-size: 11px;
+}
+
+[data-theme="dark"] .verse-number {
+    opacity: 0.3;
+}
+
+[data-theme="dark"] .shabad-line:hover .verse-number {
+    opacity: 0.7;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════

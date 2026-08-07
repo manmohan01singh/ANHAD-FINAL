@@ -89,9 +89,6 @@
     <title>Daily Hukamnama | ANHAD</title>
   <meta name="theme-color" content="#0D0D0F">
 
-    <!-- Preload critical Guru image -->
-    <link rel="preload" as="image" href="../guruimages/gurugranthsahebji.jpeg" fetchpriority="high">
-    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Gurmukhi:wght@400;500;600;700&display=optional" rel="stylesheet">
@@ -274,7 +271,7 @@
         .hero {
             position: relative;
             width: 100%;
-            padding: calc(var(--header-h) + 16px) 24px 24px;
+            padding: calc(var(--header-h) + 32px) 24px 32px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -299,15 +296,15 @@
             display: block; /* Show in dark mode */
         }
         .hero-portrait {
-            width: 92px; height: 92px;
+            width: 104px; height: 104px;
             border-radius: 50%;
-            padding: 3px;
+            padding: 4px;
             background: linear-gradient(145deg, rgba(var(--accent-rgb), 0.5), rgba(var(--accent-rgb), 0.2));
             box-shadow:
                 0 0 0 1px rgba(var(--accent-rgb), 0.25),
-                0 6px 24px rgba(0,0,0,0.12),
+                0 8px 32px rgba(0,0,0,0.12),
                 inset 0 1px 2px rgba(255,255,255,0.5);
-            margin-bottom: 14px;
+            margin-bottom: 20px;
             flex-shrink: 0;
             opacity: 0;
             transform: scale(0.92);
@@ -334,13 +331,13 @@
         }
         
         .hero-title {
-            font-family: -apple-system, 'SF Pro Display', 'Inter', system-ui, sans-serif;
-            font-size: 26px;
-            font-weight: 600;
-            letter-spacing: -0.015em;
+            font-family: var(--font-gurmukhi);
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
             color: var(--text-primary);
-            line-height: 1.25;
-            margin-bottom: 4px;
+            line-height: 1.3;
+            margin-bottom: 6px;
             opacity: 0;
             transform: translateY(8px);
             transition: opacity 0.3s ease, transform 0.3s var(--ease);
@@ -353,10 +350,10 @@
         }
         .hero-guru {
             font-family: var(--font-gurmukhi);
-            font-size: 13px;
+            font-size: 14px;
             color: var(--text-secondary);
             font-weight: 500;
-            line-height: 1.35;
+            line-height: 1.4;
             opacity: 0;
             transform: translateY(6px);
             transition: opacity 0.3s ease, transform 0.3s var(--ease);
@@ -371,12 +368,12 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            margin-top: 10px;
-            font-size: 11px;
+            gap: 10px;
+            margin-top: 12px;
+            font-size: 12px;
             color: var(--text-tertiary);
             font-weight: 500;
-            letter-spacing: 0.015em;
+            letter-spacing: 0.02em;
             opacity: 0;
             transform: translateY(4px);
             transition: opacity 0.3s ease, transform 0.3s var(--ease);
@@ -397,13 +394,13 @@
         }
         
         .hero-transition {
-            width: 70px;
+            width: 80px;
             height: 2px;
             border-radius: 1px;
-            background: linear-gradient(90deg, transparent, rgba(var(--accent-rgb), 0.35) 20%, rgba(var(--accent-rgb), 0.35) 80%, transparent);
-            margin: 16px auto 0;
+            background: linear-gradient(90deg, transparent, rgba(var(--accent-rgb), 0.3) 20%, rgba(var(--accent-rgb), 0.3) 80%, transparent);
+            margin: 20px auto 0;
             filter: blur(0.5px);
-            box-shadow: 0 0 10px rgba(var(--accent-rgb), 0.25);
+            box-shadow: 0 0 12px rgba(var(--accent-rgb), 0.2);
             opacity: 0;
             transform: scaleX(0);
             transition: opacity 0.3s ease, transform 0.35s var(--ease);
@@ -449,7 +446,7 @@
 
         /* ─── GURBANI — READING FIRST (BEAUTIFUL GURMUKHI FONT) ─── */
         .gurbani-section {
-            padding: 8px 24px 120px;
+            padding: 0 24px 120px;
             max-width: 680px;
             margin: 0 auto;
             z-index: 2; /* Above paper */
@@ -485,15 +482,15 @@
         
         .verse-gurmukhi {
             font-family: 'RiyastiHastlikhat', 'Noto Sans Gurmukhi', 'Gurmukhi MN', 'AnmolLipi', sans-serif;
-            font-size: 1.85rem;
-            line-height: 2.1;
+            font-size: 2rem;
+            line-height: 2.2;
             color: var(--text-primary);
             font-weight: 500;
             text-align: center;
             word-wrap: break-word;
-            letter-spacing: 0.025em;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.06);
-            margin-bottom: 8px;
+            letter-spacing: 0.03em;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.06);
+            margin-bottom: 6px;
         }
         
         .verse-translation {
@@ -663,21 +660,20 @@
         .pa { font-family: var(--font-gurmukhi); }
 
         @media (max-width: 380px) {
-            .hero-portrait { width: 80px; height: 80px; }
-            .hero-title { font-size: 22px; }
-            .verse-gurmukhi { font-size: 1.5rem; }
+            .hero-portrait { width: 88px; height: 88px; }
+            .hero-title { font-size: 21px; }
+            .verse-gurmukhi { font-size: 1.2rem; }
             .gurbani-section { padding-left: 16px; padding-right: 16px; }
-            .hero { padding: calc(var(--header-h) + 12px) 20px 20px; }
         }
         @media (min-width: 500px) {
-            .hero-portrait { width: 108px; height: 108px; }
+            .hero-portrait { width: 120px; height: 120px; }
             .hero-title { font-size: 28px; }
-            .verse-gurmukhi { font-size: 2rem; }
+            .verse-gurmukhi { font-size: 1.5rem; }
         }
         @media (min-width: 768px) {
-            .hero { padding-top: calc(var(--header-h) + 28px); }
-            .hero-portrait { width: 120px; height: 120px; }
-            .hero-title { font-size: 30px; }
+            .hero { padding-top: calc(var(--header-h) + 40px); }
+            .hero-portrait { width: 136px; height: 136px; }
+            .hero-title { font-size: 32px; }
         }
     </style>
 </head>
@@ -714,13 +710,7 @@
             <div class="hero-glow" aria-hidden="true"></div>
             <div class="hero-portrait">
                 <div class="hero-portrait-inner">
-                    <img 
-                        id="guruImage" 
-                        src="../guruimages/gurugranthsahebji.jpeg" 
-                        alt="Guru Portrait"
-                        loading="eager"
-                        fetchpriority="high"
-                        decoding="async">
+                    <img decoding="async" id="guruImage" src="../guruimages/gurugranthsahebji.jpeg" alt="">
                 </div>
             </div>
             <h1 class="hero-title">Daily Hukamnama</h1>

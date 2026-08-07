@@ -158,11 +158,9 @@
   align-items: center;
   padding-left: calc(var(--ac-safe-left) + 4px);
   padding-right: calc(var(--ac-safe-right) + 4px);
-  /* CRITICAL SCROLL FIX: No will-change or transform to avoid rendering pipeline conflicts */
+  /* REMOVED: will-change and transform that caused scroll rendering glitches */
   transition: background 0.25s var(--ac-smooth),
               border-color 0.25s var(--ac-smooth);
-  /* Performance: Use contain for layout isolation without blocking scroll */
-  contain: layout style;
 }
 
 /* Thin gold hairline on scroll compact state */
