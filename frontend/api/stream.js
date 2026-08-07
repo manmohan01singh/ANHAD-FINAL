@@ -50,7 +50,7 @@ export default async function handler(req) {
   try {
     const fetchHeaders = {
       'User-Agent': 'ANHAD-Radio/5.0',
-      'Icy-MetaData': '1',
+      'Icy-MetaData': '0',
       'Connection': 'keep-alive',
     };
     if (req.headers.get('range')) {
