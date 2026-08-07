@@ -1,0 +1,249 @@
+{
+  "suite": "Suite 1 - Static Analysis (Node.js)",
+  "overallStatus": "PASS ✅",
+  "results": {
+    "timestamp": "2026-07-24T17:50:31.449Z",
+    "syntaxValidation": {
+      "status": "PASS ✅",
+      "filesChecked": 257,
+      "errors": []
+    },
+    "domOperationScan": {
+      "status": "PASS ✅",
+      "innerHTMLCount": 353,
+      "createElementCount": 240,
+      "totalSites": 593
+    },
+    "duplicateListenerPatterns": {
+      "status": "PASS ✅",
+      "potentialDuplicates": 1067,
+      "targetFiles": [
+        {
+          "file": "frontend/Calendar/gurpurab-calendar-ios.js",
+          "count": 8
+        },
+        {
+          "file": "frontend/Calendar/gurpurab-calendar.js",
+          "count": 19
+        },
+        {
+          "file": "frontend/enhanced-functionality.js",
+          "count": 17
+        },
+        {
+          "file": "frontend/GurbaniGPT/components/chat.js",
+          "count": 27
+        },
+        {
+          "file": "frontend/GurbaniKhoj/gurbani-khoj.js",
+          "count": 52
+        },
+        {
+          "file": "frontend/GurbaniKhoj/shabad-reader.js",
+          "count": 34
+        },
+        {
+          "file": "frontend/GurbaniRadio/gurbani-radio.js",
+          "count": 22
+        },
+        {
+          "file": "frontend/GurbaniRadio/ios17-player.js",
+          "count": 10
+        },
+        {
+          "file": "frontend/GurbaniRadio/stream-library.js",
+          "count": 8
+        },
+        {
+          "file": "frontend/Homepage/ios-homepage.js",
+          "count": 8
+        },
+        {
+          "file": "frontend/Homepage/ultra-welcome.js",
+          "count": 7
+        },
+        {
+          "file": "frontend/Hukamnama/daily-hukamnama.js",
+          "count": 19
+        },
+        {
+          "file": "frontend/Hukamnama/optical-glass-physics.js",
+          "count": 6
+        },
+        {
+          "file": "frontend/js/anhad-core.js",
+          "count": 8
+        },
+        {
+          "file": "frontend/js/anhad-onboarding.js",
+          "count": 6
+        },
+        {
+          "file": "frontend/js/audio-core.js",
+          "count": 6
+        },
+        {
+          "file": "frontend/js/audio-integration.js",
+          "count": 14
+        },
+        {
+          "file": "frontend/js/daily-hukamnama.js",
+          "count": 17
+        },
+        {
+          "file": "frontend/js/homepage-data.js",
+          "count": 25
+        },
+        {
+          "file": "frontend/js/persistent-audio.js",
+          "count": 11
+        },
+        {
+          "file": "frontend/js/random-shabad.js",
+          "count": 26
+        },
+        {
+          "file": "frontend/js/trendora-app.js",
+          "count": 39
+        },
+        {
+          "file": "frontend/lib/anhad-audio-singleton.js",
+          "count": 12
+        },
+        {
+          "file": "frontend/lib/background-download-ui.js",
+          "count": 6
+        },
+        {
+          "file": "frontend/lib/global-alarm-system.js",
+          "count": 8
+        },
+        {
+          "file": "frontend/lib/kirtan-listening-tracker.js",
+          "count": 8
+        },
+        {
+          "file": "frontend/lib/persistent-audio.js",
+          "count": 9
+        },
+        {
+          "file": "frontend/lib/smart-back.js",
+          "count": 7
+        },
+        {
+          "file": "frontend/lib/stats-integration.js",
+          "count": 18
+        },
+        {
+          "file": "frontend/NaamAbhyas/components/ritual-engine.js",
+          "count": 7
+        },
+        {
+          "file": "frontend/NaamAbhyas/naam-abhyas.js",
+          "count": 33
+        },
+        {
+          "file": "frontend/NaamAbhyas-V2/js/ui/NaamAbhyasUI.js",
+          "count": 25
+        },
+        {
+          "file": "frontend/nitnem/bani-setting-panel.js",
+          "count": 21
+        },
+        {
+          "file": "frontend/nitnem/js/hub-app.js",
+          "count": 6
+        },
+        {
+          "file": "frontend/nitnem/js/reader-app.js",
+          "count": 14
+        },
+        {
+          "file": "frontend/nitnem/js/reader-engine.js",
+          "count": 34
+        },
+        {
+          "file": "frontend/NitnemTracker/nitnem-tracker.js",
+          "count": 102
+        },
+        {
+          "file": "frontend/Notes/notes-integration.js",
+          "count": 18
+        },
+        {
+          "file": "frontend/Notes/notes-ui.js",
+          "count": 31
+        },
+        {
+          "file": "frontend/pwa-register.js",
+          "count": 7
+        },
+        {
+          "file": "frontend/RandomShabad/random-shabad.js",
+          "count": 15
+        },
+        {
+          "file": "frontend/reminders/cinematic-v5.js",
+          "count": 14
+        },
+        {
+          "file": "frontend/reminders/js/alarm-controller.js",
+          "count": 9
+        },
+        {
+          "file": "frontend/reminders/js/perf-optimizer.js",
+          "count": 6
+        },
+        {
+          "file": "frontend/reminders/js/reliable-alarm.js",
+          "count": 7
+        },
+        {
+          "file": "frontend/reminders/smart-reminders-ui.js",
+          "count": 30
+        },
+        {
+          "file": "frontend/reminders/smart-reminders-v6.js",
+          "count": 31
+        },
+        {
+          "file": "frontend/reminders/smart-reminders-v7.js",
+          "count": 40
+        },
+        {
+          "file": "frontend/script.js",
+          "count": 43
+        },
+        {
+          "file": "frontend/SehajPaath/reader.js",
+          "count": 40
+        },
+        {
+          "file": "frontend/SehajPaath/sehaj-paath.js",
+          "count": 40
+        },
+        {
+          "file": "frontend/ShabadVichar/shabad-vichar.js",
+          "count": 21
+        },
+        {
+          "file": "frontend/sw-alarm.js",
+          "count": 7
+        },
+        {
+          "file": "frontend/sw.js",
+          "count": 9
+        }
+      ]
+    },
+    "bundleIntegrity": {
+      "status": "PASS ✅",
+      "missingScripts": [],
+      "verifiedFiles": 8
+    },
+    "structuralRegressions": {
+      "status": "PASS ✅",
+      "checksPassed": true
+    }
+  }
+}

@@ -1,0 +1,549 @@
+/* ═══════════════════════════════════════════════════════════════════════════════
+   GURPURAB CELEBRATION MODE 2026 — Respectful, Lightweight, Battery-Efficient
+   Spiritual enhancement for Parkash Gurpurabs & major Sikh festivals
+   
+   Performance Requirements:
+   - Zero impact on startup or scrolling
+   - CSS-only animations (no JavaScript loops)
+   - Maximum 5 decorative elements
+   - Auto-pause when page hidden
+   - Suitable for low-end Android devices
+   
+═══════════════════════════════════════════════════════════════════════════════ */
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   DESIGN TOKENS — Sikh-inspired golden palette
+───────────────────────────────────────────────────────────────────────────── */
+:root {
+  --celebration-gold: #D4AF37;
+  --celebration-gold-light: #F4D03F;
+  --celebration-gold-glow: rgba(212, 175, 55, 0.25);
+  --celebration-transition: cubic-bezier(0.4, 0, 0.2, 1);
+  --celebration-duration: 12s; /* Slow, meditative breathing */
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   FEATURE 1: SOFT GOLDEN RADIAL GLOW (CSS Gradients Only)
+   Applied behind Guru Sahib portrait on Gurpurab days
+───────────────────────────────────────────────────────────────────────────── */
+.gurpurab-active .greeting__guru-portrait::before {
+  content: '';
+  position: absolute;
+  inset: -40%;
+  background: radial-gradient(
+    circle at center,
+    rgba(212, 175, 55, 0.18) 0%,
+    rgba(244, 208, 63, 0.12) 30%,
+    rgba(212, 175, 55, 0.06) 60%,
+    transparent 100%
+  );
+  border-radius: 50%;
+  z-index: -1;
+  pointer-events: none;
+  animation: divineGlow var(--celebration-duration) ease-in-out infinite;
+}
+
+@keyframes divineGlow {
+  0%, 100% {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   FEATURE 2: GENTLE BREATHING GLOW — ANHAD Logo
+   Slow 10-12 second opacity animation for calm spiritual atmosphere
+───────────────────────────────────────────────────────────────────────────── */
+.gurpurab-active .anhad-title-pill {
+  animation: logoBreathing var(--celebration-duration) ease-in-out infinite;
+  box-shadow: 
+    0 0 0 1px rgba(212, 175, 55, 0.15),
+    0 4px 16px rgba(212, 175, 55, 0.08),
+    0 0 32px rgba(212, 175, 55, 0.05);
+}
+
+@keyframes logoBreathing {
+  0%, 100% {
+    box-shadow: 
+      0 0 0 1px rgba(212, 175, 55, 0.15),
+      0 4px 16px rgba(212, 175, 55, 0.08),
+      0 0 32px rgba(212, 175, 55, 0.05);
+  }
+  50% {
+    box-shadow: 
+      0 0 0 1px rgba(212, 175, 55, 0.25),
+      0 4px 20px rgba(212, 175, 55, 0.15),
+      0 0 48px rgba(212, 175, 55, 0.12);
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   FEATURE 3: SUBTLE GOLDEN SPARKLES AT TOP (Fade on Scroll)
+   Lightweight decoration that disappears when user scrolls
+───────────────────────────────────────────────────────────────────────────── */
+.gurpurab-sparkles-top {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  pointer-events: none;
+  z-index: 998; /* Below nav but above content */
+  display: none;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+.gurpurab-active .gurpurab-sparkles-top {
+  display: block;
+}
+
+/* Hide on scroll */
+.gurpurab-scrolled .gurpurab-sparkles-top {
+  opacity: 0;
+}
+
+/* Individual sparkles - using Unicode stars */
+.gurpurab-sparkle-top {
+  position: absolute;
+  font-size: 16px;
+  color: rgba(212, 175, 55, 0.6);
+  animation: sparkleGlow 3s ease-in-out infinite;
+}
+
+/* Distribute 5 sparkles across the top */
+.gurpurab-sparkle-top:nth-child(1) {
+  left: 15%;
+  top: 20px;
+  animation-delay: 0s;
+}
+
+.gurpurab-sparkle-top:nth-child(2) {
+  left: 35%;
+  top: 30px;
+  font-size: 14px;
+  animation-delay: 0.6s;
+}
+
+.gurpurab-sparkle-top:nth-child(3) {
+  left: 50%;
+  top: 15px;
+  font-size: 18px;
+  animation-delay: 1.2s;
+}
+
+.gurpurab-sparkle-top:nth-child(4) {
+  left: 65%;
+  top: 25px;
+  font-size: 14px;
+  animation-delay: 1.8s;
+}
+
+.gurpurab-sparkle-top:nth-child(5) {
+  left: 85%;
+  top: 20px;
+  animation-delay: 2.4s;
+}
+
+@keyframes sparkleGlow {
+  0%, 100% {
+    opacity: 0.4;
+    transform: scale(1) rotate(0deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2) rotate(180deg);
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   FEATURE 4: HIGHLIGHTED PARKASH GURPURAB BADGE
+   Replaces normal event badge with prominent "Parkash Gurpurab Today" styling
+───────────────────────────────────────────────────────────────────────────── */
+.gurpurab-active .event-card__eyebrow {
+  background: linear-gradient(
+    90deg,
+    rgba(212, 175, 55, 0.15) 0%,
+    rgba(212, 175, 55, 0.25) 50%,
+    rgba(212, 175, 55, 0.15) 100%
+  );
+  color: #8B6914;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 8px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  font-size: 11px;
+}
+
+.gurpurab-active .event-card__eyebrow::before {
+  content: '🪔 ';
+  margin-right: 4px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   FEATURE 5: LIGHTWEIGHT SVG FLOATING PETALS (Max 5)
+   CSS transforms only, no Canvas, no JavaScript animation loop
+   Automatically pause when page hidden via :paused class
+───────────────────────────────────────────────────────────────────────────── */
+.gurpurab-petals {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 999; /* Above content but below modals */
+  opacity: 0;
+  transition: opacity 1s ease-in;
+}
+
+.gurpurab-active .gurpurab-petals {
+  opacity: 1;
+}
+
+/* Individual petal — uses SVG as background for crisp rendering */
+.gurpurab-petal {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  opacity: 0.6;
+  will-change: transform;
+  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23FFB6C1" d="M12 2c-3 0-5.5 2.5-5.5 5.5 0 2 1 3.8 2.5 4.8v9.2c0 .8.7 1.5 1.5 1.5h3c.8 0 1.5-.7 1.5-1.5v-9.2c1.5-1 2.5-2.8 2.5-4.8C17.5 4.5 15 2 12 2z"/></svg>') no-repeat center;
+  background-size: contain;
+}
+
+/* Petal 1 — Leftmost fall */
+.gurpurab-petal:nth-child(1) {
+  left: 10%;
+  animation: petalFloat1 15s ease-in-out infinite;
+  animation-delay: 0s;
+}
+
+/* Petal 2 — Left-center fall */
+.gurpurab-petal:nth-child(2) {
+  left: 30%;
+  animation: petalFloat2 18s ease-in-out infinite;
+  animation-delay: 3s;
+}
+
+/* Petal 3 — Center fall */
+.gurpurab-petal:nth-child(3) {
+  left: 50%;
+  animation: petalFloat3 16s ease-in-out infinite;
+  animation-delay: 6s;
+}
+
+/* Petal 4 — Right-center fall */
+.gurpurab-petal:nth-child(4) {
+  left: 70%;
+  animation: petalFloat4 17s ease-in-out infinite;
+  animation-delay: 9s;
+}
+
+/* Petal 5 — Rightmost fall */
+.gurpurab-petal:nth-child(5) {
+  left: 90%;
+  animation: petalFloat5 19s ease-in-out infinite;
+  animation-delay: 12s;
+}
+
+/* Petal float animations — slow, meditative drift */
+@keyframes petalFloat1 {
+  0% {
+    transform: translateY(-10%) translateX(0) rotate(0deg);
+    opacity: 0;
+  }
+  10% { opacity: 0.6; }
+  90% { opacity: 0.5; }
+  100% {
+    transform: translateY(110vh) translateX(20px) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+@keyframes petalFloat2 {
+  0% {
+    transform: translateY(-10%) translateX(0) rotate(45deg);
+    opacity: 0;
+  }
+  10% { opacity: 0.6; }
+  90% { opacity: 0.5; }
+  100% {
+    transform: translateY(110vh) translateX(-25px) rotate(405deg);
+    opacity: 0;
+  }
+}
+
+@keyframes petalFloat3 {
+  0% {
+    transform: translateY(-10%) translateX(0) rotate(90deg);
+    opacity: 0;
+  }
+  10% { opacity: 0.6; }
+  90% { opacity: 0.5; }
+  100% {
+    transform: translateY(110vh) translateX(15px) rotate(450deg);
+    opacity: 0;
+  }
+}
+
+@keyframes petalFloat4 {
+  0% {
+    transform: translateY(-10%) translateX(0) rotate(135deg);
+    opacity: 0;
+  }
+  10% { opacity: 0.6; }
+  90% { opacity: 0.5; }
+  100% {
+    transform: translateY(110vh) translateX(-20px) rotate(495deg);
+    opacity: 0;
+  }
+}
+
+@keyframes petalFloat5 {
+  0% {
+    transform: translateY(-10%) translateX(0) rotate(180deg);
+    opacity: 0;
+  }
+  10% { opacity: 0.6; }
+  90% { opacity: 0.5; }
+  100% {
+    transform: translateY(110vh) translateX(10px) rotate(540deg);
+    opacity: 0;
+  }
+}
+
+/* Pause animations when page hidden */
+.gurpurab-paused .gurpurab-petal,
+.gurpurab-paused .gurpurab-sparkle-top,
+.gurpurab-paused .greeting__guru-portrait::before,
+.gurpurab-paused .anhad-title-pill {
+  animation-play-state: paused !important;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   FEATURE 6: SUBTLE GOLDEN HALO — Event Card
+   Decorative golden border around Gurpurab card
+───────────────────────────────────────────────────────────────────────────── */
+.gurpurab-active .event-card {
+  position: relative;
+  box-shadow: 
+    0 0 0 1px rgba(212, 175, 55, 0.3),
+    0 4px 16px rgba(212, 175, 55, 0.15),
+    0 8px 32px rgba(212, 175, 55, 0.08);
+  border-color: rgba(212, 175, 55, 0.25);
+}
+
+.gurpurab-active .event-card::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  background: linear-gradient(
+    135deg,
+    rgba(212, 175, 55, 0.25) 0%,
+    rgba(244, 208, 63, 0.15) 50%,
+    rgba(212, 175, 55, 0.25) 100%
+  );
+  z-index: -1;
+  pointer-events: none;
+  animation: haloShimmer 8s ease-in-out infinite;
+}
+
+@keyframes haloShimmer {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 0.8; }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   DARK MODE ADJUSTMENTS
+───────────────────────────────────────────────────────────────────────────── */
+html.dark-mode .gurpurab-sparkle-top,
+body.dark-mode .gurpurab-sparkle-top {
+  color: rgba(212, 175, 55, 0.8);
+  text-shadow: 0 0 8px rgba(212, 175, 55, 0.5);
+}
+
+html.dark-mode .gurpurab-active .event-card__eyebrow,
+body.dark-mode .gurpurab-active .event-card__eyebrow {
+  background: linear-gradient(
+    90deg,
+    rgba(212, 175, 55, 0.12) 0%,
+    rgba(212, 175, 55, 0.22) 50%,
+    rgba(212, 175, 55, 0.12) 100%
+  );
+  color: #E8C478;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   ACCESSIBILITY & PERFORMANCE
+───────────────────────────────────────────────────────────────────────────── */
+
+/* Respect user motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .gurpurab-active .greeting__guru-portrait::before,
+  .gurpurab-active .anhad-title-pill,
+  .gurpurab-sparkle-top,
+  .gurpurab-petal,
+  .gurpurab-active .event-card::before {
+    animation: none !important;
+    transition: none !important;
+  }
+  
+  /* Hide floating petals and sparkles entirely for reduced motion */
+  .gurpurab-petals,
+  .gurpurab-sparkles-top {
+    display: none !important;
+  }
+}
+
+/* Battery optimization: Reduce animation frequency on low battery */
+@media (prefers-reduced-motion: no-preference) {
+  /* Animations will run at full speed by default */
+  /* JS can add .low-battery class to slow animations further */
+  .low-battery .gurpurab-petal {
+    animation-duration: 30s !important; /* 2x slower */
+  }
+  
+  .low-battery .greeting__guru-portrait::before,
+  .low-battery .anhad-title-pill {
+    animation-duration: 20s !important; /* Slower breathing */
+  }
+}
+
+/* GPU acceleration for smooth rendering */
+.gurpurab-petal,
+.gurpurab-sparkle-top,
+.gurpurab-active .greeting__guru-portrait::before,
+.gurpurab-active .anhad-title-pill {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  will-change: auto; /* Reset after animation starts */
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   WELCOME POPUP STYLES
+   One-time daily popup for Gurpurab awareness
+───────────────────────────────────────────────────────────────────────────── */
+.gurpurab-welcome-popup {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: none; /* Controlled by JS */
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 20px;
+  animation: popupFadeIn 0.3s ease-out;
+}
+
+.gurpurab-welcome-popup.visible {
+  display: flex;
+}
+
+@keyframes popupFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.gurpurab-welcome-content {
+  background: var(--bg-primary);
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  border-radius: 20px;
+  padding: 28px 24px 24px;
+  max-width: 360px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 
+    0 16px 64px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(212, 175, 55, 0.15);
+  animation: popupScaleIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes popupScaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.gurpurab-welcome-icon {
+  font-size: 56px;
+  margin-bottom: 12px;
+  filter: drop-shadow(0 4px 8px rgba(212, 175, 55, 0.3));
+}
+
+.gurpurab-welcome-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+  font-family: 'Noto Sans Gurmukhi', sans-serif;
+}
+
+.gurpurab-welcome-message {
+  font-size: 15px;
+  font-weight: 400;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: 24px;
+}
+
+.gurpurab-welcome-actions {
+  display: flex;
+  gap: 12px;
+  flex-direction: column;
+}
+
+.gurpurab-welcome-btn {
+  padding: 14px 24px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.gurpurab-welcome-btn:active {
+  transform: scale(0.97);
+}
+
+.gurpurab-welcome-btn-primary {
+  background: linear-gradient(135deg, #D4AF37 0%, #E8C478 100%);
+  color: #2C1810;
+  box-shadow: 
+    0 4px 12px rgba(212, 175, 55, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+.gurpurab-welcome-btn-primary:hover {
+  background: linear-gradient(135deg, #E8C478 0%, #D4AF37 100%);
+}
+
+.gurpurab-welcome-btn-secondary {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+}
+
+.gurpurab-welcome-btn-secondary:hover {
+  background: rgba(212, 175, 55, 0.05);
+  border-color: rgba(212, 175, 55, 0.2);
+}

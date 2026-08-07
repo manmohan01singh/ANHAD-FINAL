@@ -667,7 +667,20 @@
         else if (name.includes('teg') || name.includes('mahala 9')) guruData = CONFIG.GURU_MAP[9];
         else if (name.includes('gobind') || name.includes('mahala 10')) guruData = CONFIG.GURU_MAP[10];
 
-        elements.guruImage.src = `../guruimages/${guruData.file}`;
+        const newSrc = `../guruimages/${guruData.file}`;
+        
+        // Preload the image before updating to prevent visible loading delay
+        const preloadImg = new Image();
+        preloadImg.fetchpriority = 'high';
+        preloadImg.onload = () => {
+            elements.guruImage.src = newSrc;
+        };
+        preloadImg.onerror = () => {
+            // If new image fails to load, keep the default
+            console.warn('[Hukamnama] Failed to load guru image:', newSrc);
+        };
+        preloadImg.src = newSrc;
+        
         const nameDisplay = document.getElementById('guruNameDisplay');
         if (nameDisplay) nameDisplay.textContent = guruData.name;
     }

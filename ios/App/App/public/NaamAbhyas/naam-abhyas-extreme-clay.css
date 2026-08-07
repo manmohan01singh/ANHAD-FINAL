@@ -1,0 +1,302 @@
+/**
+ * ═══════════════════════════════════════════════════════════════════
+ * NAAM ABHYAS - EXTREME iOS CLAYMORPHISM ENHANCEMENT
+ * Ultra-soft cushion effect that makes users never want to leave
+ * ═══════════════════════════════════════════════════════════════════
+ */
+
+/* ═══ EXTREME CLAYMORPHISM CARDS ═══ */
+.glass-card {
+  background: linear-gradient(145deg, rgba(28, 28, 30, 0.98), rgba(44, 44, 46, 0.95)) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  box-shadow: 
+    /* Outer glow */
+    0 12px 40px rgba(0, 0, 0, 0.5),
+    0 6px 20px rgba(0, 0, 0, 0.3),
+    /* Soft highlights */
+    inset 0 1px 2px rgba(255, 255, 255, 0.08),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.4),
+    /* Depth */
+    -4px -4px 12px rgba(255, 255, 255, 0.03),
+    4px 4px 16px rgba(0, 0, 0, 0.6) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border-radius: 24px !important;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+.glass-card:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 
+    0 16px 50px rgba(0, 0, 0, 0.6),
+    0 8px 25px rgba(0, 0, 0, 0.4),
+    inset 0 1px 2px rgba(255, 255, 255, 0.1),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.4),
+    -4px -4px 12px rgba(255, 255, 255, 0.04),
+    4px 4px 16px rgba(0, 0, 0, 0.7) !important;
+}
+
+/* ═══ LIGHT MODE CARDS ═══ */
+[data-theme="light"] .glass-card,
+html[data-theme="light"] .glass-card {
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.98), rgba(245, 245, 247, 0.95)) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 
+    0 12px 40px rgba(0, 0, 0, 0.08),
+    0 6px 20px rgba(0, 0, 0, 0.04),
+    inset 0 1px 2px rgba(255, 255, 255, 0.9),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.03),
+    -4px -4px 12px rgba(255, 255, 255, 0.95),
+    4px 4px 16px rgba(0, 0, 0, 0.06) !important;
+}
+
+[data-theme="light"] .glass-card:hover {
+  box-shadow: 
+    0 16px 50px rgba(0, 0, 0, 0.1),
+    0 8px 25px rgba(0, 0, 0, 0.05),
+    inset 0 1px 2px rgba(255, 255, 255, 0.95),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.03),
+    -4px -4px 12px rgba(255, 255, 255, 1),
+    4px 4px 16px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* ═══ SACRED GOLD ACCENTS ═══ */
+.streak-fire,
+.ring-fill,
+.today-bar-fill,
+.stat-cell svg,
+.qa-primary {
+  filter: drop-shadow(0 2px 8px rgba(212, 148, 58, 0.4)) !important;
+}
+
+.qa-primary {
+  background: linear-gradient(145deg, #D4943A, #C17F2E) !important;
+  box-shadow: 
+    0 8px 24px rgba(212, 148, 58, 0.35),
+    0 4px 12px rgba(212, 148, 58, 0.25),
+    inset 0 1px 2px rgba(255, 255, 255, 0.2),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.2) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+}
+
+.qa-primary:hover {
+  transform: translateY(-3px) scale(1.02) !important;
+  box-shadow: 
+    0 12px 32px rgba(212, 148, 58, 0.5),
+    0 6px 16px rgba(212, 148, 58, 0.35),
+    inset 0 1px 2px rgba(255, 255, 255, 0.25),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.2) !important;
+}
+
+.qa-primary:active {
+  transform: translateY(-1px) scale(0.98) !important;
+  box-shadow: 
+    0 4px 16px rgba(212, 148, 58, 0.4),
+    inset 0 2px 4px rgba(0, 0, 0, 0.25) !important;
+}
+
+/* ═══ SECONDARY BUTTONS ═══ */
+.qa-btn:not(.qa-primary) {
+  background: linear-gradient(145deg, rgba(44, 44, 46, 0.9), rgba(36, 36, 40, 0.85)) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 
+    0 6px 20px rgba(0, 0, 0, 0.3),
+    0 3px 10px rgba(0, 0, 0, 0.2),
+    inset 0 1px 1px rgba(255, 255, 255, 0.05),
+    -2px -2px 6px rgba(255, 255, 255, 0.02),
+    2px 2px 8px rgba(0, 0, 0, 0.4) !important;
+}
+
+.qa-btn:not(.qa-primary):hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 
+    0 8px 28px rgba(0, 0, 0, 0.4),
+    0 4px 14px rgba(0, 0, 0, 0.3),
+    inset 0 1px 1px rgba(255, 255, 255, 0.08),
+    -2px -2px 6px rgba(255, 255, 255, 0.03),
+    2px 2px 8px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* ═══ PROGRESS RING ENHANCEMENT ═══ */
+.completion-ring {
+  filter: drop-shadow(0 4px 12px rgba(212, 148, 58, 0.3));
+}
+
+.ring-fill {
+  stroke: url(#goldGradient) !important;
+  filter: drop-shadow(0 0 8px rgba(212, 148, 58, 0.6));
+}
+
+.ring-value {
+  font-size: 2.5rem !important;
+  font-weight: 800 !important;
+  color: #D4943A !important;
+  text-shadow: 0 2px 8px rgba(212, 148, 58, 0.4);
+  filter: drop-shadow(0 0 8px rgba(212, 148, 58, 0.3));
+}
+
+/* ═══ TOGGLE SWITCH ENHANCEMENT ═══ */
+.toggle-switch {
+  box-shadow: 
+    inset 0 2px 6px rgba(0, 0, 0, 0.4),
+    inset 0 -1px 2px rgba(255, 255, 255, 0.05) !important;
+}
+
+.toggle-slider:before {
+  box-shadow: 
+    0 3px 8px rgba(0, 0, 0, 0.3),
+    0 1px 3px rgba(0, 0, 0, 0.2),
+    inset 0 1px 1px rgba(255, 255, 255, 0.8) !important;
+}
+
+.toggle-switch input:checked + .toggle-slider {
+  background: linear-gradient(145deg, #34C759, #30B350) !important;
+  box-shadow: 
+    inset 0 2px 6px rgba(0, 0, 0, 0.2),
+    0 0 12px rgba(52, 199, 89, 0.3) !important;
+}
+
+/* ═══ SYNC ITEMS (Hub Cards) ═══ */
+.sync-item {
+  background: linear-gradient(145deg, rgba(36, 36, 40, 0.95), rgba(28, 28, 32, 0.9)) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 
+    0 4px 16px rgba(0, 0, 0, 0.3),
+    0 2px 8px rgba(0, 0, 0, 0.2),
+    inset 0 1px 1px rgba(255, 255, 255, 0.05),
+    -2px -2px 4px rgba(255, 255, 255, 0.02),
+    2px 2px 6px rgba(0, 0, 0, 0.4) !important;
+  border-radius: 16px !important;
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+.sync-item:hover {
+  transform: translateX(4px) !important;
+  box-shadow: 
+    0 6px 24px rgba(0, 0, 0, 0.4),
+    0 3px 12px rgba(0, 0, 0, 0.3),
+    inset 0 1px 1px rgba(255, 255, 255, 0.08),
+    -2px -2px 4px rgba(255, 255, 255, 0.03),
+    2px 2px 6px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* ═══ TIMELINE ITEMS ENHANCEMENT ═══ */
+.schedule-slot {
+  background: linear-gradient(145deg, rgba(36, 36, 40, 0.8), rgba(28, 28, 32, 0.75)) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 
+    0 3px 12px rgba(0, 0, 0, 0.25),
+    0 1px 6px rgba(0, 0, 0, 0.15),
+    inset 0 1px 1px rgba(255, 255, 255, 0.04),
+    -1px -1px 3px rgba(255, 255, 255, 0.02),
+    1px 1px 4px rgba(0, 0, 0, 0.35) !important;
+  border-radius: 14px !important;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+.schedule-slot.completed {
+  background: linear-gradient(145deg, rgba(52, 199, 89, 0.15), rgba(48, 179, 80, 0.12)) !important;
+  border: 1px solid rgba(52, 199, 89, 0.25) !important;
+  box-shadow: 
+    0 3px 12px rgba(52, 199, 89, 0.15),
+    0 1px 6px rgba(52, 199, 89, 0.1),
+    inset 0 1px 1px rgba(52, 199, 89, 0.08) !important;
+}
+
+.schedule-slot.missed {
+  background: linear-gradient(145deg, rgba(255, 69, 58, 0.12), rgba(235, 60, 50, 0.1)) !important;
+  border: 1px solid rgba(255, 69, 58, 0.2) !important;
+  box-shadow: 
+    0 3px 12px rgba(255, 69, 58, 0.12),
+    0 1px 6px rgba(255, 69, 58, 0.08) !important;
+}
+
+/* ═══ WISDOM CARD ENHANCEMENT ═══ */
+.wisdom-card {
+  background: linear-gradient(145deg, rgba(212, 148, 58, 0.08), rgba(181, 120, 32, 0.06)) !important;
+  border: 1px solid rgba(212, 148, 58, 0.15) !important;
+  box-shadow: 
+    0 8px 32px rgba(212, 148, 58, 0.12),
+    0 4px 16px rgba(212, 148, 58, 0.08),
+    inset 0 1px 2px rgba(255, 255, 255, 0.08) !important;
+}
+
+.wisdom-quote {
+  font-size: 1.3rem !important;
+  font-weight: 600 !important;
+  color: #D4943A !important;
+  text-shadow: 0 2px 8px rgba(212, 148, 58, 0.3);
+}
+
+/* ═══ HEADER STATUS PILL ═══ */
+.status-pill {
+  background: linear-gradient(145deg, rgba(36, 36, 40, 0.95), rgba(28, 28, 32, 0.9)) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 
+    0 4px 16px rgba(0, 0, 0, 0.3),
+    0 2px 8px rgba(0, 0, 0, 0.2),
+    inset 0 1px 1px rgba(255, 255, 255, 0.05),
+    -2px -2px 4px rgba(255, 255, 255, 0.02),
+    2px 2px 6px rgba(0, 0, 0, 0.4) !important;
+  border-radius: 20px !important;
+  backdrop-filter: blur(12px) !important;
+}
+
+/* ═══ PERFECT DAY INDICATOR ═══ */
+.perfect-day-indicator {
+  animation: perfectDayGlow 2s ease-in-out infinite !important;
+}
+
+@keyframes perfectDayGlow {
+  0%, 100% {
+    filter: drop-shadow(0 0 8px rgba(212, 148, 58, 0.6));
+  }
+  50% {
+    filter: drop-shadow(0 0 16px rgba(212, 148, 58, 0.9));
+  }
+}
+
+/* ═══ MODAL OVERLAYS ═══ */
+.welcome-content,
+.ritual-card {
+  background: linear-gradient(145deg, rgba(28, 28, 30, 0.98), rgba(44, 44, 46, 0.96)) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  box-shadow: 
+    0 20px 60px rgba(0, 0, 0, 0.7),
+    0 10px 30px rgba(0, 0, 0, 0.5),
+    inset 0 1px 2px rgba(255, 255, 255, 0.08),
+    -4px -4px 12px rgba(255, 255, 255, 0.03),
+    4px 4px 20px rgba(0, 0, 0, 0.7) !important;
+  border-radius: 32px !important;
+  backdrop-filter: blur(30px) saturate(200%) !important;
+}
+
+/* ═══ STATS GRID CELLS ═══ */
+.stat-cell {
+  background: linear-gradient(145deg, rgba(36, 36, 40, 0.6), rgba(28, 28, 32, 0.55)) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 
+    0 3px 12px rgba(0, 0, 0, 0.2),
+    inset 0 1px 1px rgba(255, 255, 255, 0.04),
+    -1px -1px 3px rgba(255, 255, 255, 0.02),
+    1px 1px 4px rgba(0, 0, 0, 0.3) !important;
+  border-radius: 14px !important;
+  transition: all 0.2s ease !important;
+}
+
+.stat-cell:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 
+    0 6px 20px rgba(0, 0, 0, 0.3),
+    inset 0 1px 1px rgba(255, 255, 255, 0.06) !important;
+}
+
+/* ═══ SMOOTH ANIMATIONS ═══ */
+* {
+  transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+/* ═══ SVG GRADIENT FOR PROGRESS RING ═══ */
+svg defs {
+  display: block;
+}

@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notification Settings - ANHAD</title>
+    <link rel="stylesheet" href="../css/anhad-core.css">
+    <style>
+        .notification-settings {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+
+        .setting-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            backdrop-filter: blur(10px);
+        }
+
+        .setting-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .setting-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: #ffffff;
+        }
+
+        .setting-subtitle {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 4px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 48px;
+            height: 28px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-switch.active {
+            background: linear-gradient(135deg, #FF6B9D 0%, #C06DF5 100%);
+        }
+
+        .toggle-knob {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 12px;
+            top: 2px;
+            left: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-switch.active .toggle-knob {
+            left: 22px;
+        }
+
+        .time-picker {
+            margin-top: 12px;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .time-picker input {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 8px 12px;
+            color: white;
+            font-size: 14px;
+        }
+
+        .frequency-selector {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .frequency-btn {
+            flex: 1;
+            padding: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .frequency-btn.active {
+            background: linear-gradient(135deg, #FF6B9D 0%, #C06DF5 100%);
+            border-color: transparent;
+        }
+
+        .enable-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #FF6B9D 0%, #C06DF5 100%);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .permission-status {
+            text-align: center;
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .permission-status.granted {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4CAF50;
+        }
+
+        .permission-status.denied {
+            background: rgba(244, 67, 54, 0.2);
+            color: #F44336;
+        }
+    </style>
+</head>
+<body>
+    <div class="notification-settings">
+        <h1 style="color: white; margin-bottom: 8px;">🔔 Notifications</h1>
+        <p style="color: rgba(255,255,255,0.6); margin-bottom: 24px;">Peaceful reminders for your spiritual journey</p>
+
+        <div id="permissionStatus"></div>
+
+        <button id="enableNotifications" class="enable-btn" style="display: none;">
+            Enable Notifications
+        </button>
+
+        <div id="settingsContainer"></div>
+    </div>
+
+    <script src="../js/notification-system.js"></script>
+    <script>
+        const settings = [
+            { id: 'amritvela', title: 'Amritvela', subtitle: 'Morning blessed time', hasTime: true },
+            { id: 'japji_sahib', title: 'Japji Sahib', subtitle: 'Morning paath reminder', hasTime: true },
+            { id: 'jaap_sahib', title: 'Jaap Sahib', subtitle: 'Morning Nitnem', hasTime: true },
+            { id: 'rehras_sahib', title: 'Rehras Sahib', subtitle: 'Evening paath', hasTime: true },
+            { id: 'kirtan_sohila', title: 'Kirtan Sohila', subtitle: 'Bedtime paath', hasTime: true },
+            { id: 'hukamnama', title: 'Daily Hukamnama', subtitle: "Guru's daily message", hasTime: true },
+            { id: 'simran_reminders', title: 'Simran Reminders', subtitle: 'Random peaceful reminders', hasFrequency: true },
+            { id: 'bedtime', title: 'Bedtime', subtitle: 'Good night reminder', hasTime: true },
+            { id: 'nitnem_check', title: 'Nitnem Check', subtitle: 'Evening completion check', hasTime: true }
+        ];
+
+        function updatePermissionStatus() {
+            const statusDiv = document.getElementById('permissionStatus');
+            const enableBtn = document.getElementById('enableNotifications');
+            
+            if (!('Notification' in window)) {
+                statusDiv.innerHTML = '<div class="permission-status denied">Notifications not supported in this browser</div>';
+                return;
+            }
+
+            if (Notification.permission === 'granted') {
+                statusDiv.innerHTML = '<div class="permission-status granted">✓ Notifications Enabled</div>';
+                enableBtn.style.display = 'none';
+                renderSettings();
+            } else if (Notification.permission === 'denied') {
+                statusDiv.innerHTML = '<div class="permission-status denied">Notifications blocked. Please enable in browser settings.</div>';
+                enableBtn.style.display = 'none';
+            } else {
+                enableBtn.style.display = 'block';
+                statusDiv.innerHTML = '';
+            }
+        }
+
+        function renderSettings() {
+            const container = document.getElementById('settingsContainer');
+            const prefs = window.anhadNotifications.preferences;
+
+            container.innerHTML = settings.map(setting => {
+                const pref = prefs[setting.id] || {};
+                const isEnabled = pref.enabled !== false;
+
+                return `
+                    <div class="setting-card">
+                        <div class="setting-header">
+                            <div>
+                                <div class="setting-title">${setting.title}</div>
+                                <div class="setting-subtitle">${setting.subtitle}</div>
+                            </div>
+                            <div class="toggle-switch ${isEnabled ? 'active' : ''}" 
+                                 onclick="toggleSetting('${setting.id}')">
+                                <div class="toggle-knob"></div>
+                            </div>
+                        </div>
+                        ${setting.hasTime && isEnabled ? `
+                            <div class="time-picker">
+                                <label style="color: rgba(255,255,255,0.7); font-size: 13px;">Time:</label>
+                                <input type="time" value="${pref.time || '06:00'}" 
+                                       onchange="updateTime('${setting.id}', this.value)">
+                            </div>
+                        ` : ''}
+                        ${setting.hasFrequency && isEnabled ? `
+                            <div class="frequency-selector">
+                                <button class="frequency-btn ${pref.frequency === 'low' ? 'active' : ''}" 
+                                        onclick="updateFrequency('${setting.id}', 'low')">Low</button>
+                                <button class="frequency-btn ${pref.frequency === 'medium' || !pref.frequency ? 'active' : ''}" 
+                                        onclick="updateFrequency('${setting.id}', 'medium')">Medium</button>
+                                <button class="frequency-btn ${pref.frequency === 'high' ? 'active' : ''}" 
+                                        onclick="updateFrequency('${setting.id}', 'high')">High</button>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function toggleSetting(id) {
+            const pref = window.anhadNotifications.preferences[id];
+            window.anhadNotifications.updatePreference(id, { enabled: !pref.enabled });
+            renderSettings();
+        }
+
+        function updateTime(id, time) {
+            window.anhadNotifications.updatePreference(id, { time });
+        }
+
+        function updateFrequency(id, frequency) {
+            window.anhadNotifications.updatePreference(id, { frequency });
+            renderSettings();
+        }
+
+        document.getElementById('enableNotifications').addEventListener('click', async () => {
+            const granted = await window.anhadNotifications.requestPermission();
+            if (granted) {
+                window.anhadNotifications.enable();
+            }
+            updatePermissionStatus();
+        });
+
+        // Initialize
+        setTimeout(() => {
+            updatePermissionStatus();
+        }, 500);
+    </script>
+</body>
+</html>

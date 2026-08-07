@@ -89,6 +89,9 @@
     <title>Daily Hukamnama | ANHAD</title>
   <meta name="theme-color" content="#0D0D0F">
 
+    <!-- Preload critical Guru image -->
+    <link rel="preload" as="image" href="../guruimages/gurugranthsahebji.jpeg" fetchpriority="high">
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Gurmukhi:wght@400;500;600;700&display=optional" rel="stylesheet">
@@ -710,7 +713,13 @@
             <div class="hero-glow" aria-hidden="true"></div>
             <div class="hero-portrait">
                 <div class="hero-portrait-inner">
-                    <img decoding="async" id="guruImage" src="../guruimages/gurugranthsahebji.jpeg" alt="">
+                    <img 
+                        id="guruImage" 
+                        src="../guruimages/gurugranthsahebji.jpeg" 
+                        alt="Guru Portrait"
+                        loading="eager"
+                        fetchpriority="high"
+                        decoding="async">
                 </div>
             </div>
             <h1 class="hero-title">Daily Hukamnama</h1>

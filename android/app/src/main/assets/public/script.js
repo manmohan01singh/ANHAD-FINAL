@@ -724,9 +724,9 @@ class AudioEngine extends EventEmitter {
         this.audio.preload = 'auto';
         this.audio.volume = this.volume;
 
-        // ALWAYS enable CORS to support Cloudflare R2/S3 and Web Audio API analysis
-        this.audio.crossOrigin = 'anonymous';
-        this.corsEnabled = true;
+        // CORS REMOVED: R2 bucket doesn't have CORS headers configured.
+        // this.audio.crossOrigin = 'anonymous'; // REMOVED - causes CORS blocking
+        this.corsEnabled = false;
 
         this._attachAudioEvents();
         return this.audio;

@@ -138,8 +138,8 @@ button, .btn, .button {
    2. GURU PORTRAITS (GREETING IMAGES) — ENLARGED & VERTICALLY CENTERED
    ═══════════════════════════════════════════════════════════════════════════════ */
 .greeting {
-    margin-top: -14px !important;
-    margin-bottom: 2px !important;
+    margin-top: -18px !important;
+    margin-bottom: 0px !important;
     padding-top: 0 !important;
     padding-bottom: 0 !important;
 }
@@ -150,39 +150,39 @@ button, .btn, .button {
 
 /* Normal Light & Dark Mode Guru Portraits */
 .greeting__portrait-slider {
-    height: 185px !important;
+    height: 195px !important;
     touch-action: pan-y !important;
 }
 
 .greeting__guru-portrait {
-    width: 165px !important;
-    height: 165px !important;
-    min-width: 165px !important;
-    min-height: 165px !important;
+    width: 185px !important;
+    height: 185px !important;
+    min-width: 185px !important;
+    min-height: 185px !important;
     border-radius: 50% !important;
     margin-bottom: 0 !important;
 }
 
 .greeting__slide {
-    width: 165px !important;
-    height: 165px !important;
+    width: 185px !important;
+    height: 185px !important;
 }
 
-/* Dynamic Mode (Auto) Guru Portraits — Slightly Larger per user request */
+/* Dynamic Mode (Auto) Guru Portraits — Much Larger for Better Stack */
 [data-theme-mode="auto"] .greeting__portrait-slider {
-    height: 195px !important;
+    height: 210px !important;
 }
 
 [data-theme-mode="auto"] .greeting__guru-portrait {
-    width: 180px !important;
-    height: 180px !important;
-    min-width: 180px !important;
-    min-height: 180px !important;
+    width: 200px !important;
+    height: 200px !important;
+    min-width: 200px !important;
+    min-height: 200px !important;
 }
 
 [data-theme-mode="auto"] .greeting__slide {
-    width: 180px !important;
-    height: 180px !important;
+    width: 200px !important;
+    height: 200px !important;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════

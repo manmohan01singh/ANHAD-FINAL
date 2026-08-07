@@ -1,0 +1,30 @@
+{
+  "navigationTimeline": {
+    "navigationStart": 0,
+    "domInteractiveMs": 99,
+    "domContentLoadedMs": 99,
+    "loadEventEndMs": 100
+  },
+  "paintMetrics": {
+    "firstPaintMs": "Not Measured",
+    "firstContentfulPaintMs": "Not Measured",
+    "largestContentfulPaintMs": "Not Measured"
+  },
+  "heroResourceTiming": {
+    "status": "Preloaded before main thread fetch"
+  },
+  "cssWaterfall": {
+    "blockingStylesheetsCount": 0,
+    "totalCssBlockingTimeMs": "Derived",
+    "importsRemaining": 0
+  },
+  "scriptWaterfall": {
+    "parserBlockingScriptsCount": 1,
+    "deferredScriptsCount": 0,
+    "asyncScriptsCount": 0
+  },
+  "longTasks": {
+    "countOver50ms": 0,
+    "longestTaskMs": 0
+  }
+}

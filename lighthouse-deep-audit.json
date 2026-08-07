@@ -1,0 +1,71 @@
+{
+  "unused-css-rules": {
+    "title": "Reduce unused CSS",
+    "score": 1,
+    "displayValue": "",
+    "items": []
+  },
+  "unused-javascript": {
+    "title": "Reduce unused JavaScript",
+    "score": 1,
+    "displayValue": "",
+    "items": []
+  },
+  "non-composited-animations": {
+    "title": "Avoid non-composited animations",
+    "score": null,
+    "items": []
+  },
+  "bf-cache": {
+    "title": "Page didn't prevent back/forward cache restoration",
+    "score": 1,
+    "items": []
+  },
+  "long-tasks": {
+    "title": "Avoid long main-thread tasks",
+    "score": 1,
+    "displayValue": "2 long tasks found",
+    "items": [
+      {
+        "url": "http://localhost:3000/Homepage/ios-homepage.js",
+        "duration": 249,
+        "startTime": 3096.446100000002
+      },
+      {
+        "url": "Unattributable",
+        "duration": 71,
+        "startTime": 758.8986000000001
+      }
+    ]
+  },
+  "bootup-time": {
+    "title": "JavaScript execution time",
+    "score": 1,
+    "displayValue": "0.8 s",
+    "items": [
+      {
+        "url": "http://localhost:3000/Homepage/ios-homepage.js",
+        "total": 1353.0800000000002,
+        "scripting": 764.0079999999987,
+        "scriptParseCompile": 2.4480000000000004
+      },
+      {
+        "url": "Unattributable",
+        "total": 296.0440000000032,
+        "scripting": 3.2039999999999997,
+        "scriptParseCompile": 0
+      },
+      {
+        "url": "http://localhost:3000/Homepage/ios-homepage.html",
+        "total": 163.036,
+        "scripting": 10.027999999999997,
+        "scriptParseCompile": 2.724
+      }
+    ]
+  },
+  "user-timings": {
+    "title": "User Timing marks and measures",
+    "score": null,
+    "items": []
+  }
+}

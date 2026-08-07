@@ -1,0 +1,20 @@
+{
+  "evaluatedUrl": "http://localhost:3000/index.html",
+  "requestedUrl": "http://localhost:3000/index.html",
+  "benchmarkIndex": 2905,
+  "metrics": {
+    "fcpMs": 3741.0074999999993,
+    "lcpMs": 8515.493875,
+    "tbtMs": 74,
+    "speedIndexMs": 3741.0074999999993,
+    "cls": 0.09278962836276078
+  },
+  "networkSummary": {
+    "totalRequests": 157,
+    "totalBytes": 1637780,
+    "cssBytes": 87883,
+    "jsBytes": 142948
+  },
+  "renderBlockingResources": [],
+  "lcpDetails": []
+}

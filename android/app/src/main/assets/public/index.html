@@ -427,9 +427,12 @@
   <link rel="stylesheet" href="css/nav-glass.css?v=4.1.9">
   <!-- NO SHADOWS - Remove all shadows from buttons and cards -->
   <link rel="stylesheet" href="css/no-shadows.css?v=2">
+  <!-- CRITICAL: Scroll Performance Fix -->
+  <link rel="stylesheet" href="css/scroll-performance-fix.css?v=1.0.5">
   <!-- Non-critical CSS loaded async via media trick -->
   <link rel="stylesheet" href="css/gurpurab-event-semantics.css?v=1" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="css/gurpurab-special-mode.css" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="css/gurpurab-celebration-2026.css?v=1" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="css/install-button.css" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="css/mobile-accessibility.css" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="css/ios-override.css?v=8" media="print" onload="this.media='all'">
@@ -2803,9 +2806,72 @@
          GREETING — iOS Large Title Inspired
     ════════════════════════════════════════════════════════════════════ -->
     <section class="greeting ios-animate-in" aria-label="Personal Greeting" style="position: relative; overflow: visible;">
-      <!-- Subtle Ambient Orbs — ONLY 2: Sky Blue + Yellow -->
-      <div class="time-orb time-orb-1" aria-hidden="true"></div>
-      <div class="time-orb time-orb-2" aria-hidden="true"></div>
+      <!-- Sky Blue Orbs - 2-3 circular orbs with 100% blur -->
+      <div class="greeting-orb greeting-orb-1" aria-hidden="true"></div>
+      <div class="greeting-orb greeting-orb-2" aria-hidden="true"></div>
+      <div class="greeting-orb greeting-orb-3" aria-hidden="true"></div>
+      
+      <style>
+        /* Dynamic Color Orbs - Adapt to Guru Image Colors */
+        .greeting-orb {
+          position: absolute;
+          border-radius: 50%;
+          filter: blur(60px);
+          pointer-events: none;
+          z-index: 0;
+          will-change: transform, background;
+          display: none; /* Hidden by default */
+          transition: background 0.8s cubic-bezier(0.4, 0.0, 0.2, 1);
+        }
+        
+        /* Show orbs ONLY in day time auto mode */
+        [data-theme-mode="auto"][data-time-of-day="day"] .greeting-orb {
+          display: block;
+        }
+        
+        .greeting-orb-1 {
+          width: 180px;
+          height: 180px;
+          top: -50px;
+          left: -40px;
+          background: radial-gradient(circle, rgba(255, 140, 66, 0.7), rgba(216, 101, 24, 0.4), transparent);
+          animation: floatOrb1 8s ease-in-out infinite;
+        }
+        
+        .greeting-orb-2 {
+          width: 150px;
+          height: 150px;
+          top: 20px;
+          right: -30px;
+          background: radial-gradient(circle, rgba(212, 148, 58, 0.7), rgba(184, 134, 11, 0.4), transparent);
+          animation: floatOrb2 10s ease-in-out infinite;
+        }
+        
+        .greeting-orb-3 {
+          width: 120px;
+          height: 120px;
+          bottom: -20px;
+          left: 50%;
+          transform: translateX(-50%);
+          background: radial-gradient(circle, rgba(245, 230, 211, 0.6), rgba(232, 220, 196, 0.3), transparent);
+          animation: floatOrb3 12s ease-in-out infinite;
+        }
+        
+        @keyframes floatOrb1 {
+          0%, 100% { transform: translate(0, 0); }
+          50% { transform: translate(15px, -15px); }
+        }
+        
+        @keyframes floatOrb2 {
+          0%, 100% { transform: translate(0, 0); }
+          50% { transform: translate(-12px, 12px); }
+        }
+        
+        @keyframes floatOrb3 {
+          0%, 100% { transform: translate(-50%, 0); }
+          50% { transform: translate(calc(-50% + 10px), -10px); }
+        }
+      </style>
       
       <div class="greeting__content">
         <!-- Portrait Slider for immersive experience -->
@@ -3162,14 +3228,14 @@
       <svg class="quick-card__chevron" aria-hidden="true"><use href="#icon-chevron-right"/></svg>
     </article>
 
-    <article class="quick-card quick-card--gold ios-haptic" id="naamCard" aria-label="Naam Abhyas" data-href="NaamAbhyas/naam-abhyas.html">
+    <article class="quick-card quick-card--gold ios-haptic" id="naamCard" aria-label="Naam Abhyas - Under Development" role="button" tabindex="0">
       <div class="quick-card__icon" aria-hidden="true"><span class="ios-emoji" role="img" aria-label="prayer">🙏</span></div>
       <div class="quick-card__content">
         <div class="quick-card__title">Naam Abhyas</div>
-        <div class="quick-card__subtitle" id="naamSubtitle">Set schedule timing &amp; start</div>
+        <div class="quick-card__subtitle" id="naamSubtitle">Focused meditation sessions</div>
       </div>
       <div class="quick-card__meta">
-        <span class="quick-card__meta-value" id="naamMeta">Schedule</span>
+        <span class="quick-card__meta-value" id="naamMeta" style="color: #D4943A; font-weight: 700; font-size: 11px;">Under Development</span>
       </div>
       <svg class="quick-card__chevron" aria-hidden="true"><use href="#icon-chevron-right"/></svg>
     </article>
@@ -3243,6 +3309,22 @@
     </article>
     </div>
 
+
+  <!-- ════════════════════════════════════════════════════════════════════════
+       COMING SOON POPUP — Naam Abhyas Under Development
+  ════════════════════════════════════════════════════════════════════════ -->
+  <div id="anhadComingSoonOverlay" aria-hidden="true">
+    <div id="anhadComingSoonCard" role="dialog" aria-labelledby="comingSoonTitle" aria-modal="true">
+      <span class="cs-icon">🙏</span>
+      <div class="cs-title" id="comingSoonTitle">Under Development</div>
+      <div class="cs-feature">Naam Abhyas</div>
+      <p class="cs-desc">This feature is currently being rebuilt with enhanced meditation sessions and improved scheduling. Stay tuned!</p>
+      <button class="cs-close ios-haptic" id="comingSoonClose">
+        <span>Okay</span>
+        <span>✨</span>
+      </button>
+    </div>
+  </div>
 
   <!-- ════════════════════════════════════════════════════════════════════════
        RADIO BOTTOM SHEET — Choose Stream (Emoji Icons)
@@ -3327,6 +3409,11 @@
   <!-- Core UI logic -->
   <script src="js/trendora-app.js?v=4.0.4" defer></script>
   <script src="js/homepage-data.js" defer></script>
+  
+  <!-- FESTIVAL MODE 2026 - Gurpurab Celebration System -->
+  <script src="js/festival-mode-config.js?v=1.0.0" defer></script>
+  <script src="js/festival-mode-integration.js?v=1.0.0" defer></script>
+  
   <script src="pwa-register.js?v=4.0.4" defer></script>
   <script src="js/update-controller.js" defer></script>
 

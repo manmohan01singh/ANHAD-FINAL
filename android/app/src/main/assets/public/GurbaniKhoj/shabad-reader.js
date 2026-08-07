@@ -154,7 +154,11 @@ const FONT_NAMES = {
     'pothi': 'Sacred Pothi',
     'court': 'Court Script',
     'modern': 'Modern Serif',
-    'royal': 'Royal Text'
+    'royal': 'Royal Text',
+    'noto': 'Noto Sans Gurmukhi',
+    'mukta': 'Mukta Mahee',
+    'raavi': 'Raavi',
+    'gurbani': 'AnmolLipi'
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -348,17 +352,38 @@ function renderShabad(data) {
     let sourceName = 'Sri Guru Granth Sahib Ji';
     let writerName = firstVerse.writer?.gurmukhi || firstVerse.writer?.english || '';
     
+    // Extract Guru name from writer string
+    let guruName = '';
+    if (firstVerse.writer) {
+        const mahala = firstVerse.writer.mahala;
+        if (mahala) {
+            const mahalaNum = mahala.replace(/\D/g, ''); // Extract number
+            const guruNames = {
+                '1': 'Guru Nanak Dev Ji',
+                '2': 'Guru Angad Dev Ji',
+                '3': 'Guru Amar Das Ji',
+                '4': 'Guru Ram Das Ji',
+                '5': 'Guru Arjan Dev Ji',
+                '6': 'Guru Hargobind Sahib Ji',
+                '7': 'Guru Har Rai Sahib Ji',
+                '8': 'Guru Har Krishan Sahib Ji',
+                '9': 'Guru Tegh Bahadur Ji'
+            };
+            guruName = guruNames[mahalaNum] || '';
+        }
+    }
+    
     // Build title: raag + mahala
     let raagName = firstVerse.raag?.gurmukhi || firstVerse.raag?.english || '';
     let mahala = firstVerse.writer?.mahala || '';
     DOM.navTitle.textContent = raagName ? `${raagName} ${mahala}`.trim() : 'ਗੁਰਬਾਣੀ';
     
-    // Subtitle: source
-    DOM.navSubtitle.textContent = sourceName;
+    // Subtitle: Guru name if available, else source
+    DOM.navSubtitle.textContent = guruName || sourceName;
     
     // Meta: writer + ang
     let metaParts = [];
-    if (writerName) metaParts.push(writerName);
+    if (!guruName && writerName) metaParts.push(writerName); // Only show writer if no Guru name
     if (firstVerse.pageNo) metaParts.push(`Ang ${firstVerse.pageNo}`);
     DOM.navMeta.textContent = metaParts.join(' • ');
 
@@ -528,6 +553,9 @@ const Autoscroll = {
         DOM.scrollPlayBtn.querySelector('.play-svg').style.display = 'none';
         DOM.scrollPlayBtn.querySelector('.pause-svg').style.display = 'block';
         
+        // Add thin mode to player card
+        DOM.autoscrollPill.classList.add('thin-mode');
+        
         lastTickTime = performance.now();
         this.tick();
     },
@@ -539,6 +567,9 @@ const Autoscroll = {
         DOM.scrollPlayBtn.classList.remove('playing');
         DOM.scrollPlayBtn.querySelector('.play-svg').style.display = 'block';
         DOM.scrollPlayBtn.querySelector('.pause-svg').style.display = 'none';
+        
+        // Remove thin mode from player card
+        DOM.autoscrollPill.classList.remove('thin-mode');
         
         if (autoscrollId) {
             cancelAnimationFrame(autoscrollId);
@@ -636,8 +667,30 @@ const Settings = {
         document.documentElement.setAttribute('data-font', font);
         localStorage.setItem('gurbaniFont', font);
 
+        const fontKeyMap = {
+            'pothi': 'noto-sans',
+            'noto': 'noto-sans',
+            'court': 'mukta-mahee',
+            'mukta': 'mukta-mahee',
+            'modern': 'baloo-paaji',
+            'royal': 'noto-serif',
+            'raavi': 'raavi',
+            'gurbani': 'anmol-lipi'
+        };
+        const fontMap = {
+            'noto-sans': "'Noto Sans Gurmukhi', sans-serif",
+            'mukta-mahee': "'Mukta Mahee', 'Noto Sans Gurmukhi', sans-serif",
+            'baloo-paaji': "'Baloo Paaji 2', 'Noto Sans Gurmukhi', sans-serif",
+            'noto-serif': "'Noto Serif Gurmukhi', 'Noto Sans Gurmukhi', serif",
+            'raavi': "'Raavi', 'Noto Sans Gurmukhi', sans-serif",
+            'anmol-lipi': "'AnmolLipi', 'Noto Sans Gurmukhi', sans-serif"
+        };
+        const targetKey = fontKeyMap[font] || 'noto-sans';
+        localStorage.setItem('gurbaniKhoj_font', targetKey);
+        document.documentElement.style.setProperty('--font-gurmukhi', fontMap[targetKey]);
+
         const displayName = FONT_NAMES[font] || 'Sacred Pothi';
-        DOM.activeFontVal.textContent = `${displayName} >`;
+        if (DOM.activeFontVal) DOM.activeFontVal.textContent = `${displayName} >`;
         
         $$('#fontRowBtn .row-value').forEach(el => {
             el.textContent = `${displayName} >`;
@@ -660,6 +713,11 @@ const Settings = {
         });
         
         localStorage.setItem('reader_line_spacing', spacing);
+        
+        // Re-render to apply spacing immediately
+        if (State.verses.length) {
+            renderShabad({ verses: State.verses });
+        }
     },
 
     setTextAlign(align) {
@@ -834,13 +892,28 @@ function initEvents() {
         Settings.setFontSize(val);
     });
 
-    // Font family cycle button
+    // Font family cycle button - now toggles submenu
     DOM.fontRowBtn.addEventListener('click', () => {
         haptic();
-        const fontKeys = ['pothi', 'court', 'modern', 'royal'];
-        const currentIdx = fontKeys.indexOf(State.fontGurmukhi);
-        const nextIdx = (currentIdx + 1) % fontKeys.length;
-        Settings.setFont(fontKeys[nextIdx]);
+        const submenu = $('#fontSubmenu');
+        const isVisible = submenu.style.display !== 'none';
+        submenu.style.display = isVisible ? 'none' : 'flex';
+    });
+
+    // Font option selection
+    $$('.font-option').forEach(btn => {
+        btn.addEventListener('click', () => {
+            haptic();
+            const font = btn.dataset.font;
+            Settings.setFont(font);
+            
+            // Update active state
+            $$('.font-option').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            // Hide submenu
+            $('#fontSubmenu').style.display = 'none';
+        });
     });
 
     // Line spacing segmented control
@@ -1048,6 +1121,45 @@ function initKeyboardShortcuts() {
 // INITIALIZATION
 // ═══════════════════════════════════════════════════════════════════════════════
 
+// Header hide/show on scroll
+let lastScrollY = 0;
+let scrollTimer = null;
+
+function initHeaderScroll() {
+    const nav = $('.ios-nav');
+    if (!nav) return;
+    
+    window.addEventListener('scroll', () => {
+        const currentScrollY = window.scrollY;
+        
+        // Clear existing timer
+        if (scrollTimer) clearTimeout(scrollTimer);
+        
+        // Hide when scrolling down (after 100px), show when scrolling up
+        if (currentScrollY > 100) {
+            if (currentScrollY > lastScrollY && !State.autoscrollActive) {
+                // Scrolling down - hide header
+                nav.classList.add('nav-hidden');
+            } else if (currentScrollY < lastScrollY) {
+                // Scrolling up - show header
+                nav.classList.remove('nav-hidden');
+            }
+        } else {
+            // Always show when near top
+            nav.classList.remove('nav-hidden');
+        }
+        
+        lastScrollY = currentScrollY;
+        
+        // Also show header briefly after scroll stops
+        scrollTimer = setTimeout(() => {
+            if (currentScrollY > 100 && !State.autoscrollActive) {
+                nav.classList.remove('nav-hidden');
+            }
+        }, 2000);
+    }, { passive: true });
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
     const params = getParams();
     State.shabadId = params.shabadId;
@@ -1064,6 +1176,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     WordVichar.init();
     initEvents();
     initKeyboardShortcuts();
+    initHeaderScroll();
 
     const data = await loadShabad(State.shabadId);
     if (data) {

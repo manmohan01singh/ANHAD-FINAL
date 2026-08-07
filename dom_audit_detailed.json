@@ -1,0 +1,2261 @@
+{
+  "methodCounts": {
+    "innerHTML": 505,
+    "outerHTML": 4,
+    "insertAdjacentHTML": 19,
+    "DOMParser": 1,
+    "createElement": 292,
+    "cloneNode": 16,
+    "appendChild": 379,
+    "replaceChild": 3,
+    "replaceChildren": 0,
+    "removeChild": 10,
+    "remove": 128
+  },
+  "fileStats": {
+    "frontend/assets/splash/splash-generator.js": {
+      "total": 2,
+      "innerHTML": 0,
+      "createElement": 2,
+      "destructive": 0
+    },
+    "frontend/AUDIO_DEBUG.html": {
+      "total": 11,
+      "innerHTML": 11,
+      "createElement": 0,
+      "destructive": 11
+    },
+    "frontend/Calendar/gurpurab-calendar-ios.js": {
+      "total": 11,
+      "innerHTML": 6,
+      "createElement": 2,
+      "destructive": 6
+    },
+    "frontend/Calendar/gurpurab-calendar.js": {
+      "total": 52,
+      "innerHTML": 22,
+      "createElement": 14,
+      "destructive": 23
+    },
+    "frontend/components/LiveDriftBanner.js": {
+      "total": 5,
+      "innerHTML": 1,
+      "createElement": 2,
+      "destructive": 1
+    },
+    "frontend/components/SehajPaathReader.js": {
+      "total": 4,
+      "innerHTML": 1,
+      "createElement": 1,
+      "destructive": 2
+    },
+    "frontend/Dashboard/dashboard-analytics-premium.js": {
+      "total": 1,
+      "innerHTML": 1,
+      "createElement": 0,
+      "destructive": 1
+    },
+    "frontend/Dashboard/dashboard-analytics.js": {
+      "total": 1,
+      "innerHTML": 1,
+      "createElement": 0,
+      "destructive": 1
+    },
+    "frontend/Dashboard/dashboard.html": {
+      "total": 3,
+      "innerHTML": 3,
+      "createElement": 0,
+      "destructive": 3
+    },
+    "frontend/enhanced-functionality.js": {
+      "total": 17,
+      "innerHTML": 5,
+      "createElement": 5,
+      "destructive": 7
+    },
+    "frontend/Favorites/favorites.html": {
+      "total": 7,
+      "innerHTML": 7,
+      "createElement": 0,
+      "destructive": 7
+    },
+    "frontend/guide/index.html": {
+      "total": 1,
+      "innerHTML": 1,
+      "createElement": 0,
+      "destructive": 1
+    },
+    "frontend/GurbaniGPT/components/bookmarks.js": {
+      "total": 2,
+      "innerHTML": 2,
+      "createElement": 0,
+      "destructive": 2
+    },
+    "frontend/GurbaniGPT/components/chat.js": {
+      "total": 22,
+      "innerHTML": 16,
+      "createElement": 3,
+      "destructive": 16
+    },
+    "frontend/GurbaniGPT/components/debug.js": {
+      "total": 10,
+      "innerHTML": 4,
+      "createElement": 3,
+      "destructive": 4
+    },
+    "frontend/GurbaniGPT/components/theme.js": {
+      "total": 1,
+      "innerHTML": 1,
+      "createElement": 0,
+      "destructive": 1
+    },
+    "frontend/GurbaniGPT/src/conversation/controller/ChatController.js": {
+      "total": 10,
+      "innerHTML": 10,
+      "createElement": 0,
+      "destructive": 10
+    },
+    "frontend/GurbaniGPT/src/conversation/rendering/GurbaniRenderer.js": {
+      "total": 3,
+      "innerHTML": 1,
+      "createElement": 1,
+      "destructive": 1
+    },
+    "frontend/GurbaniGPT/src/conversation/rendering/MessageRenderer.js": {
+      "total": 8,
+      "innerHTML": 3,
+      "createElement": 3,
+      "destructive": 3
+    },
+    "frontend/GurbaniGPT/src/conversation/streaming/StreamController.js": {
+      "total": 4,
+      "innerHTML": 2,
+      "createElement": 0,
+      "destructive": 4
+    },
+    "frontend/GurbaniGPT/src/conversation/WelcomeController.js": {
+      "total": 3,
+      "innerHTML": 1,
+      "createElement": 1,
+      "destructive": 1
+    },
+    "frontend/GurbaniKhoj/gurbani-khoj.js": {
+      "total": 25,
+      "innerHTML": 17,
+      "createElement": 2,
+      "destructive": 20
+    },
+    "frontend/GurbaniKhoj/live-kirtan-tracker.js": {
+      "total": 8,
+      "innerHTML": 5,
+      "createElement": 2,
+      "destructive": 5
+    },
+    "frontend/GurbaniKhoj/search-history.js": {
+      "total": 2,
+      "innerHTML": 2,
+      "createElement": 0,
+      "destructive": 2
+    },
+    "frontend/GurbaniKhoj/shabad-reader.js": {
+      "total": 1,
+      "innerHTML": 1,
+      "createElement": 0,
+      "destructive": 1
+    },
+    "frontend/GurbaniRadio/gurbani-radio.js": {
+      "total": 3,
+      "innerHTML": 0,
+      "createElement": 1,
+      "destructive": 1
+    },
+    "frontend/GurbaniRadio/ios17-player.js": {
+      "total": 2,
+      "innerHTML": 2,
+      "createElement": 0,
+      "destructive": 2
+    },
+    "frontend/GurbaniRadio/stream-library.js": {
+      "total": 31,
+      "innerHTML": 8,
+      "createElement": 10,
+      "destructive": 9
+    },
+    "frontend/Homepage/ios-homepage.js": {
+      "total": 2,
+      "innerHTML": 0,
+      "createElement": 1,
+      "destructive": 0
+    },
+    "frontend/Homepage/ultra-welcome.js": {
+      "total": 10,
+      "innerHTML": 0,
+      "createElement": 4,
+      "destructive": 1
+    },
+    "frontend/Hukamnama/daily-hukamnama.html": {
+      "total": 1,
+      "innerHTML": 1,
+      "createElement": 0,
+      "destructive": 1
+    },
+    "frontend/Hukamnama/daily-hukamnama.js": {
+      "total": 3,
+      "innerHTML": 3,
+      "createElement": 0,
+      "destructive": 3
+    },
+    "frontend/Hukamnama/optical-glass-physics.js": {
+      "total": 3,
+      "innerHTML": 0,
+      "createElement": 1,
+      "destructive": 1
+    },
+    "frontend/index.html": {
+      "total": 16,
+      "innerHTML": 0,
+      "createElement": 8,
+      "destructive": 1
+    },
+    "frontend/Insights/insights.js": {
+      "total": 12,
+      "innerHTML": 12,
+      "createElement": 0,
+      "destructive": 12
+    },
+    "frontend/Journey/journey.js": {
+      "total": 1,
+      "innerHTML": 1,
+      "createElement": 0,
+      "destructive": 1
+    },
+    "frontend/js/anhad-core.js": {
+      "total": 4,
+      "innerHTML": 3,
+      "createElement": 1,
+      "destructive": 3
+    },
+    "frontend/js/anhad-onboarding.js": {
+      "total": 29,
+      "innerHTML": 7,
+      "createElement": 7,
+      "destructive": 14
+    },
+    "frontend/js/anhad-sky-bg.js": {
+      "total": 7,
+      "innerHTML": 0,
+      "createElement": 4,
+      "destructive": 0
+    },
+    "frontend/js/audio-core.js": {
+      "total": 3,
+      "innerHTML": 0,
+      "createElement": 1,
+      "destructive": 1
+    },
+    "frontend/js/audio-integration.js": {
+      "total": 3,
+      "innerHTML": 1,
+      "createElement": 1,
+      "destructive": 1
+    },
+    "frontend/js/daily-hukamnama.js": {
+      "total": 3,
+      "innerHTML": 3,
+      "createElement": 0,
+      "destructive": 3
+    },
+    "frontend/js/homepage-data.js": {
+      "total": 13,
+      "innerHTML": 6,
+      "createElement": 3,
+      "destructive": 7
+    },
+    "frontend/js/random-shabad.js": {
+      "total": 26,
+      "innerHTML": 7,
+      "createElement": 10,
+      "destructive": 9
+    },
+    "frontend/js/shared-nav.js": {
+      "total": 2,
+      "innerHTML": 0,
+      "createElement": 0,
+      "destructive": 0
+    },
+    "frontend/js/theme-preservation.test.js": {
+      "total": 2,
+      "innerHTML": 2,
+      "createElement": 0,
+      "destructive": 2
+    },
+    "frontend/js/theme-rendering.test.js": {
+      "total": 2,
+      "innerHTML": 2,
+      "createElement": 0,
+      "destructive": 2
+    },
+    "frontend/js/trendora-app.js": {
+      "total": 13,
+      "innerHTML": 9,
+      "createElement": 2,
+      "destructive": 9
+    },
+    "frontend/js/ultra-welcome-loader.js": {
+      "total": 6,
+      "innerHTML": 0,
+      "createElement": 2,
+      "destructive": 1
+    },
+    "frontend/js/virtual-live-indicator.js": {
+      "total": 6,
+      "innerHTML": 0,
+      "createElement": 3,
+      "destructive": 0
+    },
+    "frontend/lib/anhad-audio-singleton.js": {
+      "total": 2,
+      "innerHTML": 0,
+      "createElement": 0,
+      "destructive": 0
+    },
+    "frontend/lib/audio-manager.js": {
+      "total": 3,
+      "innerHTML": 0,
+      "createElement": 1,
+      "destructive": 1
+    },
+    "frontend/lib/background-audio-loader.js": {
+      "total": 4,
+      "innerHTML": 0,
+      "createElement": 2,
+      "destructive": 0
+    },
+    "frontend/lib/background-download-ui.js": {
+      "total": 5,
+      "innerHTML": 1,
+      "createElement": 2,
+      "destructive": 1
+    },
+    "frontend/lib/capacitor-notifications-global.js": {
+      "total": 28,
+      "innerHTML": 2,
+      "createElement": 9,
+      "destructive": 11
+    },
+    "frontend/lib/download-manager.js": {
+      "total": 6,
+      "innerHTML": 1,
+      "createElement": 2,
+      "destructive": 2
+    },
+    "frontend/lib/global-alarm-system.js": {
+      "total": 10,
+      "innerHTML": 1,
+      "createElement": 3,
+      "destructive": 4
+    },
+    "frontend/lib/global-mini-player.js": {
+      "total": 5,
+      "innerHTML": 3,
+      "createElement": 1,
+      "destructive": 3
+    },
+    "frontend/lib/gurbani-download-manager.js": {
+      "total": 11,
+      "innerHTML": 2,
+      "createElement": 4,
+      "destructive": 3
+    },
+    "frontend/lib/ios-android-notifications.js": {
+      "total": 12,
+      "innerHTML": 2,
+      "createElement": 3,
+      "destructive": 6
+    },
+    "frontend/lib/liquidglass.js": {
+      "total": 30,
+      "innerHTML": 1,
+      "createElement": 9,
+      "destructive": 4
+    },
+    "frontend/lib/optimized-image-loader.js": {
+      "total": 3,
+      "innerHTML": 0,
+      "createElement": 2,
+      "destructive": 0
+    },
+    "frontend/lib/overlay-player.js": {
+      "total": 5,
+      "innerHTML": 3,
+      "createElement": 1,
+      "destructive": 3
+    },
+    "frontend/lib/persistent-audio.js": {
+      "total": 2,
+      "innerHTML": 0,
+      "createElement": 1,
+      "destructive": 0
+    },
+    "frontend/lib/share-card.js": {
+      "total": 10,
+      "innerHTML": 1,
+      "createElement": 3,
+      "destructive": 5
+    },
+    "frontend/lib/smooth-navigation.js": {
+      "total": 28,
+      "innerHTML": 3,
+      "createElement": 5,
+      "destructive": 8
+    },
+    "frontend/NaamAbhyas/components/ritual-engine.js": {
+      "total": 12,
+      "innerHTML": 3,
+      "createElement": 4,
+      "destructive": 4
+    },
+    "frontend/NaamAbhyas/naam-abhyas-settings.html": {
+      "total": 16,
+      "innerHTML": 3,
+      "createElement": 6,
+      "destructive": 3
+    },
+    "frontend/NaamAbhyas/naam-abhyas-widget.js": {
+      "total": 1,
+      "innerHTML": 1,
+      "createElement": 0,
+      "destructive": 1
+    },
+    "frontend/NaamAbhyas/naam-abhyas.js": {
+      "total": 13,
+      "innerHTML": 7,
+      "createElement": 2,
+      "destructive": 9
+    },
+    "frontend/NaamAbhyas-V2/js/ui/NaamAbhyasUI.js": {
+      "total": 4,
+      "innerHTML": 2,
+      "createElement": 1,
+      "destructive": 2
+    },
+    "frontend/NaamAbhyas-V2/test.html": {
+      "total": 3,
+      "innerHTML": 1,
+      "createElement": 1,
+      "destructive": 1
+    },
+    "frontend/newglass/newglass.html": {
+      "total": 1,
+      "innerHTML": 0,
+      "createElement": 0,
+      "destructive": 0
+    },
+    "frontend/nitnem/anand-sahib.html": {
+      "total": 10,
+      "innerHTML": 5,
+      "createElement": 3,
+      "destructive": 5
+    },
+    "frontend/nitnem/bani-setting-panel.js": {
+      "total": 19,
+      "innerHTML": 5,
+      "createElement": 6,
+      "destructive": 8
+    },
+    "frontend/nitnem/category/favorites.html": {
+      "total": 1,
+      "innerHTML": 1,
+      "createElement": 0,
+      "destructive": 1
+    },
+    "frontend/nitnem/chaupai-sahib.html": {
+      "total": 10,
+      "innerHTML": 5,
+      "createElement": 3,
+      "destructive": 5
+    },
+    "frontend/nitnem/index-v2.html": {
+      "total": 4,
+      "innerHTML": 4,
+      "createElement": 0,
+      "destructive": 4
+    },
+    "frontend/nitnem/index.html": {
+      "total": 6,
+      "innerHTML": 5,
+      "createElement": 0,
+      "destructive": 5
+    },
+    "frontend/nitnem/jaap-sahib.html": {
+      "total": 10,
+      "innerHTML": 5,
+      "createElement": 3,
+      "destructive": 5
+    },
+    "frontend/nitnem/japji-sahib.html": {
+      "total": 10,
+      "innerHTML": 5,
+      "createElement": 3,
+      "destructive": 5
+    },
+    "frontend/nitnem/js/banidb-api.js": {
+      "total": 1,
+      "innerHTML": 0,
+      "createElement": 1,
+      "destructive": 0
+    },
+    "frontend/nitnem/js/hub-app.js": {
+      "total": 23,
+      "innerHTML": 14,
+      "createElement": 2,
+      "destructive": 14
+    },
+    "frontend/nitnem/js/preload-manager.js": {
+      "total": 2,
+      "innerHTML": 0,
+      "createElement": 1,
+      "destructive": 0
+    },
+    "frontend/nitnem/js/reader-app.js": {
+      "total": 9,
+      "innerHTML": 5,
+      "createElement": 2,
+      "destructive": 5
+    },
+    "frontend/nitnem/js/reader-engine.js": {
+      "total": 19,
+      "innerHTML": 6,
+      "createElement": 4,
+      "destructive": 6
+    },
+    "frontend/nitnem/my-pothi.html": {
+      "total": 7,
+      "innerHTML": 7,
+      "createElement": 0,
+      "destructive": 7
+    },
+    "frontend/nitnem/pdf-viewer-old.html": {
+      "total": 4,
+      "innerHTML": 0,
+      "createElement": 1,
+      "destructive": 2
+    },
+    "frontend/nitnem/reader.html": {
+      "total": 1,
+      "innerHTML": 0,
+      "createElement": 1,
+      "destructive": 0
+    },
+    "frontend/nitnem/rehras-sahib.html": {
+      "total": 10,
+      "innerHTML": 5,
+      "createElement": 3,
+      "destructive": 5
+    },
+    "frontend/nitnem/sohila-sahib.html": {
+      "total": 10,
+      "innerHTML": 5,
+      "createElement": 3,
+      "destructive": 5
+    },
+    "frontend/nitnem/tav-prasad-savaiye.html": {
+      "total": 10,
+      "innerHTML": 5,
+      "createElement": 3,
+      "destructive": 5
+    },
+    "frontend/NitnemTracker/components/mala-counter.js": {
+      "total": 9,
+      "innerHTML": 1,
+      "createElement": 0,
+      "destructive": 5
+    },
+    "frontend/NitnemTracker/nitnem-tracker.js": {
+      "total": 125,
+      "innerHTML": 29,
+      "createElement": 20,
+      "destructive": 67
+    },
+    "frontend/Notes/notes-manager.js": {
+      "total": 3,
+      "innerHTML": 0,
+      "createElement": 1,
+      "destructive": 1
+    },
+    "frontend/Notes/notes-ui.js": {
+      "total": 4,
+      "innerHTML": 3,
+      "createElement": 1,
+      "destructive": 3
+    },
+    "frontend/Profile/profile.js": {
+      "total": 2,
+      "innerHTML": 2,
+      "createElement": 0,
+      "destructive": 2
+    },
+    "frontend/pwa-register.js": {
+      "total": 2,
+      "innerHTML": 0,
+      "createElement": 0,
+      "destructive": 2
+    },
+    "frontend/RandomShabad/random-shabad.js": {
+      "total": 1,
+      "innerHTML": 1,
+      "createElement": 0,
+      "destructive": 1
+    },
+    "frontend/reminders/alarm.html": {
+      "total": 3,
+      "innerHTML": 3,
+      "createElement": 0,
+      "destructive": 3
+    },
+    "frontend/reminders/cinematic-reminders.js": {
+      "total": 11,
+      "innerHTML": 8,
+      "createElement": 1,
+      "destructive": 9
+    },
+    "frontend/reminders/cinematic-v5.js": {
+      "total": 2,
+      "innerHTML": 2,
+      "createElement": 0,
+      "destructive": 2
+    },
+    "frontend/reminders/ios-companion.js": {
+      "total": 3,
+      "innerHTML": 3,
+      "createElement": 0,
+      "destructive": 3
+    },
+    "frontend/reminders/js/alarm-controller.js": {
+      "total": 10,
+      "innerHTML": 2,
+      "createElement": 4,
+      "destructive": 3
+    },
+    "frontend/reminders/js/alarm.js": {
+      "total": 12,
+      "innerHTML": 3,
+      "createElement": 4,
+      "destructive": 4
+    },
+    "frontend/reminders/js/bg-alarm.js": {
+      "total": 5,
+      "innerHTML": 1,
+      "createElement": 1,
+      "destructive": 3
+    },
+    "frontend/reminders/js/livestream-sound-options.js": {
+      "total": 1,
+      "innerHTML": 1,
+      "createElement": 0,
+      "destructive": 1
+    },
+    "frontend/reminders/js/perf-optimizer.js": {
+      "total": 7,
+      "innerHTML": 1,
+      "createElement": 2,
+      "destructive": 2
+    },
+    "frontend/reminders/js/reliable-alarm.js": {
+      "total": 10,
+      "innerHTML": 2,
+      "createElement": 2,
+      "destructive": 6
+    },
+    "frontend/reminders/smart-reminders-ui.js": {
+      "total": 6,
+      "innerHTML": 3,
+      "createElement": 1,
+      "destructive": 4
+    },
+    "frontend/reminders/smart-reminders-v6.js": {
+      "total": 15,
+      "innerHTML": 5,
+      "createElement": 4,
+      "destructive": 7
+    },
+    "frontend/reminders/smart-reminders-v7.js": {
+      "total": 14,
+      "innerHTML": 11,
+      "createElement": 1,
+      "destructive": 12
+    },
+    "frontend/reset-sehaj-paath-count.html": {
+      "total": 6,
+      "innerHTML": 6,
+      "createElement": 0,
+      "destructive": 6
+    },
+    "frontend/sadhsangat-live/index.html": {
+      "total": 176,
+      "innerHTML": 59,
+      "createElement": 10,
+      "destructive": 66
+    },
+    "frontend/sadhsangat-live/js/collage-canvas-renderer.js": {
+      "total": 2,
+      "innerHTML": 0,
+      "createElement": 2,
+      "destructive": 0
+    },
+    "frontend/sadhsangat-live/js/collage-fallback-generator.js": {
+      "total": 1,
+      "innerHTML": 0,
+      "createElement": 1,
+      "destructive": 0
+    },
+    "frontend/sadhsangat-live/js/collage-generator.js": {
+      "total": 1,
+      "innerHTML": 0,
+      "createElement": 1,
+      "destructive": 0
+    },
+    "frontend/sadhsangat-live/js/__tests__/collage-image-loader.test.js": {
+      "total": 1,
+      "innerHTML": 0,
+      "createElement": 1,
+      "destructive": 0
+    },
+    "frontend/script.js": {
+      "total": 31,
+      "innerHTML": 8,
+      "createElement": 9,
+      "destructive": 11
+    },
+    "frontend/SehajPaath/components/achievements-engine.js": {
+      "total": 1,
+      "innerHTML": 1,
+      "createElement": 0,
+      "destructive": 1
+    },
+    "frontend/SehajPaath/components/bookmarks-manager.js": {
+      "total": 1,
+      "innerHTML": 1,
+      "createElement": 0,
+      "destructive": 1
+    },
+    "frontend/SehajPaath/components/detached-mode.js": {
+      "total": 6,
+      "innerHTML": 1,
+      "createElement": 2,
+      "destructive": 2
+    },
+    "frontend/SehajPaath/components/notes-manager.js": {
+      "total": 1,
+      "innerHTML": 1,
+      "createElement": 0,
+      "destructive": 1
+    },
+    "frontend/SehajPaath/components/search-engine.js": {
+      "total": 6,
+      "innerHTML": 1,
+      "createElement": 2,
+      "destructive": 2
+    },
+    "frontend/SehajPaath/components/settings-panel.js": {
+      "total": 5,
+      "innerHTML": 1,
+      "createElement": 2,
+      "destructive": 2
+    },
+    "frontend/SehajPaath/components/shabad-reader.js": {
+      "total": 3,
+      "innerHTML": 2,
+      "createElement": 1,
+      "destructive": 2
+    },
+    "frontend/SehajPaath/reader.js": {
+      "total": 29,
+      "innerHTML": 7,
+      "createElement": 9,
+      "destructive": 9
+    },
+    "frontend/SehajPaath/sehaj-paath.js": {
+      "total": 29,
+      "innerHTML": 17,
+      "createElement": 5,
+      "destructive": 19
+    },
+    "frontend/Settings/appearance.html": {
+      "total": 5,
+      "innerHTML": 0,
+      "createElement": 2,
+      "destructive": 1
+    },
+    "frontend/Settings/notifications.html": {
+      "total": 5,
+      "innerHTML": 5,
+      "createElement": 0,
+      "destructive": 5
+    },
+    "frontend/Settings/spiritual-notifications-settings.html": {
+      "total": 3,
+      "innerHTML": 1,
+      "createElement": 2,
+      "destructive": 1
+    },
+    "frontend/ShabadVichar/shabad-vichar.js": {
+      "total": 3,
+      "innerHTML": 3,
+      "createElement": 0,
+      "destructive": 3
+    }
+  },
+  "navImpactItems": [
+    {
+      "file": "frontend/guide/index.html",
+      "line": 155,
+      "method": "innerHTML",
+      "snippet": "fc.innerHTML=h;",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/index.html",
+      "line": 3616,
+      "method": "remove",
+      "snippet": "setTimeout(() => toast.remove(), 400);",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/lib/smooth-navigation.js",
+      "line": 491,
+      "method": "innerHTML",
+      "snippet": "currentNode.innerHTML = newNode.innerHTML;",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/lib/smooth-navigation.js",
+      "line": 514,
+      "method": "remove",
+      "snippet": "currentNode.remove();",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/lib/smooth-navigation.js",
+      "line": 553,
+      "method": "remove",
+      "snippet": "if (el.getAttribute('data-spa-page') !== newPageKey) el.remove();",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/lib/smooth-navigation.js",
+      "line": 562,
+      "method": "remove",
+      "snippet": "currentEl.remove();",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/lib/smooth-navigation.js",
+      "line": 623,
+      "method": "removeChild",
+      "snippet": "while (currentApp.firstChild) currentApp.removeChild(currentApp.firstChild);",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/lib/smooth-navigation.js",
+      "line": 639,
+      "method": "innerHTML",
+      "snippet": "currentApp.innerHTML = newApp.innerHTML;",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/lib/smooth-navigation.js",
+      "line": 824,
+      "method": "innerHTML",
+      "snippet": "loader.innerHTML = `",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/lib/smooth-navigation.js",
+      "line": 954,
+      "method": "remove",
+      "snippet": "existingScript.remove();",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/nitnem/index.html",
+      "line": 1709,
+      "method": "innerHTML",
+      "snippet": "inlineSearchResults.innerHTML = '';",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/nitnem/index.html",
+      "line": 1715,
+      "method": "innerHTML",
+      "snippet": "inlineSearchResults.innerHTML = '';",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/nitnem/index.html",
+      "line": 1728,
+      "method": "innerHTML",
+      "snippet": "inlineSearchResults.innerHTML = '<p style=\"text-align:center;padding:24px;color:var(--text-secondary);font-siz",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/nitnem/index.html",
+      "line": 1734,
+      "method": "innerHTML",
+      "snippet": "inlineSearchResults.innerHTML = '';",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/nitnem/index.html",
+      "line": 1740,
+      "method": "innerHTML",
+      "snippet": "inlineSearchResults.innerHTML = matches.map(bani => {",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/sadhsangat-live/index.html",
+      "line": 5479,
+      "method": "outerHTML",
+      "snippet": "return `<img decoding=\"async\" src=\"${url}\" alt=\"${ch.channelName}\" style=\"width:100%; height:100%; object-fit:",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/sadhsangat-live/index.html",
+      "line": 5627,
+      "method": "innerHTML",
+      "snippet": "list.innerHTML = '';",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/sadhsangat-live/index.html",
+      "line": 5634,
+      "method": "innerHTML",
+      "snippet": "row.innerHTML = `",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/sadhsangat-live/index.html",
+      "line": 5636,
+      "method": "outerHTML",
+      "snippet": "<img decoding=\"async\" src=\"${getChannelAvatarUrl(ch)}\" alt=\"${ch.channelName}\" style=\"width:20px; height:20px;",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/sadhsangat-live/index.html",
+      "line": 5714,
+      "method": "innerHTML",
+      "snippet": "bgPlayBtn.innerHTML = `<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.5\" stroke-li",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/sadhsangat-live/index.html",
+      "line": 5722,
+      "method": "innerHTML",
+      "snippet": "bgPlayBtn.innerHTML = `<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.5\" stroke-li",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/sadhsangat-live/index.html",
+      "line": 5766,
+      "method": "innerHTML",
+      "snippet": "$('notifContentList').innerHTML = `<div style=\"text-align:center; padding:30px; font-size:12.5px; color:var(--",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/sadhsangat-live/index.html",
+      "line": 5808,
+      "method": "remove",
+      "snippet": "if (badge) badge.remove();",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/sadhsangat-live/index.html",
+      "line": 5852,
+      "method": "remove",
+      "snippet": "r.remove();",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/sadhsangat-live/index.html",
+      "line": 6310,
+      "method": "innerHTML",
+      "snippet": "main.innerHTML = `",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/sadhsangat-live/index.html",
+      "line": 6444,
+      "method": "innerHTML",
+      "snippet": "resultsList.innerHTML = '';",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/sadhsangat-live/index.html",
+      "line": 6489,
+      "method": "innerHTML",
+      "snippet": "resultsList.innerHTML = `<div style=\"text-align:center; padding:16px; font-size:13.5px; color:var(--text-secon",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/sadhsangat-live/index.html",
+      "line": 6514,
+      "method": "innerHTML",
+      "snippet": "rowsContainer.innerHTML = '';",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/sadhsangat-live/index.html",
+      "line": 6526,
+      "method": "remove",
+      "snippet": "img.onerror = () => { img.remove(); avDiv.textContent = getInitials(ch.channelName); };",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/sadhsangat-live/index.html",
+      "line": 6535,
+      "method": "innerHTML",
+      "snippet": "info.innerHTML = `",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/sadhsangat-live/index.html",
+      "line": 6699,
+      "method": "innerHTML",
+      "snippet": "vInfo.innerHTML = `",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/sadhsangat-live/index.html",
+      "line": 6749,
+      "method": "innerHTML",
+      "snippet": "list.innerHTML = '';",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/sadhsangat-live/index.html",
+      "line": 6763,
+      "method": "innerHTML",
+      "snippet": "left.innerHTML = `<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.5\"><circle cx=\"12",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/sadhsangat-live/index.html",
+      "line": 6773,
+      "method": "innerHTML",
+      "snippet": "del.innerHTML = '✕';",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/sadhsangat-live/index.html",
+      "line": 6803,
+      "method": "innerHTML",
+      "snippet": "main.innerHTML = '';",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/sadhsangat-live/index.html",
+      "line": 6827,
+      "method": "innerHTML",
+      "snippet": "liveHdr.innerHTML = `",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/sadhsangat-live/index.html",
+      "line": 6847,
+      "method": "innerHTML",
+      "snippet": "subContainer.innerHTML = `",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/sadhsangat-live/index.html",
+      "line": 6875,
+      "method": "innerHTML",
+      "snippet": "prevHdr.innerHTML = `",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/sadhsangat-live/index.html",
+      "line": 6964,
+      "method": "innerHTML",
+      "snippet": "prevList.innerHTML = '<div style=\"padding:20px; text-align:center; color:var(--text-secondary);\">No previous l",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/sadhsangat-live/index.html",
+      "line": 6970,
+      "method": "innerHTML",
+      "snippet": "row.innerHTML = `",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/sadhsangat-live/index.html",
+      "line": 7101,
+      "method": "innerHTML",
+      "snippet": "allCircle.innerHTML = '<img src=\"../assets/app-logo-384.avif\" alt=\"ANHAD Logo\" class=\"app-logo\" style=\"width: ",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/sadhsangat-live/index.html",
+      "line": 7130,
+      "method": "innerHTML",
+      "snippet": "circle.innerHTML = getChannelAvatarHTML(ch);",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/sadhsangat-live/index.html",
+      "line": 7175,
+      "method": "innerHTML",
+      "snippet": "liveHeader.innerHTML = `",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/sadhsangat-live/index.html",
+      "line": 7194,
+      "method": "innerHTML",
+      "snippet": "liveSection.innerHTML = `",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/sadhsangat-live/index.html",
+      "line": 7207,
+      "method": "innerHTML",
+      "snippet": "liveCard.innerHTML = `",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/sadhsangat-live/index.html",
+      "line": 7243,
+      "method": "innerHTML",
+      "snippet": "continueHeader.innerHTML = `",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/sadhsangat-live/index.html",
+      "line": 7282,
+      "method": "innerHTML",
+      "snippet": "card.innerHTML = `",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/sadhsangat-live/index.html",
+      "line": 7310,
+      "method": "innerHTML",
+      "snippet": "prevHeader.innerHTML = `",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/sadhsangat-live/index.html",
+      "line": 7400,
+      "method": "innerHTML",
+      "snippet": "prevList.innerHTML = '<div style=\"padding:20px; text-align:center; color:var(--text-secondary);\">No previous l",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/sadhsangat-live/index.html",
+      "line": 7407,
+      "method": "innerHTML",
+      "snippet": "row.innerHTML = `",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/sadhsangat-live/index.html",
+      "line": 7508,
+      "method": "innerHTML",
+      "snippet": "badge.innerHTML = '▶ LIVE';",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/sadhsangat-live/index.html",
+      "line": 7531,
+      "method": "innerHTML",
+      "snippet": "dotsContainer.innerHTML = '';",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/sadhsangat-live/index.html",
+      "line": 7604,
+      "method": "innerHTML",
+      "snippet": "filterHeader.innerHTML = `",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/sadhsangat-live/index.html",
+      "line": 7619,
+      "method": "innerHTML",
+      "snippet": "subContainer.innerHTML = '<div class=\"shimmer-card\"></div><div class=\"shimmer-card\"></div><div class=\"shimmer-",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/sadhsangat-live/index.html",
+      "line": 7626,
+      "method": "innerHTML",
+      "snippet": "subContainer.innerHTML = `",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/sadhsangat-live/index.html",
+      "line": 7731,
+      "method": "innerHTML",
+      "snippet": "container.innerHTML = '';",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/sadhsangat-live/index.html",
+      "line": 7733,
+      "method": "innerHTML",
+      "snippet": "container.innerHTML = `<div class=\"empty-state\"><div class=\"empty-icon\">📂</div><div class=\"empty-heading\">No ",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/sadhsangat-live/index.html",
+      "line": 7742,
+      "method": "innerHTML",
+      "snippet": "row.innerHTML = `",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/sadhsangat-live/index.html",
+      "line": 7760,
+      "method": "innerHTML",
+      "snippet": "container.innerHTML = '<div class=\"shimmer-card\"></div>';",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/sadhsangat-live/index.html",
+      "line": 7767,
+      "method": "innerHTML",
+      "snippet": "container.innerHTML = `",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/sadhsangat-live/index.html",
+      "line": 7781,
+      "method": "innerHTML",
+      "snippet": "row.innerHTML = `",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/sadhsangat-live/index.html",
+      "line": 7802,
+      "method": "innerHTML",
+      "snippet": "container.innerHTML = `",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/sadhsangat-live/index.html",
+      "line": 7821,
+      "method": "innerHTML",
+      "snippet": "themeCard.innerHTML = `",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/sadhsangat-live/index.html",
+      "line": 7842,
+      "method": "innerHTML",
+      "snippet": "presetsCard.innerHTML = `",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/sadhsangat-live/index.html",
+      "line": 7867,
+      "method": "innerHTML",
+      "snippet": "managerCard.innerHTML = `",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/sadhsangat-live/index.html",
+      "line": 7877,
+      "method": "innerHTML",
+      "snippet": "listDiv.innerHTML = `<div style=\"text-align:center; padding:12px; color:var(--text-secondary); font-size:12px;",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/sadhsangat-live/index.html",
+      "line": 7882,
+      "method": "innerHTML",
+      "snippet": "row.innerHTML = `",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/sadhsangat-live/index.html",
+      "line": 7892,
+      "method": "innerHTML",
+      "snippet": "upBtn.innerHTML = '▲';",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/sadhsangat-live/index.html",
+      "line": 7898,
+      "method": "innerHTML",
+      "snippet": "downBtn.innerHTML = '▼';",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/sadhsangat-live/index.html",
+      "line": 7905,
+      "method": "innerHTML",
+      "snippet": "delBtn.innerHTML = '✕';",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/sadhsangat-live/index.html",
+      "line": 8053,
+      "method": "innerHTML",
+      "snippet": "card.innerHTML = `",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/sadhsangat-live/index.html",
+      "line": 8136,
+      "method": "innerHTML",
+      "snippet": "meta.innerHTML = `",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/sadhsangat-live/index.html",
+      "line": 8146,
+      "method": "innerHTML",
+      "snippet": "meta.innerHTML = `",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/sadhsangat-live/index.html",
+      "line": 8176,
+      "method": "innerHTML",
+      "snippet": "moreBtn.innerHTML = `<svg viewBox=\"0 0 24 24\" fill=\"currentColor\" width=\"18\" height=\"18\"><path d=\"M12 8c1.1 0 ",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/sadhsangat-live/index.html",
+      "line": 8275,
+      "method": "innerHTML",
+      "snippet": "$('iosMenuSubscribe').innerHTML = isSubbed",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/sadhsangat-live/index.html",
+      "line": 8345,
+      "method": "remove",
+      "snippet": "if (existing) existing.remove();",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/sadhsangat-live/index.html",
+      "line": 8359,
+      "method": "innerHTML",
+      "snippet": "overlay.innerHTML = `",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/sadhsangat-live/index.html",
+      "line": 8380,
+      "method": "remove",
+      "snippet": "overlay.querySelector('#anhad-close-overlay').addEventListener('click', () => overlay.remove());",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/sadhsangat-live/index.html",
+      "line": 8393,
+      "method": "innerHTML",
+      "snippet": "thumbWrap.innerHTML = `<iframe",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/sadhsangat-live/index.html",
+      "line": 8556,
+      "method": "innerHTML",
+      "snippet": "miniPlayBtn.innerHTML = `<svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"currentColor\"><rect x=\"5\" y=\"4\"",
+      "isDestructive": true,
+      "isNavTarget": true
+    },
+    {
+      "file": "frontend/sadhsangat-live/index.html",
+      "line": 8563,
+      "method": "innerHTML",
+      "snippet": "miniPlayBtn.innerHTML = `<svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"currentColor\"><polygon points=\"",
+      "isDestructive": true,
+      "isNavTarget": true
+    }
+  ],
+  "detailedFindings": [
+    {
+      "file": "frontend/assets/splash/splash-generator.js",
+      "line": 41,
+      "method": "createElement",
+      "snippet": "const canvas = document.createElement('canvas');",
+      "isDestructive": false,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/assets/splash/splash-generator.js",
+      "line": 99,
+      "method": "createElement",
+      "snippet": "const link = document.createElement('a');",
+      "isDestructive": false,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/AUDIO_DEBUG.html",
+      "line": 191,
+      "method": "innerHTML",
+      "snippet": "info.innerHTML = html;",
+      "isDestructive": true,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/AUDIO_DEBUG.html",
+      "line": 200,
+      "method": "innerHTML",
+      "snippet": "status.innerHTML = '<div class=\"result success\">✅ Server is running</div>';",
+      "isDestructive": true,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/AUDIO_DEBUG.html",
+      "line": 202,
+      "method": "innerHTML",
+      "snippet": "status.innerHTML = '<div class=\"result error\">❌ No server detected<br>Please start START_LOCAL_SERVER.bat</div",
+      "isDestructive": true,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/AUDIO_DEBUG.html",
+      "line": 213,
+      "method": "innerHTML",
+      "snippet": "results.innerHTML = '<div class=\"result info\">Testing audio files...</div>';",
+      "isDestructive": true,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/AUDIO_DEBUG.html",
+      "line": 245,
+      "method": "innerHTML",
+      "snippet": "results.innerHTML = html;",
+      "isDestructive": true,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/AUDIO_DEBUG.html",
+      "line": 280,
+      "method": "innerHTML",
+      "snippet": "results.innerHTML = `<div class=\"result info\">🔊 Attempting to play: ${path}</div>`;",
+      "isDestructive": true,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/AUDIO_DEBUG.html",
+      "line": 287,
+      "method": "innerHTML",
+      "snippet": "results.innerHTML = `<div class=\"result success\">✅ Playing: ${path}<br>Audio is working!</div>`;",
+      "isDestructive": true,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/AUDIO_DEBUG.html",
+      "line": 290,
+      "method": "innerHTML",
+      "snippet": "results.innerHTML = `<div class=\"result error\">❌ Failed to play: ${path}<br>Error: ${error.message}<br><br>`;",
+      "isDestructive": true,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/AUDIO_DEBUG.html",
+      "line": 302,
+      "method": "innerHTML",
+      "snippet": "document.getElementById('playbackResults').innerHTML = '<div class=\"result info\">⏹️ Stopped</div>';",
+      "isDestructive": true,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/AUDIO_DEBUG.html",
+      "line": 318,
+      "method": "innerHTML",
+      "snippet": "caps.innerHTML = html;",
+      "isDestructive": true,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/AUDIO_DEBUG.html",
+      "line": 347,
+      "method": "innerHTML",
+      "snippet": "recs.innerHTML = html;",
+      "isDestructive": true,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/Calendar/gurpurab-calendar-ios.js",
+      "line": 211,
+      "method": "innerHTML",
+      "snippet": "grid.innerHTML = '';",
+      "isDestructive": true,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/Calendar/gurpurab-calendar-ios.js",
+      "line": 218,
+      "method": "createElement",
+      "snippet": "const cell = document.createElement('div');",
+      "isDestructive": false,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/Calendar/gurpurab-calendar-ios.js",
+      "line": 227,
+      "method": "innerHTML",
+      "snippet": "cell.innerHTML = `",
+      "isDestructive": true,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/Calendar/gurpurab-calendar-ios.js",
+      "line": 236,
+      "method": "appendChild",
+      "snippet": "grid.appendChild(cell);",
+      "isDestructive": false,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/Calendar/gurpurab-calendar-ios.js",
+      "line": 257,
+      "method": "innerHTML",
+      "snippet": "list.innerHTML = '';",
+      "isDestructive": true,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/Calendar/gurpurab-calendar-ios.js",
+      "line": 261,
+      "method": "appendChild",
+      "snippet": "list.appendChild(row);",
+      "isDestructive": false,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/Calendar/gurpurab-calendar-ios.js",
+      "line": 285,
+      "method": "innerHTML",
+      "snippet": "list.innerHTML = '';",
+      "isDestructive": true,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/Calendar/gurpurab-calendar-ios.js",
+      "line": 288,
+      "method": "innerHTML",
+      "snippet": "list.innerHTML = '<div class=\"empty-state\">No upcoming events</div>';",
+      "isDestructive": true,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/Calendar/gurpurab-calendar-ios.js",
+      "line": 294,
+      "method": "appendChild",
+      "snippet": "list.appendChild(row);",
+      "isDestructive": false,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/Calendar/gurpurab-calendar-ios.js",
+      "line": 309,
+      "method": "createElement",
+      "snippet": "const row = document.createElement('div');",
+      "isDestructive": false,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/Calendar/gurpurab-calendar-ios.js",
+      "line": 316,
+      "method": "innerHTML",
+      "snippet": "row.innerHTML = `",
+      "isDestructive": true,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/Calendar/gurpurab-calendar.js",
+      "line": 526,
+      "method": "innerHTML",
+      "snippet": "list.innerHTML = '<div style=\"padding: 8px 2px; font-weight: 800; color: rgba(11,11,15,0.55);\">No upcoming eve",
+      "isDestructive": true,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/Calendar/gurpurab-calendar.js",
+      "line": 532,
+      "method": "innerHTML",
+      "snippet": "list.innerHTML = '';",
+      "isDestructive": true,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/Calendar/gurpurab-calendar.js",
+      "line": 536,
+      "method": "createElement",
+      "snippet": "const row = document.createElement('div');",
+      "isDestructive": false,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/Calendar/gurpurab-calendar.js",
+      "line": 558,
+      "method": "innerHTML",
+      "snippet": "row.innerHTML = `",
+      "isDestructive": true,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/Calendar/gurpurab-calendar.js",
+      "line": 577,
+      "method": "appendChild",
+      "snippet": "list.appendChild(row);",
+      "isDestructive": false,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/Calendar/gurpurab-calendar.js",
+      "line": 625,
+      "method": "innerHTML",
+      "snippet": "grid.innerHTML = '';",
+      "isDestructive": true,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/Calendar/gurpurab-calendar.js",
+      "line": 629,
+      "method": "createElement",
+      "snippet": "const cell = document.createElement('div');",
+      "isDestructive": false,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/Calendar/gurpurab-calendar.js",
+      "line": 641,
+      "method": "innerHTML",
+      "snippet": "cell.innerHTML = `",
+      "isDestructive": true,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/Calendar/gurpurab-calendar.js",
+      "line": 664,
+      "method": "appendChild",
+      "snippet": "frag.appendChild(cell);",
+      "isDestructive": false,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/Calendar/gurpurab-calendar.js",
+      "line": 666,
+      "method": "appendChild",
+      "snippet": "grid.appendChild(frag);",
+      "isDestructive": false,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/Calendar/gurpurab-calendar.js",
+      "line": 685,
+      "method": "innerHTML",
+      "snippet": "legend.innerHTML = '';",
+      "isDestructive": true,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/Calendar/gurpurab-calendar.js",
+      "line": 688,
+      "method": "createElement",
+      "snippet": "const item = document.createElement('div');",
+      "isDestructive": false,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/Calendar/gurpurab-calendar.js",
+      "line": 690,
+      "method": "innerHTML",
+      "snippet": "item.innerHTML = `<span class=\"dot\" style=\"background:${escapeHtml(color)}\"></span><span>${escapeHtml(label)}<",
+      "isDestructive": true,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/Calendar/gurpurab-calendar.js",
+      "line": 691,
+      "method": "appendChild",
+      "snippet": "legend.appendChild(item);",
+      "isDestructive": false,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/Calendar/gurpurab-calendar.js",
+      "line": 705,
+      "method": "innerHTML",
+      "snippet": "list.innerHTML = '<div style=\"padding: 8px 2px; font-weight: 800; color: rgba(11,11,15,0.55);\">No events found",
+      "isDestructive": true,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/Calendar/gurpurab-calendar.js",
+      "line": 709,
+      "method": "innerHTML",
+      "snippet": "list.innerHTML = '';",
+      "isDestructive": true,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/Calendar/gurpurab-calendar.js",
+      "line": 713,
+      "method": "createElement",
+      "snippet": "const row = document.createElement('div');",
+      "isDestructive": false,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/Calendar/gurpurab-calendar.js",
+      "line": 726,
+      "method": "innerHTML",
+      "snippet": "row.innerHTML = `",
+      "isDestructive": true,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/Calendar/gurpurab-calendar.js",
+      "line": 745,
+      "method": "appendChild",
+      "snippet": "list.appendChild(row);",
+      "isDestructive": false,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/Calendar/gurpurab-calendar.js",
+      "line": 762,
+      "method": "innerHTML",
+      "snippet": "wrap.innerHTML = '';",
+      "isDestructive": true,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/Calendar/gurpurab-calendar.js",
+      "line": 764,
+      "method": "createElement",
+      "snippet": "const card = document.createElement('div');",
+      "isDestructive": false,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/Calendar/gurpurab-calendar.js",
+      "line": 773,
+      "method": "createElement",
+      "snippet": "const small = document.createElement('div');",
+      "isDestructive": false,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/Calendar/gurpurab-calendar.js",
+      "line": 779,
+      "method": "innerHTML",
+      "snippet": "small.innerHTML = `<div style=\"font-weight:900;\">${escapeHtml(title)}</div><div style=\"font-weight:900; color:",
+      "isDestructive": true,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/Calendar/gurpurab-calendar.js",
+      "line": 781,
+      "method": "createElement",
+      "snippet": "const grid = document.createElement('div');",
+      "isDestructive": false,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/Calendar/gurpurab-calendar.js",
+      "line": 796,
+      "method": "createElement",
+      "snippet": "const empty = document.createElement('div');",
+      "isDestructive": false,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/Calendar/gurpurab-calendar.js",
+      "line": 801,
+      "method": "innerHTML",
+      "snippet": "empty.innerHTML = '<div class=\"day-number\"></div><div class=\"dots\"></div>';",
+      "isDestructive": true,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/Calendar/gurpurab-calendar.js",
+      "line": 802,
+      "method": "appendChild",
+      "snippet": "grid.appendChild(empty);",
+      "isDestructive": false,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/Calendar/gurpurab-calendar.js",
+      "line": 813,
+      "method": "createElement",
+      "snippet": "const cell = document.createElement('div');",
+      "isDestructive": false,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/Calendar/gurpurab-calendar.js",
+      "line": 817,
+      "method": "innerHTML",
+      "snippet": "cell.innerHTML = `<div class=\"day-number\">${d.getDate()}</div><div class=\"dots\">${dots}</div>`;",
+      "isDestructive": true,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/Calendar/gurpurab-calendar.js",
+      "line": 824,
+      "method": "appendChild",
+      "snippet": "grid.appendChild(cell);",
+      "isDestructive": false,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/Calendar/gurpurab-calendar.js",
+      "line": 827,
+      "method": "appendChild",
+      "snippet": "card.appendChild(small);",
+      "isDestructive": false,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/Calendar/gurpurab-calendar.js",
+      "line": 828,
+      "method": "appendChild",
+      "snippet": "card.appendChild(grid);",
+      "isDestructive": false,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/Calendar/gurpurab-calendar.js",
+      "line": 829,
+      "method": "appendChild",
+      "snippet": "wrap.appendChild(card);",
+      "isDestructive": false,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/Calendar/gurpurab-calendar.js",
+      "line": 865,
+      "method": "innerHTML",
+      "snippet": "kv.innerHTML = `<div>📅 Nanakshahi: ${escapeHtml(`${ns.day} ${ns.monthName}, ${ns.year}`)}</div>`;",
+      "isDestructive": true,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/Calendar/gurpurab-calendar.js",
+      "line": 870,
+      "method": "innerHTML",
+      "snippet": "history.querySelector('.block-text').innerHTML = dayEvents",
+      "isDestructive": true,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/Calendar/gurpurab-calendar.js",
+      "line": 887,
+      "method": "createElement",
+      "snippet": "const links = document.createElement('div');",
+      "isDestructive": false,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/Calendar/gurpurab-calendar.js",
+      "line": 893,
+      "method": "createElement",
+      "snippet": "const btn = document.createElement('button');",
+      "isDestructive": false,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/Calendar/gurpurab-calendar.js",
+      "line": 898,
+      "method": "appendChild",
+      "snippet": "links.appendChild(btn);",
+      "isDestructive": false,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/Calendar/gurpurab-calendar.js",
+      "line": 901,
+      "method": "innerHTML",
+      "snippet": "blockText.innerHTML = '';",
+      "isDestructive": true,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/Calendar/gurpurab-calendar.js",
+      "line": 902,
+      "method": "appendChild",
+      "snippet": "blockText.appendChild(links);",
+      "isDestructive": false,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/Calendar/gurpurab-calendar.js",
+      "line": 926,
+      "method": "innerHTML",
+      "snippet": "kv.innerHTML = `",
+      "isDestructive": true,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/Calendar/gurpurab-calendar.js",
+      "line": 945,
+      "method": "innerHTML",
+      "snippet": "related.querySelector('.block-text').innerHTML = rel.map((s) => `• ${escapeHtml(s)}`).join('<br/>');",
+      "isDestructive": true,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/Calendar/gurpurab-calendar.js",
+      "line": 955,
+      "method": "innerHTML",
+      "snippet": "celebrations.querySelector('.block-text').innerHTML = cel.map((s) => `• ${escapeHtml(s)}`).join('<br/>');",
+      "isDestructive": true,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/Calendar/gurpurab-calendar.js",
+      "line": 992,
+      "method": "innerHTML",
+      "snippet": "content.innerHTML = `",
+      "isDestructive": true,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/Calendar/gurpurab-calendar.js",
+      "line": 1046,
+      "method": "innerHTML",
+      "snippet": "pills.innerHTML = '';",
+      "isDestructive": true,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/Calendar/gurpurab-calendar.js",
+      "line": 1049,
+      "method": "createElement",
+      "snippet": "const btn = document.createElement('button');",
+      "isDestructive": false,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/Calendar/gurpurab-calendar.js",
+      "line": 1057,
+      "method": "appendChild",
+      "snippet": "pills.appendChild(btn);",
+      "isDestructive": false,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/Calendar/gurpurab-calendar.js",
+      "line": 1133,
+      "method": "createElement",
+      "snippet": "el = document.createElement('div');",
+      "isDestructive": false,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/Calendar/gurpurab-calendar.js",
+      "line": 1147,
+      "method": "appendChild",
+      "snippet": "document.body.appendChild(el);",
+      "isDestructive": false,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/Calendar/gurpurab-calendar.js",
+      "line": 1349,
+      "method": "createElement",
+      "snippet": "const a = document.createElement('a');",
+      "isDestructive": false,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/Calendar/gurpurab-calendar.js",
+      "line": 1352,
+      "method": "appendChild",
+      "snippet": "document.body.appendChild(a);",
+      "isDestructive": false,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/Calendar/gurpurab-calendar.js",
+      "line": 1354,
+      "method": "remove",
+      "snippet": "a.remove();",
+      "isDestructive": true,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/components/LiveDriftBanner.js",
+      "line": 11,
+      "method": "createElement",
+      "snippet": "const style = document.createElement('style');",
+      "isDestructive": false,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/components/LiveDriftBanner.js",
+      "line": 73,
+      "method": "appendChild",
+      "snippet": "document.head.appendChild(style);",
+      "isDestructive": false,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/components/LiveDriftBanner.js",
+      "line": 91,
+      "method": "createElement",
+      "snippet": "banner = document.createElement('div');",
+      "isDestructive": false,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/components/LiveDriftBanner.js",
+      "line": 94,
+      "method": "innerHTML",
+      "snippet": "banner.innerHTML = `",
+      "isDestructive": true,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/components/LiveDriftBanner.js",
+      "line": 103,
+      "method": "appendChild",
+      "snippet": "else parent.appendChild(banner);",
+      "isDestructive": false,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/components/SehajPaathReader.js",
+      "line": 300,
+      "method": "createElement",
+      "snippet": "const toast = document.createElement('div');",
+      "isDestructive": false,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/components/SehajPaathReader.js",
+      "line": 313,
+      "method": "appendChild",
+      "snippet": "document.body.appendChild(toast);",
+      "isDestructive": false,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/components/SehajPaathReader.js",
+      "line": 314,
+      "method": "remove",
+      "snippet": "setTimeout(() => toast.remove(), 2000);",
+      "isDestructive": true,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/components/SehajPaathReader.js",
+      "line": 547,
+      "method": "innerHTML",
+      "snippet": "document.body.innerHTML = html;",
+      "isDestructive": true,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/Dashboard/dashboard-analytics-premium.js",
+      "line": 120,
+      "method": "innerHTML",
+      "snippet": "container.innerHTML = `",
+      "isDestructive": true,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/Dashboard/dashboard-analytics.js",
+      "line": 195,
+      "method": "innerHTML",
+      "snippet": "container.innerHTML = `",
+      "isDestructive": true,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/Dashboard/dashboard.html",
+      "line": 404,
+      "method": "innerHTML",
+      "snippet": "container.innerHTML = Object.entries(goals)",
+      "isDestructive": true,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/Dashboard/dashboard.html",
+      "line": 476,
+      "method": "innerHTML",
+      "snippet": "container.innerHTML = `",
+      "isDestructive": true,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/Dashboard/dashboard.html",
+      "line": 532,
+      "method": "innerHTML",
+      "snippet": "container.innerHTML = `",
+      "isDestructive": true,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/enhanced-functionality.js",
+      "line": 281,
+      "method": "innerHTML",
+      "snippet": "if (shabadSource) shabadSource.innerHTML = `<span><i class=\"fas fa-book-open\"></i></span><span>${randomShabad.",
+      "isDestructive": true,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/enhanced-functionality.js",
+      "line": 453,
+      "method": "appendChild",
+      "snippet": "document.body.appendChild(settingsModal);",
+      "isDestructive": false,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/enhanced-functionality.js",
+      "line": 459,
+      "method": "createElement",
+      "snippet": "const modal = document.createElement('dialog');",
+      "isDestructive": false,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/enhanced-functionality.js",
+      "line": 468,
+      "method": "innerHTML",
+      "snippet": "modal.innerHTML = `",
+      "isDestructive": true,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/enhanced-functionality.js",
+      "line": 635,
+      "method": "createElement",
+      "snippet": "modal = document.createElement('dialog');",
+      "isDestructive": false,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/enhanced-functionality.js",
+      "line": 638,
+      "method": "innerHTML",
+      "snippet": "modal.innerHTML = `",
+      "isDestructive": true,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/enhanced-functionality.js",
+      "line": 668,
+      "method": "appendChild",
+      "snippet": "document.body.appendChild(modal);",
+      "isDestructive": false,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/enhanced-functionality.js",
+      "line": 698,
+      "method": "createElement",
+      "snippet": "modal = document.createElement('dialog');",
+      "isDestructive": false,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/enhanced-functionality.js",
+      "line": 701,
+      "method": "innerHTML",
+      "snippet": "modal.innerHTML = `",
+      "isDestructive": true,
+      "isNavTarget": false
+    },
+    {
+      "file": "frontend/enhanced-functionality.js",
+      "line": 744,
+      "method": "appendChild",
+      "snippet": "document.body.appendChild(modal);",
+      "isDestructive": false,
+      "isNavTarget": false
+    }
+  ]
+}

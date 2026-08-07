@@ -1,0 +1,89 @@
+{
+  "metadata": {
+    "version": "1.0.0",
+    "timestamp": "2026-07-24T16:22:41.123Z",
+    "environment": "Capacitor Android Telemetry Harness (Baseline Freeze)"
+  },
+  "coldLaunch": {
+    "perceivedPaintTargetMs": "<500ms",
+    "domNodeCount": 424,
+    "heavyBlurElementCount": 2,
+    "initialJSHeapMB": 23.37
+  },
+  "routeP95Latencies": {
+    "Home -> Learning": {
+      "samples": 5,
+      "p50Ms": 0.03,
+      "p95Ms": 0.07,
+      "maxMs": 0.07
+    },
+    "Learning -> Home": {
+      "samples": 5,
+      "p50Ms": 0.03,
+      "p95Ms": 0.09,
+      "maxMs": 0.09
+    },
+    "Home -> Favorites": {
+      "samples": 5,
+      "p50Ms": 0.04,
+      "p95Ms": 0.05,
+      "maxMs": 0.05
+    },
+    "Favorites -> Home": {
+      "samples": 5,
+      "p50Ms": 0.04,
+      "p95Ms": 0.05,
+      "maxMs": 0.05
+    },
+    "Home -> Radio": {
+      "samples": 5,
+      "p50Ms": 0.03,
+      "p95Ms": 0.05,
+      "maxMs": 0.05
+    },
+    "Radio -> Home": {
+      "samples": 5,
+      "p50Ms": 0.03,
+      "p95Ms": 0.03,
+      "maxMs": 0.03
+    }
+  },
+  "mainThreadBudget": {
+    "longTaskCount": 0,
+    "maxSingleTaskMs": 0
+  },
+  "memoryAndLeaks": {
+    "initialHeapMB": 23.37,
+    "peakHeapMB": 23.37,
+    "netGrowthPercent": 0,
+    "duplicateListenersDetected": 4,
+    "domNodePeak": 424
+  },
+  "bottleneckRankings": [
+    {
+      "rank": 1,
+      "issue": "Direct window.location.href reloads bypassing SPA router",
+      "impact": "CRITICAL (300-800ms WebView tear-down & white flash)"
+    },
+    {
+      "rank": 2,
+      "issue": "Destructive innerHTML replacement on navigation",
+      "impact": "CRITICAL (Reflow & element-by-element UI rebuild)"
+    },
+    {
+      "rank": 3,
+      "issue": "8 Render-blocking CSS files + inline remote font import",
+      "impact": "HIGH (FP/FCP block)"
+    },
+    {
+      "rank": 4,
+      "issue": "Dynamic requestIdleCallback hero image preload",
+      "impact": "HIGH (LCP delay)"
+    },
+    {
+      "rank": 5,
+      "issue": "Duplicate event listener registrations on page swap",
+      "impact": "MEDIUM (Memory leak & main thread bloat)"
+    }
+  ]
+}

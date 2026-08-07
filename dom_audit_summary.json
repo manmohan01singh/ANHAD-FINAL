@@ -1,0 +1,19 @@
+{
+  "totalOccurrences": 1409,
+  "methodBreakdown": {
+    "innerHTML": 0,
+    "outerHTML": 0,
+    "insertAdjacentHTML": 0,
+    "DOMParser": 0,
+    "createElement": 0,
+    "cloneNode": 0,
+    "appendChild": 0,
+    "replaceChild": 0,
+    "replaceChildren": 0,
+    "removeChild": 0,
+    "remove": 0,
+    "documentWrite": 0
+  },
+  "fileBreakdown": {},
+  "sampleHighImpact": []
+}

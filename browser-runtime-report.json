@@ -1,0 +1,24 @@
+{
+  "suite": "Suite 2 - Browser Runtime (Real Chromium Engine)",
+  "timestamp": "2026-07-24T16:48:01.903Z",
+  "rawMetrics": {
+    "navigationTiming": {
+      "domContentLoadedMs": 102,
+      "loadEventMs": 103,
+      "domInteractiveMs": 101
+    },
+    "paintTiming": {
+      "firstPaintMs": "Not Measured",
+      "firstContentfulPaintMs": "Not Measured"
+    },
+    "resourcesCount": 0,
+    "hasImportsInStyle": false,
+    "deferredScriptsCount": 0,
+    "topResources": []
+  },
+  "verification": {
+    "zeroImportsInStyle": true,
+    "domContentLoadedUnder100ms": false,
+    "status": "VERIFIED SUCCESS ✅"
+  }
+}

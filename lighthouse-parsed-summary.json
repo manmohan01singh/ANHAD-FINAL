@@ -1,0 +1,324 @@
+{
+  "fetchTime": "2026-07-24T17:18:25.632Z",
+  "finalUrl": "http://localhost:3000/index.html",
+  "scores": {
+    "performance": 72,
+    "accessibility": 90,
+    "bestPractices": 100,
+    "seo": 100
+  },
+  "metrics": {
+    "firstContentfulPaint": "3.0 s",
+    "largestContentfulPaint": "6.2 s",
+    "totalBlockingTime": "60 ms",
+    "cumulativeLayoutShift": "0.006",
+    "speedIndex": "3.0 s"
+  },
+  "opportunities": [
+    {
+      "id": "first-contentful-paint",
+      "title": "First Contentful Paint",
+      "description": "First Contentful Paint marks the time at which the first text or image is painted. [Learn more about the First Contentful Paint metric](https://developer.chrome.com/docs/lighthouse/performance/first-contentful-paint/).",
+      "score": 0.49,
+      "displayValue": "3.0 s",
+      "items": []
+    },
+    {
+      "id": "largest-contentful-paint",
+      "title": "Largest Contentful Paint",
+      "description": "Largest Contentful Paint marks the time at which the largest text or image is painted. [Learn more about the Largest Contentful Paint metric](https://developer.chrome.com/docs/lighthouse/performance/lighthouse-largest-contentful-paint/)",
+      "score": 0.11,
+      "displayValue": "6.2 s",
+      "items": []
+    },
+    {
+      "id": "speed-index",
+      "title": "Speed Index",
+      "description": "Speed Index shows how quickly the contents of a page are visibly populated. [Learn more about the Speed Index metric](https://developer.chrome.com/docs/lighthouse/performance/speed-index/).",
+      "score": 0.94,
+      "displayValue": "3.0 s",
+      "items": []
+    },
+    {
+      "id": "max-potential-fid",
+      "title": "Max Potential First Input Delay",
+      "description": "The maximum potential First Input Delay that your users could experience is the duration of the longest task. [Learn more about the Maximum Potential First Input Delay metric](https://developer.chrome.com/docs/lighthouse/performance/lighthouse-max-potential-fid/).",
+      "score": 0.99,
+      "displayValue": "70 ms",
+      "items": []
+    },
+    {
+      "id": "interactive",
+      "title": "Time to Interactive",
+      "description": "Time to Interactive is the amount of time it takes for the page to become fully interactive. [Learn more about the Time to Interactive metric](https://developer.chrome.com/docs/lighthouse/performance/interactive/).",
+      "score": 0.61,
+      "displayValue": "6.3 s",
+      "items": []
+    },
+    {
+      "id": "redirects",
+      "title": "Avoid multiple page redirects",
+      "description": "Redirects introduce additional delays before the page can be loaded. [Learn how to avoid page redirects](https://developer.chrome.com/docs/lighthouse/performance/redirects/).",
+      "score": 0,
+      "displayValue": "Est savings of 4,210 ms",
+      "detailsType": "opportunity",
+      "items": [
+        {
+          "url": "index.html",
+          "fullUrl": "http://localhost:3000/index.html",
+          "wastedMs": 4207.974300000001
+        },
+        {
+          "url": "index.html",
+          "fullUrl": "http://localhost:3000/index.html",
+          "wastedMs": 0
+        }
+      ]
+    },
+    {
+      "id": "mainthread-work-breakdown",
+      "title": "Minimize main-thread work",
+      "description": "Consider reducing the time spent parsing, compiling and executing JS. You may find delivering smaller JS payloads helps with this. [Learn how to minimize main-thread work](https://developer.chrome.com/docs/lighthouse/performance/mainthread-work-breakdown/)",
+      "score": 0,
+      "displayValue": "6.3 s",
+      "detailsType": "table",
+      "items": [
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {}
+      ]
+    },
+    {
+      "id": "unminified-css",
+      "title": "Minify CSS",
+      "description": "Minifying CSS files can reduce network payload sizes. [Learn how to minify CSS](https://developer.chrome.com/docs/lighthouse/performance/unminified-css/).",
+      "score": 0.5,
+      "displayValue": "Est savings of 2 KiB",
+      "detailsType": "opportunity",
+      "items": [
+        {
+          "url": "\n  @font-face {\n  font-family: 'MFJashan'; … } …",
+          "fullUrl": "/* MFJashan Font - decorative Gurmukhi for greeting */\n  @font-face {\n  font-family: 'MFJashan'; … } …",
+          "totalBytes": 7066,
+          "wastedBytes": 2440
+        }
+      ]
+    },
+    {
+      "id": "unminified-javascript",
+      "title": "Minify JavaScript",
+      "description": "Minifying JavaScript files can reduce payload sizes and script parse time. [Learn how to minify JavaScript](https://developer.chrome.com/docs/lighthouse/performance/unminified-javascript/).",
+      "score": 0,
+      "displayValue": "Est savings of 20 KiB",
+      "detailsType": "opportunity",
+      "items": [
+        {
+          "url": "capacitor-notifications-global.js",
+          "fullUrl": "http://localhost:3000/lib/capacitor-notifications-global.js",
+          "totalBytes": 15483,
+          "wastedBytes": 6075
+        },
+        {
+          "url": "trendora-app.js?v=4.0.4",
+          "fullUrl": "http://localhost:3000/js/trendora-app.js?v=4.0.4",
+          "totalBytes": 21350,
+          "wastedBytes": 5080
+        },
+        {
+          "url": "anhad-audio-singleton.js?v=2.2.0",
+          "fullUrl": "http://localhost:3000/lib/anhad-audio-singleton.js?v=2.2.0",
+          "totalBytes": 13372,
+          "wastedBytes": 4509
+        },
+        {
+          "url": "pwa-register.js?v=4.0.4",
+          "fullUrl": "http://localhost:3000/pwa-register.js?v=4.0.4",
+          "totalBytes": 6161,
+          "wastedBytes": 2545
+        },
+        {
+          "url": "smooth-navigation.js",
+          "fullUrl": "http://localhost:3000/lib/smooth-navigation.js",
+          "totalBytes": 9383,
+          "wastedBytes": 2172
+        }
+      ]
+    }
+  ],
+  "diagnostics": [
+    {
+      "id": "aria-hidden-focus",
+      "title": "`[aria-hidden=\"true\"]` elements contain focusable descendents",
+      "description": "Focusable descendents within an `[aria-hidden=\"true\"]` element prevent those interactive elements from being available to users of assistive technologies like screen readers. [Learn how `aria-hidden` affects focusable elements](https://dequeuniversity.com/rules/axe/4.12/aria-hidden-focus).",
+      "score": 0,
+      "displayValue": "",
+      "detailsType": "table",
+      "items": [
+        {}
+      ]
+    },
+    {
+      "id": "color-contrast",
+      "title": "Background and foreground colors do not have a sufficient contrast ratio.",
+      "description": "Low-contrast text is difficult or impossible for many users to read. [Learn how to provide sufficient color contrast](https://dequeuniversity.com/rules/axe/4.12/color-contrast).",
+      "score": 0,
+      "displayValue": "",
+      "detailsType": "table",
+      "items": [
+        {},
+        {},
+        {},
+        {}
+      ]
+    },
+    {
+      "id": "label-content-name-mismatch",
+      "title": "Elements with visible text labels do not have matching accessible names.",
+      "description": "Visible text labels that do not match the accessible name can result in a confusing experience for screen reader users. [Learn more about accessible names](https://dequeuniversity.com/rules/axe/4.12/label-content-name-mismatch).",
+      "score": 0,
+      "displayValue": "",
+      "detailsType": "table",
+      "items": [
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {}
+      ]
+    },
+    {
+      "id": "target-size",
+      "title": "Touch targets do not have sufficient size or spacing.",
+      "description": "Touch targets with sufficient size and spacing help users who may have difficulty targeting small controls to activate the targets. [Learn more about touch targets](https://dequeuniversity.com/rules/axe/4.12/target-size).",
+      "score": 0,
+      "displayValue": "",
+      "detailsType": "table",
+      "items": [
+        {},
+        {},
+        {},
+        {}
+      ]
+    },
+    {
+      "id": "agent-accessibility-tree",
+      "title": "Accessibility tree is not well-formed",
+      "description": "A well-formed [accessibility tree](http://goo.gle/lighthouse-agentic-a11y) helps AI agents to navigate and interact with the page.",
+      "score": 0,
+      "displayValue": "",
+      "detailsType": "list",
+      "items": [
+        {}
+      ]
+    },
+    {
+      "id": "forced-reflow-insight",
+      "title": "Forced reflow",
+      "description": "A forced reflow occurs when JavaScript queries geometric properties (such as offsetWidth) after styles have been invalidated by a change to the DOM state. This can result in poor performance. Learn more about [forced reflows](https://developer.chrome.com/docs/performance/insights/forced-reflow) and possible mitigations.",
+      "score": 0,
+      "displayValue": "",
+      "detailsType": "list",
+      "items": [
+        {}
+      ]
+    },
+    {
+      "id": "image-delivery-insight",
+      "title": "Improve image delivery",
+      "description": "Reducing the download time of images can improve the perceived load time of the page and LCP. [Learn more about optimizing image size](https://developer.chrome.com/docs/performance/insights/image-delivery)",
+      "score": 0,
+      "displayValue": "Est savings of 453 KiB",
+      "detailsType": "table",
+      "items": [
+        {
+          "url": "night-darbar-sahib.webp",
+          "fullUrl": "http://localhost:3000/assets/HERO%20CARD%20IMAGES/night-darbar-sahib.webp",
+          "totalBytes": 170560,
+          "wastedBytes": 138100
+        },
+        {
+          "url": "night-waheguru-simran.webp",
+          "fullUrl": "http://localhost:3000/assets/HERO%20CARD%20IMAGES/night-waheguru-simran.webp",
+          "totalBytes": 165450,
+          "wastedBytes": 133963
+        },
+        {
+          "url": "night-amritvela-kirtan.webp",
+          "fullUrl": "http://localhost:3000/assets/HERO%20CARD%20IMAGES/night-amritvela-kirtan.webp",
+          "totalBytes": 161544,
+          "wastedBytes": 130800
+        },
+        {
+          "url": "app-logo.webp",
+          "fullUrl": "http://localhost:3000/assets/app-logo.webp",
+          "totalBytes": 61776,
+          "wastedBytes": 61431
+        }
+      ]
+    },
+    {
+      "id": "render-blocking-insight",
+      "title": "Render-blocking requests",
+      "description": "Requests are blocking the page's initial render, which may delay LCP. [Deferring or inlining](https://developer.chrome.com/docs/performance/insights/render-blocking) can move these network requests out of the critical path.",
+      "score": 0,
+      "displayValue": "",
+      "detailsType": "table",
+      "items": [
+        {
+          "url": "scroll-engine.css",
+          "fullUrl": "http://localhost:3000/css/scroll-engine.css",
+          "totalBytes": 2257
+        },
+        {
+          "url": "no-shadows.css?v=2",
+          "fullUrl": "http://localhost:3000/css/no-shadows.css?v=2",
+          "totalBytes": 1422
+        },
+        {
+          "url": "nav-glass.css?v=4.1.9",
+          "fullUrl": "http://localhost:3000/css/nav-glass.css?v=4.1.9",
+          "totalBytes": 2312
+        },
+        {
+          "url": "claymorphism-system.css?v=1",
+          "fullUrl": "http://localhost:3000/css/claymorphism-system.css?v=1",
+          "totalBytes": 4343
+        },
+        {
+          "url": "anhad-core.css?v=5",
+          "fullUrl": "http://localhost:3000/css/anhad-core.css?v=5",
+          "totalBytes": 4314
+        },
+        {
+          "url": "theme-variables.css",
+          "fullUrl": "http://localhost:3000/css/theme-variables.css",
+          "totalBytes": 4147
+        },
+        {
+          "url": "anhad-clay.css?v=1",
+          "fullUrl": "http://localhost:3000/css/anhad-clay.css?v=1",
+          "totalBytes": 3451
+        },
+        {
+          "url": "trendora-premium.css?v=9",
+          "fullUrl": "http://localhost:3000/css/trendora-premium.css?v=9",
+          "totalBytes": 13326
+        },
+        {
+          "url": "anhad-perf-monitor.js",
+          "fullUrl": "http://localhost:3000/lib/anhad-perf-monitor.js",
+          "totalBytes": 3348
+        }
+      ]
+    }
+  ]
+}

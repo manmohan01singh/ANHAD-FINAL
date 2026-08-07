@@ -28,10 +28,6 @@
 			"androidSplashResourceName": "splash",
 			"androidScaleType": "CENTER_CROP"
 		},
-		"WidgetDataBridge": {
-			"updateInterval": 15,
-			"debug": false
-		},
 		"CapacitorHttp": {
 			"enabled": false
 		}

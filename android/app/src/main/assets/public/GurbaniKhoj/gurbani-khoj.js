@@ -298,6 +298,26 @@ const Theme = {
             else if (darkFlag === 'false') this.set('light');
             else this.set(localStorage.getItem('gurbaniTheme') || 'light');
         }
+        
+        // Load font preferences
+        this.loadFont();
+    },
+    
+    loadFont() {
+        const fontMap = {
+            'noto-sans': "'Noto Sans Gurmukhi', sans-serif",
+            'mukta-mahee': "'Mukta Mahee', 'Noto Sans Gurmukhi', sans-serif",
+            'baloo-paaji': "'Baloo Paaji 2', 'Noto Sans Gurmukhi', sans-serif",
+            'noto-serif': "'Noto Serif Gurmukhi', 'Noto Sans Gurmukhi', serif",
+            'raavi': "'Raavi', 'Noto Sans Gurmukhi', sans-serif",
+            'anmol-lipi': "'AnmolLipi', 'Noto Sans Gurmukhi', sans-serif",
+            'gurbani-akhar': "'GurbaniAkhar', 'Noto Sans Gurmukhi', sans-serif"
+        };
+        
+        const savedFont = localStorage.getItem('gurbaniKhoj_font') || 'noto-sans';
+        const fontFamily = fontMap[savedFont] || fontMap['noto-sans'];
+        
+        document.documentElement.style.setProperty('--font-gurmukhi', fontFamily);
     },
 
     toggle() {
@@ -664,6 +684,111 @@ const GurbaniAPI = {
 // UI HELPERS
 // ═══════════════════════════════════════════════════════════════════════════════
 
+function getCleanText(val) {
+    if (!val) return '';
+    if (typeof val === 'string') {
+        const trimmed = val.trim();
+        if (trimmed === 'undefined' || trimmed === 'null' || trimmed === '[object Object]') return '';
+        return trimmed;
+    }
+    return '';
+}
+
+function normalizeSourceFilter(filter) {
+    if (!filter || filter === 'all') return 'all';
+    const s = String(filter).trim().toUpperCase();
+    if (s === 'SGGS' || s === 'G' || s === 'SRI GURU GRANTH SAHIB JI') return 'G';
+    if (s === 'DASAM' || s === 'D' || s === 'SRI DASAM GRANTH SAHIB JI') return 'D';
+    if (s === 'BHAI GURDAS' || s === 'BHAI' || s === 'B') return 'B';
+    if (s === 'NAND LAL' || s === 'N') return 'N';
+    return filter;
+}
+
+function isAsciiGurbani(str) {
+    if (!str) return false;
+    return /[A-Za-z]/.test(str) && !/[\u0A00-\u0A7F]/.test(str);
+}
+
+function convertGurbaniAsciiToUnicode(text) {
+    if (!text || typeof text !== 'string') return '';
+    let trimmed = text.trim();
+    if (!trimmed || trimmed === 'undefined' || trimmed === 'null' || trimmed === '[object Object]') return '';
+    
+    // Normalize spaces
+    trimmed = trimmed.replace(/\s+/g, ' ');
+
+    // If text is already pure UTF-8 Gurmukhi Unicode (range \u0A00-\u0A7F), return directly
+    if (/[\u0A00-\u0A7F]/.test(trimmed) && !/[A-Za-z]/.test(trimmed)) {
+        return trimmed;
+    }
+
+    const lower = trimmed.toLowerCase();
+
+    // 1. Author Name matching (maps Mehla 1-9 & font encodings to full Guru Sahib / Bhagat names)
+    if (lower.includes('mú 1') || lower.includes('m: 1') || lower.includes('m1') || lower.includes('mehla 1') || lower.includes('mahala 1') || lower.includes('nwnk') || lower.includes('nanak')) {
+        return 'ਗੁਰੂ ਨਾਨਕ ਦੇਵ ਜੀ';
+    }
+    if (lower.includes('mú 2') || lower.includes('m: 2') || lower.includes('m2') || lower.includes('mehla 2') || lower.includes('mahala 2') || lower.includes('amgd') || lower.includes('angad')) {
+        return 'ਗੁਰੂ ਅੰਗਦ ਦੇਵ ਜੀ';
+    }
+    if (lower.includes('mú 3') || lower.includes('m: 3') || lower.includes('m3') || lower.includes('mehla 3') || lower.includes('mahala 3') || lower.includes('amr') || lower.includes('amar')) {
+        return 'ਗੁਰੂ ਅਮਰ ਦਾਸ ਜੀ';
+    }
+    if (lower.includes('mú 4') || lower.includes('m: 4') || lower.includes('m4') || lower.includes('mehla 4') || lower.includes('mahala 4') || lower.includes('rwm dws') || lower.includes('ram das')) {
+        return 'ਗੁਰੂ ਰਾਮ ਦਾਸ ਜੀ';
+    }
+    if (lower.includes('mú 5') || lower.includes('m: 5') || lower.includes('m5') || lower.includes('mehla 5') || lower.includes('mahala 5') || lower.includes('arjn') || lower.includes('arjan')) {
+        return 'ਗੁਰੂ ਅਰਜਨ ਦੇਵ ਜੀ';
+    }
+    if (lower.includes('mú 9') || lower.includes('m: 9') || lower.includes('m9') || lower.includes('mehla 9') || lower.includes('mahala 9') || lower.includes('qyg') || lower.includes('tegh')) {
+        return 'ਗੁਰੂ ਤੇਗ਼ ਬਹਾਦਰ ਸਾਹਿਬ ਜੀ';
+    }
+    if (lower.includes('goib') || lower.includes('gobind') || lower.includes('ghur') || lower.includes('ismg') || lower.includes('singh') || lower.includes('m10')) {
+        return 'ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ ਜੀ';
+    }
+    if (lower.includes('kbir') || lower.includes('kabir')) {
+        return 'ਭਗਤ ਕਬੀਰ ਜੀ';
+    }
+    if (lower.includes('nwmdyv') || lower.includes('namdev')) {
+        return 'ਭਗਤ ਨਾਮਦੇਵ ਜੀ';
+    }
+    if (lower.includes('gurdw') || lower.includes('gurdas')) {
+        return 'ਭਾਈ ਗੁਰਦਾਸ ਜੀ';
+    }
+    if (lower.includes('rivdws') || lower.includes('ravidas')) {
+        return 'ਭਗਤ ਰਵਿਦਾਸ ਜੀ';
+    }
+    if (lower.includes('frid') || lower.includes('farid')) {
+        return 'ਸ਼ੇਖ਼ ਫ਼ਰੀਦ ਜੀ';
+    }
+    if (lower.includes('nµd') || lower.includes('nand lal')) {
+        return 'ਭਾਈ ਨੰਦ ਲਾਲ ਜੀ';
+    }
+
+    // 2. Raag Title matching
+    let raagName = '';
+    if (lower.includes('gauvi') || lower.includes('gauri')) raagName = 'ਰਾਗੁ ਗਉੜੀ';
+    else if (lower.includes('rwmkl') || lower.includes('ramkali')) raagName = 'ਰਾਗੁ ਰਾਮਕਲੀ';
+    else if (lower.includes('swrmg') || lower.includes('swrng') || lower.includes('sarang')) raagName = 'ਰਾਗੁ ਸਾਰੰਗ';
+    else if (lower.includes('awsw') || lower.includes('asa')) raagName = 'ਰਾਗੁ ਆਸਾ';
+    else if (lower.includes('sotf') || lower.includes('sorath')) raagName = 'ਰਾਗੁ ਸੋਰਠਿ';
+    else if (lower.includes('dnwsr') || lower.includes('dhanasari')) raagName = 'ਰਾਗੁ ਧਨਾਸਰੀ';
+    else if (lower.includes('sooh') || lower.includes('suhi')) raagName = 'ਰਾਗੁ ਸੂਹੀ';
+    else if (lower.includes('ilwv') || lower.includes('bilaval')) raagName = 'ਰਾਗੁ ਬਿਲਾਵਲੁ';
+    else if (lower.includes('gomfl') || lower.includes('gond')) raagName = 'ਰਾਗੁ ਗੋਂਡ';
+
+    if (raagName) {
+        return raagName;
+    }
+
+    // If text is already pure UTF-8 Gurmukhi Unicode (range \u0A00-\u0A7F), return directly
+    if (/[\u0A00-\u0A7F]/.test(trimmed) && !/[A-Za-z]/.test(trimmed)) {
+        return trimmed;
+    }
+
+    return trimmed;
+}
+
 function hideAllViews() {
     DOM.resultsView?.classList.remove('active');
     DOM.loadingState?.classList.remove('active');
@@ -725,46 +850,37 @@ async function performSearch(append = false) {
     }
 
     try {
-        // First try to search from cache
-        const cachedResults = GurbaniCache.search(query, State.sourceFilter);
-        
         let data;
         let fromCache = false;
 
-        if (cachedResults.verses && cachedResults.verses.length > 0) {
-            // Use cached results
-            data = { verses: cachedResults.verses, resultsInfo: { totalResults: cachedResults.verses.length } };
-            fromCache = true;
-            console.log(`Found ${cachedResults.verses.length} results in cache`);
-            
-            if (cachedResults.totalInCache) {
-                showToast(`Offline: ${cachedResults.totalInCache} verses cached`);
+        // Try API first to get ALL online results from full database
+        try {
+            data = await GurbaniAPI.search(query, 1, State.page);
+            if (data && data.verses && data.verses.length > 0 && window.OfflineDB && window.OfflineDB.isReady) {
+                window.OfflineDB.addVerses(data.verses).catch(err => {
+                    console.warn('Failed to cache verses:', err);
+                });
             }
-        } else {
-            // If no cache results or insufficient, try API
-            try {
-                // Always use Gurmukhi search type (1) for best results
-                data = await GurbaniAPI.search(query, 1, State.page);
-                
-                // Cache the API results
-                if (data.verses && data.verses.length > 0) {
-                    GurbaniCache.addVerses(data.verses);
-                }
-            } catch (apiError) {
-                // If API fails, try cache again with broader search
-                console.log('API failed, trying cache fallback:', apiError.message);
-                const fallbackResults = GurbaniCache.search(query.substring(0, 2), 'all');
-                if (fallbackResults.verses && fallbackResults.verses.length > 0) {
-                    data = { verses: fallbackResults.verses, resultsInfo: { totalResults: fallbackResults.verses.length } };
+        } catch (apiError) {
+            console.warn('API search failed, trying offline DB:', apiError.message);
+            // Fallback to offline DB if network is offline or API fails
+            if (window.OfflineDB && window.OfflineDB.isReady) {
+                const offlineResults = await window.OfflineDB.search(query, 1, State.sourceFilter);
+                if (offlineResults && offlineResults.verses && offlineResults.verses.length > 0) {
+                    data = { 
+                        verses: offlineResults.verses, 
+                        resultsInfo: { totalResults: offlineResults.totalResults } 
+                    };
                     fromCache = true;
-                    showToast('Showing cached results (offline)');
-                } else {
-                    throw apiError;
+                    console.log(`✓ Found ${offlineResults.verses.length} results offline`);
                 }
+            }
+            if (!fromCache && (!data || !data.verses || data.verses.length === 0)) {
+                throw new Error('Unable to search. Please check your connection.');
             }
         }
 
-        if (!data.verses || data.verses.length === 0) {
+        if (!data || !data.verses || data.verses.length === 0) {
             if (!append) showEmpty();
             return;
         }
@@ -801,13 +917,13 @@ async function performSearch(append = false) {
         showResults();
 
         if (fromCache) {
-            // Show cache indicator
+            // Show offline indicator
             const cacheIndicator = document.createElement('div');
             cacheIndicator.className = 'cache-indicator';
             cacheIndicator.textContent = '📴 Offline';
-            cacheIndicator.style.cssText = 'position: fixed; bottom: 80px; right: 20px; background: rgba(52, 199, 89, 0.9); color: white; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: 600; z-index: 1000;';
+            cacheIndicator.style.cssText = 'position: fixed; bottom: 90px; right: 20px; background: rgba(52, 199, 89, 0.95); color: white; padding: 10px 18px; border-radius: 20px; font-size: 13px; font-weight: 600; z-index: 1000; box-shadow: 0 4px 12px rgba(0,0,0,0.15);';
             document.body.appendChild(cacheIndicator);
-            setTimeout(() => cacheIndicator.remove(), 2000);
+            setTimeout(() => cacheIndicator.remove(), 2500);
         }
 
     } catch (error) {
@@ -825,17 +941,21 @@ async function performSearch(append = false) {
 // ═══════════════════════════════════════════════════════════════════════════════
 
 function filterResultsBySource(results, sourceFilter) {
-    if (sourceFilter === 'all') return results;
+    const norm = normalizeSourceFilter(sourceFilter);
+    if (norm === 'all') return results;
     return results.filter(verse => {
-        const source = verse._source || GURBANI_SOURCES.G;
-        return source.id === sourceFilter;
+        const source = verse._source || GURBANI_SOURCES[verse.source] || GURBANI_SOURCES.G;
+        const sourceId = source.id || verse.source || 'G';
+        return sourceId === norm;
     });
 }
 
 function updateResultsCount(filtered, total) {
-    const sourceName = State.sourceFilter === 'all'
+    const norm = normalizeSourceFilter(State.sourceFilter);
+    const sourceObj = GURBANI_SOURCES[norm] || GURBANI_SOURCES.G;
+    const sourceName = norm === 'all'
         ? 'All Sources'
-        : (GURBANI_SOURCES[State.sourceFilter]?.name || State.sourceFilter);
+        : (sourceObj.name || State.sourceFilter);
     DOM.resultsCount.textContent = `Found ${filtered} Results`;
     const detail = document.getElementById('resultsSourceDetail');
     if (detail) detail.textContent = `Shabads from ${sourceName}`;
@@ -858,14 +978,411 @@ function highlightSearchTerm(text, query) {
     return text.replace(regex, '<mark class="search-highlight">$1</mark>');
 }
 
+// ═══════════════════════════════════════════════════════════════════════════════
+// SUB TAB HANDLER - Ragas and Authors filtering
+// ═══════════════════════════════════════════════════════════════════════════════
+
+function handleSubTabChange(tabType) {
+    if (!State.allResults || State.allResults.length === 0) {
+        return; // No results to filter
+    }
+
+    let filteredResults = [...State.allResults];
+    
+    if (tabType === 'shabads') {
+        // Show all shabads - no additional filtering beyond source filter
+        filteredResults = State.sourceFilter === 'all'
+            ? State.allResults
+            : filterResultsBySource(State.allResults, State.sourceFilter);
+        displayResults(filteredResults, false);
+        updateResultsCount(filteredResults.length, State.allResults.length);
+    } 
+    else if (tabType === 'ragas') {
+        // Group results by Raag and show raag-wise
+        filteredResults = State.sourceFilter === 'all'
+            ? State.allResults
+            : filterResultsBySource(State.allResults, State.sourceFilter);
+        displayResultsByRaag(filteredResults);
+    } 
+    else if (tabType === 'authors') {
+        // Group results by Author (Guru Saheb wise)
+        filteredResults = State.sourceFilter === 'all'
+            ? State.allResults
+            : filterResultsBySource(State.allResults, State.sourceFilter);
+        displayResultsByAuthor(filteredResults);
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// GLOBAL RAAG & AUTHOR NAME MAPPINGS
+// ═══════════════════════════════════════════════════════════════════════════════
+
+const raagNameMap = {
+    'Aasaa': 'ਆਸਾ',
+    'Soohee': 'ਸੂਹੀ',
+    'Raamkalee': 'ਰਾਮਕਲੀ',
+    'Goojaree': 'ਗੂਜਰੀ',
+    'Gond': 'ਗੋਂਡ',
+    'Sorat': 'ਸੋਰਠਿ',
+    'Dhanaasree': 'ਧਨਾਸਰੀ',
+    'Jaithsree': 'ਜੈਤਸਰੀ',
+    'Todee': 'ਟੋਡੀ',
+    'Bairaaree': 'ਬੈਰਾੜੀ',
+    'Tilang': 'ਤਿਲੰਗ',
+    'Bilaval': 'ਬਿਲਾਵਲੁ',
+    'Nat Naaraayan': 'ਨਟ ਨਾਰਾਇਣ',
+    'Maale Gauraa': 'ਮਾਲੀ ਗਉੜਾ',
+    'Maaroo': 'ਮਾਰੂ',
+    'Tukhaari': 'ਤੁਖਾਰੀ',
+    'Kaydaaraa': 'ਕੇਦਾਰਾ',
+    'Bhairao': 'ਭੈਰਉ',
+    'Basant': 'ਬਸੰਤੁ',
+    'Saarag': 'ਸਾਰੰਗ',
+    'Malaar': 'ਮਲਾਰ',
+    'Kaanraa': 'ਕਾਨੜਾ',
+    'Kalyaan': 'ਕਲਿਆਨ',
+    'Prabhaatee': 'ਪ੍ਰਭਾਤੀ',
+    'Jaijaavantee': 'ਜੈਜਾਵੰਤੀ',
+    'Siree Raag': 'ਸਿਰੀਰਾਗੁ',
+    'Maajh': 'ਮਾਝ',
+    'Gauri': 'ਗਉੜੀ',
+    'Gaurree': 'ਗਉੜੀ',
+    'Aasa': 'ਆਸਾ',
+    'Gujri': 'ਗੂਜਰੀ',
+    'Devagandhari': 'ਦੇਵਗੰਧਾਰੀ',
+    'Bihagara': 'ਬਿਹਾਗੜਾ',
+    'Vadhans': 'ਵਡਹੰਸੁ',
+    'Dhanasari': 'ਧਨਾਸਰੀ',
+    'Jaitsree': 'ਜੈਤਸਰੀ',
+    'Todi': 'ਟੋਡੀ',
+    'Bairari': 'ਬੈਰਾੜੀ',
+    'Suhi': 'ਸੂਹੀ',
+    'Gaund': 'ਗੋਂਡ',
+    'Ramkali': 'ਰਾਮਕਲੀ',
+    'Nat Narayan': 'ਨਟ ਨਾਰਾਇਣ',
+    'Mali Gaura': 'ਮਾਲੀ ਗਉੜਾ',
+    'Maru': 'ਮਾਰੂ',
+    'Tukhari': 'ਤੁਖਾਰੀ',
+    'Kedara': 'ਕੇਦਾਰਾ',
+    'Bhairo': 'ਭੈਰਉ',
+    'Sarang': 'ਸਾਰੰਗ',
+    'Malar': 'ਮਲਾਰ',
+    'Kanara': 'ਕਾਨੜਾ',
+    'Kalyan': 'ਕਲਿਆਨ',
+    'Prabhati': 'ਪ੍ਰਭਾਤੀ',
+    'Jaijavanti': 'ਜੈਜਾਵੰਤੀ'
+};
+
+const authorNameMap = {
+    'Guru Nanak Dev': 'ਗੁਰੂ ਨਾਨਕ ਦੇਵ ਜੀ',
+    'Guru Angad Dev': 'ਗੁਰੂ ਅੰਗਦ ਦੇਵ ਜੀ',
+    'Guru Amar Das': 'ਗੁਰੂ ਅਮਰ ਦਾਸ ਜੀ',
+    'Guru Ram Das': 'ਗੁਰੂ ਰਾਮ ਦਾਸ ਜੀ',
+    'Guru Arjan Dev': 'ਗੁਰੂ ਅਰਜਨ ਦੇਵ ਜੀ',
+    'Guru Hargobind': 'ਗੁਰੂ ਹਰਗੋਬਿੰਦ ਸਾਹਿਬ ਜੀ',
+    'Guru Har Rai': 'ਗੁਰੂ ਹਰ ਰਾਇ ਸਾਹਿਬ ਜੀ',
+    'Guru Har Krishan': 'ਗੁਰੂ ਹਰਿ ਕ੍ਰਿਸ਼ਨ ਸਾਹਿਬ ਜੀ',
+    'Guru Tegh Bahadur': 'ਗੁਰੂ ਤੇਗ਼ ਬਹਾਦਰ ਸਾਹਿਬ ਜੀ',
+    'Guru Gobind Singh': 'ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ ਜੀ',
+    'Bhai Gurdas': 'ਭਾਈ ਗੁਰਦਾਸ ਜੀ',
+    'Bhagat Kabir': 'ਭਗਤ ਕਬੀਰ ਜੀ',
+    'Bhagat Namdev': 'ਭਗਤ ਨਾਮਦੇਵ ਜੀ',
+    'Bhagat Ravidas': 'ਭਗਤ ਰਵਿਦਾਸ ਜੀ',
+    'Bhagat Farid': 'ਭਗਤ ਫਰੀਦ ਜੀ',
+    'Sheikh Farid': 'ਸ਼ੇਖ਼ ਫ਼ਰੀਦ ਜੀ',
+    'Bhagat Jaidev': 'ਭਗਤ ਜੈਦੇਵ ਜੀ',
+    'Bhagat Trilochan': 'ਭਗਤ ਤ੍ਰਿਲੋਚਨ ਜੀ',
+    'Bhagat Beni': 'ਭਗਤ ਬੇਣੀ ਜੀ',
+    'Bhagat Ramanand': 'ਭਗਤ ਰਾਮਾਨੰਦ ਜੀ',
+    'Bhagat Dhanna': 'ਭਗਤ ਧੰਨਾ ਜੀ',
+    'Bhagat Pipa': 'ਭਗਤ ਪੀਪਾ ਜੀ',
+    'Bhagat Sain': 'ਭਗਤ ਸੈਣ ਜੀ',
+    'Bhagat Bhikhan': 'ਭਗਤ ਭੀਖਣ ਜੀ',
+    'Bhagat Parmanand': 'ਭਗਤ ਪਰਮਾਨੰਦ ਜੀ',
+    'Bhagat Surdas': 'ਭਗਤ ਸੂਰਦਾਸ ਜੀ',
+    'Bhat Kalshar': 'ਭੱਟ ਕਲਸਹਾਰ ਜੀ',
+    'Bhat Jalap': 'ਭੱਟ ਜਲਾਪ ਜੀ',
+    'Bhai Mardana': 'ਭਾਈ ਮਰਦਾਨਾ ਜੀ',
+    'Bhai Nand Lal': 'ਭਾਈ ਨੰਦ ਲਾਲ ਜੀ',
+    'Satta and Balwand': 'ਸੱਤਾ ਤੇ ਬਲਵੰਡ ਜੀ',
+    'Sundar': 'ਸੁੰਦਰ ਜੀ'
+};
+
+// Display results grouped by Raag
+function displayResultsByRaag(results) {
+    // Group results by raag
+    const raagGroups = {};
+    
+    results.forEach(verse => {
+        const raagInfo = verse.verse?.raag || verse.raag;
+        let raagNamePunjabi = '';
+        let raagKey = '';
+        
+        if (raagInfo) {
+            const unicodeName = getCleanText(typeof raagInfo === 'object' ? (raagInfo.unicode || raagInfo.punjabi || raagInfo.pa) : '');
+            const englishName = getCleanText(typeof raagInfo === 'object' ? (raagInfo.english || raagInfo.en) : raagInfo);
+            const gurmukhiName = getCleanText(typeof raagInfo === 'object' ? raagInfo.gurmukhi : raagInfo);
+
+            if (unicodeName && !isAsciiGurbani(unicodeName)) {
+                raagNamePunjabi = unicodeName;
+            } else if (englishName && raagNameMap[englishName]) {
+                raagNamePunjabi = raagNameMap[englishName];
+            } else if (gurmukhiName) {
+                raagNamePunjabi = convertGurbaniAsciiToUnicode(gurmukhiName);
+            } else if (englishName) {
+                raagNamePunjabi = raagNameMap[englishName] || englishName;
+            }
+
+            raagKey = englishName || raagNamePunjabi;
+        }
+        
+        if (!raagNamePunjabi || !raagKey) {
+            return;
+        }
+        
+        if (!raagGroups[raagKey]) {
+            raagGroups[raagKey] = {
+                name: raagNamePunjabi,
+                nameEn: raagKey,
+                verses: []
+            };
+        }
+        raagGroups[raagKey].verses.push(verse);
+    });
+
+    // Sort raag groups by name
+    const sortedRaags = Object.values(raagGroups).sort((a, b) => 
+        a.nameEn.localeCompare(b.nameEn)
+    );
+
+    // If no raags found, show message
+    if (sortedRaags.length === 0) {
+        DOM.resultsList.innerHTML = `
+            <div style="text-align: center; padding: 40px 20px; color: var(--text-secondary);">
+                <p style="font-size: 16px;">No raag information available for these results.</p>
+                <p style="font-size: 14px; margin-top: 8px;">Try switching to the Shabads tab.</p>
+            </div>
+        `;
+        return;
+    }
+
+    // Build HTML with raag sections
+    let html = sortedRaags.map(raagGroup => {
+        const versesHtml = raagGroup.verses.map(verse => {
+            const shabadId = verse.shabadId || verse.shabadID || verse.shabad?.shabadId || '';
+            const verseId = verse.verseId || verse.verseID || verse.verse?.verseId || '';
+            const gurmukhi = verse.verse?.unicode || verse.verse?.gurmukhi || verse.gurmukhi || verse.verse || '';
+            const ang = verse.verse?.pageNo || verse.pageNo || verse.ang || '';
+            const source = verse._source || GURBANI_SOURCES['G'];
+            const isFav = Favorites.isFavorite(shabadId);
+            const bookmarkSvgFill = isFav ? 'currentColor' : 'none';
+            
+            // Trim gurmukhi for title
+            const gurmukhiTitle = gurmukhi.length > 50 ? gurmukhi.substring(0, 50) + '...' : gurmukhi;
+
+            return `
+<article class="result-card" data-shabad="${shabadId}" data-verse="${verseId}">
+    <div class="result-card-header">
+        <span class="result-gurmukhi-title">${gurmukhiTitle}</span>
+        <button class="result-bookmark-btn ${isFav ? 'active' : ''}" data-shabad="${shabadId}" aria-label="Bookmark">
+            <svg viewBox="0 0 24 24" fill="${bookmarkSvgFill}" stroke="currentColor" stroke-width="2">
+                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+            </svg>
+        </button>
+    </div>
+    <p class="result-gurmukhi">${gurmukhi}</p>
+    <div class="result-meta">
+        <span class="result-source-text">${source.name}</span>
+        <span class="result-meta-dot"></span>
+        <span class="result-ang">Ang ${ang}</span>
+    </div>
+</article>`;
+        }).join('');
+
+        return `
+<div class="raag-section" style="margin-bottom: 24px;">
+    <h3 style="font-family: var(--font-gurmukhi, 'Noto Sans Gurmukhi'); font-size: 20px; font-weight: 600; color: var(--text-primary); margin-bottom: 16px; padding: 12px 16px; background: var(--bg-secondary); border-radius: 12px;">
+        ${raagGroup.name} <span style="font-size: 16px; opacity: 0.7;">(${raagGroup.verses.length})</span>
+    </h3>
+    ${versesHtml}
+</div>`;
+    }).join('');
+
+    DOM.resultsList.innerHTML = html;
+    updateResultsCount(results.length, State.allResults.length);
+    
+    // Re-attach click handlers
+    attachResultCardHandlers();
+}
+
+// Display results grouped by Author
+function displayResultsByAuthor(results) {
+    // Group results by author
+    const authorGroups = {};
+    
+    results.forEach(verse => {
+        const writerInfo = verse.writer || verse.verse?.writer || verse.author || verse.verse?.author;
+        let authorNamePunjabi = '';
+        let authorKey = '';
+
+        if (writerInfo) {
+            const unicodeName = getCleanText(typeof writerInfo === 'object' ? (writerInfo.unicode || writerInfo.punjabi || writerInfo.pa) : '');
+            const englishName = getCleanText(typeof writerInfo === 'object' ? (writerInfo.english || writerInfo.en || writerInfo.name) : writerInfo);
+            const gurmukhiName = getCleanText(typeof writerInfo === 'object' ? writerInfo.gurmukhi : writerInfo);
+
+            authorNamePunjabi = convertGurbaniAsciiToUnicode(gurmukhiName || unicodeName || englishName);
+            if (!authorNamePunjabi && englishName && authorNameMap[englishName]) {
+                authorNamePunjabi = authorNameMap[englishName];
+            }
+        }
+        
+        if (!authorNamePunjabi && verse.writer_english) {
+            authorNamePunjabi = convertGurbaniAsciiToUnicode(verse.writer_english);
+        }
+
+        if (!authorNamePunjabi) {
+            const gurmukhiText = verse.verse?.unicode || verse.gurmukhi || '';
+            authorNamePunjabi = convertGurbaniAsciiToUnicode(gurmukhiText);
+        }
+
+        if (!authorNamePunjabi) {
+            authorNamePunjabi = 'ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ';
+        }
+        
+        authorKey = authorNamePunjabi;
+        
+        if (!authorGroups[authorKey]) {
+            authorGroups[authorKey] = {
+                name: authorNamePunjabi,
+                nameEn: authorKey,
+                verses: []
+            };
+        }
+        authorGroups[authorKey].verses.push(verse);
+    });
+
+    // Sort author groups by Punjabi name
+    const sortedAuthors = Object.values(authorGroups).sort((a, b) => 
+        a.nameEn.localeCompare(b.nameEn)
+    );
+
+    // If no authors found, show message
+    if (sortedAuthors.length === 0) {
+        DOM.resultsList.innerHTML = `
+            <div style="text-align: center; padding: 40px 20px; color: var(--text-secondary);">
+                <p style="font-size: 16px;">No author information available for these results.</p>
+                <p style="font-size: 14px; margin-top: 8px;">Try switching to the Shabads tab.</p>
+            </div>
+        `;
+        return;
+    }
+
+    // Build HTML with author sections
+    let html = sortedAuthors.map(authorGroup => {
+        const versesHtml = authorGroup.verses.map(verse => {
+            const shabadId = verse.shabadId || verse.shabadID || verse.shabad?.shabadId || '';
+            const verseId = verse.verseId || verse.verseID || verse.verse?.verseId || '';
+            const gurmukhi = verse.verse?.unicode || verse.verse?.gurmukhi || verse.gurmukhi || verse.verse || '';
+            const ang = verse.verse?.pageNo || verse.pageNo || verse.ang || '';
+            const source = verse._source || GURBANI_SOURCES['G'];
+            const isFav = Favorites.isFavorite(shabadId);
+            const bookmarkSvgFill = isFav ? 'currentColor' : 'none';
+            
+            // Trim gurmukhi for title
+            const gurmukhiTitle = gurmukhi.length > 50 ? gurmukhi.substring(0, 50) + '...' : gurmukhi;
+
+            return `
+<article class="result-card" data-shabad="${shabadId}" data-verse="${verseId}">
+    <div class="result-card-header">
+        <span class="result-gurmukhi-title">${gurmukhiTitle}</span>
+        <button class="result-bookmark-btn ${isFav ? 'active' : ''}" data-shabad="${shabadId}" aria-label="Bookmark">
+            <svg viewBox="0 0 24 24" fill="${bookmarkSvgFill}" stroke="currentColor" stroke-width="2">
+                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+            </svg>
+        </button>
+    </div>
+    <p class="result-gurmukhi">${gurmukhi}</p>
+    <div class="result-meta">
+        <span class="result-source-text">${source.name}</span>
+        <span class="result-meta-dot"></span>
+        <span class="result-ang">Ang ${ang}</span>
+    </div>
+</article>`;
+        }).join('');
+
+        return `
+<div class="author-section" style="margin-bottom: 24px;">
+    <h3 style="font-family: var(--font-gurmukhi, 'Noto Sans Gurmukhi'); font-size: 20px; font-weight: 600; color: var(--text-primary); margin-bottom: 16px; padding: 12px 16px; background: var(--bg-secondary); border-radius: 12px;">
+        ${authorGroup.name} <span style="font-size: 16px; opacity: 0.7;">(${authorGroup.verses.length})</span>
+    </h3>
+    ${versesHtml}
+</div>`;
+    }).join('');
+
+    DOM.resultsList.innerHTML = html;
+    updateResultsCount(results.length, State.allResults.length);
+    
+    // Re-attach click handlers
+    attachResultCardHandlers();
+}
+
+// Helper function to attach click handlers to result cards
+function attachResultCardHandlers() {
+    DOM.resultsList.querySelectorAll('.result-card').forEach(card => {
+        card.addEventListener('click', (e) => {
+            const bookmarkBtn = e.target.closest('.result-bookmark-btn');
+            if (bookmarkBtn) {
+                e.stopPropagation();
+                haptic();
+                const shabadId = bookmarkBtn.dataset.shabad;
+                const svg = bookmarkBtn.querySelector('svg');
+                if (Favorites.isFavorite(shabadId)) {
+                    Favorites.remove(shabadId);
+                    bookmarkBtn.classList.remove('active');
+                    svg.setAttribute('fill', 'none');
+                } else {
+                    const gurmukhiText = card.querySelector('.result-gurmukhi')?.textContent || '';
+                    const angText = card.querySelector('.result-ang')?.textContent.replace('Ang ', '') || '';
+                    Favorites.add({ shabadId, gurmukhi: gurmukhiText, ang: angText, translation: '' });
+                    bookmarkBtn.classList.add('active');
+                    svg.setAttribute('fill', 'currentColor');
+                }
+                return;
+            }
+
+            haptic();
+            const shabadId = card.dataset.shabad;
+            const verseId = card.dataset.verse;
+            
+            // Track in recent shabad history
+            const gurmukhiText = card.querySelector('.result-gurmukhi')?.textContent || '';
+            const angText = card.querySelector('.result-ang')?.textContent.replace('Ang ', '') || '';
+            HistoryTracker.addShabad(shabadId, gurmukhiText, angText);
+
+            try {
+                sessionStorage.setItem('gurbaniKhoj_state', JSON.stringify({
+                    query: State.query,
+                    inputValue: DOM.searchInput.value,
+                    allResults: State.allResults,
+                    sourceFilter: State.sourceFilter,
+                    scrollY: window.scrollY,
+                    page: State.page,
+                    totalPages: State.totalPages
+                }));
+            } catch (err) {}
+            window.location.href = `shabad-reader.html?shabad=${shabadId}&verse=${verseId}`;
+        });
+    });
+}
+
 function displayResults(verses, append = false) {
     const query = State.query || DOM.searchInput.value.trim();
 
     const html = verses.map((verse, index) => {
-        const ang = verse.pageNo || verse.source?.pageNo || '';
-        const gurmukhiRaw = verse.verse?.unicode || '';
-        const shabadId = verse.shabadId;
-        const verseId = verse.verseId;
+        const ang = verse.verse?.pageNo || verse.pageNo || verse.ang || '';
+        const gurmukhiRaw = verse.verse?.unicode || verse.verse?.gurmukhi || verse.gurmukhi || '';
+        const shabadId = verse.shabadId || verse.shabadID || '';
+        const verseId = verse.verseId || verse.verseID || '';
 
         // Get source info
         const source = verse._source || GURBANI_SOURCES.G;
@@ -879,9 +1396,38 @@ function displayResults(verses, append = false) {
         // Stagger animation delay
         const animDelay = Math.min(index * 35, 350);
 
-        // Build title from raag + writer like the reference image: "ਰਾਮਕਲੀ ਮਹਲਾ ੫"
-        const writer = verse.writer?.unicode || verse.writer?.english || '';
-        const raag = verse.raag?.unicode || verse.raag?.english || '';
+        // Build title from raag + writer - try multiple paths safely
+        const writerData = verse.verse?.writer || verse.writer;
+        const raagData = verse.verse?.raag || verse.raag;
+        
+        let writer = '';
+        if (typeof writerData === 'string') {
+            writer = getCleanText(writerData);
+            if (isAsciiGurbani(writer)) writer = '';
+        } else if (writerData && typeof writerData === 'object') {
+            const u = getCleanText(writerData.unicode || writerData.punjabi);
+            const e = getCleanText(writerData.english || writerData.en);
+            const g = getCleanText(writerData.gurmukhi);
+            if (u && !isAsciiGurbani(u)) writer = u;
+            else if (e && authorNameMap[e]) writer = authorNameMap[e];
+            else if (g && !isAsciiGurbani(g)) writer = g;
+            else if (e) writer = e;
+        }
+
+        let raag = '';
+        if (typeof raagData === 'string') {
+            raag = getCleanText(raagData);
+            if (isAsciiGurbani(raag)) raag = '';
+        } else if (raagData && typeof raagData === 'object') {
+            const u = getCleanText(raagData.unicode || raagData.punjabi);
+            const e = getCleanText(raagData.english || raagData.en);
+            const g = getCleanText(raagData.gurmukhi);
+            if (u && !isAsciiGurbani(u)) raag = u;
+            else if (e && raagNameMap[e]) raag = raagNameMap[e];
+            else if (g && !isAsciiGurbani(g)) raag = g;
+            else if (e) raag = e;
+        }
+        
         let cardTitle = '';
         if (raag && writer) {
             cardTitle = `${raag} ${writer}`;
@@ -890,8 +1436,13 @@ function displayResults(verses, append = false) {
         } else if (writer) {
             cardTitle = writer;
         } else {
-            cardTitle = source.shortName;
+            // Fallback: use first few words of gurmukhi
+            const firstWords = gurmukhiRaw ? gurmukhiRaw.split(' ').slice(0, 3).join(' ') : '';
+            cardTitle = getCleanText(firstWords) || source.shortName || 'ਗੁਰਬਾਣੀ';
         }
+
+        // Convert any legacy ASCII font strings in card title to pure Unicode Gurmukhi
+        cardTitle = convertGurbaniAsciiToUnicode(cardTitle);
 
         const bookmarkSvgFill = isFav ? 'currentColor' : 'none';
 
@@ -2592,6 +3143,10 @@ function initEventListeners() {
             $$('.sub-tab').forEach(t => t.classList.remove('active'));
             tab.classList.add('active');
             haptic();
+            
+            // Handle different tab views
+            const tabType = tab.dataset.tab;
+            handleSubTabChange(tabType);
         });
     });
 

@@ -137,7 +137,8 @@
             this.audio = document.createElement('audio');
             this.audio.id = 'backgroundAudioPlayer';
             this.audio.preload = 'auto';
-            this.audio.crossOrigin = 'anonymous';
+            // CORS REMOVED: R2 bucket doesn't have CORS headers configured.
+            // this.audio.crossOrigin = 'anonymous'; // REMOVED - causes CORS blocking
             this.audio.style.cssText = 'position:absolute;visibility:hidden;pointer-events:none;';
 
             // Append to document as soon as possible

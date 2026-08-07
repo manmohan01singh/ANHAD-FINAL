@@ -155,26 +155,26 @@
   display: none !important;
 }
 [data-theme-mode="auto"] .greeting__portrait-slider {
-  height: 185px !important;
-  margin-bottom: 10px !important;
+  height: 210px !important;
+  margin-bottom: 4px !important;
 }
 [data-theme-mode="auto"] .greeting__guru-portrait {
-  width: 170px !important;
-  height: 170px !important;
-  min-width: 170px !important;
-  min-height: 170px !important;
+  width: 200px !important;
+  height: 200px !important;
+  min-width: 200px !important;
+  min-height: 200px !important;
 }
 [data-theme-mode="auto"] .greeting__slide {
-  width: 170px !important;
-  height: 170px !important;
+  width: 200px !important;
+  height: 200px !important;
 }
 [data-theme-mode="auto"] .greeting {
-  margin-top: -12px !important;
-  margin-bottom: 2px !important;
+  margin-top: -18px !important;
+  margin-bottom: 0px !important;
   padding: 0 !important;
 }
 [data-theme-mode="auto"] .progress-inline {
-  margin-top: 4px !important;
+  margin-top: 2px !important;
 }
 
 /* Hide celestial elements entirely so they never waste GPU */
