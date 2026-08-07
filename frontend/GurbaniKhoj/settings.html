@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="pa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light dark">
+    <title>Gurbani Khoj Settings</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Baloo+Paaji+2:wght@400;600;700;800&family=Mukta+Mahee:wght@400;500;600;700&family=Noto+Sans+Gurmukhi:wght@400;500;600;700&family=Noto+Serif+Gurmukhi:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="../css/anhad-core.css">
+    <link rel="stylesheet" href="gurbani-khoj.css">
+    
+    <style>
+        :root {
+            --font-ui: 'Outfit', -apple-system, sans-serif;
+            --font-gurmukhi: 'Noto Sans Gurmukhi', sans-serif;
+        }
+        
+        body {
+            font-family: var(--font-ui);
+            background: var(--bg-page);
+            color: var(--text-primary);
+            margin: 0;
+            padding: 0;
+        }
+        
+        .settings-container {
+            max-width: 430px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background: var(--bg-page);
+        }
+        
+        .settings-header {
+            position: sticky;
+            top: 0;
+            background: var(--bg-page);
+            padding: 20px 16px;
+            border-bottom: 1px solid var(--border-light);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 10;
+        }
+        
+        .back-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--bg-card);
+            border: 1px solid var(--border-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--ios-blue);
+        }
+        
+        .settings-header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            margin: 0;
+        }
+        
+        .settings-content {
+            padding: 20px 16px;
+        }
+        
+        .setting-section {
+            margin-bottom: 32px;
+        }
+        
+        .section-title {
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+        
+        .setting-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-light);
+            border-radius: 16px;
+            padding: 16px;
+            box-shadow: var(--shadow-soft);
+        }
+        
+        .font-preview {
+            text-align: center;
+            padding: 24px 16px;
+            margin-bottom: 16px;
+            background: var(--bg-page);
+            border-radius: 12px;
+            border: 2px dashed var(--border-light);
+        }
+        
+        .preview-text {
+            font-size: 28px;
+            line-height: 1.6;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+        
+        .preview-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        
+        .font-selector {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 12px;
+        }
+        
+        .font-option {
+            padding: 14px;
+            border-radius: 12px;
+            background: var(--bg-page);
+            border: 2px solid var(--border-light);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+        
+        .font-option:hover {
+            border-color: var(--ios-blue);
+        }
+        
+        .font-option.active {
+            background: var(--ios-blue-light);
+            border-color: var(--ios-blue);
+        }
+        
+        .font-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+        
+        .font-sample {
+            font-size: 20px;
+            color: var(--text-secondary);
+        }
+        
+        .font-option.active .font-name {
+            color: var(--ios-blue);
+        }
+    </style>
+</head>
+<body>
+    <div class="settings-container">
+        <header class="settings-header">
+            <button class="back-btn" onclick="window.history.back()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                    <path d="M15 18l-6-6 6-6"/>
+                </svg>
+            </button>
+            <h1>Settings</h1>
+        </header>
+        
+        <div class="settings-content">
+            <!-- Font Selection -->
+            <div class="setting-section">
+                <h2 class="section-title">Punjabi Font</h2>
+                <div class="setting-card">
+                    <div class="font-preview">
+                        <div class="preview-text" id="fontPreview">ਵਾਹਿਗੁਰੂ ਜੀ ਕਾ ਖਾਲਸਾ</div>
+                        <div class="preview-label">Preview</div>
+                    </div>
+                    
+                    <div class="font-selector">
+                        <div class="font-option active" data-font="noto-sans">
+                            <div class="font-name">Noto Sans</div>
+                            <div class="font-sample" style="font-family: 'Noto Sans Gurmukhi';">ੴ</div>
+                        </div>
+                        
+                        <div class="font-option" data-font="mukta-mahee">
+                            <div class="font-name">Mukta Mahee</div>
+                            <div class="font-sample" style="font-family: 'Mukta Mahee', 'Noto Sans Gurmukhi';">ੴ</div>
+                        </div>
+                        
+                        <div class="font-option" data-font="baloo-paaji">
+                            <div class="font-name">Baloo Paaji 2</div>
+                            <div class="font-sample" style="font-family: 'Baloo Paaji 2', 'Noto Sans Gurmukhi';">ੴ</div>
+                        </div>
+                        
+                        <div class="font-option" data-font="noto-serif">
+                            <div class="font-name">Serif Gurmukhi</div>
+                            <div class="font-sample" style="font-family: 'Noto Serif Gurmukhi', 'Noto Sans Gurmukhi';">ੴ</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Offline Mode -->
+            <div class="setting-section">
+                <h2 class="section-title">Offline Mode</h2>
+                <div class="setting-card">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                        <div>
+                            <div style="font-weight: 600; margin-bottom: 4px;">Download for Offline</div>
+                            <div style="font-size: 13px; color: var(--text-secondary);">Search instantly without internet</div>
+                        </div>
+                        <div style="font-size: 24px;">📴</div>
+                    </div>
+                    
+                    <div id="offlineStatus" style="padding: 12px; background: var(--bg-page); border-radius: 8px; margin-top: 12px; text-align: center; font-size: 14px; color: var(--text-secondary);">
+                        Checking status...
+                    </div>
+                    
+                    <button id="downloadBtn" style="width: 100%; margin-top: 12px; padding: 14px; background: var(--ios-blue); color: white; border: none; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer;">
+                        Start Download
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="offline-db.js"></script>
+    <script>
+        // Font selection
+        const fontOptions = document.querySelectorAll('.font-option');
+        const preview = document.getElementById('fontPreview');
+        
+        const fontMap = {
+            'noto-sans': "'Noto Sans Gurmukhi', sans-serif",
+            'mukta-mahee': "'Mukta Mahee', 'Noto Sans Gurmukhi', sans-serif",
+            'baloo-paaji': "'Baloo Paaji 2', 'Noto Sans Gurmukhi', sans-serif",
+            'noto-serif': "'Noto Serif Gurmukhi', 'Noto Sans Gurmukhi', serif",
+            'raavi': "'Raavi', 'Noto Sans Gurmukhi', sans-serif",
+            'anmol-lipi': "'AnmolLipi', 'Noto Sans Gurmukhi', sans-serif",
+            'gurbani-akhar': "'GurbaniAkhar', 'Noto Sans Gurmukhi', sans-serif"
+        };
+        
+        // Load saved font
+        const savedFont = localStorage.getItem('gurbaniKhoj_font') || 'noto-sans';
+        document.querySelector(`[data-font="${savedFont}"]`)?.classList.add('active');
+        preview.style.fontFamily = fontMap[savedFont];
+        
+        fontOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                fontOptions.forEach(o => o.classList.remove('active'));
+                option.classList.add('active');
+                
+                const fontKey = option.dataset.font;
+                const fontFamily = fontMap[fontKey];
+                
+                preview.style.fontFamily = fontFamily;
+                localStorage.setItem('gurbaniKhoj_font', fontKey);
+                
+                // Apply globally
+                document.documentElement.style.setProperty('--font-gurmukhi', fontFamily);
+                
+                // Show toast
+                showToast('Font updated ✓');
+            });
+        });
+        
+        // Offline mode status
+        async function updateOfflineStatus() {
+            if (window.OfflineDB && window.OfflineDB.isReady) {
+                const progress = await window.OfflineDB.getProgress();
+                const statusEl = document.getElementById('offlineStatus');
+                const downloadBtn = document.getElementById('downloadBtn');
+                
+                if (progress.progress >= 100) {
+                    statusEl.textContent = `✓ ${progress.current} verses cached`;
+                    statusEl.style.color = 'var(--ios-green, #34c759)';
+                    downloadBtn.textContent = 'Refresh Cache';
+                } else if (progress.current > 0) {
+                    statusEl.textContent = `${progress.current} / ${progress.target} verses (${progress.progress}%)`;
+                    downloadBtn.textContent = 'Continue Download';
+                } else {
+                    statusEl.textContent = 'Not downloaded';
+                }
+            }
+        }
+        
+        // Download button
+        document.getElementById('downloadBtn').addEventListener('click', async () => {
+            const btn = document.getElementById('downloadBtn');
+            btn.textContent = 'Downloading...';
+            btn.disabled = true;
+            
+            // This would trigger the bulk download in the main app
+            // For now, show message
+            showToast('Download will start in Gurbani Khoj');
+            
+            setTimeout(() => {
+                btn.textContent = 'Start Download';
+                btn.disabled = false;
+            }, 2000);
+        });
+        
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.textContent = message;
+            toast.style.cssText = 'position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); color: white; padding: 12px 24px; border-radius: 24px; font-size: 14px; z-index: 1000;';
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2000);
+        }
+        
+        // Initialize
+        updateOfflineStatus();
+        setInterval(updateOfflineStatus, 5000);
+    </script>
+</body>
+</html>

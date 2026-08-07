@@ -427,9 +427,12 @@
   <link rel="stylesheet" href="css/nav-glass.css?v=4.1.9">
   <!-- NO SHADOWS - Remove all shadows from buttons and cards -->
   <link rel="stylesheet" href="css/no-shadows.css?v=2">
+  <!-- CRITICAL: Scroll Performance Fix -->
+  <link rel="stylesheet" href="css/scroll-performance-fix.css?v=1.0.5">
   <!-- Non-critical CSS loaded async via media trick -->
   <link rel="stylesheet" href="css/gurpurab-event-semantics.css?v=1" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="css/gurpurab-special-mode.css" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="css/gurpurab-celebration-2026.css?v=1" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="css/install-button.css" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="css/mobile-accessibility.css" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="css/ios-override.css?v=8" media="print" onload="this.media='all'">
@@ -3225,14 +3228,14 @@
       <svg class="quick-card__chevron" aria-hidden="true"><use href="#icon-chevron-right"/></svg>
     </article>
 
-    <article class="quick-card quick-card--gold ios-haptic" id="naamCard" aria-label="Naam Abhyas" data-href="NaamAbhyas/naam-abhyas.html">
+    <article class="quick-card quick-card--gold ios-haptic" id="naamCard" aria-label="Naam Abhyas - Under Development" role="button" tabindex="0">
       <div class="quick-card__icon" aria-hidden="true"><span class="ios-emoji" role="img" aria-label="prayer">🙏</span></div>
       <div class="quick-card__content">
         <div class="quick-card__title">Naam Abhyas</div>
-        <div class="quick-card__subtitle" id="naamSubtitle">Set schedule timing &amp; start</div>
+        <div class="quick-card__subtitle" id="naamSubtitle">Focused meditation sessions</div>
       </div>
       <div class="quick-card__meta">
-        <span class="quick-card__meta-value" id="naamMeta">Schedule</span>
+        <span class="quick-card__meta-value" id="naamMeta" style="color: #D4943A; font-weight: 700; font-size: 11px;">Under Development</span>
       </div>
       <svg class="quick-card__chevron" aria-hidden="true"><use href="#icon-chevron-right"/></svg>
     </article>
@@ -3306,6 +3309,22 @@
     </article>
     </div>
 
+
+  <!-- ════════════════════════════════════════════════════════════════════════
+       COMING SOON POPUP — Naam Abhyas Under Development
+  ════════════════════════════════════════════════════════════════════════ -->
+  <div id="anhadComingSoonOverlay" aria-hidden="true">
+    <div id="anhadComingSoonCard" role="dialog" aria-labelledby="comingSoonTitle" aria-modal="true">
+      <span class="cs-icon">🙏</span>
+      <div class="cs-title" id="comingSoonTitle">Under Development</div>
+      <div class="cs-feature">Naam Abhyas</div>
+      <p class="cs-desc">This feature is currently being rebuilt with enhanced meditation sessions and improved scheduling. Stay tuned!</p>
+      <button class="cs-close ios-haptic" id="comingSoonClose">
+        <span>Okay</span>
+        <span>✨</span>
+      </button>
+    </div>
+  </div>
 
   <!-- ════════════════════════════════════════════════════════════════════════
        RADIO BOTTOM SHEET — Choose Stream (Emoji Icons)
@@ -3390,6 +3409,11 @@
   <!-- Core UI logic -->
   <script src="js/trendora-app.js?v=4.0.4" defer></script>
   <script src="js/homepage-data.js" defer></script>
+  
+  <!-- FESTIVAL MODE 2026 - Gurpurab Celebration System -->
+  <script src="js/festival-mode-config.js?v=1.0.0" defer></script>
+  <script src="js/festival-mode-integration.js?v=1.0.0" defer></script>
+  
   <script src="pwa-register.js?v=4.0.4" defer></script>
   <script src="js/update-controller.js" defer></script>
 

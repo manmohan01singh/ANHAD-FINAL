@@ -12,7 +12,7 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
-const CACHE_VERSION = 'anhad-v10.12.1'; // v10.12.1: Fixed padding - reduced web/Vercel only, kept Android/iOS original
+const CACHE_VERSION = 'anhad-v11.0.0'; // v11.0.0: Production cleanup — widgets removed, dead assets purged, R8 enabled
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 const DATA_CACHE = `${CACHE_VERSION}-data`;
@@ -264,7 +264,8 @@ const DATA_URLS = [
   'data/gurpurab-events.json',
   'data/guru-purabs.json',
   'NitnemTracker/data/banis.json',
-  'NitnemTracker/data/achievements.json'
+  'NitnemTracker/data/achievements.json',
+  'notifications-content.json'  // SPIRITUAL NOTIFICATIONS CONTENT
 ];
 
 const INSTALL_PRECACHE_FILES = [
@@ -319,6 +320,78 @@ function _hasShownToday(id) {
 function _markShownToday(id) {
   const today = new Date().toLocaleDateString('en-CA');
   _shownToday.add(id + '_' + today);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// NOTIFICATION CONTENT LOADER - Loads spiritual messages from JSON
+// ═══════════════════════════════════════════════════════════════════════════════
+let NOTIFICATION_CONTENT = null;
+
+async function loadNotificationContent() {
+  if (NOTIFICATION_CONTENT) return NOTIFICATION_CONTENT;
+  
+  try {
+    const cache = await caches.open(DATA_CACHE);
+    const response = await cache.match('/notifications-content.json');
+    if (response) {
+      NOTIFICATION_CONTENT = await response.json();
+      console.log('[SW] ✅ Loaded notification content:', 
+        Object.keys(NOTIFICATION_CONTENT.notifications).length, 'categories');
+      return NOTIFICATION_CONTENT;
+    } else {
+      // Fallback: fetch from network
+      const networkResponse = await fetch('/notifications-content.json');
+      NOTIFICATION_CONTENT = await networkResponse.json();
+      console.log('[SW] ✅ Loaded notification content from network');
+      return NOTIFICATION_CONTENT;
+    }
+  } catch (e) {
+    console.error('[SW] ❌ Failed to load notification content:', e);
+  }
+  return null;
+}
+
+// Get random notification from category
+async function getRandomSpiritualNotification(category) {
+  const content = await loadNotificationContent();
+  if (!content || !content.notifications[category]) {
+    console.warn(`[SW] Category "${category}" not found in notifications-content.json`);
+    return null;
+  }
+  
+  const messages = content.notifications[category];
+  const randomIndex = Math.floor(Math.random() * messages.length);
+  const notif = messages[randomIndex];
+  
+  return {
+    id: `${category}_${randomIndex}_${Date.now()}`,
+    title: notif.title,
+    body: notif.body,
+    emoji: notif.emoji,
+    translation: notif.translation,
+    category: category
+  };
+}
+
+// Map categories to URLs
+function getCategoryURL(category) {
+  const urlMap = {
+    'amritvela': '/index.html',
+    'japji_sahib': '/nitnem/index.html',
+    'jaap_sahib': '/nitnem/index.html',
+    'tav_prasad_swaye': '/nitnem/index.html',
+    'chaupai_sahib': '/nitnem/index.html',
+    'anand_sahib': '/nitnem/index.html',
+    'rehras_sahib': '/nitnem/index.html',
+    'kirtan_sohila': '/nitnem/index.html',
+    'ardas': '/nitnem/index.html',
+    'hukamnama': '/Hukamnama/daily-hukamnama.html',
+    'kirtan': '/GurbaniRadio/gurbani-radio.html',
+    'simran': '/GurbaniRadio/gurbani-radio.html?stream=simran',
+    'nitnem': '/nitnem/index.html',
+    'sehaj_paath': '/SehajPaath/sehaj-paath.html'
+  };
+  return urlMap[category] || '/index.html';
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -470,22 +543,23 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // 1. ONLINE KIRTAN (LIVE STREAMS) -> NETWORK ONLY
-  // Detect live audio stream requests (r2.dev webm files, icecast, shoutcast, etc.)
-  // IMPORTANT: use .includes('/Audio/') not .startsWith('/Audio/') because SW scope prefix
-  // makes paths like /ANHAD-FINAL/frontend/Audio/audio1.mp3 (not /Audio/audio1.mp3)
+  // 1. ONLINE KIRTAN (LIVE STREAMS & R2 AUDIO) -> BYPASS SERVICE WORKER
+  // Detect live audio stream requests (r2.dev mp3/webm files, icecast, shoutcast, etc.)
+  // CRITICAL VERCEL & PWA FIX: Simply return without calling event.respondWith.
+  // This lets the browser load audio/live stream media directly via native HTML5 Audio
+  // without Service Worker fetch interception or CORS failures on cross-origin R2 URLs.
   const isLiveStream = (
     url.hostname.includes('r2.dev') ||
     url.hostname.includes('listen.samayam') ||
     url.hostname.includes('icecast') ||
     url.hostname.includes('shoutcast') ||
     url.hostname.includes('streaming') ||
+    url.pathname.includes('/api/stream') ||
     url.pathname.match(/\.m3u8$|\.ts$/) ||
     (url.pathname.match(/\.(mp3|aac|ogg|webm)$/) && !url.pathname.includes('/Audio/'))
   );
 
   if (isLiveStream) {
-    event.respondWith(fetch(event.request));
     return;
   }
 
@@ -848,6 +922,110 @@ async function checkAndFireScheduledNotifications() {
   const now = Date.now();
   const today = new Date().toLocaleDateString('en-CA');
 
+  // ═══════════════════════════════════════════════════════════════════════════════
+  // DYNAMIC SPIRITUAL NOTIFICATIONS FROM JSON
+  // Uses beautiful content from notifications-content.json
+  // ═══════════════════════════════════════════════════════════════════════════════
+  const spiritualSchedule = [
+    {
+      category: 'amritvela',
+      timeRanges: [[4, 6]],  // 4-6 AM
+    },
+    {
+      category: 'japji_sahib',
+      timeRanges: [[5, 9]],  // 5-9 AM
+    },
+    {
+      category: 'jaap_sahib',
+      timeRanges: [[5, 9]],  // 5-9 AM
+    },
+    {
+      category: 'tav_prasad_swaye',
+      timeRanges: [[5, 9]],  // 5-9 AM
+    },
+    {
+      category: 'chaupai_sahib',
+      timeRanges: [[5, 9], [18, 20]],  // Morning or Evening
+    },
+    {
+      category: 'anand_sahib',
+      timeRanges: [[5, 9], [18, 20]],  // Morning or Evening
+    },
+    {
+      category: 'rehras_sahib',
+      timeRanges: [[17, 20]],  // 5-8 PM
+    },
+    {
+      category: 'kirtan_sohila',
+      timeRanges: [[21, 23]],  // 9-11 PM
+    },
+    {
+      category: 'hukamnama',
+      timeRanges: [[6, 10], [12, 14]],  // 6-10AM or 12-2PM
+    },
+    {
+      category: 'kirtan',
+      timeRanges: [[8, 12], [15, 19]],  // 8AM-12PM or 3-7PM
+    },
+    {
+      category: 'simran',
+      timeRanges: [[7, 11], [13, 17], [20, 22]],  // Multiple times
+    },
+    {
+      category: 'nitnem',
+      timeRanges: [[5, 9], [18, 20]],  // Morning or Evening
+    },
+    {
+      category: 'sehaj_paath',
+      timeRanges: [[10, 14], [16, 21]],  // Midday or Evening
+    }
+  ];
+
+  const currentHour = new Date().getHours();
+
+  // Fire dynamic spiritual notifications from JSON
+  for (const schedule of spiritualSchedule) {
+    const inTimeRange = schedule.timeRanges.some(([start, end]) => 
+      currentHour >= start && currentHour < end
+    );
+    
+    if (!inTimeRange) continue;
+    if (_hasShownToday(`${schedule.category}_check`)) continue;
+
+    // Random chance to fire (15% per check to avoid spam)
+    if (Math.random() > 0.15) continue;
+
+    try {
+      const notif = await getRandomSpiritualNotification(schedule.category);
+      if (!notif) continue;
+
+      await self.registration.showNotification(notif.title, {
+        body: notif.body,
+        icon: '/assets/icon-192x192.png',
+        badge: '/assets/icon-72x72.png',
+        tag: notif.id,
+        data: { 
+          url: getCategoryURL(schedule.category),
+          translation: notif.translation,
+          category: schedule.category
+        },
+        requireInteraction: false,
+        actions: [
+          { action: 'open', title: 'Open' },
+          { action: 'dismiss', title: 'Later' }
+        ]
+      });
+      
+      _markShownToday(`${schedule.category}_check`);
+      console.log(`[SW] 🙏 Fired ${schedule.category}: ${notif.title}`);
+    } catch (e) {
+      console.error(`[SW] Failed to show ${schedule.category} notification:`, e);
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════════
+  // TIME-BASED DEFAULT NOTIFICATIONS (Backup/Fallback)
+  // ═══════════════════════════════════════════════════════════════════════════════
   const spiritualNotifications = [
     {
       id: 'hukamnama_morning',
@@ -902,7 +1080,6 @@ async function checkAndFireScheduledNotifications() {
   // Check and fire spiritual notifications
   for (const notif of spiritualNotifications) {
     // Check if current time falls in any of the time ranges
-    const currentHour = new Date().getHours();
     const inTimeRange = notif.timeRanges.some(([start, end]) => currentHour >= start && currentHour < end);
     
     if (!inTimeRange) continue;
@@ -983,7 +1160,6 @@ async function checkAndFireScheduledNotifications() {
     }
   ];
 
-  const currentHour = new Date().getHours();
   const currentMinute = new Date().getMinutes();
 
   for (const notif of defaultNotifications) {
@@ -1131,10 +1307,11 @@ async function checkRandomSpiritualNotifications() {
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // NAAM ABHYAS SPECIFIC NOTIFICATION CHECKER
-// Checks localStorage for Naam Abhyas schedule and fires notifications
+// DISABLED: Feature under development - no notifications will fire
 // ═══════════════════════════════════════════════════════════════════════════════
 async function checkNaamAbhyasSchedule() {
-  console.log('[SW] Checking Naam Abhyas schedule...');
+  console.log('[SW] Naam Abhyas notifications DISABLED - feature under development');
+  return; // Exit immediately - no notifications
 
   const now = new Date();
   const currentHour = now.getHours();

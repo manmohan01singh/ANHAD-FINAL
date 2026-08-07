@@ -58,7 +58,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Appearance | ANHAD</title>
   
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=optional" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Baloo+Paaji+2:wght@400;600;700;800&family=Mukta+Mahee:wght@400;500;600;700&family=Noto+Sans+Gurmukhi:wght@400;500;600;700&family=Noto+Serif+Gurmukhi:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/theme-variables.css">
   <link rel="stylesheet" href="../css/trendora-premium.css">
   <link rel="stylesheet" href="../css/anhad-core.css">
@@ -342,6 +342,48 @@
       </div>
     </section>
 
+    <!-- Punjabi Font Selection Section -->
+    <section class="theme-preview-section" style="margin-top: 36px;">
+      <h2 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 14px; color: var(--text-primary);">Punjabi Font (ਗੁਰਮੁਖੀ ਫੌਂਟ)</h2>
+      
+      <div style="background: var(--bg-secondary, #F2F2F7); border-radius: 20px; padding: 20px; text-align: center; margin-bottom: 16px; border: 1px solid var(--border-color, rgba(0,0,0,0.08));">
+        <div id="punjabiFontPreview" style="font-size: 26px; line-height: 1.6; margin-bottom: 6px; color: var(--text-primary); font-family: var(--font-gurmukhi, 'Noto Sans Gurmukhi');">
+          ੴ ਸਤਿਨਾਮੁ ਕਰਤਾ ਪੁਰਖੁ ਨਿਰਭਉ ਨਿਰਵੈਰੁ
+        </div>
+        <div style="font-size: 12px; color: var(--text-secondary);">Font Preview</div>
+      </div>
+
+      <div class="theme-options" id="punjabiFontGrid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
+        <!-- Noto Sans -->
+        <div class="theme-option font-select-card active" data-font="noto-sans" onclick="selectPunjabiFont('noto-sans')">
+          <div style="font-weight: 700; font-size: 15px; margin-bottom: 6px;">Noto Sans</div>
+          <div style="font-size: 22px; font-family: 'Noto Sans Gurmukhi'; color: var(--accent, #D4943A);">ੴ</div>
+          <div class="check-badge">✓</div>
+        </div>
+
+        <!-- Mukta Mahee -->
+        <div class="theme-option font-select-card" data-font="mukta-mahee" onclick="selectPunjabiFont('mukta-mahee')">
+          <div style="font-weight: 700; font-size: 15px; margin-bottom: 6px;">Mukta Mahee</div>
+          <div style="font-size: 22px; font-family: 'Mukta Mahee', 'Noto Sans Gurmukhi'; color: var(--accent, #D4943A);">ੴ</div>
+          <div class="check-badge">✓</div>
+        </div>
+
+        <!-- Baloo Paaji 2 -->
+        <div class="theme-option font-select-card" data-font="baloo-paaji" onclick="selectPunjabiFont('baloo-paaji')">
+          <div style="font-weight: 700; font-size: 15px; margin-bottom: 6px;">Baloo Paaji 2</div>
+          <div style="font-size: 22px; font-family: 'Baloo Paaji 2', 'Noto Sans Gurmukhi'; color: var(--accent, #D4943A);">ੴ</div>
+          <div class="check-badge">✓</div>
+        </div>
+
+        <!-- Noto Serif Gurmukhi -->
+        <div class="theme-option font-select-card" data-font="noto-serif" onclick="selectPunjabiFont('noto-serif')">
+          <div style="font-weight: 700; font-size: 15px; margin-bottom: 6px;">Serif Gurmukhi</div>
+          <div style="font-size: 22px; font-family: 'Noto Serif Gurmukhi', 'Noto Sans Gurmukhi'; color: var(--accent, #D4943A);">ੴ</div>
+          <div class="check-badge">✓</div>
+        </div>
+      </div>
+    </section>
+
     <!-- Info Card -->
     <div class="info-card">
       <h4 class="info-card-title">
@@ -356,6 +398,34 @@
   </main>
 
   <script>
+    const punjabiFontMap = {
+      'noto-sans': "'Noto Sans Gurmukhi', sans-serif",
+      'mukta-mahee': "'Mukta Mahee', 'Noto Sans Gurmukhi', sans-serif",
+      'baloo-paaji': "'Baloo Paaji 2', 'Noto Sans Gurmukhi', sans-serif",
+      'noto-serif': "'Noto Serif Gurmukhi', 'Noto Sans Gurmukhi', serif",
+      'raavi': "'Raavi', 'Noto Sans Gurmukhi', sans-serif",
+      'anmol-lipi': "'AnmolLipi', 'Noto Sans Gurmukhi', sans-serif",
+      'gurbani-akhar': "'GurbaniAkhar', 'Noto Sans Gurmukhi', sans-serif"
+    };
+
+    function selectPunjabiFont(fontKey) {
+      const fontFamily = punjabiFontMap[fontKey] || punjabiFontMap['noto-sans'];
+      localStorage.setItem('gurbaniKhoj_font', fontKey);
+      document.documentElement.style.setProperty('--font-gurmukhi', fontFamily);
+      
+      const previewEl = document.getElementById('punjabiFontPreview');
+      if (previewEl) previewEl.style.fontFamily = fontFamily;
+
+      updateActiveFont(fontKey);
+      showFeedback('Punjabi font updated ✓');
+    }
+
+    function updateActiveFont(fontKey) {
+      document.querySelectorAll('.font-select-card').forEach(card => {
+        card.classList.toggle('active', card.dataset.font === fontKey);
+      });
+    }
+
     function selectTheme(theme) {
       // Update theme
       if (window.AnhadTheme) {
@@ -373,7 +443,7 @@
     }
 
     function updateActiveTheme(theme) {
-      document.querySelectorAll('.theme-option').forEach(option => {
+      document.querySelectorAll('.theme-option[data-theme]').forEach(option => {
         if (option.dataset.theme === theme) {
           option.classList.add('active');
         } else {
@@ -413,6 +483,9 @@
     document.addEventListener('DOMContentLoaded', function() {
       const currentTheme = window.AnhadTheme ? window.AnhadTheme.get() : localStorage.getItem('anhad_theme') || 'auto';
       updateActiveTheme(currentTheme);
+
+      const savedFont = localStorage.getItem('gurbaniKhoj_font') || 'noto-sans';
+      selectPunjabiFont(savedFont);
     });
 
     // Add animation

@@ -566,8 +566,10 @@
       // Set preload type
       this.audio.preload = preloadMode || 'auto';
 
-      // Set CORS policy: Always request anonymous CORS for proxied, R2 CDN, and local streams to allow clean recording
-      this.audio.crossOrigin = 'anonymous';
+      // CORS REMOVED: R2 bucket doesn't have CORS headers configured.
+      // crossOrigin causes browser to require Access-Control-Allow-Origin header.
+      // Simple requests work fine without crossOrigin attribute.
+      // this.audio.crossOrigin = 'anonymous'; // REMOVED - causes CORS blocking
 
       if (this.audio.src !== url) {
         this.audio.src = url;
