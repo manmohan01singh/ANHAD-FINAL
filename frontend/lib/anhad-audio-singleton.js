@@ -417,18 +417,18 @@
       this.audio.volume = 0.7;
 
       // HTML5 event listeners
-      this.audio.addEventListener('play', () => {
-        isPlaying = true;
+      const notifyStateChange = (playingState) => {
+        isPlaying = playingState;
+        isLoading = false;
+        emit('loading', { isLoading: false });
         emit('statechange', getPublicState());
         persistState();
         updateNativeMediaState();
-      });
-      this.audio.addEventListener('pause', () => {
-        isPlaying = false;
-        emit('statechange', getPublicState());
-        persistState();
-        updateNativeMediaState();
-      });
+      };
+
+      this.audio.addEventListener('play', () => notifyStateChange(true));
+      this.audio.addEventListener('playing', () => notifyStateChange(true));
+      this.audio.addEventListener('pause', () => notifyStateChange(false));
       this.audio.addEventListener('timeupdate', () => {
         persistState();
         // Dispatch UI timeupdate
@@ -599,6 +599,12 @@
           
           try {
             await Promise.race([playPromise, timeoutPromise]);
+            isPlaying = true;
+            isLoading = false;
+            emit('loading', { isLoading: false });
+            emit('statechange', getPublicState());
+            persistState();
+            updateNativeMediaState();
             console.log('[PlaybackQueueController] ✅ Playback started successfully');
           } catch (e) {
             const isTimeout = e.message && e.message.includes('TIMEOUT');
