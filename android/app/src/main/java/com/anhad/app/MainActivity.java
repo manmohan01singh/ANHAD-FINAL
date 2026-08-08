@@ -34,10 +34,16 @@ public class MainActivity extends BridgeActivity {
             if (command != null) {
                 Log.d(TAG, "Received media command from service: " + command);
                 String jsStr = "";
-                if (command.equals("PAUSE") || command.equals("STOP")) {
-                    jsStr = "if(window.AnhadAudio) { window.AnhadAudio.pause(); }";
-                } else if (command.equals("PLAY")) {
-                    jsStr = "if(window.AnhadAudio) { window.AnhadAudio.resume(); }";
+                if (command.equals("PAUSE")) {
+                    jsStr = "if(window.AnhadAudio) { window.AnhadAudio.pauseFromNative(); }";
+                } else if (command.equals("STOP")) {
+                    jsStr = "if(window.AnhadAudio) { window.AnhadAudio.stopFromNative(); }";
+                } else if (command.equals("PLAY") || command.equals("RECONNECT")) {
+                    jsStr = "if(window.AnhadAudio) { window.AnhadAudio.resumeFromNative(); }";
+                } else if (command.equals("NEXT")) {
+                    jsStr = "if(window.AnhadAudio) { window.AnhadAudio.playNextTrack(true); }";
+                } else if (command.equals("PREV")) {
+                    jsStr = "if(window.AnhadAudio) { window.AnhadAudio.playNextTrack(false); }";
                 }
                 
                 final String finalJs = jsStr;

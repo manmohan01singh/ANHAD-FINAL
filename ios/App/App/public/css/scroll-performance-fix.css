@@ -1,0 +1,193 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   ANHAD v1.0.5 — CRITICAL SCROLL PERFORMANCE FIX
+   Fixes: Scroll lag, stuttering, images disappearing during scroll
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ═══ HARDWARE ACCELERATION ═══ */
+html {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  overflow-y: scroll;
+  overscroll-behavior-y: contain;
+}
+
+body {
+  overflow-x: hidden !important;
+  overflow-y: scroll;
+  overscroll-behavior-y: contain;
+  /* Disable momentum scrolling bounce on iOS for better control */
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ═══ FORCE GPU ACCELERATION ON ALL IMAGES ═══ */
+img, picture, .hero-card__image, .quick-card__icon, .event-card__icon {
+  will-change: auto !important; /* Don't use will-change: transform constantly */
+  transform: translate3d(0, 0, 0) !important;
+  -webkit-transform: translate3d(0, 0, 0) !important;
+  backface-visibility: hidden !important;
+  -webkit-backface-visibility: hidden !important;
+  /* Prevent images from being unloaded during scroll */
+  image-rendering: -webkit-optimize-contrast !important;
+  image-rendering: crisp-edges !important;
+}
+
+/* ═══ DISABLE TRANSFORMS DURING SCROLL (MAJOR JANK SOURCE) ═══ */
+.hero-card, .quick-card, .event-card, .practice-card, .clay-card {
+  /* Remove will-change during scroll */
+  will-change: auto !important;
+  /* Force GPU layer */
+  transform: translate3d(0, 0, 0) !important;
+  -webkit-transform: translate3d(0, 0, 0) !important;
+  backface-visibility: hidden !important;
+  -webkit-backface-visibility: hidden !important;
+}
+
+/* ═══ REMOVE ALL HOVER/ACTIVE TRANSFORMS (CAUSES REPAINTS) ═══ */
+.hero-card:hover,
+.hero-card:active,
+.quick-card:hover,
+.quick-card:active {
+  transform: translate3d(0, 0, 0) !important;
+  -webkit-transform: translate3d(0, 0, 0) !important;
+}
+
+/* ═══ DISABLE TRANSITIONS ON SCROLL ELEMENTS ═══ */
+.hero-card img,
+.quick-card img,
+.event-card img,
+.practice-card svg {
+  transition: none !important;
+  animation: none !important;
+}
+
+/* ═══ OPTIMIZE MAIN SCROLL CONTAINER ═══ */
+.app {
+  -webkit-overflow-scrolling: touch;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  overscroll-behavior-y: contain;
+  /* Contain layout, style, and paint to prevent expensive reflows */
+  contain: layout style paint;
+}
+
+/* ═══ PREVENT LAYOUT SHIFTS DURING SCROLL ═══ */
+.hero-card__badge,
+.quick-card__meta,
+.event-card__days-badge {
+  /* Don't let badges cause layout shifts */
+  contain: layout style paint;
+  transform: translate3d(0, 0, 0);
+  -webkit-transform: translate3d(0, 0, 0);
+}
+
+/* ═══ DISABLE BACKDROP-FILTER DURING SCROLL (EXPENSIVE) ═══ */
+@media (hover: none) and (pointer: coarse) {
+  /* On mobile, disable backdrop-filter which is VERY expensive */
+  .header__left,
+  .header__right,
+  .anhad-title-pill,
+  .hero-card__badge {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+}
+
+/* ═══ OPTIMIZE SVG RENDERING ═══ */
+svg {
+  will-change: auto;
+  transform: translate3d(0, 0, 0);
+  shape-rendering: optimizeSpeed; /* Faster rendering */
+}
+
+/* ═══ PREVENT EMOJI/ICON DISAPPEARING ═══ */
+.ios-emoji, .hero-card__icon, .quick-card__icon {
+  will-change: auto !important;
+  transform: translate3d(0, 0, 0) !important;
+  -webkit-transform: translate3d(0, 0, 0) !important;
+  backface-visibility: hidden !important;
+  -webkit-backface-visibility: hidden !important;
+  /* Force repaint on scroll */
+  position: relative;
+  z-index: 1;
+}
+
+/* ═══ OPTIMIZE ANIMATED BACKGROUNDS ═══ */
+.anhad-sky-canvas {
+  /* Disable sky animation during active scrolling */
+  will-change: auto;
+  pointer-events: none;
+  /* Lower rendering priority */
+  content-visibility: auto;
+}
+
+/* ═══ CONTAIN PAINT FOR CARDS ═══ */
+.hero-card, .quick-card, .event-card {
+  /* Isolate paint operations */
+  isolation: isolate;
+  contain: layout style paint;
+}
+
+/* ═══ FIX IMAGE DISAPPEARING ON SCROLL ═══ */
+picture > img,
+.hero-card__image,
+.event-card__image {
+  /* Prevent browser from unloading images during scroll */
+  content-visibility: auto;
+  contain-intrinsic-size: 300px 200px; /* Placeholder size */
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* ═══ DISABLE ANIMATIONS DURING SCROLL ═══ */
+.ios-animate-in,
+.ios-stagger > * {
+  animation: none !important;
+}
+
+/* ═══ OPTIMIZE TEXT RENDERING ═══ */
+.hero-card__title,
+.quick-card__title,
+.event-card__title {
+  text-rendering: optimizeSpeed;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ═══ PREVENT LAYOUT THRASHING ═══ */
+* {
+  /* Prevent accidental layout triggers */
+  box-sizing: border-box;
+}
+
+/* ═══ MOBILE-SPECIFIC OPTIMIZATIONS ═══ */
+@media (max-width: 768px) {
+  /* Disable all expensive effects on mobile */
+  .hero-card__overlay,
+  .quick-card__overlay {
+    display: none !important;
+  }
+  
+  /* Simplify shadows */
+  .hero-card, .quick-card, .event-card {
+    box-shadow: none !important;
+  }
+  
+  /* Remove gradients during scroll (use solid colors) */
+  .hero-card, .quick-card {
+    background-image: none !important;
+  }
+}
+
+/* ═══ CRITICAL: PREVENT REPAINT DURING SCROLL ═══ */
+body.scrolling .hero-card,
+body.scrolling .quick-card,
+body.scrolling .event-card {
+  pointer-events: none;
+  will-change: auto;
+}
+
+/* Add scrolling class via JS */
+body.scrolling * {
+  animation-play-state: paused !important;
+}

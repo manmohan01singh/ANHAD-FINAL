@@ -5,41 +5,54 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.AudioAttributes;
+import android.media.AudioFocusRequest;
+import android.media.AudioManager;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.PowerManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 import androidx.media.app.NotificationCompat.MediaStyle;
 
 /**
- * Production-grade Foreground Service for background audio playback.
+ * Production-grade Spotify-like Foreground Service for background audio playback.
  * 
- * Features (Spotify-level):
- * - Persistent notification with artwork, title, artist
- * - Play/Pause/Stop action buttons in notification
- * - MediaSession integration for lock screen controls
- * - PARTIAL_WAKE_LOCK to keep CPU alive
- * - Handles STOP, PAUSE, PLAY actions from notification
+ * Features:
+ * - Persistent media player notification when paused (does not vanish)
+ * - Auto-resume after audio interruptions (phone calls, Instagram reels) via AudioFocus
+ * - Track advance (Next/Previous) actions for Amritvela / Waheguru Simran
+ * - MediaSession integration for lock screen & bluetooth controls
+ * - PARTIAL_WAKE_LOCK to keep playback smooth in background
  */
 public class AudioForegroundService extends Service {
 
+    private static final String TAG = "AudioForegroundService";
     private static final String CHANNEL_ID = "anhad_audio_service";
     private static final int NOTIFICATION_ID = 9001;
     
     public static final String ACTION_PLAY = "com.anhad.app.ACTION_PLAY";
     public static final String ACTION_PAUSE = "com.anhad.app.ACTION_PAUSE";
     public static final String ACTION_STOP = "com.anhad.app.ACTION_STOP";
+    public static final String ACTION_NEXT = "com.anhad.app.ACTION_NEXT";
+    public static final String ACTION_PREV = "com.anhad.app.ACTION_PREV";
     
     private PowerManager.WakeLock wakeLock;
     private MediaSessionCompat mediaSession;
-    private boolean isPlaying = true;
+    private AudioManager audioManager;
+    private AudioFocusRequest focusRequest;
+    private AudioManager.OnAudioFocusChangeListener focusChangeListener;
+    
+    private boolean isPlaying = false;
+    private boolean wasPlayingBeforeInterruption = false;
     private String currentTitle = "ANHAD Kirtan";
     private String currentArtist = "Sri Harmandir Sahib Ji";
     private String currentStream = "darbar";
@@ -49,6 +62,7 @@ public class AudioForegroundService extends Service {
         super.onCreate();
         createNotificationChannel();
         acquireWakeLock();
+        initAudioFocus();
         initMediaSession();
     }
 
@@ -58,61 +72,164 @@ public class AudioForegroundService extends Service {
         sendBroadcast(intent);
     }
 
+    private void initAudioFocus() {
+        audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        focusChangeListener = new AudioManager.OnAudioFocusChangeListener() {
+            @Override
+            public void onAudioFocusChange(int focusChange) {
+                switch (focusChange) {
+                    case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
+                    case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
+                        Log.d(TAG, "Audio focus transient loss (phone call / reel playing)");
+                        if (isPlaying) {
+                            wasPlayingBeforeInterruption = true;
+                            isPlaying = false;
+                            updateMediaSessionState();
+                            updateNotification();
+                            detachForeground();
+                            broadcastCommand("PAUSE");
+                        }
+                        break;
+
+                    case AudioManager.AUDIOFOCUS_GAIN:
+                        Log.d(TAG, "Audio focus regained");
+                        if (wasPlayingBeforeInterruption) {
+                            wasPlayingBeforeInterruption = false;
+                            isPlaying = true;
+                            updateMediaSessionState();
+                            startForeground(NOTIFICATION_ID, buildNotification());
+                            broadcastCommand("PLAY");
+                        }
+                        break;
+
+                    case AudioManager.AUDIOFOCUS_LOSS:
+                        Log.d(TAG, "Audio focus permanent loss");
+                        wasPlayingBeforeInterruption = false;
+                        if (isPlaying) {
+                            isPlaying = false;
+                            updateMediaSessionState();
+                            updateNotification();
+                            detachForeground();
+                            broadcastCommand("PAUSE");
+                        }
+                        break;
+                }
+            }
+        };
+    }
+
+    private void requestAudioFocus() {
+        if (audioManager == null) return;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            AudioAttributes playbackAttributes = new AudioAttributes.Builder()
+                .setUsage(AudioAttributes.USAGE_MEDIA)
+                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                .build();
+            focusRequest = new AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN)
+                .setAudioAttributes(playbackAttributes)
+                .setAcceptsDelayedFocusGain(true)
+                .setWillPauseWhenDucked(true)
+                .setOnAudioFocusChangeListener(focusChangeListener)
+                .build();
+            audioManager.requestAudioFocus(focusRequest);
+        } else {
+            audioManager.requestAudioFocus(focusChangeListener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+        }
+    }
+
+    private void abandonAudioFocus() {
+        if (audioManager == null) return;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && focusRequest != null) {
+            audioManager.abandonAudioFocusRequest(focusRequest);
+        } else if (focusChangeListener != null) {
+            audioManager.abandonAudioFocus(focusChangeListener);
+        }
+    }
+
+    private void detachForeground() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            stopForeground(STOP_FOREGROUND_DETACH);
+        } else {
+            stopForeground(false);
+        }
+    }
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent == null) {
-            // Service restarted by OS (START_STICKY), rebuild state from saved data
+            // Service restarted by OS (START_STICKY)
             if (currentTitle == null || currentTitle.isEmpty()) {
                 currentTitle = "ANHAD Kirtan";
                 currentArtist = "Sri Harmandir Sahib Ji";
                 currentStream = "darbar";
             }
-            startForeground(NOTIFICATION_ID, buildNotification());
+            if (isPlaying) {
+                startForeground(NOTIFICATION_ID, buildNotification());
+            } else {
+                updateNotification();
+            }
             broadcastCommand("RECONNECT");
             return START_STICKY;
         }
 
         String action = intent.getAction();
-            
-            if (ACTION_STOP.equals(action) || "STOP".equals(action)) {
-                isPlaying = false;
-                updateMediaSessionState();
-                broadcastCommand("STOP");
-                stopForeground(true);
-                stopSelf();
-                return START_NOT_STICKY;
-            }
-            
-            if (ACTION_PAUSE.equals(action)) {
-                isPlaying = false;
-                updateMediaSessionState();
-                broadcastCommand("PAUSE");
-                stopForeground(true);
-                stopSelf();
-                return START_NOT_STICKY;
-            }
-            
-            if (ACTION_PLAY.equals(action)) {
-                isPlaying = true;
-                updateMediaSessionState();
-                updateNotification();
-                broadcastCommand("PLAY");
-                return START_STICKY;
-            }
-
-            // Default: start with new title/artist
-            String title = intent.getStringExtra("title");
-            String artist = intent.getStringExtra("artist");
-            String stream = intent.getStringExtra("stream");
-            if (title != null) currentTitle = title;
-            if (artist != null) currentArtist = artist;
-            if (stream != null) currentStream = stream;
+        
+        if (ACTION_STOP.equals(action) || "STOP".equals(action)) {
+            isPlaying = false;
+            wasPlayingBeforeInterruption = false;
+            abandonAudioFocus();
+            updateMediaSessionState();
+            broadcastCommand("STOP");
+            stopForeground(true);
+            stopSelf();
+            return START_NOT_STICKY;
+        }
+        
+        if (ACTION_PAUSE.equals(action) || "PAUSE".equals(action)) {
+            isPlaying = false;
+            abandonAudioFocus();
+            updateMediaSessionState();
+            updateNotification();
+            detachForeground();
+            broadcastCommand("PAUSE");
+            return START_STICKY;
+        }
+        
+        if (ACTION_PLAY.equals(action) || "PLAY".equals(action)) {
             isPlaying = true;
-            
-            updateMediaSessionMetadata();
+            wasPlayingBeforeInterruption = false;
+            requestAudioFocus();
             updateMediaSessionState();
             startForeground(NOTIFICATION_ID, buildNotification());
+            broadcastCommand("PLAY");
             return START_STICKY;
+        }
+
+        if (ACTION_NEXT.equals(action) || "NEXT".equals(action)) {
+            broadcastCommand("NEXT");
+            return START_STICKY;
+        }
+
+        if (ACTION_PREV.equals(action) || "PREV".equals(action)) {
+            broadcastCommand("PREV");
+            return START_STICKY;
+        }
+
+        // Default: update metadata and start playing
+        String title = intent.getStringExtra("title");
+        String artist = intent.getStringExtra("artist");
+        String stream = intent.getStringExtra("stream");
+        if (title != null) currentTitle = title;
+        if (artist != null) currentArtist = artist;
+        if (stream != null) currentStream = stream;
+        isPlaying = true;
+        wasPlayingBeforeInterruption = false;
+        
+        requestAudioFocus();
+        updateMediaSessionMetadata();
+        updateMediaSessionState();
+        startForeground(NOTIFICATION_ID, buildNotification());
+        return START_STICKY;
     }
 
     private void initMediaSession() {
@@ -123,23 +240,38 @@ public class AudioForegroundService extends Service {
             @Override
             public void onPlay() {
                 isPlaying = true;
+                wasPlayingBeforeInterruption = false;
+                requestAudioFocus();
                 updateMediaSessionState();
-                updateNotification();
+                startForeground(NOTIFICATION_ID, buildNotification());
                 broadcastCommand("PLAY");
             }
             
             @Override
             public void onPause() {
                 isPlaying = false;
+                abandonAudioFocus();
                 updateMediaSessionState();
+                updateNotification();
+                detachForeground();
                 broadcastCommand("PAUSE");
-                stopForeground(true);
-                stopSelf();
+            }
+
+            @Override
+            public void onSkipToNext() {
+                broadcastCommand("NEXT");
+            }
+
+            @Override
+            public void onSkipToPrevious() {
+                broadcastCommand("PREV");
             }
             
             @Override
             public void onStop() {
                 isPlaying = false;
+                wasPlayingBeforeInterruption = false;
+                abandonAudioFocus();
                 updateMediaSessionState();
                 broadcastCommand("STOP");
                 stopForeground(true);
@@ -164,7 +296,6 @@ public class AudioForegroundService extends Service {
 
             Bitmap rawArt = BitmapFactory.decodeResource(getResources(), resId);
             if (rawArt != null) {
-                // Scale down to 512x512 to avoid TransactionTooLargeException while keeping it crisp
                 return Bitmap.createScaledBitmap(rawArt, 512, 512, true);
             }
         } catch (Exception e) {
@@ -194,7 +325,9 @@ public class AudioForegroundService extends Service {
                 PlaybackStateCompat.ACTION_PLAY |
                 PlaybackStateCompat.ACTION_PAUSE |
                 PlaybackStateCompat.ACTION_STOP |
-                PlaybackStateCompat.ACTION_PLAY_PAUSE
+                PlaybackStateCompat.ACTION_PLAY_PAUSE |
+                PlaybackStateCompat.ACTION_SKIP_TO_NEXT |
+                PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS
             )
             .build());
     }
@@ -205,6 +338,12 @@ public class AudioForegroundService extends Service {
         openIntent.putExtra("route", "/kirtan");
         openIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent pendingOpen = PendingIntent.getActivity(this, 100, openIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+
+        // Previous Action
+        Intent prevIntent = new Intent(this, AudioForegroundService.class);
+        prevIntent.setAction(ACTION_PREV);
+        PendingIntent pendingPrev = PendingIntent.getService(this, 104, prevIntent,
             PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
         // Play action
@@ -218,7 +357,13 @@ public class AudioForegroundService extends Service {
         pauseIntent.setAction(ACTION_PAUSE);
         PendingIntent pendingPause = PendingIntent.getService(this, 102, pauseIntent,
             PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-            
+
+        // Next Action
+        Intent nextIntent = new Intent(this, AudioForegroundService.class);
+        nextIntent.setAction(ACTION_NEXT);
+        PendingIntent pendingNext = PendingIntent.getService(this, 105, nextIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+
         // Stop action
         Intent stopIntent = new Intent(this, AudioForegroundService.class);
         stopIntent.setAction(ACTION_STOP);
@@ -233,24 +378,29 @@ public class AudioForegroundService extends Service {
             .setSmallIcon(R.drawable.ic_stat_notify)
             .setLargeIcon(albumArt)
             .setContentIntent(pendingOpen)
+            .setDeleteIntent(pendingStop)
             .setOngoing(isPlaying)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .setCategory(NotificationCompat.CATEGORY_TRANSPORT);
 
-        // Add Play or Pause button based on state
+        // Add action buttons
+        builder.addAction(android.R.drawable.ic_media_previous, "Previous", pendingPrev);
+
         if (isPlaying) {
             builder.addAction(android.R.drawable.ic_media_pause, "Pause", pendingPause);
         } else {
             builder.addAction(android.R.drawable.ic_media_play, "Play", pendingPlay);
         }
+
+        builder.addAction(android.R.drawable.ic_media_next, "Next", pendingNext);
         builder.addAction(android.R.drawable.ic_delete, "Stop", pendingStop);
 
-        // MediaStyle for lock screen controls
+        // MediaStyle for lock screen controls (show Prev, Play/Pause, Next in compact view)
         if (mediaSession != null) {
             builder.setStyle(new MediaStyle()
                 .setMediaSession(mediaSession.getSessionToken())
-                .setShowActionsInCompactView(0)); // Show play/pause in compact
+                .setShowActionsInCompactView(0, 1, 2));
         }
 
         return builder.build();
@@ -289,6 +439,7 @@ public class AudioForegroundService extends Service {
 
     @Override
     public void onDestroy() {
+        abandonAudioFocus();
         if (wakeLock != null && wakeLock.isHeld()) {
             wakeLock.release();
         }
@@ -304,3 +455,4 @@ public class AudioForegroundService extends Service {
         return null;
     }
 }
+

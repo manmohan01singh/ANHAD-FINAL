@@ -794,7 +794,27 @@ class NaamAbhyas {
                 // Flash effect for presence acknowledgment
                 medPresentBtn.classList.add('acknowledging');
                 setTimeout(() => medPresentBtn.classList.remove('acknowledging'), 500);
-                if (this.ritualEngine) this.ritualEngine.recordPresence();
+                
+                if (this.ritualEngine && typeof this.ritualEngine.recordPresence === 'function') {
+                    try { this.ritualEngine.recordPresence(); } catch(e) {}
+                } else if (typeof this.recordSession === 'function') {
+                    try {
+                        this.recordSession({
+                            hour: new Date().getHours(),
+                            duration: (this.config && this.config.duration) ? this.config.duration * 60 : 120,
+                            status: 'completed',
+                            endedEarly: false,
+                            startedAt: new Date().toISOString(),
+                            endedAt: new Date().toISOString()
+                        });
+                        if (typeof this.updateStreak === 'function') this.updateStreak();
+                        if (typeof this.updateUI === 'function') this.updateUI();
+                    } catch(e) {}
+                }
+                
+                if (typeof this.showToast === 'function') {
+                    this.showToast('✅ Presence Recorded! Waheguru Ji', 'success');
+                }
             });
         }
 
@@ -1315,9 +1335,9 @@ class NaamAbhyas {
 
             this.showToast(message, 'warning');
 
-            // Update streak (mark as missed)
+            // Log missed sessions without wiping multi-day streak
             if (this.history && this.history.statistics) {
-                this.history.currentStreak = 0;
+                this.history.statistics.skippedSessions = (this.history.statistics.skippedSessions || 0) + missedCount;
                 this.saveHistory();
             }
         }
@@ -3703,7 +3723,23 @@ class NaamAbhyas {
     loadHistory() {
         try {
             const stored = localStorage.getItem(NAAM_CONFIG.STORAGE_KEYS.HISTORY);
-            return stored ? JSON.parse(stored) : this.getDefaultHistory();
+            const history = stored ? JSON.parse(stored) : this.getDefaultHistory();
+
+            // Validate daily streak on load
+            if (history && history.statistics && history.statistics.lastStreakDate) {
+                const today = this.getTodayString();
+                const lastDate = new Date(history.statistics.lastStreakDate);
+                const currentDate = new Date(today);
+                const diffTime = Math.abs(currentDate - lastDate);
+                const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+                // If more than 1 day missed (last active was prior to yesterday), reset current streak
+                if (diffDays > 1) {
+                    console.log(`[NaamAbhyas] Daily streak expired (${diffDays} days since last completion) — resetting streak`);
+                    history.statistics.currentStreak = 0;
+                }
+            }
+            return history;
         } catch (e) {
             console.error('Failed to load history:', e);
             return this.getDefaultHistory();
@@ -4014,3 +4050,82 @@ NaamAbhyas.prototype._syncToNitemTracker = function (sessionData) {
     } catch (e) { console.error('[NaamAbhyas] Nitnem sync failed', e); }
 };
 
+/* ═══════════════════════════════════════════════════════════════════════════════
+   NAAM ALARM INTEGRATION PATCH
+   Disables ALL competing notification senders so naam-alarm.js is the
+   single source of truth. Applied after NaamAbhyas instance is ready.
+═══════════════════════════════════════════════════════════════════════════════ */
+(function patchNaamAbhyas() {
+    'use strict';
+
+    function applyPatches(app) {
+        window.naamAbhyasApp = app;
+
+        /* Override scheduleUpcomingNotifications — only writes schedule, no browser notifs */
+        app.scheduleUpcomingNotifications = function () {
+            try {
+                localStorage.setItem('naam_alarm_schedule', JSON.stringify(this.currentSchedule));
+                localStorage.setItem('naam_abhyas_schedule', JSON.stringify(this.currentSchedule));
+                window.dispatchEvent(new Event('naamScheduleUpdated'));
+                console.log('[NaamAbhyas] Schedule written for NaamAlarm');
+            } catch (e) {}
+        };
+
+        /* Kill all other notification dispatch paths */
+        app.scheduleServiceWorkerNotification   = function () {};
+        app.scheduleViaSW                       = function () { return Promise.resolve(); };
+        app.saveAlarmToIndexedDB                = function () { return Promise.resolve(); };
+        app.saveAlarmsToIndexedDB               = function () { return Promise.resolve(); };
+        app.registerPeriodicBackgroundSync      = function () { return Promise.resolve(); };
+        app.scheduleRandomSpiritualNotifications = function () {};
+
+        if (app.notificationEngine) {
+            app.notificationEngine.scheduleSessionNotifications   = function () {};
+            app.notificationEngine.scheduleCapacitorHourlyBatch   = function () {};
+        }
+
+        /* Disable RitualEngine popup — NaamAlarm owns that now */
+        if (app.ritualEngine && app.ritualEngine.triggerScheduledSession) {
+            app.ritualEngine.triggerScheduledSession = function () {
+                console.log('[RitualEngine] Blocked — NaamAlarm handles sessions');
+            };
+        }
+
+        /* Re-write schedule on enable/generate */
+        const _origGenerate = app.generateDailySchedule.bind(app);
+        app.generateDailySchedule = function () {
+            _origGenerate();
+            try {
+                localStorage.setItem('naam_alarm_schedule', JSON.stringify(this.currentSchedule));
+                window.dispatchEvent(new Event('naamScheduleUpdated'));
+            } catch {}
+        };
+
+        /* Refresh UI after NaamAlarm records a completion */
+        window.addEventListener('naamSessionCompleted', () => {
+            try {
+                app.history = app.loadHistory();
+                if (typeof app.updateUI === 'function') app.updateUI();
+                if (typeof app.renderScheduleTimeline === 'function') app.renderScheduleTimeline();
+            } catch (e) {}
+        });
+
+        console.log('[NaamAbhyas] NaamAlarm integration patch applied');
+    }
+
+    /* Poll for the app instance */
+    let attempts = 0;
+    const poll = setInterval(() => {
+        attempts++;
+        const app = window.naamAbhyas || window.naamAbhyasInstance;
+        if (app) { clearInterval(poll); applyPatches(app); return; }
+        if (attempts > 40) clearInterval(poll);
+    }, 500);
+
+    document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(() => {
+            const app = window.naamAbhyas || window.naamAbhyasInstance || window.naamAbhyasApp;
+            if (app && !window.naamAbhyasApp) applyPatches(app);
+        }, 1500);
+    }, { once: true });
+})();

@@ -12,7 +12,7 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
-const CACHE_VERSION = 'anhad-v10.11.0'; // v10.11.0: Fixed dark mode cards, settings panel lag, and nitnem font change
+const CACHE_VERSION = 'anhad-v10.12.0'; // v10.12.0: Fixed SW navigation preload warning, font changes not applying, reduced web padding
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 const DATA_CACHE = `${CACHE_VERSION}-data`;
@@ -98,6 +98,7 @@ const STATIC_FILES = [
   'nitnem/css/main.css',
   'nitnem/css/category.css',
   'nitnem/css/reader.css',
+  'nitnem/css/fonts.css',
   'nitnem/js/bani-metadata.js',
   'nitnem/js/banidb-api.js',
   'nitnem/js/hub-app.js',
@@ -107,6 +108,15 @@ const STATIC_FILES = [
   'nitnem/category/sggs.html',
   'nitnem/category/dasam.html',
   'nitnem/category/favorites.html',
+
+  // Nitnem Font Files - CRITICAL for font switching
+  'nitnem/g-fonts/pg_serif_r.ttf',
+  'nitnem/g-fonts/pg_serif_s.ttf',
+  'nitnem/g-fonts/mffjashan.ttf',
+  'nitnem/g-fonts/pg_khanna_c_6.ttf',
+  'nitnem/g-fonts/pixel_r_21.ttf',
+  'nitnem/g-fonts/RiyastiHastlikhat.ttf',
+  'nitnem/g-fonts/pg_muskan_5.ttf',
 
   // Nitnem legacy files (preserved for backwards compatibility)
   'nitnem/japji-sahib.html',
@@ -475,7 +485,8 @@ self.addEventListener('fetch', (event) => {
   );
 
   if (isLiveStream) {
-    event.respondWith(fetch(event.request));
+    // Return without calling event.respondWith to bypass SW fetch interception completely!
+    // This allows browser native HTML5 Audio player to load streams without SW CORS errors.
     return;
   }
 
@@ -526,19 +537,27 @@ self.addEventListener('fetch', (event) => {
  * Uses the Navigation Preload response if available (parallel fetch the browser
  * already started), otherwise falls back to staleWhileRevalidate.
  * This is the fastest possible navigation strategy — zero SW-boot overhead.
+ * FIX: Properly handle preloadResponse to avoid console warnings
  */
 async function navigateWithPreload(event) {
   try {
     // Try to use the Navigation Preload response (browser fetched this in parallel)
-    const preloadResponse = await event.preloadResponse;
-    if (preloadResponse && preloadResponse.ok) {
-      // Cache the preload response for next time
-      const cache = await caches.open(DYNAMIC_CACHE);
-      cache.put(event.request, preloadResponse.clone()).catch(() => null);
-      return preloadResponse;
+    // CRITICAL FIX: Check if preloadResponse exists before awaiting
+    if (event.preloadResponse) {
+      const preloadResponse = await event.preloadResponse;
+      if (preloadResponse && preloadResponse.ok) {
+        // Cache the preload response for next time
+        const cache = await caches.open(DYNAMIC_CACHE);
+        // Use waitUntil to ensure cache operation completes
+        event.waitUntil(
+          cache.put(event.request, preloadResponse.clone()).catch(() => null)
+        );
+        return preloadResponse;
+      }
     }
   } catch (e) {
     // preloadResponse not available or failed — fall through to SWR
+    console.log('[SW] Preload response unavailable or failed:', e.message);
   }
   return staleWhileRevalidate(event.request);
 }

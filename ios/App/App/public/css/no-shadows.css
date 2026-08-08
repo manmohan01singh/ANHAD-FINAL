@@ -1,79 +1,16 @@
 /* ═══════════════════════════════════════════════════════════════════════════════
    NO SHADOWS - Global Shadow Removal Override
-   Apply this CSS last to remove ALL shadows from buttons and cards
+   PERF FIX: Removed filter:none overrides that were breaking icon tints/images
+   STAB FIX: No longer nukes filter on imgs/svgs/btns to prevent icon disappearing
    ═══════════════════════════════════════════════════════════════════════════════ */
 
-/* AGGRESSIVE: Remove all box-shadows globally with maximum specificity */
+/* Remove box-shadows globally — but do NOT remove filter (icons need CSS filters) */
 *,
 *::before,
-*::after,
-div,
-button,
-a,
-section,
-article,
-header,
-nav,
-footer,
-main {
+*::after {
   box-shadow: none !important;
   -webkit-box-shadow: none !important;
   -moz-box-shadow: none !important;
-}
-
-/* Target specific card and button classes */
-.hero-card,
-.hero-card *,
-.practice-card,
-.practice-card *,
-.quick-card,
-.quick-card *,
-.event-card,
-.event-card *,
-.clay-card,
-.clay-card *,
-.clay-btn,
-.clay-btn *,
-.clay-blue,
-.clay-purple,
-.clay-green,
-.clay-gold,
-.clay-orange,
-.clay-rose,
-.clay-red,
-button,
-button *,
-.header__btn,
-.header__btn *,
-.header__logo-btn,
-.header__logo-btn *,
-.header__theme-dot,
-.header__badge,
-.mini-player,
-.mini-player *,
-.bottom-nav,
-.bottom-nav *,
-.nav-item,
-.nav-item *,
-.quick-card--blue,
-.quick-card--blue *,
-.quick-card--purple,
-.quick-card--purple *,
-.quick-card--green,
-.quick-card--green *,
-.quick-card--gold,
-.quick-card--gold *,
-.quick-card--rose,
-.quick-card--rose *,
-[class*="card"],
-[class*="card"] *,
-[class*="btn"],
-[class*="btn"] * {
-  box-shadow: none !important;
-  -webkit-box-shadow: none !important;
-  -moz-box-shadow: none !important;
-  filter: none !important;
-  -webkit-filter: none !important;
 }
 
 /* Remove shadow CSS variables */
@@ -99,13 +36,5 @@ body {
   --clay-shadow-outer-light: none !important;
   --clay-shadow-inner-light: none !important;
   --clay-shadow-convex-light: none !important;
-}
-
-/* Remove any drop-shadow filters */
-img,
-svg,
-.icon {
-  filter: none !important;
-  -webkit-filter: none !important;
 }
 

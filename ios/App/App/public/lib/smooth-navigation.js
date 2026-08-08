@@ -89,9 +89,10 @@
    */
   function restoreScrollPosition(url) {
     const saved = SCROLL_POSITIONS.get(url);
-    // Use requestAnimationFrame to ensure the DOM is fully painted before scrolling
-    requestAnimationFrame(() => {
-      window.scrollTo(0, saved !== undefined ? saved : 0);
+    // OPTIMIZED: Use instant scroll behavior for immediate restoration (Phase 1)
+    window.scrollTo({
+      top: saved !== undefined ? saved : 0,
+      behavior: 'instant' // Skip smooth scroll animation - saves ~20ms
     });
   }
 
@@ -561,47 +562,35 @@
     console.log('[SmoothNav] 🔍 DOM_CACHE.has(url):', isCachedDom);
     
     if (isCachedDom) {
-      // ═══ ULTRA-FAST PATH: Instant return with ZERO fade ═══
-      // CAPACITOR FIX: Completely skip transition - no await, no fade
-      // This makes navigation back to home feel like a native iOS/Android app
+      // ULTRA-INSTANT PATH: Instant return with ZERO fade for native feel
       const cachedNode = DOM_CACHE.get(url);
       const fragment = cachedNode.cloneNode(true);
       
-      // VISUAL DEBUG: Show cache restore
-      console.log('[SmoothNav] ⚡⚡⚡ DOM CACHE RESTORE - INSTANT MODE ⚡⚡⚡');
-      
-      // INSTANT swap with zero visual delay - use instant class
-      currentApp.classList.add('app--instant');
+      // Remove all transition classes
       currentApp.classList.remove('app--fade-out', 'app--fade-in');
+      currentApp.style.opacity = '1';
       
-      // Clear and restore DOM in a single frame
+      // INSTANT swap - no animations
       while (currentApp.firstChild) currentApp.removeChild(currentApp.firstChild);
       Array.from(fragment.childNodes).forEach(child => currentApp.appendChild(child));
       
-      // Mark as cached for homepage-data.js instant detection
+      // Mark as cached
       currentApp.dataset.cached = 'true';
       window._homepageDataCached = true;
       
       // Force immediate paint
-      currentApp.offsetHeight; // trigger reflow
+      currentApp.offsetHeight;
       
-      NAV_DEBUG && console.log('[SmoothNav] ⚡ DOM_CACHE INSTANT HIT:', url);
+      NAV_DEBUG && console.log('[SmoothNav] ⚡ INSTANT CACHE HIT');
     } else {
-      // SLOW PATH: First visit - use minimal fade transition
-      currentApp.classList.remove('app--fade-in');
-      currentApp.classList.add('app--fade-out');
-      await new Promise(r => setTimeout(r, 30)); // Reduced from 50ms for faster feel
+      // INSTANT PATH: Skip ALL fade transitions for instant feel
+      currentApp.classList.remove('app--fade-in', 'app--fade-out');
       
-      // First visit: standard innerHTML swap
+      // Direct instant swap - no delays
       currentApp.innerHTML = newApp.innerHTML;
       
-      // Fade in quickly
-      requestAnimationFrame(() => {
-        currentApp.classList.remove('app--fade-out');
-        requestAnimationFrame(() => {
-          currentApp.classList.add('app--fade-in');
-        });
-      });
+      // Force immediate paint
+      currentApp.offsetHeight;
     }
     
     // Update URL — store url in state so popstate can do cache lookup

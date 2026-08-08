@@ -449,6 +449,7 @@
             ═══════════════════════════════════════════════════════════════════ -->
             <a href="../nitnem/my-pothi.html" class="card pothi-redirect-card" id="pothiRedirectCard" style="text-decoration:none;color:inherit;display:block;">
                 <div class="card-glow nitnem-glow"></div>
+                
                 <div class="card-header">
                     <div class="card-icon book-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -465,12 +466,32 @@
                         <path d="M9 18l6-6-6-6"/>
                     </svg>
                 </div>
-                <div class="card-body" style="padding: 16px 20px;">
-                    <p style="font-size: 14px; color: var(--text-secondary); margin: 0;">
-                        ✅ Mark your daily Nitnem Banis complete<br>
-                        📊 Track your reading progress<br>
-                        🙏 Build your spiritual routine
-                    </p>
+
+                <div class="card-body">
+                    <div class="pothi-chips-row">
+                        <span class="pothi-chip">ਜਪੁਜੀ ਸਾਹਿਬ</span>
+                        <span class="pothi-chip">ਜਾਪੁ ਸਾਹਿਬ</span>
+                        <span class="pothi-chip">ਤ੍ਵ ਪ੍ਰਸਾਦਿ</span>
+                        <span class="pothi-chip">ਚੌਪਈ ਸਾਹਿਬ</span>
+                        <span class="pothi-chip">ਅਨੰਦੁ ਸਾਹਿਬ</span>
+                    </div>
+                </div>
+
+                <div class="card-footer">
+                    <div class="stat-item">
+                        <span class="stat-value">5 Banis</span>
+                        <span class="stat-label">Daily Path</span>
+                    </div>
+                    <div class="stat-divider"></div>
+                    <div class="stat-item">
+                        <span class="stat-value">📖 Open Pothi</span>
+                        <span class="stat-label">Tap to Read</span>
+                    </div>
+                    <div class="stat-divider"></div>
+                    <div class="stat-item">
+                        <span class="stat-value">⚡ Tracker</span>
+                        <span class="stat-label">Progress & Streak</span>
+                    </div>
                 </div>
             </a>
 
@@ -738,7 +759,7 @@
                     </div>
                     <div class="card-title-group">
                         <h2 class="card-title">ਲਗਾਤਾਰਤਾ</h2>
-                        <p class="card-subtitle">Streak & Achievements</p>
+                        <p class="card-subtitle">Streak & Achievements <span class="achievement-count-pill" id="achievementSummaryBadge" style="margin-left:6px;padding:2px 8px;border-radius:10px;background:rgba(212,148,58,0.15);color:var(--ac-gold, #D4943A);font-weight:700;font-size:11px;display:inline-block;">🏆 0/6</span></p>
                     </div>
                     <button class="streak-action-btn" id="streakToggleBtn" aria-label="Toggle achievements" onclick="document.getElementById('streakBody').classList.toggle('expanded'); this.classList.toggle('rotated');">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -782,7 +803,13 @@
 
                     <!-- Achievements Grid -->
                     <div class="achievements-section">
-                        <h3 class="achievements-title">Achievements</h3>
+                        <div class="achievements-header-row" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                            <h3 class="achievements-title" style="margin:0;">Achievements</h3>
+                            <span class="achievements-progress-text" id="achievementsProgressPill" style="font-size:12px;font-weight:600;color:var(--text-secondary, #86868b);">🏆 0 of 6 Unlocked (0%)</span>
+                        </div>
+                        <div class="achievements-bar-track" style="height:6px;background:rgba(120,120,128,0.15);border-radius:4px;overflow:hidden;margin-bottom:14px;">
+                            <div class="achievements-bar-fill" id="achievementsProgressBarFill" style="width:0%;height:100%;background:linear-gradient(90deg, #FF9500, #34C759);transition:width 0.4s ease;"></div>
+                        </div>
                         <div class="achievements-grid" id="achievementsGrid">
                             <!-- Achievements loaded from JSON -->
                             <div class="achievement-card locked" data-achievement="first-amritvela">

@@ -123,7 +123,7 @@
   <!-- Google Fonts for multi-script typography pairing -->
   <link href="https://fonts.googleapis.com/css2?family=Baloo+Paaji+2:wght@400;600;800&family=Cinzel+Decorative:wght@400;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500;600;700&family=Mukta+Mahee:wght@300;400;500;600;700&family=Noto+Sans+Gurmukhi:wght@300;400;500;600;700&family=Noto+Serif+Devanagari:wght@300;400;600;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Poppins:wght@300;400;500;600&family=Rozha+One&family=Yatra+One&display=optional" rel="stylesheet">
   
-  <link rel="stylesheet" href="shabad-reader.css?v=2">
+  <link rel="stylesheet" href="shabad-reader.css?v=45">
   
   <!-- Global Theme System -->
   <link rel="stylesheet" href="../css/theme-variables.css">
@@ -190,19 +190,16 @@
                 </svg>
             </button>
         </div>
+        <!-- Reading Progress Bar attached to header -->
+        <div class="progress-track" id="progressTrack">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
     </nav>
 
     <!-- ═══════════════════════════════════════════════════════════
          READING AREA
          ═══════════════════════════════════════════════════════════ -->
     <main class="shabad-content" id="shabadContent">
-
-        <!-- Sacred Theme Switcher was moved to settings -->
-
-        <!-- Reading Progress Bar -->
-        <div class="progress-track" id="progressTrack">
-            <div class="progress-fill" id="progressFill"></div>
-        </div>
 
         <!-- Loading State -->
         <div class="loading-state" id="loadingState" style="text-align:center;padding:80px 0;">
@@ -288,8 +285,15 @@
                     </div>
                     <!-- Font Selection -->
                     <div class="settings-row clickable" id="fontRowBtn">
-                        <span class="row-label">Font</span>
+                        <span class="row-label">Gurmukhi Font</span>
                         <span class="row-value blue" id="activeFontVal">Noto Sans &gt;</span>
+                    </div>
+                    <!-- Gurmukhi Font Submenu -->
+                    <div class="font-submenu" id="fontSubmenu" style="display: none; padding: 8px 16px; flex-direction: column; gap: 4px;">
+                        <button class="font-option active" data-font="noto">Noto Sans Gurmukhi</button>
+                        <button class="font-option" data-font="mukta">Mukta Mahee</button>
+                        <button class="font-option" data-font="raavi">Raavi</button>
+                        <button class="font-option" data-font="gurbani">AnmolLipi</button>
                     </div>
                     <!-- Line Spacing -->
                     <div class="settings-row">
@@ -463,10 +467,9 @@
 
     </div><!-- /app -->
 
-    <script src="shabad-reader.js"></script>
+    <script src="shabad-reader.js?v=43"></script>
     <!-- Global Engine -->
     <script src="../lib/capacitor-notifications-global.js"></script>
-    <script src="../lib/anhad-widget-bridge.js"></script>
     <script src="../lib/anhad-audio-singleton.js?v=2.1.5"></script>
 
     <!-- ═══════════════════════════════════════════════════════════

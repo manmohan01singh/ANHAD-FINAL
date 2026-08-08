@@ -83,9 +83,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700;800;900&family=Noto+Sans+Gurmukhi:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
-    /* ─── PLAYER SHEET DISABLED: Using lightweight inline player instead ─── */
-    #playerSheet, #playerBackdrop { display: none !important; }
-
     /* ═══════════════════════════════════════════════════════════════
        ULTIMATE PREMIUM DESIGN SYSTEM
        iOS-Level Visual DNA · Apple SF + Gurbani Golden Touch
@@ -2069,7 +2066,7 @@
 
     /* Drag Handle Header — refined glass */
     .player-sheet-header {
-      height: 36px;
+      height: 44px;
       padding: 0 16px;
       display: flex;
       align-items: center;
@@ -2081,6 +2078,7 @@
       -webkit-backdrop-filter: blur(20px) saturate(200%);
       position: relative;
       z-index: 3;
+      border-bottom: 0.5px solid var(--separator);
     }
     .player-sheet-header:active {
       cursor: grabbing;
@@ -2093,22 +2091,39 @@
       border-radius: 100px;
       box-shadow: 0 0 8px rgba(255,179,0,0.3);
     }
-    .player-close-chevron {
+    .player-back-btn {
       position: absolute;
-      left: 16px;
+      left: 12px;
       top: 50%;
       transform: translateY(-50%);
       color: var(--text-primary);
       cursor: pointer;
       display: flex;
       align-items: center;
-      padding: 6px;
-      border-radius: 50%;
+      gap: 4px;
+      padding: 6px 14px;
+      border-radius: 100px;
+      font-size: 13px;
+      font-weight: 700;
       transition: all 0.2s var(--ease-out);
-      background: var(--bg-glass);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      border: 0.5px solid var(--separator);
+      background: var(--bg-secondary);
+      border: 0.5px solid var(--border-color);
+    }
+    .player-back-btn:active {
+      background: var(--gold-gradient);
+      color: #000;
+      transform: translateY(-50%) scale(0.95);
+    }
+    .player-header-title {
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--gold-accent);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
     }
     .player-close-chevron:active {
       background: var(--gold-accent);
@@ -4610,12 +4625,14 @@
     
     <!-- Drag handle header -->
     <div class="player-sheet-header" id="playerDragHeader">
-      <div class="player-close-chevron" id="playerCloseBtn">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="6 9 12 15 18 9"/>
+      <button class="player-back-btn" id="playerCloseBtn" aria-label="Minimize or Back">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"/>
         </svg>
-      </div>
+        <span>Back</span>
+      </button>
       <div class="player-drag-handle"></div>
+      <div class="player-header-title">Sadhsangat Watch</div>
     </div>
 
     <!-- Ambient Mode Lighting glow -->
@@ -8073,7 +8090,7 @@
             openIosActionSheet(v);
             return;
           }
-          playInline(card, v.videoId);
+          openPlayer(v.videoId, v.title, v.channelName, v.channelThumbnail || '', true);
         });
         return card;
       }
@@ -8184,7 +8201,7 @@
           openIosActionSheet(v);
           return;
         }
-        playInline(card, v.videoId);
+        openPlayer(v.videoId, v.title, v.channelName, v.channelThumbnail || '', false);
       });
 
       return card;
@@ -8333,74 +8350,179 @@
 
     /* ── WATCH PAGE SHEET PLAYER CONTROLLER ───────────── */
     function openPlayer(videoId, title, channelName, channelThumbnail, isLive = false) {
-      // Save to watch history
-      saveToWatchHistory({ videoId, title, channelName, channelThumbnail, isLive, duration: isLive ? 'LIVE' : '--:--', progress: '0%', watchedAt: Date.now() });
       State.currentPlaying = { videoId, title, channelName, channelThumbnail, isLive };
+      saveToWatchHistory({ videoId, title, channelName, channelThumbnail, isLive, duration: isLive ? 'LIVE' : '--:--', progress: '0%', watchedAt: Date.now() });
 
       // Pause Anhad background audio
       if (window.AnhadAudio && typeof window.AnhadAudio.pause === 'function') window.AnhadAudio.pause();
 
-      // Remove any existing overlay
+      // Remove legacy temporary overlay if present
       const existing = document.getElementById('anhad-inline-player-overlay');
       if (existing) existing.remove();
 
-      // Build clean fullscreen overlay
-      const overlay = document.createElement('div');
-      overlay.id = 'anhad-inline-player-overlay';
-      overlay.style.cssText = [
-        'position:fixed', 'inset:0', 'z-index:99999',
-        'background:rgba(0,0,0,0.96)',
-        'display:flex', 'flex-direction:column',
-        'align-items:center', 'justify-content:center',
-        'padding:env(safe-area-inset-top,16px) 12px env(safe-area-inset-bottom,16px)',
-        'animation:aipoFadeIn .2s ease'
-      ].join(';');
+      const playerSheet = $('playerSheet');
+      const playerBackdrop = $('playerBackdrop');
 
-      overlay.innerHTML = `
-        <style>
-          @keyframes aipoFadeIn{from{opacity:0}to{opacity:1}}
-        </style>
-        <div style="width:100%;max-width:760px;display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;color:#fff;gap:8px;">
-          <div style="flex:1;font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#FFB300;">${title || 'Gurbani'}</div>
-          <button id="anhad-close-overlay" style="background:rgba(255,255,255,0.1);border:none;color:#fff;font-weight:800;font-size:13px;padding:8px 18px;border-radius:20px;cursor:pointer;flex-shrink:0;">✕ Close</button>
-        </div>
-        <div style="width:100%;max-width:760px;position:relative;padding-bottom:56.25%;background:#000;border-radius:14px;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,0.7);">
-          <iframe
-            src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&playsinline=1"
-            frameborder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowfullscreen
-            style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;">
-          </iframe>
-        </div>
-        <div style="margin-top:10px;color:rgba(255,255,255,0.45);font-size:11px;">${channelName || ''}</div>
-      `;
+      $('playerDetailTitle').textContent = title || 'Gurbani Stream';
+      $('playerMiniTitle').textContent = title || 'Gurbani Stream';
+      $('playerDetailChannel').textContent = channelName || 'Sadhsangat Live';
+      $('playerMiniChannel').textContent = channelName || 'Sadhsangat Live';
 
-      document.body.appendChild(overlay);
-      overlay.querySelector('#anhad-close-overlay').addEventListener('click', () => overlay.remove());
+      const avatarUrl = channelThumbnail || `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='38' height='38' viewBox='0 0 38 38'><rect width='100%' height='100%' fill='%23FFB300'/><text x='50%' y='55%' text-anchor='middle' fill='black' font-size='16' font-family='sans-serif' font-weight='bold'>${getInitials(channelName)}</text></svg>`;
+      $('playerChannelAvatar').src = avatarUrl;
+      $('audioDiscSpin').style.backgroundImage = `url('https://i.ytimg.com/vi/${videoId}/mqdefault.jpg')`;
+
+      requestIdleCallback(() => { extractAmbientColor(videoId); }, { timeout: 1000 });
+      $('playerProgressBar').parentElement.style.setProperty('--progress', 0);
+
+      const channel = State.myChannels.find(c => c.channelName === channelName);
+      updateSubscribeBtnState(channel);
+
+      if (isLive) {
+        $('playerProgressBar').style.display = 'none';
+        $('playerLiveBadgeRow').style.display = 'flex';
+        $('playerVideoViewsRow').textContent = 'Streaming Live';
+      } else {
+        $('playerProgressBar').style.display = 'block';
+        $('playerLiveBadgeRow').style.display = 'none';
+        $('playerVideoViewsRow').textContent = 'Video Playback';
+      }
+
+      // Populate Up Next list
+      renderPlayerRelatedList(videoId);
+
+      // Open Watch Page Sheet
+      playerSheet.style.display = 'flex';
+      playerBackdrop.style.display = 'block';
+      playerSheet.className = 'player-sheet open';
+      playerBackdrop.classList.add('visible');
+      document.body.classList.add('mini-player-active');
+
+      State.likeState = false;
+      $('playerLikeBtn').style.color = 'var(--text-primary)';
+      $('playerLikeText').textContent = 'Like';
+
+      loadYtIframePlayer(videoId);
+      if (bgPlayEnabled) { setupNativeAudioCommandListener(); startNativeAudioService(); }
       haptic('medium');
+      window.dispatchEvent(new CustomEvent('sadhsangatPlayerOpened', { detail: { title, channelName } }));
     }
 
-    /* ── INLINE CARD PLAYER (replaces thumbnail with iframe) ── */
-    function playInline(card, videoId) {
-      if (window.AnhadAudio && typeof window.AnhadAudio.pause === 'function') window.AnhadAudio.pause();
-      const thumbWrap = card.querySelector('.yt-video-thumb-wrap') || card.querySelector('.yt-live-now-thumb-wrap');
-      if (thumbWrap) {
-        thumbWrap.style.position = 'relative';
-        thumbWrap.style.paddingBottom = '56.25%';
-        thumbWrap.style.height = '0';
-        thumbWrap.style.overflow = 'hidden';
-        thumbWrap.innerHTML = `<iframe
-          src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&playsinline=1"
-          frameborder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowfullscreen
-          style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;border-radius:12px;">
-        </iframe>`;
-        card.style.pointerEvents = 'none';
-      } else {
-        openPlayer(videoId, '', '', '', false);
+    /* ── POPULATE UP NEXT / RECOMMENDED FEED ON WATCH PAGE ── */
+    function renderPlayerRelatedList(currentVideoId) {
+      const container = $('playerRelatedList');
+      if (!container) return;
+      container.innerHTML = '';
+
+      const allItems = [];
+      if (Array.isArray(State.live)) {
+        State.live.forEach(item => {
+          if (item.videoId && item.videoId !== currentVideoId) {
+            allItems.push({ ...item, isLive: true });
+          }
+        });
       }
+      const videoPool = (Array.isArray(State.videos) && State.videos.length > 0) ? State.videos : (State.streams || []);
+      videoPool.forEach(item => {
+        if (item.videoId && item.videoId !== currentVideoId && !allItems.some(x => x.videoId === item.videoId)) {
+          allItems.push({ ...item, isLive: item.isLive || false });
+        }
+      });
+
+      if (allItems.length === 0) {
+        container.innerHTML = `<div style="text-align:center; padding:16px; color:var(--text-secondary); font-size:12px;">No related videos found</div>`;
+        return;
+      }
+
+      const nextItems = allItems.slice(0, 12);
+      nextItems.forEach(v => {
+        const itemRow = document.createElement('div');
+        itemRow.style.cssText = `
+          display: flex;
+          gap: 12px;
+          align-items: center;
+          padding: 8px;
+          background: var(--bg-secondary);
+          border-radius: 14px;
+          cursor: pointer;
+          transition: transform 0.15s ease, background 0.15s ease;
+          border: 0.5px solid var(--border-color);
+        `;
+
+        const thumb = document.createElement('div');
+        thumb.style.cssText = `
+          width: 110px;
+          aspect-ratio: 16/9;
+          position: relative;
+          border-radius: 8px;
+          overflow: hidden;
+          flex-shrink: 0;
+          background: #000;
+        `;
+        const img = document.createElement('img');
+        img.src = `https://img.youtube.com/vi/${v.videoId}/mqdefault.jpg`;
+        img.style.cssText = `width: 100%; height: 100%; object-fit: cover;`;
+        thumb.appendChild(img);
+
+        if (v.isLive) {
+          const liveBadge = document.createElement('span');
+          liveBadge.style.cssText = `
+            position: absolute; bottom: 4px; right: 4px;
+            background: var(--yt-red); color: #fff;
+            font-size: 9px; font-weight: 800; padding: 1px 4px;
+            border-radius: 4px; text-transform: uppercase;
+          `;
+          liveBadge.textContent = 'LIVE';
+          thumb.appendChild(liveBadge);
+        } else if (v.duration) {
+          const dur = document.createElement('span');
+          dur.style.cssText = `
+            position: absolute; bottom: 4px; right: 4px;
+            background: rgba(0,0,0,0.8); color: #fff;
+            font-size: 9px; font-weight: 700; padding: 1px 4px;
+            border-radius: 4px;
+          `;
+          dur.textContent = v.duration;
+          thumb.appendChild(dur);
+        }
+
+        const info = document.createElement('div');
+        info.style.cssText = `flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px;`;
+
+        const title = document.createElement('div');
+        title.style.cssText = `
+          font-size: 13px; font-weight: 700; color: var(--text-primary);
+          display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+          overflow: hidden; line-height: 1.3;
+        `;
+        title.textContent = v.title || 'Gurbani Stream';
+
+        const channel = document.createElement('div');
+        channel.style.cssText = `font-size: 11px; font-weight: 600; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;`;
+        channel.textContent = v.channelName || 'Sadhsangat Live';
+
+        const meta = document.createElement('div');
+        meta.style.cssText = `font-size: 10px; color: var(--text-tertiary);`;
+        meta.textContent = v.isLive ? 'Live Gurbani Stream' : (v.views || 'Gurbani Video');
+
+        info.appendChild(title);
+        info.appendChild(channel);
+        info.appendChild(meta);
+
+        itemRow.appendChild(thumb);
+        itemRow.appendChild(info);
+
+        itemRow.addEventListener('click', () => {
+          openPlayer(v.videoId, v.title, v.channelName, v.channelThumbnail || '', v.isLive || false);
+        });
+
+        container.appendChild(itemRow);
+      });
+    }
+
+    /* ── INLINE CARD PLAYER FALLBACK ── */
+    function playInline(card, videoId) {
+      openPlayer(videoId, '', '', '', false);
     }
 
     function updateSubscribeBtnState(channel) {

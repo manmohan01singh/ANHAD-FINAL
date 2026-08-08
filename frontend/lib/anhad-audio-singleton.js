@@ -746,6 +746,14 @@
     
     isTransitioning = true;
     console.log('[AnhadAudio] 🔄 Starting track transition...');
+    
+    // SAFETY NET: Force-reset isTransitioning after 10s in case Promise chain hangs
+    const safetyResetTimer = setTimeout(() => {
+      if (isTransitioning) {
+        console.warn('[AnhadAudio] 🔔 Safety timeout: resetting isTransitioning after 10s hang');
+        isTransitioning = false;
+      }
+    }, 10000);
 
     try {
       // Reset manual offset to 0 if the user was close to LIVE (within 10s)
@@ -786,19 +794,38 @@
       persistState();
 
       const trackUrl = STREAMS[currentStream].getTrackUrl(currentTrackIndex);
+      
+      // CRITICAL FIX: Validate track URL before attempting to load
+      if (!trackUrl || typeof trackUrl !== 'string' || trackUrl.trim() === '') {
+        console.error('[AnhadAudio] ❌ Invalid track URL, skipping transition');
+        clearTimeout(safetyResetTimer);
+        isTransitioning = false;
+        return;
+      }
+      
       updateMediaSession();
 
       PlaybackQueueController.loadAndPlay(trackUrl, 'metadata').then(() => {
         PlaybackQueueController.seek(0);
       }).catch((err) => {
         console.error('[AnhadAudio] ❌ Track transition failed:', err);
+        // RECOVERY: Retry with a fresh playStream call after 3 seconds
+        // This prevents the app from silently freezing after a CDN/network error
+        setTimeout(() => {
+          if (!isPlaying && currentStream) {
+            console.log('[AnhadAudio] 🔄 Recovery: Retrying playStream after transition failure');
+            try { playStream(currentStream); } catch(e) { console.error('[AnhadAudio] Recovery playStream failed:', e); }
+          }
+        }, 3000);
       }).finally(() => {
         // CRITICAL FIX: Always reset transition flag
+        clearTimeout(safetyResetTimer);
         isTransitioning = false;
         console.log('[AnhadAudio] ✅ Track transition complete');
       });
     } catch (err) {
       console.error('[AnhadAudio] ❌ Fatal error in handleTrackEnded:', err);
+      clearTimeout(safetyResetTimer);
       isTransitioning = false; // Reset flag on error
     }
   }
@@ -824,13 +851,47 @@
       offset: manualOffset
     };
     persistState();
-    _nativeServiceStarted = false;
     // Update MediaSession so Android notification shows Paused (not Playing)
     if ('mediaSession' in navigator) {
       navigator.mediaSession.playbackState = 'paused';
     }
     if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.AudioService) {
-      try { window.Capacitor.Plugins.AudioService.stop(); } catch(e) { /* silently fail */ }
+      try { window.Capacitor.Plugins.AudioService.updateState({ action: 'PAUSE' }); } catch(e) { /* silently fail */ }
+    }
+  }
+
+  function pauseFromNative() {
+    if (!isPlaying) return;
+    PlaybackQueueController.pause();
+    pauseAnchor = {
+      timestamp: Date.now(),
+      offset: manualOffset
+    };
+    persistState();
+    if ('mediaSession' in navigator) {
+      navigator.mediaSession.playbackState = 'paused';
+    }
+  }
+
+  function resumeFromNative() {
+    if (isPlaying) return;
+    if (pauseAnchor) {
+      const elapsedPause = Math.floor((Date.now() - pauseAnchor.timestamp) / 1000);
+      manualOffset = pauseAnchor.offset + elapsedPause;
+      pauseAnchor = null;
+    }
+    playStream(currentStream || 'darbar');
+  }
+
+  function stopFromNative() {
+    PlaybackQueueController.stop();
+    manualOffset = 0;
+    pauseAnchor = null;
+    persistState();
+    _nativeServiceStarted = false;
+    if ('mediaSession' in navigator) {
+      navigator.mediaSession.playbackState = 'none';
+      navigator.mediaSession.metadata = null;
     }
   }
 
@@ -1115,6 +1176,9 @@
     play,
     pause,
     resume,
+    pauseFromNative,
+    resumeFromNative,
+    stopFromNative,
     resumeInPlace,
     toggle,
     stop,

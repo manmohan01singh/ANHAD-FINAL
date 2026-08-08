@@ -30,11 +30,20 @@
   const IS_CAPACITOR = !!(window.Capacitor && window.Capacitor.isNative);
   const IS_HTTPS_WEB  = !IS_CAPACITOR && location.protocol === 'https:';
 
+  function isCorsCdnUrl(rawUrl) {
+    if (!rawUrl) return false;
+    return rawUrl.includes('pub-525228169e0c44e38a67c306ba1a458c.r2.dev') ||
+           rawUrl.includes('pub-8bf31fc1f2a44451b40a3ded7e07fac2.r2.dev') ||
+           rawUrl.startsWith('/') ||
+           (typeof location !== 'undefined' && rawUrl.startsWith(location.origin));
+  }
+
   function toProxiedUrl(rawUrl) {
     if (!rawUrl) return rawUrl;
-    if (!IS_HTTPS_WEB) return rawUrl;          // Capacitor / http:// local – use as-is
-    if (rawUrl.startsWith('https://')) return rawUrl; // already HTTPS – no proxy needed
-    // HTTP stream on HTTPS web → route through edge proxy
+    if (!IS_HTTPS_WEB && !IS_CAPACITOR) return rawUrl;
+    if (rawUrl.startsWith('/api/stream')) return rawUrl;
+    if (isCorsCdnUrl(rawUrl)) return rawUrl;
+    // Route external live streams through edge proxy so CORS Access-Control-Allow-Origin: * is present
     return '/api/stream?url=' + encodeURIComponent(rawUrl);
   }
 
@@ -243,6 +252,7 @@
   let currentTrackArtist = '';
   let manualOffset = 0; // seconds behind live edge
   let pauseAnchor = null; // { timestamp, offset }
+  let isTransitioning = false; // CRITICAL FIX: Prevent concurrent track transitions
 
   const listeners = {
     statechange: [],
@@ -396,6 +406,7 @@
   const PlaybackQueueController = {
     audio: null,
     promiseChain: Promise.resolve(),
+    endedDebounceTimer: null, // CRITICAL FIX: Debounce timer for 'ended' event
 
     init() {
       if (this.audio) return;
@@ -405,18 +416,18 @@
       this.audio.volume = 0.7;
 
       // HTML5 event listeners
-      this.audio.addEventListener('play', () => {
-        isPlaying = true;
+      const notifyStateChange = (playingState) => {
+        isPlaying = playingState;
+        isLoading = false;
+        emit('loading', { isLoading: false });
         emit('statechange', getPublicState());
         persistState();
         updateNativeMediaState();
-      });
-      this.audio.addEventListener('pause', () => {
-        isPlaying = false;
-        emit('statechange', getPublicState());
-        persistState();
-        updateNativeMediaState();
-      });
+      };
+
+      this.audio.addEventListener('play', () => notifyStateChange(true));
+      this.audio.addEventListener('playing', () => notifyStateChange(true));
+      this.audio.addEventListener('pause', () => notifyStateChange(false));
       this.audio.addEventListener('timeupdate', () => {
         persistState();
         // Dispatch UI timeupdate
@@ -430,16 +441,84 @@
         }
       });
       this.audio.addEventListener('ended', () => {
-        console.log('[PlaybackQueueController] Track ended naturally');
-        handleTrackEnded();
+        console.log('[PlaybackQueueController] Track ended event fired');
+        
+        // CRITICAL FIX: Debounce to prevent duplicate 'ended' events (Android MediaSession bug)
+        if (this.endedDebounceTimer) {
+          console.warn('[PlaybackQueueController] ⚠️ Duplicate ended event detected within 200ms, ignoring');
+          clearTimeout(this.endedDebounceTimer);
+        }
+        
+        this.endedDebounceTimer = setTimeout(() => {
+          console.log('[PlaybackQueueController] ✅ Debounced ended event, calling handleTrackEnded()');
+          handleTrackEnded();
+          this.endedDebounceTimer = null;
+        }, 200); // 200ms debounce window
       });
       this.audio.addEventListener('error', (e) => {
-        console.error('[PlaybackQueueController] HTMLAudio Error:', e);
-        emit('error', {
-          message: 'Audio playback error',
-          stream: currentStream,
-          trackTitle: currentTrackTitle
+        console.error('[PlaybackQueueController] ❌ HTMLAudio Error Event:', {
+          error: e,
+          errorCode: this.audio.error?.code,
+          errorMessage: this.audio.error?.message,
+          networkState: this.audio.networkState,
+          readyState: this.audio.readyState,
+          currentSrc: this.audio.currentSrc,
+          currentStream: currentStream,
+          currentTrackIndex: currentTrackIndex,
+          currentTrackTitle: currentTrackTitle
         });
+        
+        // Determine error type
+        let errorMessage = 'Audio playback error';
+        let errorType = 'general';
+        
+        if (this.audio.error) {
+          switch (this.audio.error.code) {
+            case 1: // MEDIA_ERR_ABORTED
+              errorMessage = 'Playback was aborted';
+              errorType = 'aborted';
+              break;
+            case 2: // MEDIA_ERR_NETWORK
+              errorMessage = 'Network error - Please check your internet connection';
+              errorType = 'network';
+              break;
+            case 3: // MEDIA_ERR_DECODE
+              errorMessage = 'Stream format not supported or corrupted';
+              errorType = 'decode';
+              break;
+            case 4: // MEDIA_ERR_SRC_NOT_SUPPORTED
+              errorMessage = 'Stream source not available';
+              errorType = 'source';
+              break;
+          }
+        }
+        
+        // Check if network is offline
+        if (!navigator.onLine) {
+          errorMessage = 'No internet connection. Please check your network and try again.';
+          errorType = 'offline';
+        }
+        
+        emit('error', {
+          message: errorMessage,
+          type: errorType,
+          stream: currentStream,
+          trackTitle: currentTrackTitle,
+          errorCode: this.audio.error?.code,
+          networkState: this.audio.networkState,
+          readyState: this.audio.readyState
+        });
+        
+        // CRITICAL FIX: Auto-recovery for playlist errors
+        if (currentStream && STREAMS[currentStream]?.type === 'playlist') {
+          console.log('[PlaybackQueueController] 🔄 Error detected in playlist, attempting recovery in 3 seconds...');
+          setTimeout(() => {
+            if (!isPlaying) {
+              console.log('[PlaybackQueueController] ⏭️ Skipping to next track after error');
+              handleTrackEnded();
+            }
+          }, 3000);
+        }
       });
 
       // Background capabilities
@@ -512,12 +591,47 @@
 
       return this.enqueue(async () => {
         if (playPromise) {
+          // CRITICAL FIX: Add 15-second timeout to prevent infinite hangs
+          const timeoutPromise = new Promise((_, reject) => {
+            setTimeout(() => reject(new Error('TIMEOUT: Audio load exceeded 15 seconds')), 15000);
+          });
+          
           try {
-            await playPromise;
+            await Promise.race([playPromise, timeoutPromise]);
+            isPlaying = true;
+            isLoading = false;
+            emit('loading', { isLoading: false });
+            emit('statechange', getPublicState());
+            persistState();
+            updateNativeMediaState();
+            console.log('[PlaybackQueueController] ✅ Playback started successfully');
           } catch (e) {
-            console.warn('[PlaybackQueueController] play promise rejected or blocked:', e.message);
+            const isTimeout = e.message && e.message.includes('TIMEOUT');
+            console.warn('[PlaybackQueueController] ❌ Play failed:', isTimeout ? 'TIMEOUT' : e.message);
+            
             isPlaying = false;
             emit('statechange', getPublicState());
+            
+            // Emit error for UI handling
+            emit('error', {
+              message: isTimeout 
+                ? 'Track loading timed out. Check your internet connection.' 
+                : 'Audio playback failed',
+              type: isTimeout ? 'timeout' : 'playback',
+              stream: currentStream,
+              trackTitle: currentTrackTitle
+            });
+            
+            // CRITICAL FIX: Auto-recovery on timeout for playlists
+            if (isTimeout && currentStream && STREAMS[currentStream]?.type === 'playlist') {
+              console.log('[PlaybackQueueController] 🔄 Auto-recovering: Skipping to next track in 2 seconds...');
+              setTimeout(() => {
+                if (!isPlaying) { // Only recover if still not playing
+                  console.log('[PlaybackQueueController] ⏭️ Executing auto-recovery...');
+                  handleTrackEnded();
+                }
+              }, 2000);
+            }
           } finally {
             isLoading = false;
             emit('loading', { isLoading: false });
@@ -624,49 +738,96 @@
   function handleTrackEnded() {
     if (!currentStream || STREAMS[currentStream].type !== 'playlist') return;
 
-    // Reset manual offset to 0 if the user was close to LIVE (within 10s)
-    if (manualOffset < 10) {
-      manualOffset = 0;
-    }
-
-    const playlist = VirtualLiveEngine.getPlaylist(currentStream);
-    const totalTracks = playlist.length;
-    const liveTime = VirtualLiveEngine.getCurrentTimelineValue();
-    
-    // Find current cycle and shuffle index
-    const userTime = liveTime - manualOffset;
-    const currentCycle = Math.floor(userTime / VirtualLiveEngine.getPlaylistTotalDuration(playlist));
-    const shuffleOrder = regenerateShuffleOrder(VIRTUAL_LIVE_EPOCH_START, currentCycle, totalTracks);
-
-    let posInShuffle = shuffleOrder.indexOf(currentTrackIndex);
-    if (posInShuffle === -1) posInShuffle = 0;
-    
-    let nextPosInShuffle = (posInShuffle + 1) % totalTracks;
-    let nextCycle = currentCycle;
-    if (nextPosInShuffle === 0) {
-      nextCycle += 1;
+    // CRITICAL FIX: Prevent concurrent execution (race condition guard)
+    if (isTransitioning) {
+      console.warn('[AnhadAudio] ⚠️ Track transition already in progress, ignoring duplicate ended event');
+      return;
     }
     
-    const nextShuffleOrder = regenerateShuffleOrder(VIRTUAL_LIVE_EPOCH_START, nextCycle, totalTracks);
-    const nextTrackIndex = nextShuffleOrder[nextPosInShuffle];
+    isTransitioning = true;
+    console.log('[AnhadAudio] 🔄 Starting track transition...');
+    
+    // SAFETY NET: Force-reset isTransitioning after 10s in case Promise chain hangs
+    const safetyResetTimer = setTimeout(() => {
+      if (isTransitioning) {
+        console.warn('[AnhadAudio] 🔔 Safety timeout: resetting isTransitioning after 10s hang');
+        isTransitioning = false;
+      }
+    }, 10000);
 
-    console.log(`[AnhadAudio] Track ended naturally. Advancing shuffle: ${currentTrackIndex+1} -> ${nextTrackIndex+1}`);
+    try {
+      // Reset manual offset to 0 if the user was close to LIVE (within 10s)
+      if (manualOffset < 10) {
+        manualOffset = 0;
+      }
 
-    currentTrackIndex = nextTrackIndex;
-    currentTrackTitle = playlist[nextTrackIndex].title;
-    currentTrackArtist = playlist[nextTrackIndex].artist;
+      const playlist = VirtualLiveEngine.getPlaylist(currentStream);
+      const totalTracks = playlist.length;
+      const liveTime = VirtualLiveEngine.getCurrentTimelineValue();
+      
+      // Find current cycle and shuffle index
+      const userTime = liveTime - manualOffset;
+      const currentCycle = Math.floor(userTime / VirtualLiveEngine.getPlaylistTotalDuration(playlist));
+      const shuffleOrder = regenerateShuffleOrder(VIRTUAL_LIVE_EPOCH_START, currentCycle, totalTracks);
 
-    // Recalibrate manual offset so user playhead starts at 0 of next track
-    const newU = VirtualLiveEngine.convertToTimelineCoordinate(currentStream, nextTrackIndex, 0, nextCycle);
-    manualOffset = Math.max(0, liveTime - newU);
-    persistState();
+      let posInShuffle = shuffleOrder.indexOf(currentTrackIndex);
+      if (posInShuffle === -1) posInShuffle = 0;
+      
+      let nextPosInShuffle = (posInShuffle + 1) % totalTracks;
+      let nextCycle = currentCycle;
+      if (nextPosInShuffle === 0) {
+        nextCycle += 1;
+      }
+      
+      const nextShuffleOrder = regenerateShuffleOrder(VIRTUAL_LIVE_EPOCH_START, nextCycle, totalTracks);
+      const nextTrackIndex = nextShuffleOrder[nextPosInShuffle];
 
-    const trackUrl = STREAMS[currentStream].getTrackUrl(currentTrackIndex);
-    updateMediaSession();
+      console.log(`[AnhadAudio] Track ended naturally. Advancing shuffle: ${currentTrackIndex+1} -> ${nextTrackIndex+1}`);
 
-    PlaybackQueueController.loadAndPlay(trackUrl, 'metadata').then(() => {
-      PlaybackQueueController.seek(0);
-    });
+      currentTrackIndex = nextTrackIndex;
+      currentTrackTitle = playlist[nextTrackIndex].title;
+      currentTrackArtist = playlist[nextTrackIndex].artist;
+
+      // Recalibrate manual offset so user playhead starts at 0 of next track
+      const newU = VirtualLiveEngine.convertToTimelineCoordinate(currentStream, nextTrackIndex, 0, nextCycle);
+      manualOffset = Math.max(0, liveTime - newU);
+      persistState();
+
+      const trackUrl = STREAMS[currentStream].getTrackUrl(currentTrackIndex);
+      
+      // CRITICAL FIX: Validate track URL before attempting to load
+      if (!trackUrl || typeof trackUrl !== 'string' || trackUrl.trim() === '') {
+        console.error('[AnhadAudio] ❌ Invalid track URL, skipping transition');
+        clearTimeout(safetyResetTimer);
+        isTransitioning = false;
+        return;
+      }
+      
+      updateMediaSession();
+
+      PlaybackQueueController.loadAndPlay(trackUrl, 'metadata').then(() => {
+        PlaybackQueueController.seek(0);
+      }).catch((err) => {
+        console.error('[AnhadAudio] ❌ Track transition failed:', err);
+        // RECOVERY: Retry with a fresh playStream call after 3 seconds
+        // This prevents the app from silently freezing after a CDN/network error
+        setTimeout(() => {
+          if (!isPlaying && currentStream) {
+            console.log('[AnhadAudio] 🔄 Recovery: Retrying playStream after transition failure');
+            try { playStream(currentStream); } catch(e) { console.error('[AnhadAudio] Recovery playStream failed:', e); }
+          }
+        }, 3000);
+      }).finally(() => {
+        // CRITICAL FIX: Always reset transition flag
+        clearTimeout(safetyResetTimer);
+        isTransitioning = false;
+        console.log('[AnhadAudio] ✅ Track transition complete');
+      });
+    } catch (err) {
+      console.error('[AnhadAudio] ❌ Fatal error in handleTrackEnded:', err);
+      clearTimeout(safetyResetTimer);
+      isTransitioning = false; // Reset flag on error
+    }
   }
 
   // ─── API CONTROL GATEWAYS ───
@@ -690,13 +851,47 @@
       offset: manualOffset
     };
     persistState();
-    _nativeServiceStarted = false;
     // Update MediaSession so Android notification shows Paused (not Playing)
     if ('mediaSession' in navigator) {
       navigator.mediaSession.playbackState = 'paused';
     }
     if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.AudioService) {
-      try { window.Capacitor.Plugins.AudioService.stop(); } catch(e) { /* silently fail */ }
+      try { window.Capacitor.Plugins.AudioService.updateState({ action: 'PAUSE' }); } catch(e) { /* silently fail */ }
+    }
+  }
+
+  function pauseFromNative() {
+    if (!isPlaying) return;
+    PlaybackQueueController.pause();
+    pauseAnchor = {
+      timestamp: Date.now(),
+      offset: manualOffset
+    };
+    persistState();
+    if ('mediaSession' in navigator) {
+      navigator.mediaSession.playbackState = 'paused';
+    }
+  }
+
+  function resumeFromNative() {
+    if (isPlaying) return;
+    if (pauseAnchor) {
+      const elapsedPause = Math.floor((Date.now() - pauseAnchor.timestamp) / 1000);
+      manualOffset = pauseAnchor.offset + elapsedPause;
+      pauseAnchor = null;
+    }
+    playStream(currentStream || 'darbar');
+  }
+
+  function stopFromNative() {
+    PlaybackQueueController.stop();
+    manualOffset = 0;
+    pauseAnchor = null;
+    persistState();
+    _nativeServiceStarted = false;
+    if ('mediaSession' in navigator) {
+      navigator.mediaSession.playbackState = 'none';
+      navigator.mediaSession.metadata = null;
     }
   }
 
@@ -981,6 +1176,9 @@
     play,
     pause,
     resume,
+    pauseFromNative,
+    resumeFromNative,
+    stopFromNative,
     resumeInPlace,
     toggle,
     stop,

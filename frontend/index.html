@@ -187,14 +187,8 @@
     /* GLOBAL SHADOW REMOVAL OVERRIDE - FLAT DESIGN */
     .hero-card, .event-card, .clay-card, .clay-hero {
       box-shadow: none !important;
-      filter: none !important;
     }
-    
-    /* REMOVE ALL SHADOWS GLOBALLY */
-    * {
-      box-shadow: none !important;
-      -webkit-box-shadow: none !important;
-    }
+    /* box-shadow removal handled globally by css/no-shadows.css */
 
     /* ═════════════════════════════════════════════════════════════════
        ANTI-FLASH: Hide desktop-only elements on mobile BEFORE paint.
@@ -244,10 +238,10 @@
       }
     }
     
-    /* PERF: Optimize rendering with GPU acceleration */
-    .app-container, .main-content {
-      will-change: transform;
-      transform: translateZ(0);
+    /* PERF: GPU acceleration only on the scroll container, not app-container
+       to avoid creating an unintended compositing root that hides child layers */
+    html {
+      -webkit-overflow-scrolling: touch;
     }
   </style>
   
@@ -465,8 +459,8 @@
       padding: 3px !important;
       border-radius: 50px !important;
       background: rgba(255, 255, 255, 0.06) !important;
-      backdrop-filter: blur(60px) saturate(180%) !important;
-      -webkit-backdrop-filter: blur(60px) saturate(180%) !important;
+      backdrop-filter: blur(20px) saturate(180%) !important;
+      -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
       border: 0.5px solid rgba(255, 255, 255, 0.12) !important;
       box-shadow: 
         0 2px 12px rgba(0, 0, 0, 0.1),
@@ -484,8 +478,8 @@
       padding: 3px !important;
       border-radius: 50px !important;
       background: rgba(255, 255, 255, 0.06) !important;
-      backdrop-filter: blur(60px) saturate(180%) !important;
-      -webkit-backdrop-filter: blur(60px) saturate(180%) !important;
+      backdrop-filter: blur(20px) saturate(180%) !important;
+      -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
       border: 0.5px solid rgba(255, 255, 255, 0.12) !important;
       box-shadow: 
         0 2px 12px rgba(0, 0, 0, 0.1),
@@ -617,8 +611,8 @@
       padding: 6px 24px !important;
       border-radius: 20px !important;
       background: rgba(255, 255, 255, 0.06) !important;
-      backdrop-filter: blur(60px) saturate(180%) !important;
-      -webkit-backdrop-filter: blur(60px) saturate(180%) !important;
+      backdrop-filter: blur(20px) saturate(180%) !important;
+      -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
       border: 0.5px solid rgba(255, 255, 255, 0.12) !important;
       box-shadow: 
         0 2px 12px rgba(0, 0, 0, 0.1),
@@ -1881,13 +1875,10 @@
         0 0 0 4px rgba(212, 168, 83, 0.35),
         0 8px 24px rgba(0, 0, 0, 0.12),
         0 0 16px rgba(212, 168, 83, 0.25);
-      animation: subtlePulse 4s ease-in-out infinite;
+      /* PERF: Removed subtlePulse animation - caused jank on mid-range devices.
+         The CSS box-shadow animation forces GPU layer recomposition every 4s.
+         The golden ring effect is preserved via static box-shadow on wrapper. */
       margin-right: -10px !important;
-    }
-    
-    @keyframes subtlePulse {
-      0%, 100% { box-shadow: 0 0 0 4px rgba(212, 168, 83, 0.35), 0 8px 24px rgba(0, 0, 0, 0.12), 0 0 16px rgba(212, 168, 83, 0.25); }
-      50% { box-shadow: 0 0 0 4px rgba(212, 168, 83, 0.5), 0 10px 28px rgba(0, 0, 0, 0.15), 0 0 24px rgba(212, 168, 83, 0.4); }
     }
     
     .event-card__guru-img {
@@ -2811,19 +2802,11 @@
       <style>
         /* Dynamic Color Orbs - Adapt to Guru Image Colors */
         .greeting-orb {
-          position: absolute;
-          border-radius: 50%;
-          filter: blur(60px);
-          pointer-events: none;
-          z-index: 0;
-          will-change: transform, background;
-          display: none; /* Hidden by default */
-          transition: background 0.8s cubic-bezier(0.4, 0.0, 0.2, 1);
+          display: none !important;
         }
         
-        /* Show orbs ONLY in day time auto mode */
         [data-theme-mode="auto"][data-time-of-day="day"] .greeting-orb {
-          display: block;
+          display: none !important;
         }
         
         .greeting-orb-1 {

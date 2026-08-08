@@ -292,7 +292,7 @@ const INSTALL_PRECACHE_FILES = [
 
 // IndexedDB for notification scheduling (Service Worker scope)
 const DB_NAME = 'GurbaniRadioSW';
-const DB_VERSION = 2;
+const DB_VERSION = 3;
 const STORES = {
   NOTIFICATION_SCHEDULE: 'notification_schedule',
   ALARM_STATE: 'alarm_state'
@@ -1579,7 +1579,15 @@ console.log('[SW] ANHAD Service Worker v5.8.0 loaded - iOS/Android optimized');
 function openDB() {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open(DB_NAME, DB_VERSION);
-    request.onerror = () => reject(request.error);
+    request.onerror = () => {
+      if (request.error && request.error.name === 'VersionError') {
+        const fallbackReq = indexedDB.open(DB_NAME);
+        fallbackReq.onsuccess = () => resolve(fallbackReq.result);
+        fallbackReq.onerror = () => reject(fallbackReq.error);
+        return;
+      }
+      reject(request.error);
+    };
     request.onsuccess = () => resolve(request.result);
     request.onupgradeneeded = (event) => {
       const db = event.target.result;

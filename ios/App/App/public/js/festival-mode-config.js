@@ -281,7 +281,7 @@
      */
     _applyFeatures(features) {
       // Sparkles at top (fade on scroll)
-      if (features.festivalBanner) {
+      if (features.topSparkles || features.festivalBanner) {
         this._createSparkles();
       }
 

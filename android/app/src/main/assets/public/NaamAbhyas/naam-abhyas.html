@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="pa" data-global-theme="force">
 <head>
       <!-- CRITICAL: Theme blocker - MUST run before paint -->
   <script>
@@ -56,176 +55,977 @@
     })();
   </script>
   <meta name="color-scheme" content="light dark">
+    <link rel="stylesheet" href="../css/mobile-lock.css">
+    <link rel="stylesheet" href="../css/anhad-core.css">
+  <link rel="stylesheet" href="../css/claymorphism-system.css?v=1">
     <meta charset="UTF-8">
-    <meta name="viewport"
-        content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#080612">
-    <meta name="description"
-        content="Naam Abhyas • Sacred hourly practice. Pause 2 minutes every hour to remember Waheguru.">
-
+    <meta name="theme-color" content="#1a1a2e">
+    <meta name="description" content="Naam Abhyas • Sacred Hourly Practice. Pause 2 minutes every hour to remember Waheguru.">
+    
     <title>ਨਾਮ ਅਭਿਆਸ | Naam Abhyas</title>
-
-    <!-- Fonts -->
+    
+    <!-- Preconnect for performance -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=optional"
-        rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Baloo+Paaji+2:wght@400;500;600;700;800&family=Mukta+Mahee:wght@200;300;400;500;600;700;800&display=optional"
-        rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Gurmukhi:wght@300;400;500;600;700&display=optional"
-        rel="stylesheet">
-
-    <!-- Stylesheets -->
-    <link rel="stylesheet" href="naam-abhyas.css">
-    <link rel="stylesheet" href="components/ritual-overlay.css">
-    <link rel="stylesheet" href="../css/scroll-engine.css">
-
-    <!-- Favicon & PWA -->
-    <link rel="icon" type="image/png" sizes="72x72" href="../assets/icon-72x72.png">
-    <link rel="manifest" href="../manifest.json">
-
-    <!-- Theme System -->
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=optional" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Gurmukhi:wght@300;400;500;600;700&display=optional" rel="stylesheet">
+    
+    <!-- PRIMARY: Sehaj Paath Unified Claymorphism Design System -->
+    <link rel="stylesheet" href="../SehajPaath/sehaj-paath-unified.css">
+    <link rel="stylesheet" href="../SehajPaath/sehaj-paath-settings-theme.css">
+    
+    <!-- Global Theme System -->
+    <link rel="stylesheet" href="../css/theme-variables.css">
     <script src="../lib/global-theme.js"></script>
+    
+    <!-- Navigation Libraries -->
     <script src="../lib/smart-back.js"></script>
     <script src="../lib/page-lifecycle.js"></script>
-    <script src="../lib/audio-preload.js"></script>
-    <script src="../lib/audio-coordinator.js"></script>
+    <script src="../lib/smooth-navigation.js?v=2"></script>
+    <script src="../lib/state-preservation.js"></script>
     
-    <!-- CRITICAL: Guaranteed Alarm System for Naam Abhyas notifications -->
-    <script src="../lib/guaranteed-alarm-system.js"></script>
-    
-    <!-- Fallback Alarm System (works without Service Worker) -->
-    <script src="../lib/fallback-alarm-system.js"></script>
-    
-    <script src="../lib/smooth-navigation.js"></script>
-    <script src="../js/scroll-engine.js" defer></script>
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="72x72" href="../assets/icon-72x72.png">
+    <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
     <script src="../js/anhad-core.js" defer></script>
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="../manifest.json">
+
+    <!-- Naam Abhyas extra styles (only for overlay/modal specifics not in Sehaj Paath) -->
+    <link rel="stylesheet" href="naam-abhyas-ios-timer.css">
+    <link rel="stylesheet" href="components/ritual-overlay.css">
+
+    <!-- Naam Abhyas Sehaj UI override (minimal, keeps Sehaj look) -->
+    <style>
+      /* ── Naam Abhyas: page-level accent reuse from Sehaj Paath tokens ── */
+
+      /* Hero section compact banner */
+      .hero-section {
+        text-align: center;
+        padding: var(--sp-4) var(--sp-4) var(--sp-2);
+      }
+      .hero-title {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+      }
+      .hero-gurmukhi {
+        font-family: var(--sp-font-gurmukhi);
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--sp-text-gurmukhi);
+      }
+      .hero-eng {
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: var(--sp-text-tertiary);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        display: block;
+      }
+
+      /* Toggle card specifics */
+      .toggle-card .toggle-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--sp-3);
+      }
+      .toggle-info {
+        display: flex;
+        align-items: center;
+        gap: var(--sp-3);
+        flex: 1;
+      }
+      .toggle-icon-wrap {
+        width: 44px; height: 44px;
+        display: flex; align-items: center; justify-content: center;
+        background: var(--sp-gold-icon-bg);
+        border-radius: var(--sp-radius-icon);
+        border: 1px solid var(--sp-border);
+        box-shadow: var(--sp-icon-shadow);
+        flex-shrink: 0;
+      }
+      .toggle-icon-wrap svg { color: var(--sp-text-gold); }
+      .toggle-text { display: flex; flex-direction: column; gap: 2px; }
+      .toggle-label { font-size: 0.9375rem; font-weight: 600; color: var(--sp-text-primary); }
+      .toggle-desc { font-size: 0.75rem; color: var(--sp-text-tertiary); }
+
+      /* Next session card */
+      .next-card .next-header {
+        display: flex;
+        align-items: center;
+        gap: var(--sp-3);
+        margin-bottom: var(--sp-4);
+      }
+      .next-icon-wrap {
+        width: 44px; height: 44px;
+        display: flex; align-items: center; justify-content: center;
+        background: var(--sp-gold-icon-bg);
+        border-radius: var(--sp-radius-icon);
+        border: 1px solid var(--sp-border);
+        box-shadow: var(--sp-icon-shadow);
+        flex-shrink: 0;
+      }
+      .next-icon-wrap svg { width: 24px; height: 24px; color: var(--sp-text-gold); }
+      .next-title { font-size: 1.125rem; font-weight: 600; color: var(--sp-text-primary); }
+      .next-subtitle { font-size: 0.8125rem; color: var(--sp-text-tertiary); }
+
+      /* Big time display */
+      .session-time-display {
+        font-size: clamp(3rem, 14vw, 4.5rem);
+        font-weight: 800;
+        color: var(--sp-text-primary);
+        text-align: center;
+        line-height: 1;
+        letter-spacing: -0.02em;
+        margin: var(--sp-4) 0 var(--sp-3);
+      }
+      .session-countdown {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--sp-2);
+        font-size: 0.875rem;
+        color: var(--sp-text-tertiary);
+        margin-bottom: var(--sp-5);
+      }
+      .countdown-label { font-weight: 400; }
+      .countdown-value { font-weight: 700; color: var(--sp-text-secondary); }
+
+      /* Session progress dots */
+      .session-progress {
+        background: var(--sp-surface-inner);
+        border: 1px solid var(--sp-border-inner);
+        border-radius: var(--sp-radius-inner);
+        box-shadow: var(--sp-inner-shadow);
+        padding: var(--sp-4);
+        text-align: center;
+      }
+      .progress-dots {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        justify-content: center;
+        margin-bottom: var(--sp-2);
+      }
+      .progress-dot {
+        width: 10px; height: 10px;
+        border-radius: 50%;
+        background: var(--sp-surface-btn);
+        box-shadow: var(--sp-inset-track);
+        transition: background 0.3s var(--sp-spring);
+      }
+      .progress-dot.completed { background: var(--sp-gold-surface); box-shadow: 0 2px 6px rgba(var(--sp-orange-rgb), 0.35); }
+      .progress-dot.current { background: var(--sp-saffron); box-shadow: 0 0 8px rgba(255,149,0,0.5); animation: sp-pulse 1.5s ease-in-out infinite; }
+      .progress-info {
+        font-size: 0.8125rem;
+        color: var(--sp-text-tertiary);
+      }
+
+      /* Sync Hub card */
+      .sync-hub-header {
+        display: flex;
+        align-items: center;
+        gap: var(--sp-3);
+        margin-bottom: var(--sp-4);
+      }
+      .sync-hub-icon-wrap {
+        width: 44px; height: 44px;
+        display: flex; align-items: center; justify-content: center;
+        background: var(--sp-gold-icon-bg);
+        border-radius: var(--sp-radius-icon);
+        border: 1px solid var(--sp-border);
+        box-shadow: var(--sp-icon-shadow);
+        flex-shrink: 0;
+      }
+      .sync-hub-icon-wrap svg { width: 24px; height: 24px; color: var(--sp-text-gold); }
+      .sync-hub-title { font-size: 1.125rem; font-weight: 600; color: var(--sp-text-primary); }
+      .sync-hub-subtitle { font-size: 0.8125rem; color: var(--sp-text-tertiary); }
+      .sync-grid { display: flex; flex-direction: column; gap: var(--sp-3); }
+      .sync-item {
+        display: flex;
+        align-items: center;
+        gap: var(--sp-3);
+        padding: var(--sp-3) var(--sp-4);
+        background: var(--sp-surface-inner);
+        border: 1px solid var(--sp-border-inner);
+        border-radius: var(--sp-radius-inner);
+        box-shadow: var(--sp-inner-shadow);
+        cursor: pointer;
+        transition: background-color 0.2s var(--sp-spring), color 0.2s var(--sp-spring);
+      }
+      .sync-item:active { transform: scale(0.98); box-shadow: var(--sp-pressed-shadow); }
+      .sync-item-icon { font-size: 1.5rem; width: 32px; text-align: center; }
+      .sync-item-info { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+      .sync-item-label { font-size: 0.875rem; font-weight: 600; color: var(--sp-text-primary); }
+      .sync-item-desc { font-size: 0.75rem; color: var(--sp-text-tertiary); }
+      .sync-arrow { width: 18px; height: 18px; color: var(--sp-text-quaternary); flex-shrink: 0; }
+
+      /* Timeline card */
+      .timeline-header {
+        display: flex;
+        align-items: center;
+        gap: var(--sp-3);
+        margin-bottom: var(--sp-4);
+      }
+      .timeline-icon-wrap {
+        width: 44px; height: 44px;
+        display: flex; align-items: center; justify-content: center;
+        background: var(--sp-gold-icon-bg);
+        border-radius: var(--sp-radius-icon);
+        border: 1px solid var(--sp-border);
+        box-shadow: var(--sp-icon-shadow);
+        flex-shrink: 0;
+      }
+      .timeline-icon-wrap svg { width: 24px; height: 24px; color: var(--sp-text-gold); }
+      .timeline-title { font-size: 1.125rem; font-weight: 600; color: var(--sp-text-primary); }
+      .timeline-subtitle { font-size: 0.8125rem; color: var(--sp-text-tertiary); }
+      .refresh-btn {
+        margin-left: auto;
+        width: 36px; height: 36px;
+        display: flex; align-items: center; justify-content: center;
+        background: var(--sp-surface-btn);
+        border: 1px solid var(--sp-border);
+        border-radius: var(--sp-radius-btn);
+        color: var(--sp-text-secondary);
+        box-shadow: var(--sp-btn-shadow);
+        cursor: pointer;
+        transition: background-color 0.2s var(--sp-spring), color 0.2s var(--sp-spring);
+      }
+      .refresh-btn:active { transform: scale(0.92) rotate(180deg); box-shadow: var(--sp-pressed-shadow); }
+      .refresh-btn svg { width: 18px; height: 18px; }
+      .schedule-timeline { display: flex; flex-direction: column; gap: var(--sp-2); }
+      .schedule-empty {
+        text-align: center;
+        padding: var(--sp-8);
+        color: var(--sp-text-quaternary);
+        font-size: 0.875rem;
+      }
+
+      /* Timeline item */
+      .timeline-item {
+        display: flex;
+        align-items: center;
+        gap: var(--sp-3);
+        padding: var(--sp-3) var(--sp-4);
+        background: var(--sp-surface-inner);
+        border: 1px solid var(--sp-border-inner);
+        border-radius: var(--sp-radius-inner);
+        box-shadow: var(--sp-inner-shadow);
+      }
+      .timeline-item.completed { opacity: 0.6; }
+      .timeline-item.current { border-color: var(--sp-gold); box-shadow: 0 0 16px rgba(var(--sp-gold-rgb), 0.2); }
+      .timeline-dot {
+        width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+        background: var(--sp-surface-btn); box-shadow: var(--sp-inset-track);
+      }
+      .timeline-dot.completed { background: var(--sp-gold-surface); }
+      .timeline-dot.current { background: var(--sp-saffron); animation: sp-pulse 1.5s ease-in-out infinite; }
+      .timeline-time { font-size: 0.875rem; font-weight: 600; color: var(--sp-text-primary); min-width: 70px; }
+      .timeline-label { font-size: 0.75rem; color: var(--sp-text-tertiary); flex: 1; }
+      .timeline-status { font-size: 0.75rem; font-weight: 500; color: var(--sp-gold); }
+
+      /* Wisdom card */
+      .wisdom-card { position: relative; overflow: hidden; }
+      .wisdom-accent {
+        position: absolute; top: 0; left: 0;
+        width: 4px; height: 100%;
+        background: var(--sp-gold-surface);
+        border-radius: 0 2px 2px 0;
+      }
+      .wisdom-icon {
+        width: 36px; height: 36px;
+        display: flex; align-items: center; justify-content: center;
+        background: var(--sp-gold-icon-bg);
+        border-radius: var(--sp-radius-md);
+        border: 1px solid var(--sp-border);
+        box-shadow: var(--sp-icon-shadow);
+        margin-bottom: var(--sp-3);
+        margin-left: var(--sp-4);
+      }
+      .wisdom-icon svg { color: var(--sp-text-gold); }
+      .wisdom-quote {
+        font-family: var(--sp-font-gurmukhi);
+        font-size: 1.0625rem;
+        color: var(--sp-text-gurmukhi);
+        line-height: 1.7;
+        margin: 0 var(--sp-4) var(--sp-2);
+      }
+      .wisdom-translation {
+        font-size: 0.8125rem;
+        color: var(--sp-text-secondary);
+        line-height: 1.5;
+        margin: 0 var(--sp-4) var(--sp-2);
+      }
+      .wisdom-source {
+        font-size: 0.6875rem;
+        color: var(--sp-text-tertiary);
+        margin: 0 var(--sp-4) var(--sp-3);
+      }
+      .wisdom-refresh {
+        display: flex;
+        align-items: center;
+        gap: var(--sp-2);
+        padding: var(--sp-2) var(--sp-4);
+        background: var(--sp-surface-btn);
+        border: 1px solid var(--sp-border);
+        border-radius: var(--sp-radius-btn);
+        color: var(--sp-text-secondary);
+        font-size: 0.75rem;
+        cursor: pointer;
+        box-shadow: var(--sp-btn-shadow);
+        margin-left: var(--sp-4);
+        transition: background-color 0.2s var(--sp-spring), color 0.2s var(--sp-spring);
+      }
+      .wisdom-refresh:active { transform: scale(0.94); box-shadow: var(--sp-pressed-shadow); }
+
+      /* Quick Actions */
+      .quick-actions { padding: 0 var(--sp-1); }
+      .qa-label {
+        font-size: 0.6875rem;
+        font-weight: 700;
+        color: var(--sp-text-tertiary);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin-bottom: var(--sp-3);
+        padding: 0 var(--sp-2);
+      }
+      .qa-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--sp-3); }
+      .qa-btn {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: var(--sp-2);
+        padding: var(--sp-4) var(--sp-3);
+        background: var(--sp-surface-btn);
+        border: 1px solid var(--sp-border);
+        border-radius: var(--sp-radius-inner);
+        cursor: pointer;
+        box-shadow: var(--sp-btn-shadow);
+        color: var(--sp-text-primary);
+        transition: background-color 0.3s var(--sp-spring), color 0.3s var(--sp-spring);
+      }
+      .qa-btn:active { transform: scale(0.94); box-shadow: var(--sp-pressed-shadow); }
+      .qa-btn.qa-primary {
+        background: var(--sp-gold-surface);
+        border-color: rgba(255,160,50,0.3);
+        color: #3A2000;
+      }
+      .qa-btn svg { flex-shrink: 0; }
+      .qa-text { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+      .qa-title { font-size: 0.8125rem; font-weight: 600; }
+      .qa-sub { font-size: 0.6875rem; color: inherit; opacity: 0.7; }
+
+      /* Stats card specifics */
+      .stats-card .stats-header {
+        display: flex;
+        align-items: center;
+        gap: var(--sp-3);
+        margin-bottom: var(--sp-5);
+      }
+      .stats-icon-wrap {
+        width: 44px; height: 44px;
+        display: flex; align-items: center; justify-content: center;
+        background: var(--sp-gold-icon-bg);
+        border-radius: var(--sp-radius-icon);
+        border: 1px solid var(--sp-border);
+        box-shadow: var(--sp-icon-shadow);
+        flex-shrink: 0;
+      }
+      .stats-icon-wrap svg { width: 24px; height: 24px; color: var(--sp-text-gold); }
+      .stats-title { font-size: 1.125rem; font-weight: 600; color: var(--sp-text-primary); }
+      .stats-subtitle { font-size: 0.8125rem; color: var(--sp-text-tertiary); }
+
+      /* Stats body layout */
+      .stats-body {
+        display: flex;
+        gap: var(--sp-4);
+        align-items: flex-start;
+        margin-bottom: var(--sp-4);
+      }
+      /* Completion Ring */
+      .ring-section { display: flex; flex-direction: column; align-items: center; gap: var(--sp-2); flex-shrink: 0; }
+      .ring-container { position: relative; width: 90px; height: 90px; }
+      .completion-ring { width: 100%; height: 100%; transform: rotate(-90deg); }
+      .ring-bg { fill: none; stroke: var(--sp-border-inner); stroke-width: 8; }
+      .ring-fill {
+        fill: none; stroke: url(#goldGradient); stroke-width: 8; stroke-linecap: round;
+        transition: stroke-dashoffset 1s var(--sp-ease-out);
+      }
+      .ring-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+      .ring-value { font-size: 1.5rem; font-weight: 700; color: var(--sp-text-primary); }
+      .ring-pct { font-size: 0.6875rem; font-weight: 600; color: var(--sp-gold); }
+      .ring-label { font-size: 0.6875rem; color: var(--sp-text-tertiary); }
+
+      /* Stats mini-grid */
+      .stats-grid {
+        flex: 1;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--sp-3);
+      }
+      .stat-cell {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        padding: var(--sp-3);
+        background: var(--sp-surface-inner);
+        border: 1px solid var(--sp-border-inner);
+        border-radius: var(--sp-radius-inner);
+        box-shadow: var(--sp-inner-shadow);
+        text-align: center;
+      }
+      .stat-number { font-size: 1.25rem; font-weight: 700; color: var(--sp-text-primary); }
+      .stat-name { font-size: 0.6875rem; color: var(--sp-text-tertiary); }
+
+      /* Perfect day indicator */
+      .perfect-day-indicator {
+        width: 32px; height: 32px;
+        display: flex; align-items: center; justify-content: center;
+        background: var(--sp-gold-icon-bg);
+        border-radius: var(--sp-radius-btn);
+        border: 1px solid var(--sp-border);
+        box-shadow: var(--sp-icon-shadow);
+        margin-left: auto;
+        transition: opacity 0.3s;
+      }
+      .perfect-day-indicator.hidden { opacity: 0; pointer-events: none; }
+
+      /* Today progress bar */
+      .today-bar { margin-bottom: var(--sp-4); }
+      .today-bar-header { display: flex; justify-content: space-between; font-size: 0.8125rem; margin-bottom: var(--sp-2); color: var(--sp-text-secondary); font-weight: 500; }
+      .today-bar-track {
+        height: 12px;
+        background: var(--sp-surface-btn);
+        box-shadow: var(--sp-inset-track);
+        border-radius: var(--sp-radius-btn);
+        overflow: hidden;
+      }
+      .today-bar-fill {
+        height: 100%; width: 0%;
+        background: var(--sp-gold-surface);
+        box-shadow: 0 2px 6px rgba(var(--sp-orange-rgb), 0.3);
+        border-radius: var(--sp-radius-btn);
+        transition: width 1s var(--sp-ease-out);
+      }
+
+      /* Weekly banner */
+      .weekly-banner {
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        padding: var(--sp-4);
+        background: var(--sp-surface-inner);
+        border: 1px solid var(--sp-border-inner);
+        border-radius: var(--sp-radius-inner);
+        box-shadow: var(--sp-inner-shadow);
+        margin-bottom: var(--sp-4);
+      }
+      .weekly-stat { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+      .weekly-val { font-size: 1.25rem; font-weight: 700; color: var(--sp-text-primary); }
+      .weekly-lbl { font-size: 0.6875rem; color: var(--sp-text-tertiary); }
+      .weekly-divider { width: 1px; height: 36px; background: var(--sp-border-inner); }
+
+      /* View stats button */
+      .view-stats-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--sp-2);
+        width: 100%;
+        padding: var(--sp-3) var(--sp-4);
+        background: var(--sp-surface-btn);
+        border: 1px solid var(--sp-border);
+        border-radius: var(--sp-radius-inner);
+        color: var(--sp-text-primary);
+        font-size: 0.875rem;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: var(--sp-btn-shadow);
+        transition: background-color 0.3s var(--sp-spring), color 0.3s var(--sp-spring);
+      }
+      .view-stats-btn:active { transform: scale(0.96); box-shadow: var(--sp-pressed-shadow); }
+      .view-stats-btn svg { width: 18px; height: 18px; }
+
+      /* Achievements card */
+      .ach-header {
+        display: flex;
+        align-items: center;
+        gap: var(--sp-3);
+        margin-bottom: var(--sp-4);
+      }
+      .ach-icon-wrap {
+        width: 44px; height: 44px;
+        display: flex; align-items: center; justify-content: center;
+        background: var(--sp-gold-icon-bg);
+        border-radius: var(--sp-radius-icon);
+        border: 1px solid var(--sp-border);
+        box-shadow: var(--sp-icon-shadow);
+        flex-shrink: 0;
+      }
+      .ach-icon-wrap svg { width: 24px; height: 24px; color: var(--sp-text-gold); }
+      .ach-title { font-size: 1.125rem; font-weight: 600; color: var(--sp-text-primary); }
+      .ach-subtitle { font-size: 0.8125rem; color: var(--sp-text-tertiary); }
+      .achievements-preview { display: flex; gap: var(--sp-3); overflow-x: auto; padding-bottom: var(--sp-2); }
+      .achievement-badge {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: var(--sp-2);
+        padding: var(--sp-4) var(--sp-3);
+        background: var(--sp-surface-btn);
+        border: 1px solid var(--sp-border);
+        border-radius: var(--sp-radius-inner);
+        box-shadow: var(--sp-btn-shadow);
+        min-width: 72px;
+        flex-shrink: 0;
+        transition: background-color 0.3s var(--sp-spring), color 0.3s var(--sp-spring);
+      }
+      .achievement-badge.locked { opacity: 0.45; }
+      .achievement-badge.unlocked { border-color: var(--sp-gold); box-shadow: 0 0 16px rgba(var(--sp-gold-rgb),0.25); }
+      .badge-icon {
+        width: 32px; height: 32px;
+        display: flex; align-items: center; justify-content: center;
+        color: var(--sp-text-gold);
+      }
+      .badge-name { font-size: 0.625rem; font-weight: 600; color: var(--sp-text-secondary); text-align: center; }
+
+      /* Bottom spacer */
+      .bottom-spacer { height: 40px; }
+
+      /* Welcome modal */
+      .welcome-modal {
+        position: fixed; inset: 0; z-index: 2000;
+        display: flex; align-items: center; justify-content: center;
+        opacity: 0; visibility: hidden;
+        transition: opacity 0.4s var(--sp-ease-out), visibility 0.4s;
+      }
+      .welcome-modal.active { opacity: 1; visibility: visible; }
+      .welcome-backdrop {
+        position: absolute; inset: 0;
+        background: rgba(0,0,0,0.5);
+        backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+      }
+      .welcome-content {
+        position: relative;
+        width: calc(100% - 40px); max-width: 360px;
+        background: var(--sp-surface);
+        border: 1px solid var(--sp-border);
+        border-radius: var(--sp-radius-card);
+        box-shadow: var(--sp-card-shadow-hover);
+        padding: var(--sp-6);
+        text-align: center;
+        animation: sp-fadeIn 0.4s var(--sp-ease-out) forwards;
+      }
+      .welcome-symbol {
+        font-size: 3rem;
+        color: var(--sp-gold);
+        display: block;
+        margin-bottom: var(--sp-3);
+        font-family: var(--sp-font-gurmukhi);
+      }
+      .welcome-title {
+        font-family: var(--sp-font-gurmukhi);
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--sp-text-gurmukhi);
+        margin-bottom: var(--sp-1);
+      }
+      .welcome-subtitle { font-size: 0.875rem; color: var(--sp-text-secondary); margin-bottom: var(--sp-4); }
+      .welcome-quote {
+        font-family: var(--sp-font-gurmukhi);
+        font-size: 1rem;
+        color: var(--sp-text-gurmukhi);
+        line-height: 1.7;
+        margin-bottom: var(--sp-1);
+      }
+      .welcome-translation { font-size: 0.75rem; color: var(--sp-text-tertiary); margin-bottom: var(--sp-5); }
+      .welcome-stats {
+        display: flex;
+        justify-content: space-around;
+        margin-bottom: var(--sp-5);
+        padding: var(--sp-4);
+        background: var(--sp-surface-inner);
+        border: 1px solid var(--sp-border-inner);
+        border-radius: var(--sp-radius-inner);
+        box-shadow: var(--sp-inner-shadow);
+      }
+      .welcome-stat { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+      .welcome-stat .stat-value { font-size: 1.5rem; font-weight: 700; color: var(--sp-text-primary); }
+      .welcome-stat .stat-label {
+        display: flex; align-items: center; gap: 4px;
+        font-size: 0.6875rem; color: var(--sp-text-tertiary);
+      }
+      .welcome-start-btn {
+        display: flex; align-items: center; justify-content: center; gap: var(--sp-3);
+        width: 100%; padding: var(--sp-4) var(--sp-6);
+        background: var(--sp-gold-surface);
+        border: 1px solid rgba(255,160,50,0.3);
+        border-radius: var(--sp-radius-btn);
+        color: #3A2000; font-size: 1rem; font-weight: 700; cursor: pointer;
+        box-shadow: 8px 8px 16px rgba(var(--sp-orange-rgb),0.20);
+        margin-bottom: var(--sp-3);
+        transition: background-color 0.3s var(--sp-spring), color 0.3s var(--sp-spring);
+      }
+      .welcome-start-btn:active { transform: scale(0.96); box-shadow: inset 8px 8px 16px rgba(0,0,0,0.3); }
+      .welcome-dismiss-btn {
+        background: none; border: none;
+        font-size: 0.875rem; color: var(--sp-text-tertiary);
+        cursor: pointer; padding: var(--sp-2) var(--sp-4);
+        transition: color 0.2s;
+      }
+      .welcome-dismiss-btn:hover { color: var(--sp-text-primary); }
+
+      /* Settings modal (bottom sheet) */
+      .settings-modal {
+        position: fixed; inset: 0; z-index: 1100;
+        display: flex; align-items: flex-end; justify-content: center;
+        opacity: 0; visibility: hidden;
+        transition: opacity 0.35s var(--sp-ease-out), visibility 0.35s;
+      }
+      .settings-modal.active { opacity: 1; visibility: visible; }
+      .settings-modal-backdrop {
+        position: absolute; inset: 0;
+        background: rgba(0,0,0,0.5);
+        backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+      }
+      .settings-modal-sheet {
+        position: relative; width: 100%; max-width: 428px; max-height: 90vh;
+        background: var(--sp-surface);
+        border: 1px solid var(--sp-border);
+        border-radius: var(--sp-radius-card) var(--sp-radius-card) 0 0;
+        box-shadow: 0 -16px 32px rgba(0,0,0, var(--sp-shadow-deep));
+        transform: translateY(100%);
+        transition: transform 0.5s var(--sp-ease-out);
+        display: flex; flex-direction: column; overflow: hidden;
+      }
+      .settings-modal.active .settings-modal-sheet { transform: translateY(0); }
+      .sheet-handle {
+        width: 36px; height: 4px; border-radius: 2px;
+        background: var(--sp-border-inner);
+        margin: var(--sp-3) auto var(--sp-1);
+        flex-shrink: 0;
+      }
+      .sheet-header {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: var(--sp-3) var(--sp-5) var(--sp-4);
+        border-bottom: 1px solid var(--sp-border-inner);
+        flex-shrink: 0;
+      }
+      .sheet-title { font-size: 1.125rem; font-weight: 600; color: var(--sp-text-primary); }
+      .sheet-close-btn {
+        width: 32px; height: 32px;
+        display: flex; align-items: center; justify-content: center;
+        background: var(--sp-surface-btn);
+        border: 1px solid var(--sp-border);
+        border-radius: var(--sp-radius-btn);
+        color: var(--sp-text-secondary); cursor: pointer;
+        box-shadow: var(--sp-btn-shadow);
+        transition: background-color 0.2s var(--sp-spring), color 0.2s var(--sp-spring);
+      }
+      .sheet-close-btn:active { transform: scale(0.92); box-shadow: var(--sp-pressed-shadow); }
+      .sheet-close-btn svg { width: 16px; height: 16px; }
+      .sheet-content { flex: 1; overflow-y: auto; padding: var(--sp-5); padding-bottom: calc(var(--sp-8) + var(--sp-safe-bottom)); }
+
+      /* Setting group */
+      .setting-group { margin-bottom: var(--sp-6); }
+      .setting-label { margin-bottom: var(--sp-3); }
+      .setting-title { display: block; font-size: 0.875rem; font-weight: 600; color: var(--sp-text-primary); margin-bottom: 2px; }
+      .setting-desc { display: block; font-size: 0.75rem; color: var(--sp-text-tertiary); }
+
+      /* Theme selector in settings */
+      .theme-selector { display: flex; gap: var(--sp-2); }
+      .theme-option {
+        flex: 1;
+        display: flex; flex-direction: column; align-items: center; gap: var(--sp-2);
+        padding: var(--sp-3);
+        background: var(--sp-surface-inner);
+        border: 2px solid transparent;
+        border-radius: var(--sp-radius-inner);
+        cursor: pointer;
+        box-shadow: var(--sp-inner-shadow);
+        transition: background-color 0.2s, color 0.2s;
+      }
+      .theme-option input { display: none; }
+      .theme-box { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+      .theme-icon { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; color: var(--sp-text-gold); }
+      .theme-label { font-size: 0.6875rem; color: var(--sp-text-secondary); font-weight: 500; }
+      .theme-option:has(input:checked) { border-color: var(--sp-gold); box-shadow: 0 0 16px rgba(var(--sp-gold-rgb), 0.25); }
+
+      /* Duration control */
+      .duration-control-premium { display: flex; flex-direction: column; gap: var(--sp-3); }
+      .duration-presets { display: flex; gap: var(--sp-2); }
+      .preset-btn {
+        flex: 1; padding: var(--sp-3);
+        background: var(--sp-surface-btn);
+        border: 1px solid var(--sp-border);
+        border-radius: var(--sp-radius-inner);
+        color: var(--sp-text-secondary); font-size: 0.875rem; font-weight: 600;
+        cursor: pointer; box-shadow: var(--sp-btn-shadow);
+        transition: background-color 0.2s var(--sp-spring), color 0.2s var(--sp-spring);
+      }
+      .preset-btn.active { background: var(--sp-gold-surface); color: #3A2000; border-color: rgba(255,160,50,0.3); }
+      .preset-btn:active { transform: scale(0.94); box-shadow: var(--sp-pressed-shadow); }
+      .duration-input-wrapper {
+        display: flex; align-items: center; gap: var(--sp-3);
+        padding: var(--sp-3) var(--sp-4);
+        background: var(--sp-surface-inner);
+        border: 1px solid var(--sp-border-inner);
+        border-radius: var(--sp-radius-inner);
+        box-shadow: var(--sp-inner-shadow);
+      }
+      .duration-num-input {
+        flex: 1; height: 36px; padding: 0 var(--sp-2);
+        background: var(--sp-surface-btn);
+        border: 1px solid var(--sp-border-inner);
+        border-radius: var(--sp-radius-md);
+        color: var(--sp-text-primary); font-size: 1rem; font-weight: 700;
+        text-align: center;
+        box-shadow: var(--sp-inset-track);
+      }
+      .duration-num-input:focus { outline: none; border-color: var(--sp-gold); }
+      .duration-unit { font-size: 0.875rem; color: var(--sp-text-tertiary); }
+
+      /* Active hours */
+      .time-range-inputs { display: flex; gap: var(--sp-3); }
+      .time-input-group {
+        flex: 1; display: flex; flex-direction: column; gap: var(--sp-2);
+        padding: var(--sp-3) var(--sp-4);
+        background: var(--sp-surface-inner);
+        border: 1px solid var(--sp-border-inner);
+        border-radius: var(--sp-radius-inner);
+        box-shadow: var(--sp-inner-shadow);
+      }
+      .time-input-group label { font-size: 0.6875rem; color: var(--sp-text-tertiary); font-weight: 500; }
+      .time-input-group select {
+        width: 100%; padding: var(--sp-2) var(--sp-3);
+        background: var(--sp-surface-btn);
+        border: 1px solid var(--sp-border-inner);
+        border-radius: var(--sp-radius-md);
+        color: var(--sp-text-primary); font-size: 0.875rem;
+        box-shadow: var(--sp-inset-track);
+      }
+
+      /* Setting row with toggle */
+      .setting-row {
+        display: flex; align-items: center; justify-content: space-between; gap: var(--sp-3);
+        padding: var(--sp-3) var(--sp-4);
+        background: var(--sp-surface-inner);
+        border: 1px solid var(--sp-border-inner);
+        border-radius: var(--sp-radius-inner);
+        box-shadow: var(--sp-inner-shadow);
+      }
+      .mini-toggle { position: relative; width: 44px; height: 26px; cursor: pointer; }
+      .mini-toggle input { opacity: 0; width: 0; height: 0; }
+      .mini-toggle-slider {
+        position: absolute; inset: 0;
+        background: var(--sp-surface-btn);
+        border-radius: var(--sp-radius-btn);
+        box-shadow: var(--sp-inset-track);
+        cursor: pointer;
+        transition: background-color 0.3s var(--sp-spring), color 0.3s var(--sp-spring);
+      }
+      .mini-toggle-slider::before {
+        content: ''; position: absolute; width: 22px; height: 22px; left: 2px; top: 2px;
+        background: var(--sp-surface-btn);
+        border-radius: 50%;
+        box-shadow: 2px 2px 6px rgba(0,0,0,0.15), -2px -2px 6px rgba(255,255,255, var(--sp-highlight));
+        transition: background-color 0.3s var(--sp-spring), color 0.3s var(--sp-spring);
+      }
+      .mini-toggle input:checked + .mini-toggle-slider { background: var(--sp-green); }
+      .mini-toggle input:checked + .mini-toggle-slider::before { transform: translateX(18px); background: #fff; }
+
+      /* Sound select */
+      .sound-select-wrapper { display: flex; gap: var(--sp-2); align-items: center; }
+      .sound-select {
+        flex: 1; padding: var(--sp-3) var(--sp-4);
+        background: var(--sp-surface-inner);
+        border: 1px solid var(--sp-border-inner);
+        border-radius: var(--sp-radius-inner);
+        color: var(--sp-text-primary); font-size: 0.875rem;
+        box-shadow: var(--sp-inner-shadow);
+      }
+      .preview-sound-btn {
+        width: 40px; height: 40px;
+        display: flex; align-items: center; justify-content: center;
+        background: var(--sp-gold-surface);
+        border: 1px solid rgba(255,160,50,0.3);
+        border-radius: var(--sp-radius-inner);
+        color: #3A2000; cursor: pointer;
+        box-shadow: var(--sp-btn-shadow);
+      }
+      .preview-sound-btn:active { transform: scale(0.94); box-shadow: var(--sp-pressed-shadow); }
+      .preview-sound-btn svg { width: 18px; height: 18px; }
+
+      /* Stats Panel Overlay */
+      .stats-panel-overlay {
+        position: fixed; inset: 0; z-index: 1200;
+        display: flex; align-items: flex-end; justify-content: center;
+        opacity: 0; visibility: hidden;
+        transition: opacity 0.35s var(--sp-ease-out), visibility 0.35s;
+      }
+      .stats-panel-overlay.active { opacity: 1; visibility: visible; }
+      .stats-panel-backdrop {
+        position: absolute; inset: 0;
+        background: rgba(0,0,0,0.5);
+        backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+      }
+      .stats-panel-sheet {
+        position: relative; width: 100%; max-width: 428px; max-height: 90vh;
+        background: var(--sp-surface);
+        border: 1px solid var(--sp-border);
+        border-radius: var(--sp-radius-card) var(--sp-radius-card) 0 0;
+        box-shadow: 0 -16px 32px rgba(0,0,0, var(--sp-shadow-deep));
+        transform: translateY(100%);
+        transition: transform 0.5s var(--sp-ease-out);
+        display: flex; flex-direction: column; overflow: hidden;
+      }
+      .stats-panel-overlay.active .stats-panel-sheet { transform: translateY(0); }
+      .stats-panel-handle {
+        width: 36px; height: 4px; border-radius: 2px;
+        background: var(--sp-border-inner);
+        margin: var(--sp-3) auto var(--sp-1);
+      }
+      .stats-panel-header {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: var(--sp-3) var(--sp-5) var(--sp-4);
+        border-bottom: 1px solid var(--sp-border-inner);
+      }
+      .stats-panel-title { font-size: 1.125rem; font-weight: 600; color: var(--sp-text-primary); }
+      .stats-close-btn {
+        width: 32px; height: 32px;
+        display: flex; align-items: center; justify-content: center;
+        background: var(--sp-surface-btn);
+        border: 1px solid var(--sp-border);
+        border-radius: var(--sp-radius-btn);
+        color: var(--sp-text-secondary); cursor: pointer;
+        box-shadow: var(--sp-btn-shadow);
+      }
+      .stats-close-btn:active { transform: scale(0.92); }
+      .stats-close-btn svg { width: 16px; height: 16px; }
+      .stats-panel-content { flex: 1; overflow-y: auto; padding: var(--sp-5); }
+
+      /* Toast */
+      .toast-container {
+        position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%);
+        z-index: 5000; display: flex; flex-direction: column; gap: var(--sp-2);
+        pointer-events: none;
+      }
+    </style>
 </head>
 
 <body>
-
-    <!-- -----------------------------------------------------------------------
-         SACRED LOADING SCREEN (with background to prevent black screen)
-    ----------------------------------------------------------------------- -->
-    <div class="app-loading" id="appLoading" style="background: var(--clay-bg);">
-        <div class="load-cosmos">
-            <div class="load-ring"></div>
-            <div class="load-ring load-ring-2"></div>
-        </div>
-        <div class="loading-ik-onkar">ੴ</div>
-        <div class="loading-text">ਵਾਹਿਗੁਰੂ</div>
-        <div class="loading-sub">Preparing your sacred practice...</div>
-    </div>
-
-    <!-- Background Orbs -->
-    <div class="bg-orb bg-orb-1" aria-hidden="true"></div>
-    <div class="bg-orb bg-orb-2" aria-hidden="true"></div>
-    <div class="bg-orb bg-orb-3" aria-hidden="true"></div>
-
-    <!-- COSMOS (hidden — preserved for JS compatibility) -->
-    <div class="cosmos" id="cosmos" aria-hidden="true">
-        <canvas id="cosmosCanvas" aria-hidden="true"></canvas>
-        <div class="stars-field" id="starsField" aria-hidden="true"></div>
-    </div>
-
-    <!-- -----------------------------------------------------------------------
-         WELCOME MODAL
-    ----------------------------------------------------------------------- -->
-    <div class="welcome-modal" id="welcomeModal">
-        <div class="welcome-backdrop"></div>
-        <div class="welcome-content">
-            <div class="welcome-symbol">ੴ</div>
-            <h2 class="welcome-title">ਨਾਮ ਅਭਿਆਸ</h2>
-            <p class="welcome-subtitle">Welcome to Naam Abhyas</p>
-            <p class="welcome-quote">"ਸਤਿਨਾਮੁ ਜਪਿ ਵਡਭਾਗੀਆ"</p>
-            <p class="welcome-translation">Chanting the Naam, millions of sins are erased</p>
-            <div class="welcome-stats">
-                <div class="welcome-stat">
-                    <span class="stat-value" id="welcomeStreak">0</span>
-                    <span class="stat-label">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                        Streak
-                    </span>
-                </div>
-                <div class="welcome-stat">
-                    <span class="stat-value" id="welcomeToday">0</span>
-                    <span class="stat-label">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-                        Today
-                    </span>
-                </div>
-                <div class="welcome-stat">
-                    <span class="stat-value" id="welcomeTotal">0</span>
-                    <span class="stat-label">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                        Total
-                    </span>
-                </div>
-            </div>
-            <button class="welcome-start-btn" id="welcomeStartBtn">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3l14 9-14 9V3z"/></svg>
-                <span class="btn-text">Begin Naam Abhyas</span>
-            </button>
-            <button class="welcome-dismiss-btn" id="welcomeDismissBtn">View Schedule</button>
-        </div>
-    </div>
-
-
-    <!-- -----------------------------------------------------------------------
-         MAIN APPLICATION
-    ----------------------------------------------------------------------- -->
-    <div class="app-container" id="appContainer">
-
-        <!-- -------------------------------------------------------------------
-             HEADER  Transparent & Minimal
-        ------------------------------------------------------------------- -->
-        <header class="app-header" id="appHeader">
-            <button class="hdr-btn back-btn" id="backBtn" aria-label="Go back">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                    <path d="M15 18l-6-6 6-6" />
+    <!-- ═══════════════════════════════════════════════════════════════════════════
+         LOADING SCREEN — Sehaj Paath Style
+    ═══════════════════════════════════════════════════════════════════════════ -->
+    <div class="app-loading" id="appLoading">
+        <div class="loading-content">
+            <div class="loading-khanda">
+                <svg viewBox="0 0 100 100" class="khanda-icon">
+                    <circle cx="50" cy="50" r="48" fill="none" stroke="currentColor" stroke-width="1" opacity="0.3"/>
+                    <path d="M50 5L55 25H75L59 37L64 57L50 45L36 57L41 37L25 25H45L50 5Z" fill="currentColor"/>
                 </svg>
-            </button>
-
-            <div class="status-pill">
-                <div class="streak-fire">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--clay-sacred)" stroke="var(--clay-sacred)" stroke-width="1"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                    <span class="streak-count" id="headerStreakCount">0</span>
-                </div>
-                <div class="pill-divider"></div>
-                <span class="current-time" id="currentTime">12:00 AM</span>
             </div>
-            <div class="hdr-actions">
-                <button class="hdr-btn" id="settingsPageBtn" aria-label="Settings">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="3"></circle>
-                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            <div class="loading-spinner"></div>
+            <p class="loading-text">ਵਾਹਿਗੁਰੂ</p>
+            <p class="loading-subtext">Preparing your sacred practice...</p>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════════
+         MAIN APPLICATION CONTAINER
+    ═══════════════════════════════════════════════════════════════════════════ -->
+    <div class="app-container" id="appContainer">
+        
+        <!-- Background effects (hidden in Sehaj Paath style via CSS .background-effects {display:none}) -->
+        <div class="background-effects">
+            <div class="gradient-orb gradient-orb-1"></div>
+            <div class="gradient-orb gradient-orb-2"></div>
+            <div class="gradient-orb gradient-orb-3"></div>
+            <div class="mesh-gradient"></div>
+            <div class="noise-overlay"></div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════════════════
+             HEADER — Sacred Clay Style (identical to Sehaj Paath)
+        ═══════════════════════════════════════════════════════════════════════ -->
+        <header class="app-header clay-sacred" id="appHeader">
+            <div class="header-blur-bg"></div>
+            
+            <div class="header-content">
+                <!-- Back Button -->
+                <button class="header-btn back-btn" id="backBtn" aria-label="Go back to home">
+                    <svg class="header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <path d="M15 18l-6-6 6-6"/>
                     </svg>
                 </button>
+                
+                <!-- Status Pill (Dynamic Island Inspired) -->
+                <div class="status-pill" id="statusPill">
+                    <div class="status-pill-content">
+                        <div class="streak-fire" id="streakFire">
+                            <span class="fire-emoji">🙏</span>
+                            <span class="streak-count" id="headerStreakCount">0</span>
+                        </div>
+                        <div class="status-divider"></div>
+                        <div class="paath-number" id="currentTime">12:00 AM</div>
+                    </div>
+                </div>
+                
+                <!-- Header Title -->
+                <div class="header-title-section">
+                    <h1 class="header-title">
+                        <span class="gurmukhi-title">ਨਾਮ ਅਭਿਆਸ</span>
+                        <span class="english-title">Naam Abhyas</span>
+                    </h1>
+                    <p class="header-subtitle" id="headerSubtitle">Sacred Hourly Practice</p>
+                </div>
+                
+                <!-- Header Actions -->
+                <div class="header-actions">
+                    <button class="header-btn" id="settingsPageBtn" aria-label="Settings">
+                        <svg class="header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="3"/>
+                            <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
+                        </svg>
+                    </button>
+                </div>
             </div>
         </header>
 
-        <!-- -------------------------------------------------------------------
-             SCROLLABLE CONTENT
-        ------------------------------------------------------------------- -->
+        <!-- ═══════════════════════════════════════════════════════════════════════
+             MAIN SCROLLABLE CONTENT
+        ═══════════════════════════════════════════════════════════════════════ -->
         <main class="main-content" id="mainContent">
 
-            <!-- --- COMPACT HERO BANNER --- -->
+            <!-- ─── HERO BANNER ─── -->
             <section class="hero-section" id="heroSection">
                 <h1 class="hero-title">
-                    <span class="hero-gurmukhi" style="font-size: 1.4rem;">ਵਾਹਿਗੁਰੂ</span>
-                    <span class="hero-eng" style="font-size: 0.75rem; display: block;">Naam Abhyas • Sacred Hourly Practice</span>
+                    <span class="hero-gurmukhi">ਵਾਹਿਗੁਰੂ</span>
+                    <span class="hero-eng">Naam Abhyas • Sacred Hourly Practice</span>
                 </h1>
             </section>
 
-            <!-- --- ENABLE TOGGLE --- -->
-            <section class="glass-card toggle-card" id="toggleSection">
+            <!-- ─── ENABLE TOGGLE CARD ─── -->
+            <section class="card toggle-card clay-sacred" id="toggleSection">
+                <div class="card-glow"></div>
                 <div class="toggle-row">
                     <div class="toggle-info">
                         <div class="toggle-icon-wrap">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-                    </div>
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                                <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                            </svg>
+                        </div>
                         <div class="toggle-text">
                             <span class="toggle-label">Enable Naam Abhyas</span>
                             <span class="toggle-desc" id="toggleStatusText">Currently disabled</span>
@@ -238,8 +1038,9 @@
                 </div>
             </section>
 
-            <!-- --- NEXT SESSION CARD --- -->
-            <section class="glass-card next-card" id="nextSessionSection">
+            <!-- ─── NEXT SESSION CARD ─── -->
+            <section class="card next-card clay-sacred clay-animate-float" id="nextSessionSection">
+                <div class="card-glow"></div>
                 <div class="next-header">
                     <div class="next-icon-wrap">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -267,8 +1068,9 @@
                 </div>
             </section>
 
-            <!-- --- SPIRITUAL SYNC HUB --- -->
-            <section class="glass-card sync-hub-card" id="syncHubSection">
+            <!-- ─── SPIRITUAL PRACTICES HUB ─── -->
+            <section class="card sync-hub-card clay-sacred" id="syncHubSection">
+                <div class="card-glow"></div>
                 <div class="sync-hub-header">
                     <div class="sync-hub-icon-wrap">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -278,7 +1080,7 @@
                     </div>
                     <div>
                         <h2 class="sync-hub-title">Spiritual Practices Hub</h2>
-                        <p class="sync-hub-subtitle">Linked Spiritual Wisdom & Progress</p>
+                        <p class="sync-hub-subtitle">Linked Spiritual Wisdom &amp; Progress</p>
                     </div>
                 </div>
                 <div class="sync-grid">
@@ -305,15 +1107,16 @@
                         <div class="sync-item-icon">🤝</div>
                         <div class="sync-item-info">
                             <span class="sync-item-label">Sadhsangat Live</span>
-                            <span class="sync-item-desc">Listen to collective Kirtan & Raags</span>
+                            <span class="sync-item-desc">Listen to collective Kirtan &amp; Raags</span>
                         </div>
                         <svg class="sync-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
                     </div>
                 </div>
             </section>
 
-            <!-- --- SACRED DAY TIMELINE --- -->
-            <section class="glass-card timeline-card" id="scheduleSection">
+            <!-- ─── SACRED DAY TIMELINE ─── -->
+            <section class="card timeline-card clay-sacred" id="scheduleSection">
+                <div class="card-glow"></div>
                 <div class="timeline-header">
                     <div class="timeline-icon-wrap">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -339,24 +1142,30 @@
                 </div>
             </section>
 
-            <!-- --- WISDOM QUOTE --- -->
-            <section class="glass-card wisdom-card" id="wisdomCard">
+            <!-- ─── WISDOM QUOTE ─── -->
+            <section class="card wisdom-card clay-sacred" id="wisdomCard">
+                <div class="card-glow"></div>
                 <div class="wisdom-accent"></div>
                 <div class="wisdom-icon">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-7 7c0 2.1.9 4.1 2.3 5.5A4.5 4.5 0 0 1 10 18h4a4.5 4.5 0 0 1 2.7-3.5C18.1 13.1 19 11.1 19 9a7 7 0 0 0-7-7z"/><path d="M9 22h6"/><path d="M10 18v4"/><path d="M14 18v4"/></svg>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2a7 7 0 0 0-7 7c0 2.1.9 4.1 2.3 5.5A4.5 4.5 0 0 1 10 18h4a4.5 4.5 0 0 1 2.7-3.5C18.1 13.1 19 11.1 19 9a7 7 0 0 0-7-7z"/>
+                        <path d="M9 22h6"/>
+                        <path d="M10 18v4"/>
+                        <path d="M14 18v4"/>
+                    </svg>
                 </div>
                 <p class="wisdom-quote" id="wisdomQuote">"ਸਤਿਨਾਮੁ ਜਪਿ ਵਡਭਾਗੀਆ"</p>
                 <p class="wisdom-translation" id="wisdomTranslation">Chanting the Naam, millions of sins are erased</p>
                 <p class="wisdom-source" id="wisdomSource">— Sri Guru Granth Sahib Ji, Ang 289</p>
                 <button class="wisdom-refresh" id="wisdomRefreshBtn" aria-label="New quote">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path
-                            d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15" />
+                        <path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15" />
                     </svg>
+                    New Quote
                 </button>
             </section>
 
-            <!-- --- QUICK ACTIONS --- -->
+            <!-- ─── QUICK ACTIONS ─── -->
             <section class="quick-actions" id="quickActions">
                 <div class="qa-label">Extra Naam Simran</div>
                 <div class="qa-grid">
@@ -384,13 +1193,13 @@
                 </div>
             </section>
 
-            <!-- --- DISCIPLINE DASHBOARD --- -->
-            <section class="glass-card stats-card" id="quickStatsSection">
+            <!-- ─── DISCIPLINE DASHBOARD ─── -->
+            <section class="card stats-card clay-sacred" id="quickStatsSection">
+                <div class="card-glow"></div>
                 <div class="stats-header">
                     <div class="stats-icon-wrap">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                            <path
-                                d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
                         </svg>
                     </div>
                     <div>
@@ -407,6 +1216,12 @@
                     <div class="ring-section">
                         <div class="ring-container" id="completionRingContainer">
                             <svg class="completion-ring" viewBox="0 0 100 100">
+                                <defs>
+                                    <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" style="stop-color:#D4943A;stop-opacity:1" />
+                                        <stop offset="100%" style="stop-color:#C17F2E;stop-opacity:1" />
+                                    </linearGradient>
+                                </defs>
                                 <circle class="ring-bg" cx="50" cy="50" r="40" />
                                 <circle class="ring-fill" id="completionRingFill" cx="50" cy="50" r="40"
                                     stroke-dasharray="251" stroke-dashoffset="251" />
@@ -422,22 +1237,22 @@
                     <!-- Stats Grid -->
                     <div class="stats-grid">
                         <div class="stat-cell">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--clay-sacred)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--sp-gold)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
                             <span class="stat-number" id="currentStreak">0</span>
                             <span class="stat-name">Hour Streak</span>
                         </div>
                         <div class="stat-cell">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--clay-sacred)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--sp-gold)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
                             <span class="stat-number" id="todayCompleted">0</span>
                             <span class="stat-name">Today</span>
                         </div>
                         <div class="stat-cell">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--clay-sacred)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--sp-gold)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
                             <span class="stat-number" id="totalTime">0m</span>
                             <span class="stat-name">Total Time</span>
                         </div>
                         <div class="stat-cell">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--clay-sacred)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--sp-gold)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
                             <span class="stat-number" id="longestStreak">0</span>
                             <span class="stat-name">Best Streak</span>
                         </div>
@@ -476,14 +1291,14 @@
                 </button>
             </section>
 
-            <!-- --- ACHIEVEMENTS --- -->
-            <section class="glass-card achievements-card" id="achievementsSection">
+            <!-- ─── ACHIEVEMENTS ─── -->
+            <section class="card achievements-card clay-sacred" id="achievementsSection">
+                <div class="card-glow"></div>
                 <div class="ach-header">
                     <div class="ach-icon-wrap">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                             <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
-                            <path
-                                d="M4 22h16M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" />
+                            <path d="M4 22h16M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" />
                             <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
                         </svg>
                     </div>
@@ -524,9 +1339,51 @@
         </main>
     </div>
 
-    <!-- -----------------------------------------------------------------------
+    <!-- ═══════════════════════════════════════════════════════════════════════════
+         WELCOME MODAL
+    ═══════════════════════════════════════════════════════════════════════════ -->
+    <div class="welcome-modal" id="welcomeModal">
+        <div class="welcome-backdrop"></div>
+        <div class="welcome-content">
+            <div class="welcome-symbol">ੴ</div>
+            <h2 class="welcome-title">ਨਾਮ ਅਭਿਆਸ</h2>
+            <p class="welcome-subtitle">Welcome to Naam Abhyas</p>
+            <p class="welcome-quote">"ਸਤਿਨਾਮੁ ਜਪਿ ਵਡਭਾਗੀਆ"</p>
+            <p class="welcome-translation">Chanting the Naam, millions of sins are erased</p>
+            <div class="welcome-stats">
+                <div class="welcome-stat">
+                    <span class="stat-value" id="welcomeStreak">0</span>
+                    <span class="stat-label">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                        Streak
+                    </span>
+                </div>
+                <div class="welcome-stat">
+                    <span class="stat-value" id="welcomeToday">0</span>
+                    <span class="stat-label">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+                        Today
+                    </span>
+                </div>
+                <div class="welcome-stat">
+                    <span class="stat-value" id="welcomeTotal">0</span>
+                    <span class="stat-label">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                        Total
+                    </span>
+                </div>
+            </div>
+            <button class="welcome-start-btn" id="welcomeStartBtn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3l14 9-14 9V3z"/></svg>
+                <span class="btn-text">Begin Naam Abhyas</span>
+            </button>
+            <button class="welcome-dismiss-btn" id="welcomeDismissBtn">View Schedule</button>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════════
          MEDITATION OVERLAY — Premium SVG Immersive Experience
-    ----------------------------------------------------------------------- -->
+    ═══════════════════════════════════════════════════════════════════════════ -->
     <div class="meditation-overlay" id="meditationOverlay">
         <div class="meditation-cosmos">
             <svg class="med-progress-svg" viewBox="0 0 200 200">
@@ -577,9 +1434,9 @@
         </div>
     </div>
 
-    <!-- -----------------------------------------------------------------------
+    <!-- ═══════════════════════════════════════════════════════════════════════════
          SESSION ALERT MODAL — iOS Style Notification
-    ----------------------------------------------------------------------- -->
+    ═══════════════════════════════════════════════════════════════════════════ -->
     <div class="session-alert-modal" id="sessionAlertModal">
         <div class="alert-backdrop"></div>
         <div class="alert-ios-card">
@@ -606,15 +1463,15 @@
         </div>
     </div>
 
-    <!-- -----------------------------------------------------------------------
+    <!-- ═══════════════════════════════════════════════════════════════════════════
          COMPLETION MODAL — Rotating Blessings
-    ----------------------------------------------------------------------- -->
+    ═══════════════════════════════════════════════════════════════════════════ -->
     <div class="completion-modal" id="completionModal">
         <div class="completion-backdrop"></div>
         <div class="completion-card-ios">
             <div class="comp-header-ios">
                 <div class="comp-icon-ios">
-                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--clay-sacred)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--sp-gold)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
                 </div>
                 <h2 class="comp-title-ios" id="completionTitle">Wonderful!</h2>
                 <p class="comp-blessing-ios" id="completionBlessing">You remembered Guru Maharaj Ji</p>
@@ -640,24 +1497,7 @@
         </div>
     </div>
 
-    <!-- -----------------------------------------------------------------------
-         STATS PANEL
-    ----------------------------------------------------------------------- -->
-    <div class="stats-panel" id="statsPanel">
-        <div class="panel-header">
-            <button class="panel-close-btn" id="closeStatsBtn" aria-label="Close">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M18 6L6 18M6 6l12 12" />
-                </svg>
-            </button>
-            <h2 class="panel-title">Statistics</h2>
-        </div>
-        <div class="panel-content" id="statsPanelContent"></div>
-    </div>
-
-    <!-- -----------------------------------------------------------------------
-         SETTINGS MODAL (Bottom Sheet)
-    ----------------------------------------------------------------------- -->
+    <!-- ═══ SETTINGS MODAL (Bottom Sheet) ═══ -->
     <div class="settings-modal" id="settingsModal">
         <div class="settings-modal-backdrop" id="settingsModalBackdrop"></div>
         <div class="settings-modal-sheet" id="settingsModalSheet">
@@ -709,7 +1549,7 @@
                     </div>
                 </div>
 
-                <!-- Duration Setting: CUSTOM INPUT + PRESETS -->
+                <!-- Duration Setting -->
                 <div class="setting-group">
                     <div class="setting-label">
                         <span class="setting-title">Session Duration</span>
@@ -742,56 +1582,16 @@
                                 <option value="5" selected>5:00 AM</option>
                                 <option value="6">6:00 AM</option>
                                 <option value="7">7:00 AM</option>
-                                <option value="8">8:00 AM</option>
                             </select>
                         </div>
-                        <div class="time-range-divider">to</div>
                         <div class="time-input-group">
                             <label>Until</label>
                             <select id="activeHoursEnd">
                                 <option value="20">8:00 PM</option>
-                                <option value="21">9:00 PM</option>
-                                <option value="22" selected>10:00 PM</option>
+                                <option value="21" selected>9:00 PM</option>
+                                <option value="22">10:00 PM</option>
                                 <option value="23">11:00 PM</option>
                             </select>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Notifications -->
-                <div class="setting-group">
-                    <div class="setting-label">
-                        <span class="setting-title">Notifications</span>
-                        <span class="setting-desc">How you're reminded</span>
-                    </div>
-                    <div class="toggle-options">
-                        <div class="toggle-option">
-                            <span class="option-text">Hour start notification</span>
-                            <label class="mini-toggle">
-                                <input type="checkbox" id="hourStartNotification" checked>
-                                <span class="mini-toggle-slider"></span>
-                            </label>
-                        </div>
-                        <div class="toggle-option">
-                            <span class="option-text">2-minute warning</span>
-                            <label class="mini-toggle">
-                                <input type="checkbox" id="preReminderNotification" checked>
-                                <span class="mini-toggle-slider"></span>
-                            </label>
-                        </div>
-                        <div class="toggle-option">
-                            <span class="option-text">Vibration</span>
-                            <label class="mini-toggle">
-                                <input type="checkbox" id="vibrationEnabled" checked>
-                                <span class="mini-toggle-slider"></span>
-                            </label>
-                        </div>
-                        <div class="toggle-option">
-                            <span class="option-text">Sound</span>
-                            <label class="mini-toggle">
-                                <input type="checkbox" id="soundEnabled" checked>
-                                <span class="mini-toggle-slider"></span>
-                            </label>
                         </div>
                     </div>
                 </div>
@@ -835,7 +1635,6 @@
         </div>
     </div>
 
-
     <!-- ═══ STATS PANEL OVERLAY ═══ -->
     <div class="stats-panel-overlay" id="statsPanel">
         <div class="stats-panel-backdrop" id="statsPanelBackdrop"></div>
@@ -856,6 +1655,12 @@
     <!-- Toast Container -->
     <div class="toast-container" id="toastContainer"></div>
 
+    <!-- COSMOS (hidden — preserved for JS compatibility) -->
+    <div class="cosmos" id="cosmos" aria-hidden="true" style="display:none">
+        <canvas id="cosmosCanvas" aria-hidden="true"></canvas>
+        <div class="stars-field" id="starsField" aria-hidden="true"></div>
+    </div>
+
     <!-- Scripts -->
     <script src="components/timer-engine.js"></script>
     <script src="components/notification-engine.js"></script>
@@ -863,14 +1668,7 @@
     <script src="components/audio-manager.js"></script>
     <script src="components/ritual-engine.js"></script>
 
-    <!-- Native Notifications for Mobile -->
-    <script src="../lib/native-notifications.js"></script>
-
-    <!-- Global Alarm System -->
-    <script src="../lib/alarm-coordinator.js" defer></script>
-    <script src="../lib/global-alarm-system.js" defer></script>
-
-    <script src="../lib/unified-stats.js"></script>
+    <!-- Core Script -->
     <script src="naam-abhyas.js"></script>
     <!-- Global Alarm/Notification Engine + Back Button + Widget Bridge -->
     <script src="../lib/capacitor-notifications-global.js"></script>

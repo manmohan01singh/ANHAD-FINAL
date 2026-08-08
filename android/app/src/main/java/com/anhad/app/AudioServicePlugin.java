@@ -114,9 +114,17 @@ public class AudioServicePlugin extends Plugin {
         }
 
         Intent intent = new Intent(getContext(), AudioForegroundService.class);
-        intent.setAction(action.equals("PLAY") ? AudioForegroundService.ACTION_PLAY : AudioForegroundService.ACTION_PAUSE);
+        if ("NEXT".equals(action)) {
+            intent.setAction(AudioForegroundService.ACTION_NEXT);
+        } else if ("PREV".equals(action)) {
+            intent.setAction(AudioForegroundService.ACTION_PREV);
+        } else if ("PAUSE".equals(action)) {
+            intent.setAction(AudioForegroundService.ACTION_PAUSE);
+        } else {
+            intent.setAction(AudioForegroundService.ACTION_PLAY);
+        }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && "PLAY".equals(action)) {
             getContext().startForegroundService(intent);
         } else {
             getContext().startService(intent);

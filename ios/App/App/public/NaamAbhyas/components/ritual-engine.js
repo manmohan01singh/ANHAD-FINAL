@@ -266,7 +266,8 @@ class RitualEngine {
      * @param {boolean} isExtra - True if this is an EXTRA session (not counting towards schedule)
      */
     triggerManualSession(durationMinutes = 2, isExtra = true) {
-        console.log(`[RitualEngine] Starting ${isExtra ? 'EXTRA' : 'SCHEDULED'} session: ${durationMinutes} minutes`);
+        console.log(`[RitualEngine] 🎯 Starting ${isExtra ? 'EXTRA' : 'SCHEDULED'} session: ${durationMinutes} minutes`);
+        console.log(`[RitualEngine] isExtraSession flag set to:`, isExtra);
 
         this.sessionDurationMinutes = durationMinutes;
         this.isExtraSession = isExtra;
@@ -285,6 +286,12 @@ class RitualEngine {
             isExtra: isExtra,
             durationMinutes: durationMinutes
         };
+
+        console.log(`[RitualEngine] currentSession created:`, {
+            hour: this.currentSession.hour,
+            isExtra: this.currentSession.isExtra,
+            duration: durationMinutes
+        });
 
         this.enterActiveState();
     }
@@ -346,6 +353,9 @@ class RitualEngine {
         };
 
         console.log('[RitualEngine] Entering ACTIVE state');
+
+        // Add body class for iOS timer styling
+        document.body.classList.add('timer-active');
 
         // Show overlay
         const overlay = document.getElementById('ritualOverlay');
@@ -624,6 +634,9 @@ class RitualEngine {
         this.hideSkipConfirmation();
         this.cleanup();
 
+        // Remove body class for iOS timer styling
+        document.body.classList.remove('timer-active');
+
         // Close overlay immediately
         const overlay = document.getElementById('ritualOverlay');
         if (overlay) overlay.classList.remove('active');
@@ -691,9 +704,21 @@ class RitualEngine {
                 metrics: { ...this.sessionMetrics }
             };
 
-            // Only mark in schedule if not extra
+            console.log(`[RitualEngine] Recording session:`, {
+                hour: sessionData.hour,
+                isExtra: sessionData.isExtra,
+                duration: this.sessionDurationMinutes,
+                scheduleHasHour: !!this.app.currentSchedule?.[sessionData.hour]
+            });
+
+            // Only mark in schedule if not extra AND hour exists in schedule
             if (!this.isExtraSession && this.app.currentSchedule?.[this.currentSession.hour]) {
+                console.log(`[RitualEngine] ✅ Marking scheduled hour ${this.currentSession.hour} as completed`);
                 this.app.currentSchedule[this.currentSession.hour].status = 'completed';
+            } else if (this.isExtraSession) {
+                console.log(`[RitualEngine] 📝 Extra session - NOT marking any schedule hour`);
+            } else {
+                console.log(`[RitualEngine] ⚠️ Hour ${this.currentSession.hour} not found in schedule`);
             }
 
             // Record session (handles both scheduled and extra)
@@ -896,6 +921,9 @@ class RitualEngine {
             clearTimeout(this.autoCloseTimeout);
             this.autoCloseTimeout = null;
         }
+
+        // Remove body class for iOS timer styling
+        document.body.classList.remove('timer-active');
 
         const overlay = document.getElementById('ritualOverlay');
         if (overlay) overlay.classList.remove('active');

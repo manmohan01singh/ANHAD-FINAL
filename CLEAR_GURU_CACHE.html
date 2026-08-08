@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Clear Guru Image Cache</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        button {
+            background: #FF6B00;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #E55A00;
+        }
+        .success {
+            background: #22C55E;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            display: none;
+        }
+        .info {
+            background: #EEF2FF;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border-left: 4px solid #4F46E5;
+        }
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Clear Guru Image Cache</h1>
+        
+        <div class="info">
+            <strong>Problem:</strong> The app is showing Guru Arjan Dev Ji instead of Guru Granth Sahib Ji
+            <br><br>
+            <strong>Root Cause:</strong> Sept 13 event is cached in localStorage instead of Sept 12
+            <br><br>
+            <strong>Solution:</strong> Clear the cached event data
+        </div>
+        
+        <button onclick="clearCache()">Clear Event Cache</button>
+        <button onclick="clearAll()">Clear ALL Cache (Nuclear Option)</button>
+        
+        <div id="success" class="success"></div>
+        
+        <div style="margin-top: 20px;">
+            <h3>Cached Data:</h3>
+            <pre id="cacheData" style="background: #f4f4f4; padding: 15px; border-radius: 5px; overflow-x: auto; font-size: 12px;"></pre>
+        </div>
+    </div>
+    
+    <script>
+        function showCacheData() {
+            const cacheKeys = [
+                'anhad_cached_upcoming_gurpurab',
+                'gurpurab_events',
+                'next_gurpurab_cache',
+                'homepage_cache'
+            ];
+            
+            let output = '';
+            cacheKeys.forEach(key => {
+                const value = localStorage.getItem(key);
+                if (value) {
+                    output += `${key}:\n${JSON.stringify(JSON.parse(value), null, 2)}\n\n`;
+                }
+            });
+            
+            document.getElementById('cacheData').textContent = output || 'No cached event data found';
+        }
+        
+        function clearCache() {
+            // Clear Gurpurab event caches
+            localStorage.removeItem('anhad_cached_upcoming_gurpurab');
+            localStorage.removeItem('gurpurab_events');
+            localStorage.removeItem('next_gurpurab_cache');
+            localStorage.removeItem('homepage_cache');
+            
+            showSuccess('Event cache cleared! Reload the homepage to see Guru Granth Sahib Ji');
+        }
+        
+        function clearAll() {
+            // Nuclear option - clear all localStorage
+            const important = {
+                nitnemTracker_nitnemLog: localStorage.getItem('nitnemTracker_nitnemLog'),
+                nitnemTracker_amritvelaLog: localStorage.getItem('nitnemTracker_amritvelaLog'),
+                anhad_streak_data: localStorage.getItem('anhad_streak_data'),
+                anhad_my_pothi: localStorage.getItem('anhad_my_pothi')
+            };
+            
+            localStorage.clear();
+            
+            // Restore important data
+            Object.entries(important).forEach(([key, value]) => {
+                if (value) localStorage.setItem(key, value);
+            });
+            
+            showSuccess('ALL cache cleared (except your Nitnem/streak data)! Reload the homepage.');
+        }
+        
+        function showSuccess(message) {
+            const successDiv = document.getElementById('success');
+            successDiv.textContent = '✅ ' + message;
+            successDiv.style.display = 'block';
+            showCacheData();
+            
+            setTimeout(() => {
+                successDiv.style.display = 'none';
+            }, 5000);
+        }
+        
+        // Show cache on load
+        showCacheData();
+    </script>
+</body>
+</html>

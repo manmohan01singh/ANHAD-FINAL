@@ -83,9 +83,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700;800;900&family=Noto+Sans+Gurmukhi:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
-    /* ─── PLAYER SHEET DISABLED: Using lightweight inline player instead ─── */
-    #playerSheet, #playerBackdrop { display: none !important; }
-
     /* ═══════════════════════════════════════════════════════════════
        ULTIMATE PREMIUM DESIGN SYSTEM
        iOS-Level Visual DNA · Apple SF + Gurbani Golden Touch
@@ -2026,12 +2023,11 @@
       left: 50%;
       transform: translateX(-50%) translateY(100%) translateZ(0);
       width: 100%;
-      max-width: 600px;
+      max-width: 800px;
       height: 100dvh;
       background: var(--bg-glass-strong);
-      /* PERFORMANCE: Reduced blur from 40px to 20px for smoother animations */
-      backdrop-filter: blur(20px) saturate(180%);
-      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      backdrop-filter: blur(10px) saturate(140%);
+      -webkit-backdrop-filter: blur(10px) saturate(140%);
       z-index: 1500;
       display: flex;
       flex-direction: column;
@@ -2039,12 +2035,8 @@
       overflow: hidden;
       border-radius: 24px 24px 0 0;
       border-top: 0.5px solid var(--separator);
-      /* GPU acceleration for smoother animations */
       will-change: transform;
       backface-visibility: hidden;
-      perspective: 1000px;
-      /* Optimize compositing */
-      contain: layout style paint;
     }
     .player-sheet.open {
       transform: translateX(-50%) translateY(0) translateZ(0);
@@ -2069,7 +2061,7 @@
 
     /* Drag Handle Header — refined glass */
     .player-sheet-header {
-      height: 36px;
+      height: 44px;
       padding: 0 16px;
       display: flex;
       align-items: center;
@@ -2081,6 +2073,7 @@
       -webkit-backdrop-filter: blur(20px) saturate(200%);
       position: relative;
       z-index: 3;
+      border-bottom: 0.5px solid var(--separator);
     }
     .player-sheet-header:active {
       cursor: grabbing;
@@ -2093,22 +2086,39 @@
       border-radius: 100px;
       box-shadow: 0 0 8px rgba(255,179,0,0.3);
     }
-    .player-close-chevron {
+    .player-back-btn {
       position: absolute;
-      left: 16px;
+      left: 12px;
       top: 50%;
       transform: translateY(-50%);
       color: var(--text-primary);
       cursor: pointer;
       display: flex;
       align-items: center;
-      padding: 6px;
-      border-radius: 50%;
+      gap: 4px;
+      padding: 6px 14px;
+      border-radius: 100px;
+      font-size: 13px;
+      font-weight: 700;
       transition: all 0.2s var(--ease-out);
-      background: var(--bg-glass);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      border: 0.5px solid var(--separator);
+      background: var(--bg-secondary);
+      border: 0.5px solid var(--border-color);
+    }
+    .player-back-btn:active {
+      background: var(--gold-gradient);
+      color: #000;
+      transform: translateY(-50%) scale(0.95);
+    }
+    .player-header-title {
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--gold-accent);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
     }
     .player-close-chevron:active {
       background: var(--gold-accent);
@@ -2230,6 +2240,23 @@
     #ytPlayerContainer {
       width: 100%;
       height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 5;
+      background: #000;
+    }
+    #ytPlayerContainer iframe {
+      width: 100% !important;
+      height: 100% !important;
+      position: absolute !important;
+      top: 0 !important;
+      left: 0 !important;
+      border: none !important;
+      z-index: 5 !important;
+      pointer-events: auto !important;
     }
 
     /* Double-tap HUD */
@@ -4610,12 +4637,14 @@
     
     <!-- Drag handle header -->
     <div class="player-sheet-header" id="playerDragHeader">
-      <div class="player-close-chevron" id="playerCloseBtn">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="6 9 12 15 18 9"/>
+      <button class="player-back-btn" id="playerCloseBtn" aria-label="Minimize or Back">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"/>
         </svg>
-      </div>
+        <span>Back</span>
+      </button>
       <div class="player-drag-handle"></div>
+      <div class="player-header-title">Sadhsangat Watch</div>
     </div>
 
     <!-- Ambient Mode Lighting glow -->
@@ -5088,15 +5117,16 @@
     function setupMediaSession() {
       if (!('mediaSession' in navigator)) return;
       
+      const artUrl = (State.currentPlaying && State.currentPlaying.videoId) 
+        ? `https://i.ytimg.com/vi/${State.currentPlaying.videoId}/mqdefault.jpg`
+        : 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><rect width="100%" height="100%" fill="%23FFB300"/><text x="50%" y="55%" text-anchor="middle" fill="black" font-size="200" font-family="sans-serif" font-weight="bold">ੴ</text></svg>';
+
       const metadata = State.currentPlaying ? {
-        title: State.currentPlaying.title,
-        artist: State.currentPlaying.channelName,
+        title: State.currentPlaying.title || 'Gurbani Live',
+        artist: State.currentPlaying.channelName || 'Sadhsangat Live',
         album: 'Sadhsangat Live',
         artwork: [
-          { src: 'https://via.placeholder.com/96/FFD700/000000?text=S', sizes: '96x96', type: 'image/png' },
-          { src: 'https://via.placeholder.com/128/FFD700/000000?text=S', sizes: '128x128', type: 'image/png' },
-          { src: 'https://via.placeholder.com/256/FFD700/000000?text=S', sizes: '256x256', type: 'image/png' },
-          { src: 'https://via.placeholder.com/512/FFD700/000000?text=S', sizes: '512x512', type: 'image/png' }
+          { src: artUrl, sizes: '512x512', type: 'image/jpeg' }
         ]
       } : {};
       
@@ -5105,16 +5135,16 @@
       // Play/Pause handler
       navigator.mediaSession.setActionHandler('play', async () => {
         console.log('Media Session: Play');
-        if (ytPlayer) {
-          ytPlayer.playVideo();
+        if (ytPlayer && typeof ytPlayer.playVideo === 'function') {
+          try { ytPlayer.playVideo(); } catch(e) {}
         }
         updateMediaSessionPlaybackState();
       });
       
       navigator.mediaSession.setActionHandler('pause', async () => {
         console.log('Media Session: Pause');
-        if (ytPlayer) {
-          ytPlayer.pauseVideo();
+        if (ytPlayer && typeof ytPlayer.pauseVideo === 'function') {
+          try { ytPlayer.pauseVideo(); } catch(e) {}
         }
         updateMediaSessionPlaybackState();
       });
@@ -5122,43 +5152,44 @@
       // Seek handlers
       navigator.mediaSession.setActionHandler('seekbackward', (details) => {
         console.log('Media Session: Seek Backward');
-        if (ytPlayer && ytPlayer.getCurrentTime && ytPlayer.seekTo) {
-          ytPlayer.getCurrentTime((seconds) => {
-            ytPlayer.seekTo(seconds - (details.seekOffset || 10));
-          });
+        if (ytPlayer && typeof ytPlayer.getCurrentTime === 'function' && typeof ytPlayer.seekTo === 'function') {
+          try {
+            const seconds = ytPlayer.getCurrentTime() || 0;
+            ytPlayer.seekTo(Math.max(0, seconds - (details.seekOffset || 10)), true);
+          } catch(e) {}
         }
       });
       
       navigator.mediaSession.setActionHandler('seekforward', (details) => {
         console.log('Media Session: Seek Forward');
-        if (ytPlayer && ytPlayer.getCurrentTime && ytPlayer.seekTo) {
-          ytPlayer.getCurrentTime((seconds) => {
-            ytPlayer.seekTo(seconds + (details.seekOffset || 10));
-          });
+        if (ytPlayer && typeof ytPlayer.getCurrentTime === 'function' && typeof ytPlayer.seekTo === 'function') {
+          try {
+            const seconds = ytPlayer.getCurrentTime() || 0;
+            ytPlayer.seekTo(seconds + (details.seekOffset || 10), true);
+          } catch(e) {}
         }
       });
       
       // Next/Previous (for playlist navigation)
       navigator.mediaSession.setActionHandler('nexttrack', () => {
         console.log('Media Session: Next Track');
-        // Implement if you have playlist support
       });
       
       navigator.mediaSession.setActionHandler('previoustrack', () => {
         console.log('Media Session: Previous Track');
-        // Implement if you have playlist support
       });
     }
     
     function updateMediaSessionPlaybackState() {
-      if ('mediaSession' in navigator && ytPlayer) {
-        ytPlayer.getPlayerState((state) => {
-          if (state === YT.PlayerState.PLAYING) {
+      if ('mediaSession' in navigator && ytPlayer && typeof ytPlayer.getPlayerState === 'function') {
+        try {
+          const state = ytPlayer.getPlayerState();
+          if (state === (window.YT ? window.YT.PlayerState.PLAYING : 1)) {
             navigator.mediaSession.playbackState = 'playing';
           } else {
             navigator.mediaSession.playbackState = 'paused';
           }
-        });
+        } catch(e) {}
       }
     }
     
@@ -8073,7 +8104,7 @@
             openIosActionSheet(v);
             return;
           }
-          playInline(card, v.videoId);
+          openPlayer(v.videoId, v.title, v.channelName, v.channelThumbnail || '', true);
         });
         return card;
       }
@@ -8184,7 +8215,7 @@
           openIosActionSheet(v);
           return;
         }
-        playInline(card, v.videoId);
+        openPlayer(v.videoId, v.title, v.channelName, v.channelThumbnail || '', false);
       });
 
       return card;
@@ -8194,33 +8225,12 @@
       return name.split(' ').map(x => x[0]).slice(0, 2).join('').toUpperCase();
     }
 
-    /* ── Dynamic Ambient Color Extraction from video thumbnail ── */
+    /* ── Dynamic Ambient Color Extraction ── */
     function extractAmbientColor(videoId) {
       const playerSheet = $('playerSheet');
-      const img = new Image();
-      img.crossOrigin = 'anonymous';
-      img.src = `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        canvas.width = 40; canvas.height = 23;
-        ctx.drawImage(img, 0, 0, 40, 23);
-        const imageData = ctx.getImageData(0, 0, 40, 23).data;
-        let r = 0, g = 0, b = 0, count = 0;
-        for (let i = 0; i < imageData.length; i += 4) {
-          r += imageData[i]; g += imageData[i+1]; b += imageData[i+2];
-          count++;
-        }
-        r = Math.round(r / count); g = Math.round(g / count); b = Math.round(b / count);
-        const main = `${r},${g},${b}`;
-        const secondary = `${Math.min(r + 50, 255)},${Math.min(g + 50, 255)},${Math.min(b + 50, 255)}`;
-        playerSheet.style.setProperty('--ambient-color', `rgba(${main}, 0.3)`);
-        playerSheet.style.setProperty('--ambient-color-secondary', `rgba(${secondary}, 0.15)`);
-      };
-      img.onerror = () => {
-        playerSheet.style.setProperty('--ambient-color', 'rgba(255,179,0,0.25)');
-        playerSheet.style.setProperty('--ambient-color-secondary', 'rgba(255,179,0,0.12)');
-      };
+      if (!playerSheet) return;
+      playerSheet.style.setProperty('--ambient-color', 'rgba(255,179,0,0.25)');
+      playerSheet.style.setProperty('--ambient-color-secondary', 'rgba(255,179,0,0.12)');
     }
 
     function openIosActionSheet(v) {
@@ -8333,74 +8343,189 @@
 
     /* ── WATCH PAGE SHEET PLAYER CONTROLLER ───────────── */
     function openPlayer(videoId, title, channelName, channelThumbnail, isLive = false) {
-      // Save to watch history
-      saveToWatchHistory({ videoId, title, channelName, channelThumbnail, isLive, duration: isLive ? 'LIVE' : '--:--', progress: '0%', watchedAt: Date.now() });
       State.currentPlaying = { videoId, title, channelName, channelThumbnail, isLive };
+      State.currentTime = 0;
+      State.duration = 0;
+      saveToWatchHistory({ videoId, title, channelName, channelThumbnail, isLive, duration: isLive ? 'LIVE' : '--:--', progress: '0%', watchedAt: Date.now() });
 
       // Pause Anhad background audio
       if (window.AnhadAudio && typeof window.AnhadAudio.pause === 'function') window.AnhadAudio.pause();
 
-      // Remove any existing overlay
+      // Remove legacy temporary overlay if present
       const existing = document.getElementById('anhad-inline-player-overlay');
       if (existing) existing.remove();
 
-      // Build clean fullscreen overlay
-      const overlay = document.createElement('div');
-      overlay.id = 'anhad-inline-player-overlay';
-      overlay.style.cssText = [
-        'position:fixed', 'inset:0', 'z-index:99999',
-        'background:rgba(0,0,0,0.96)',
-        'display:flex', 'flex-direction:column',
-        'align-items:center', 'justify-content:center',
-        'padding:env(safe-area-inset-top,16px) 12px env(safe-area-inset-bottom,16px)',
-        'animation:aipoFadeIn .2s ease'
-      ].join(';');
+      const playerSheet = $('playerSheet');
+      const playerBackdrop = $('playerBackdrop');
 
-      overlay.innerHTML = `
-        <style>
-          @keyframes aipoFadeIn{from{opacity:0}to{opacity:1}}
-        </style>
-        <div style="width:100%;max-width:760px;display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;color:#fff;gap:8px;">
-          <div style="flex:1;font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#FFB300;">${title || 'Gurbani'}</div>
-          <button id="anhad-close-overlay" style="background:rgba(255,255,255,0.1);border:none;color:#fff;font-weight:800;font-size:13px;padding:8px 18px;border-radius:20px;cursor:pointer;flex-shrink:0;">✕ Close</button>
-        </div>
-        <div style="width:100%;max-width:760px;position:relative;padding-bottom:56.25%;background:#000;border-radius:14px;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,0.7);">
-          <iframe
-            src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&playsinline=1"
-            frameborder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowfullscreen
-            style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;">
-          </iframe>
-        </div>
-        <div style="margin-top:10px;color:rgba(255,255,255,0.45);font-size:11px;">${channelName || ''}</div>
-      `;
+      $('playerDetailTitle').textContent = title || 'Gurbani Stream';
+      $('playerMiniTitle').textContent = title || 'Gurbani Stream';
+      $('playerDetailChannel').textContent = channelName || 'Sadhsangat Live';
+      $('playerMiniChannel').textContent = channelName || 'Sadhsangat Live';
 
-      document.body.appendChild(overlay);
-      overlay.querySelector('#anhad-close-overlay').addEventListener('click', () => overlay.remove());
+      const avatarUrl = channelThumbnail || `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='38' height='38' viewBox='0 0 38 38'><rect width='100%' height='100%' fill='%23FFB300'/><text x='50%' y='55%' text-anchor='middle' fill='black' font-size='16' font-family='sans-serif' font-weight='bold'>${getInitials(channelName)}</text></svg>`;
+      $('playerChannelAvatar').src = avatarUrl;
+      $('audioDiscSpin').style.backgroundImage = `url('https://i.ytimg.com/vi/${videoId}/mqdefault.jpg')`;
+
+      extractAmbientColor(videoId);
+
+      const bar = $('playerProgressBar');
+      if (bar) {
+        bar.value = 0;
+        bar.style.display = 'block';
+        if (bar.parentElement) bar.parentElement.style.setProperty('--progress', 0);
+      }
+
+      const channel = State.myChannels.find(c => c.channelName === channelName);
+      updateSubscribeBtnState(channel);
+
+      if (isLive) {
+        $('playerLiveBadgeRow').style.display = 'flex';
+        $('playerVideoViewsRow').textContent = 'Streaming Live';
+      } else {
+        $('playerLiveBadgeRow').style.display = 'none';
+        $('playerVideoViewsRow').textContent = 'Video Playback';
+      }
+
+      // Populate Up Next list
+      renderPlayerRelatedList(videoId);
+
+      // Open Watch Page Sheet
+      playerSheet.style.display = 'flex';
+      playerBackdrop.style.display = 'block';
+      playerSheet.className = 'player-sheet open';
+      playerBackdrop.classList.add('visible');
+      document.body.classList.add('mini-player-active');
+
+      const scrollBox = $('playerScrollContent');
+      if (scrollBox) scrollBox.scrollTop = 0;
+
+      State.likeState = false;
+      $('playerLikeBtn').style.background = 'var(--bg-glass)';
+      $('playerLikeBtn').style.color = 'var(--text-primary)';
+      $('playerLikeText').textContent = 'Like';
+
+      loadYtIframePlayer(videoId);
+      if (bgPlayEnabled) { setupNativeAudioCommandListener(); startNativeAudioService(); }
       haptic('medium');
+      window.dispatchEvent(new CustomEvent('sadhsangatPlayerOpened', { detail: { title, channelName } }));
     }
 
-    /* ── INLINE CARD PLAYER (replaces thumbnail with iframe) ── */
-    function playInline(card, videoId) {
-      if (window.AnhadAudio && typeof window.AnhadAudio.pause === 'function') window.AnhadAudio.pause();
-      const thumbWrap = card.querySelector('.yt-video-thumb-wrap') || card.querySelector('.yt-live-now-thumb-wrap');
-      if (thumbWrap) {
-        thumbWrap.style.position = 'relative';
-        thumbWrap.style.paddingBottom = '56.25%';
-        thumbWrap.style.height = '0';
-        thumbWrap.style.overflow = 'hidden';
-        thumbWrap.innerHTML = `<iframe
-          src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&playsinline=1"
-          frameborder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowfullscreen
-          style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;border-radius:12px;">
-        </iframe>`;
-        card.style.pointerEvents = 'none';
-      } else {
-        openPlayer(videoId, '', '', '', false);
+    /* ── POPULATE UP NEXT / RECOMMENDED FEED ON WATCH PAGE ── */
+    function renderPlayerRelatedList(currentVideoId) {
+      const container = $('playerRelatedList');
+      if (!container) return;
+      container.innerHTML = '';
+
+      const allItems = [];
+      if (Array.isArray(State.live)) {
+        State.live.forEach(item => {
+          if (item.videoId && item.videoId !== currentVideoId) {
+            allItems.push({ ...item, isLive: true });
+          }
+        });
       }
+      const videoPool = (Array.isArray(State.videos) && State.videos.length > 0) ? State.videos : (State.streams || []);
+      videoPool.forEach(item => {
+        if (item.videoId && item.videoId !== currentVideoId && !allItems.some(x => x.videoId === item.videoId)) {
+          allItems.push({ ...item, isLive: item.isLive || false });
+        }
+      });
+
+      if (allItems.length === 0) {
+        container.innerHTML = `<div style="text-align:center; padding:16px; color:var(--text-secondary); font-size:12px;">No related videos found</div>`;
+        return;
+      }
+
+      const nextItems = allItems.slice(0, 12);
+      nextItems.forEach(v => {
+        const itemRow = document.createElement('div');
+        itemRow.style.cssText = `
+          display: flex;
+          gap: 12px;
+          align-items: center;
+          padding: 8px;
+          background: var(--bg-secondary);
+          border-radius: 14px;
+          cursor: pointer;
+          transition: transform 0.15s ease, background 0.15s ease;
+          border: 0.5px solid var(--border-color);
+        `;
+
+        const thumb = document.createElement('div');
+        thumb.style.cssText = `
+          width: 110px;
+          aspect-ratio: 16/9;
+          position: relative;
+          border-radius: 8px;
+          overflow: hidden;
+          flex-shrink: 0;
+          background: #000;
+        `;
+        const img = document.createElement('img');
+        img.src = `https://img.youtube.com/vi/${v.videoId}/mqdefault.jpg`;
+        img.style.cssText = `width: 100%; height: 100%; object-fit: cover;`;
+        thumb.appendChild(img);
+
+        if (v.isLive) {
+          const liveBadge = document.createElement('span');
+          liveBadge.style.cssText = `
+            position: absolute; bottom: 4px; right: 4px;
+            background: var(--yt-red); color: #fff;
+            font-size: 9px; font-weight: 800; padding: 1px 4px;
+            border-radius: 4px; text-transform: uppercase;
+          `;
+          liveBadge.textContent = 'LIVE';
+          thumb.appendChild(liveBadge);
+        } else if (v.duration) {
+          const dur = document.createElement('span');
+          dur.style.cssText = `
+            position: absolute; bottom: 4px; right: 4px;
+            background: rgba(0,0,0,0.8); color: #fff;
+            font-size: 9px; font-weight: 700; padding: 1px 4px;
+            border-radius: 4px;
+          `;
+          dur.textContent = v.duration;
+          thumb.appendChild(dur);
+        }
+
+        const info = document.createElement('div');
+        info.style.cssText = `flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px;`;
+
+        const title = document.createElement('div');
+        title.style.cssText = `
+          font-size: 13px; font-weight: 700; color: var(--text-primary);
+          display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+          overflow: hidden; line-height: 1.3;
+        `;
+        title.textContent = v.title || 'Gurbani Stream';
+
+        const channel = document.createElement('div');
+        channel.style.cssText = `font-size: 11px; font-weight: 600; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;`;
+        channel.textContent = v.channelName || 'Sadhsangat Live';
+
+        const meta = document.createElement('div');
+        meta.style.cssText = `font-size: 10px; color: var(--text-tertiary);`;
+        meta.textContent = v.isLive ? 'Live Gurbani Stream' : (v.views || 'Gurbani Video');
+
+        info.appendChild(title);
+        info.appendChild(channel);
+        info.appendChild(meta);
+
+        itemRow.appendChild(thumb);
+        itemRow.appendChild(info);
+
+        itemRow.addEventListener('click', () => {
+          openPlayer(v.videoId, v.title, v.channelName, v.channelThumbnail || '', v.isLive || false);
+        });
+
+        container.appendChild(itemRow);
+      });
+    }
+
+    /* ── INLINE CARD PLAYER FALLBACK ── */
+    function playInline(card, videoId) {
+      openPlayer(videoId, '', '', '', false);
     }
 
     function updateSubscribeBtnState(channel) {
@@ -8454,6 +8579,44 @@
       }
     });
 
+    function startIntervals() {
+      if (progressInterval) clearInterval(progressInterval);
+      progressInterval = setInterval(() => {
+        let current = State.currentTime || 0;
+        let duration = State.duration || 0;
+
+        if (ytPlayer && typeof ytPlayer.getCurrentTime === 'function') {
+          try {
+            const c = ytPlayer.getCurrentTime();
+            if (typeof c === 'number' && c > 0) { current = c; State.currentTime = c; }
+          } catch(e) {}
+        }
+        if (ytPlayer && typeof ytPlayer.getDuration === 'function') {
+          try {
+            const d = ytPlayer.getDuration();
+            if (typeof d === 'number' && d > 0) { duration = d; State.duration = d; }
+          } catch(e) {}
+        }
+
+        const curEl = $('playerCurrentTime');
+        const durEl = $('playerDuration');
+        const bar = $('playerProgressBar');
+
+        if (duration > 0) {
+          const val = Math.min(100, Math.max(0, (current / duration) * 100));
+          if (bar && document.activeElement !== bar) {
+            bar.value = val;
+            if (bar.parentElement) bar.parentElement.style.setProperty('--progress', val);
+          }
+          if (curEl) curEl.textContent = formatTime(current);
+          if (durEl) durEl.textContent = formatTime(duration);
+        } else {
+          if (curEl) curEl.textContent = formatTime(current);
+          if (durEl) durEl.textContent = State.currentPlaying && State.currentPlaying.isLive ? 'LIVE' : '--:--';
+        }
+      }, 500);
+    }
+
     // Dynamic YouTube iframe API loader with retry
     function loadYtIframeApi(maxRetries = 3) {
       return new Promise((resolve, reject) => {
@@ -8487,66 +8650,78 @@
     }
 
     function loadYtIframePlayer(videoId) {
-      if (ytPlayer && ytPlayer.loadVideoById) {
-        ytPlayer.loadVideoById(videoId);
-      } else {
-        window.onYouTubeIframeAPIReady = () => {
-          ytPlayer = new YT.Player('ytPlayerContainer', {
-            videoId: videoId,
-            playerVars: {
-              autoplay: 1,
-              controls: 1,
-              modestbranding: 1,
-              rel: 0,
-              playsinline: 1,
-              iv_load_policy: 3,
-              cc_load_policy: 0,
-              showinfo: 0,
-              fs: 0,
-              disablekb: 1,
-              'playsinline': 1,
-              'hl': 'en',
-              'color': 'white'
-            },
+      const container = $('ytPlayerContainer');
+      if (!container) return;
+
+      // Clean, responsive YouTube iframe embed with controls and enablejsapi enabled
+      container.innerHTML = `
+        <iframe
+          id="ytActiveIframe"
+          src="https://www.youtube.com/embed/${videoId}?autoplay=1&controls=1&enablejsapi=1&rel=0&modestbranding=1&playsinline=1"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen
+          style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;">
+        </iframe>
+      `;
+
+      State.isPlaying = true;
+      State.currentTime = 0;
+      State.duration = 0;
+
+      const playSvg = $('playIconSvg');
+      const pauseSvg = $('pauseIconSvg');
+      if (playSvg && pauseSvg) {
+        playSvg.style.display = 'none';
+        pauseSvg.style.display = 'block';
+      }
+
+      // Handshake with YouTube iframe
+      setTimeout(() => {
+        postYtCommand('listening');
+      }, 300);
+
+      // Re-bind YT.Player if API is available
+      if (window.YT && window.YT.Player) {
+        try {
+          if (ytPlayer && typeof ytPlayer.destroy === 'function') {
+            ytPlayer.destroy();
+          }
+        } catch(e) {}
+        try {
+          ytPlayer = new window.YT.Player('ytActiveIframe', {
             events: {
               onReady: (event) => {
-                console.log('YouTube Player ready with AGGRESSIVE background playback support');
-                requestWakeLock();
-                setupMediaSession();
-                if (bgPlayEnabled) startBackgroundKeepAlive();
+                ytPlayer = event.target;
+                window.__anhadYtPlayer = ytPlayer;
                 onPlayerReady(event);
               },
               onStateChange: (event) => {
-                if (bgPlayEnabled) updateMediaSessionPlaybackState();
+                if (event && event.target) ytPlayer = event.target;
                 onPlayerStateChange(event);
-              },
-              onError: (error) => {
-                console.error('YouTube Player error:', error);
               }
             }
           });
-          window.__anhadYtPlayer = ytPlayer;
-        };
-        // If YT API loaded, invoke callback now; else load dynamically
-        if (window.YT && window.YT.Player) {
-          window.onYouTubeIframeAPIReady();
-        } else {
-          loadYtIframeApi().then(() => {
-            window.onYouTubeIframeAPIReady();
-          }).catch((err) => {
-            console.error('[YT API] Failed to load YouTube player:', err);
-            showToast('⚠️ Video player unavailable. Please try again.');
-          });
+        } catch(e) {
+          startIntervals();
         }
+      } else {
+        startIntervals();
       }
     }
 
-    function onPlayerReady() {
-      ytPlayer.playVideo();
+    function onPlayerReady(event) {
+      if (event && event.target) ytPlayer = event.target;
+      window.__anhadYtPlayer = ytPlayer;
+      if (ytPlayer && typeof ytPlayer.playVideo === 'function') {
+        try { ytPlayer.playVideo(); } catch(e) {}
+      }
       startIntervals();
     }
 
     function onPlayerStateChange(e) {
+      if (e && e.target) ytPlayer = e.target;
+      window.__anhadYtPlayer = ytPlayer;
       const playBtn = $('playerPlayPauseBtn');
       const miniPlayBtn = $('playerMiniPlayPauseBtn');
       
@@ -8626,13 +8801,114 @@
       togglePlayPause();
     });
 
+    /* ── YOUTUBE IFRAME COMMAND HELPER & POSTMESSAGE LISTENER ── */
+    function postYtCommand(func, args = []) {
+      const iframe = document.querySelector('#ytPlayerContainer iframe');
+      if (iframe && iframe.contentWindow) {
+        try {
+          iframe.contentWindow.postMessage(JSON.stringify({
+            event: 'command',
+            func: func,
+            args: Array.isArray(args) ? args : [args]
+          }), '*');
+        } catch(e) {}
+      }
+    }
+
+    // Real-time message listener for YouTube iframe postMessage state & time updates
+    window.addEventListener('message', (e) => {
+      if (!e.data) return;
+      try {
+        const data = (typeof e.data === 'string') ? JSON.parse(e.data) : e.data;
+        if (data.event === 'infoDelivery' && data.info) {
+          if (typeof data.info.currentTime === 'number') {
+            State.currentTime = data.info.currentTime;
+          }
+          if (typeof data.info.duration === 'number' && data.info.duration > 0) {
+            State.duration = data.info.duration;
+          }
+          if (typeof data.info.playerState === 'number') {
+            if (data.info.playerState === 1) {
+              State.isPlaying = true;
+              const playSvg = $('playIconSvg');
+              const pauseSvg = $('pauseIconSvg');
+              if (playSvg && pauseSvg) { playSvg.style.display = 'none'; pauseSvg.style.display = 'block'; }
+            } else if (data.info.playerState === 2) {
+              State.isPlaying = false;
+              const playSvg = $('playIconSvg');
+              const pauseSvg = $('pauseIconSvg');
+              if (playSvg && pauseSvg) { playSvg.style.display = 'block'; pauseSvg.style.display = 'none'; }
+            }
+          }
+          updateScrubberUI();
+        }
+      } catch(err) {}
+    });
+
+    function updateScrubberUI() {
+      let current = State.currentTime || 0;
+      let duration = State.duration || 0;
+      if (ytPlayer && typeof ytPlayer.getCurrentTime === 'function') {
+        try { current = ytPlayer.getCurrentTime() || current; } catch(e) {}
+      }
+      if (ytPlayer && typeof ytPlayer.getDuration === 'function') {
+        try { duration = ytPlayer.getDuration() || duration; } catch(e) {}
+      }
+      
+      if (duration > 0) {
+        const val = (current / duration) * 100;
+        const bar = $('playerProgressBar');
+        if (bar && document.activeElement !== bar) {
+          bar.value = val;
+          if (bar.parentElement) bar.parentElement.style.setProperty('--progress', val);
+        }
+        const curEl = $('playerCurrentTime');
+        const durEl = $('playerDuration');
+        if (curEl) curEl.textContent = formatTime(current);
+        if (durEl) durEl.textContent = formatTime(duration);
+      }
+    }
+
     function togglePlayPause() {
-      if (!ytPlayer || !ytPlayer.getPlayerState) return;
-      const state = ytPlayer.getPlayerState();
-      if (state === YT.PlayerState.PLAYING) {
-        ytPlayer.pauseVideo();
+      let isPlaying = false;
+      if (ytPlayer && typeof ytPlayer.getPlayerState === 'function') {
+        try {
+          isPlaying = (ytPlayer.getPlayerState() === YT.PlayerState.PLAYING);
+        } catch(e) { isPlaying = State.isPlaying || false; }
       } else {
-        ytPlayer.playVideo();
+        isPlaying = State.isPlaying || false;
+      }
+
+      const playSvg = $('playIconSvg');
+      const pauseSvg = $('pauseIconSvg');
+      const miniBtn = $('playerMiniPlayPauseBtn');
+
+      if (isPlaying) {
+        State.isPlaying = false;
+        if (ytPlayer && ytPlayer.pauseVideo) { try { ytPlayer.pauseVideo(); } catch(e) {} }
+        postYtCommand('pauseVideo');
+        if (playSvg && pauseSvg) {
+          playSvg.style.display = 'block';
+          pauseSvg.style.display = 'none';
+        }
+        if (miniBtn) {
+          miniBtn.innerHTML = `<svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>`;
+        }
+        $('audioDiscSpin').classList.remove('playing');
+        showToast('⏸️ Paused');
+      } else {
+        State.isPlaying = true;
+        if (ytPlayer && ytPlayer.playVideo) { try { ytPlayer.playVideo(); } catch(e) {} }
+        postYtCommand('playVideo');
+        if (playSvg && pauseSvg) {
+          playSvg.style.display = 'none';
+          pauseSvg.style.display = 'block';
+        }
+        if (miniBtn) {
+          miniBtn.innerHTML = `<svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><rect x="5" y="4" width="4" height="16"/><rect x="15" y="4" width="4" height="16"/></svg>`;
+        }
+        $('audioDiscSpin').classList.add('playing');
+        showToast('▶️ Playing');
       }
     }
 
@@ -8640,18 +8916,52 @@
     $('playerSkipForwardBtn').addEventListener('click', () => skip(10));
 
     function skip(sec) {
-      if (!ytPlayer || !ytPlayer.getCurrentTime) return;
-      const t = ytPlayer.getCurrentTime() + sec;
-      ytPlayer.seekTo(Math.max(0, t), true);
+      let curTime = State.currentTime || 0;
+      if (ytPlayer && typeof ytPlayer.getCurrentTime === 'function') {
+        try { curTime = ytPlayer.getCurrentTime() || curTime; } catch(e) {}
+      }
+      const targetTime = Math.max(0, curTime + sec);
+      State.currentTime = targetTime;
+
+      if (ytPlayer && typeof ytPlayer.seekTo === 'function') {
+        try { ytPlayer.seekTo(targetTime, true); } catch(e) {}
+      }
+      postYtCommand('seekTo', [targetTime, true]);
+
+      updateScrubberUI();
+      showToast(sec > 0 ? `⏩ +${sec}s` : `⏪ ${Math.abs(sec)}s`);
     }
 
-    $('playerProgressBar').addEventListener('input', () => {
-      if (!ytPlayer || !ytPlayer.getDuration) return;
-      const val = parseFloat($('playerProgressBar').value);
-      $('playerProgressBar').parentElement.style.setProperty('--progress', val);
-      const duration = ytPlayer.getDuration();
-      const seek = (val / 100) * duration;
-      ytPlayer.seekTo(seek, true);
+    $('playerProgressBar').addEventListener('input', (e) => {
+      const val = parseFloat(e.target.value);
+      if (e.target.parentElement) e.target.parentElement.style.setProperty('--progress', val);
+      let duration = State.duration || 0;
+      if (ytPlayer && typeof ytPlayer.getDuration === 'function') {
+        try { duration = ytPlayer.getDuration() || duration; } catch(e) {}
+      }
+      if (duration > 0) {
+        const seekTime = (val / 100) * duration;
+        State.currentTime = seekTime;
+        $('playerCurrentTime').textContent = formatTime(seekTime);
+        if (ytPlayer && typeof ytPlayer.seekTo === 'function') {
+          try { ytPlayer.seekTo(seekTime, true); } catch(e) {}
+        }
+        postYtCommand('seekTo', [seekTime, true]);
+      }
+    });
+
+    $('playerGoLiveBtn').addEventListener('click', () => {
+      let duration = State.duration || 0;
+      if (ytPlayer && typeof ytPlayer.getDuration === 'function') {
+        try { duration = ytPlayer.getDuration() || duration; } catch(e) {}
+      }
+      if (duration > 0) {
+        if (ytPlayer && typeof ytPlayer.seekTo === 'function') {
+          try { ytPlayer.seekTo(duration, true); } catch(e) {}
+        }
+        postYtCommand('seekTo', [duration, true]);
+      }
+      showToast('🔴 Jumped to Live Stream');
     });
 
     // Double tap seeking gestures with ripple overlay HUD
@@ -8677,10 +8987,12 @@
 
     function showDoubleTapSeek(side) {
       const el = $(side === 'left' ? 'doubleTapOverlayLeft' : 'doubleTapOverlayRight');
-      el.classList.add('animate');
-      setTimeout(() => {
-        el.classList.remove('animate');
-      }, 550);
+      if (el) {
+        el.classList.add('animate');
+        setTimeout(() => {
+          el.classList.remove('animate');
+        }, 550);
+      }
     }
 
     // Mini player dismissal - click on close button
@@ -8708,23 +9020,49 @@
       const playerSheet = $('playerSheet');
       const playerBackdrop = $('playerBackdrop');
 
-      playerBackdrop.classList.remove('visible');
-      playerSheet.className = 'player-sheet';
+      if (playerBackdrop) playerBackdrop.classList.remove('visible');
+      if (playerSheet) playerSheet.className = 'player-sheet';
       document.body.classList.remove('mini-player-active');
-      
-      requestAnimationFrame(() => {
-        playerSheet.style.display = 'none';
-        playerBackdrop.style.display = 'none';
-      });
 
-      if (ytPlayer && ytPlayer.stopVideo) { try { ytPlayer.stopVideo(); } catch(e) {} }
-      if (progressInterval) clearInterval(progressInterval);
+      State.isPlaying = false;
+      State.currentPlaying = null;
+      State.currentTime = 0;
+
+      // 1. Send stop & pause to API
+      if (ytPlayer) {
+        try { if (typeof ytPlayer.stopVideo === 'function') ytPlayer.stopVideo(); } catch(e) {}
+        try { if (typeof ytPlayer.pauseVideo === 'function') ytPlayer.pauseVideo(); } catch(e) {}
+        try { if (typeof ytPlayer.destroy === 'function') ytPlayer.destroy(); } catch(e) {}
+        ytPlayer = null;
+      }
+
+      // 2. Send postMessage stop & pause to iframe
+      postYtCommand('stopVideo');
+      postYtCommand('pauseVideo');
+
+      // 3. Clear container DOM completely to destroy iframe and guarantee ZERO background audio
+      const container = $('ytPlayerContainer');
+      if (container) container.innerHTML = '';
+
+      if (progressInterval) {
+        clearInterval(progressInterval);
+        progressInterval = null;
+      }
       stopBackgroundKeepAlive();
       stopNativeAudioService();
-      playerSheet.style.removeProperty('--ambient-color');
-      playerSheet.style.removeProperty('--ambient-color-secondary');
-      if (window.wakeLock !== null) { window.wakeLock.release().then(() => { window.wakeLock = null; }).catch(() => {}); }
+      
+      if (playerSheet) {
+        playerSheet.style.removeProperty('--ambient-color');
+        playerSheet.style.removeProperty('--ambient-color-secondary');
+        playerSheet.style.display = 'none';
+      }
+      if (playerBackdrop) playerBackdrop.style.display = 'none';
+
+      if (window.wakeLock !== null) {
+        window.wakeLock.release().then(() => { window.wakeLock = null; }).catch(() => {});
+      }
       window.dispatchEvent(new CustomEvent('sadhsangatPlayerClosed'));
+      showToast('⏹️ Playback stopped');
     }
 
     function minimizePlayer() {
@@ -8783,27 +9121,41 @@
     /* ── OPTIONS OVERLAYS ACTIONS ─────────────────────── */
     $('playerLikeBtn').addEventListener('click', () => {
       State.likeState = !State.likeState;
+      const btn = $('playerLikeBtn');
+      const txt = $('playerLikeText');
       if (State.likeState) {
-        $('playerLikeBtn').style.color = 'var(--yt-red)';
-        $('playerLikeText').textContent = 'Liked';
-        showToast('Liked Gurbani Stream');
+        btn.style.background = 'var(--gold-gradient)';
+        btn.style.color = '#000';
+        btn.style.borderColor = 'var(--gold-accent)';
+        if (txt) txt.textContent = 'Liked';
+        showToast('❤️ Liked Gurbani Stream');
       } else {
-        $('playerLikeBtn').style.color = 'var(--text-primary)';
-        $('playerLikeText').textContent = 'Like';
+        btn.style.background = 'var(--bg-glass)';
+        btn.style.color = 'var(--text-primary)';
+        btn.style.borderColor = 'var(--border-color)';
+        if (txt) txt.textContent = 'Like';
       }
     });
 
     $('playerDislikeBtn').addEventListener('click', () => {
-      showToast('Disliked Gurbani Stream');
+      showToast('👍 Feedback recorded');
     });
 
-    $('playerShareBtn').addEventListener('click', () => {
+    $('playerShareBtn').addEventListener('click', async () => {
       if (!State.currentPlaying) return;
+      const title = State.currentPlaying.title || 'Sadhsangat Live Gurbani';
       const url = `https://www.youtube.com/watch?v=${State.currentPlaying.videoId}`;
+      if (navigator.share) {
+        try {
+          await navigator.share({ title: title, url: url });
+          showToast('✅ Shared successfully');
+          return;
+        } catch(e) {}
+      }
       navigator.clipboard.writeText(url).then(() => {
         showToast('📋 Link copied to clipboard');
       }).catch(() => {
-        showToast('⚠️ Failed to copy link');
+        showToast('⚠️ Link: ' + url);
       });
     });
 
@@ -8817,16 +9169,11 @@
         showToast('⚠️ No active Gurbani title found');
         return;
       }
-      
-      // Clean up the YouTube stream title to isolate the Shabad context
       let cleanTitle = State.currentPlaying.title;
-      // Remove prefixes like "live", "kirtan", "non-stop" to focus on shabad names
       cleanTitle = cleanTitle.replace(/^(live|streaming|non-stop)\s*\|\s*/gi, '');
-      cleanTitle = cleanTitle.replace(/\|.*$/g, ''); // remove everything after first pipe
+      cleanTitle = cleanTitle.replace(/\|.*$/g, '');
       cleanTitle = cleanTitle.trim();
-      
       const url = `../GurbaniGPT/index.html?prompt=${encodeURIComponent(cleanTitle)}&deepVichar=true`;
-      
       showToast('✨ Retrieving Shabad context for deep Vichar...');
       setTimeout(() => {
         if (window.navigateTo) window.navigateTo(url);
@@ -8842,9 +9189,10 @@
     });
 
     $('playerSpeedSelector').addEventListener('change', () => {
-      if (!ytPlayer || !ytPlayer.setPlaybackRate) return;
       const rate = parseFloat($('playerSpeedSelector').value);
-      ytPlayer.setPlaybackRate(rate);
+      if (ytPlayer && ytPlayer.setPlaybackRate) {
+        try { ytPlayer.setPlaybackRate(rate); } catch(e) {}
+      }
       showToast(`⚡ Speed: ${rate}x`);
     });
 
@@ -8853,18 +9201,17 @@
         clearTimeout(State.sleepTimerId);
         State.sleepTimerId = null;
       }
-      
       const minutes = parseInt($('playerSleepTimer').value);
       if (minutes > 0) {
-        showToast(`⏰ Sleep timer: ${minutes} Min`);
+        showToast(`⏰ Sleep timer set: ${minutes} Min`);
         State.sleepTimerId = setTimeout(() => {
           if (ytPlayer && ytPlayer.pauseVideo) {
-            try {
-              ytPlayer.pauseVideo();
-              showToast('⏰ Sleep timer: Playback paused.');
-            } catch(e) {}
+            try { ytPlayer.pauseVideo(); } catch(e) {}
           }
+          showToast('⏰ Sleep timer: Playback paused.');
         }, minutes * 60 * 1000);
+      } else {
+        showToast('⏰ Sleep timer off');
       }
     });
 
@@ -8872,7 +9219,6 @@
       State.audioOnly = !State.audioOnly;
       const overlay = $('audioOnlyOverlay');
       const btn = $('playerAudioToggleBtn');
-      
       if (State.audioOnly) {
         overlay.style.display = 'flex';
         btn.textContent = '🎧 Audio: On';
@@ -8887,20 +9233,33 @@
     });
 
     $('playerPiPBtn').addEventListener('click', async () => {
-      const pipSuccess = await requestPiP();
-      if (!pipSuccess) {
-        showToast('⚠️ PiP not supported or unavailable');
+      const iframe = document.querySelector('#ytPlayerContainer iframe');
+      if (iframe && iframe.requestPictureInPicture) {
+        try {
+          await iframe.requestPictureInPicture();
+          showToast('📺 PiP mode enabled');
+          return;
+        } catch(e) {}
       }
+      showToast('ℹ️ Picture-in-Picture: Tap YouTube player PiP icon');
     });
 
     $('playerFullscreenBtn').addEventListener('click', () => {
       const videoWrap = $('playerVideoViewport');
       if (document.fullscreenElement) {
-        document.exitFullscreen();
-      } else {
+        document.exitFullscreen().catch(() => {});
+      } else if (videoWrap && videoWrap.requestFullscreen) {
         videoWrap.requestFullscreen().catch(() => {
-          showToast('⚠️ Fullscreen not supported');
+          showToast('ℹ️ Tap YouTube player fullscreen button');
         });
+      }
+    });
+
+    $('playerCommentsBlock').addEventListener('click', () => {
+      const msg = prompt('🙏 Enter your divine Waheguru Ji comment / reflection:');
+      if (msg && msg.trim()) {
+        $('playerMockCommentText').textContent = '🙏 ' + msg.trim();
+        showToast('✅ Comment posted');
       }
     });
 

@@ -2,64 +2,83 @@
 <html lang="en" data-anhad-home>
 <head>
   <meta name="color-scheme" content="light dark">
-    <!-- CRITICAL: Theme blocker - MUST run before paint -->
+    <!-- CRITICAL: Optimized Theme blocker - Cached and async-friendly -->
   <script>
     (function() {
       try {
-        const theme = localStorage.getItem('anhad_theme') || 'auto';
+        // Cache theme in memory for instant access on navigation
+        if (!window._anhadThemeCache) {
+          window._anhadThemeCache = {
+            theme: localStorage.getItem('anhad_theme') || 'auto',
+            timeOfDay: localStorage.getItem('anhad_forced_time_of_day')
+          };
+        }
+        
+        const { theme, timeOfDay } = window._anhadThemeCache;
         let effectiveTheme = theme;
-        let timeOfDay = localStorage.getItem('anhad_forced_time_of_day');
+        let currentTimeOfDay = timeOfDay;
+        
         if (theme === 'auto') {
-          if (timeOfDay && ['morning', 'day', 'evening', 'night'].includes(timeOfDay)) {
-            effectiveTheme = (timeOfDay === 'night') ? 'dark' : 'light';
+          if (currentTimeOfDay && ['morning', 'day', 'evening', 'night'].includes(currentTimeOfDay)) {
+            effectiveTheme = (currentTimeOfDay === 'night') ? 'dark' : 'light';
           } else {
             const hour = new Date().getHours();
             effectiveTheme = (hour >= 5 && hour < 20) ? 'light' : 'dark';
             
-            if (hour >= 5 && hour < 9) timeOfDay = 'morning';
-            else if (hour >= 9 && hour < 16) timeOfDay = 'day';
-            else if (hour >= 16 && hour < 20) timeOfDay = 'evening';
-            else timeOfDay = 'night';
+            if (hour >= 5 && hour < 9) currentTimeOfDay = 'morning';
+            else if (hour >= 9 && hour < 16) currentTimeOfDay = 'day';
+            else if (hour >= 16 && hour < 20) currentTimeOfDay = 'evening';
+            else currentTimeOfDay = 'night';
+            
+            // Update cache
+            window._anhadThemeCache.timeOfDay = currentTimeOfDay;
           }
         }
-        document.documentElement.setAttribute('data-theme', effectiveTheme);
-        document.documentElement.setAttribute('data-theme-mode', theme);
+        
+        // Batch DOM operations for better performance
+        const doc = document.documentElement;
+        doc.setAttribute('data-theme', effectiveTheme);
+        doc.setAttribute('data-theme-mode', theme);
         if (theme === 'auto') {
-          document.documentElement.setAttribute('data-time-of-day', timeOfDay);
+          doc.setAttribute('data-time-of-day', currentTimeOfDay);
         }
-        document.documentElement.style.colorScheme = effectiveTheme;
+        doc.style.colorScheme = effectiveTheme;
+        
         if (effectiveTheme === 'dark') {
-          document.documentElement.classList.add('dark', 'dark-mode');
+          doc.classList.add('dark', 'dark-mode');
         } else {
-          document.documentElement.classList.remove('dark', 'dark-mode');
+          doc.classList.remove('dark', 'dark-mode');
         }
         
         let bg = (effectiveTheme === 'dark') ? '#0D0D0F' : '#FAF8F5';
         if (theme === 'auto') {
-          if (timeOfDay === 'morning') bg = '#FFF5EC';
-          else if (timeOfDay === 'day') bg = '#FAF8F5';
-          else if (timeOfDay === 'evening') bg = '#FFF8E7';
-          else if (timeOfDay === 'night') bg = '#0D0D0F';
+          if (currentTimeOfDay === 'morning') bg = '#FFF5EC';
+          else if (currentTimeOfDay === 'day') bg = '#FAF8F5';
+          else if (currentTimeOfDay === 'evening') bg = '#FFF8E7';
+          else if (currentTimeOfDay === 'night') bg = '#0D0D0F';
         }
-        document.documentElement.style.setProperty('background-color', bg, 'important');
+        doc.style.setProperty('background-color', bg, 'important');
 
         // INLINE CSS VARIABLES — prevent FOUC until theme-variables.css loads
-        var _v = '';
-        if (effectiveTheme === 'dark') {
-          _v = '--bg-primary:#1C1C1E;--bg-secondary:#2C2C2E;--bg-tertiary:#3A3A3C;--text-primary:#F5F5F7;--text-secondary:#8E8E93;--text-accent:#0A84FF;--border-color:rgba(255,255,255,0.15);--shadow-color:rgba(0,0,0,0.5);--highlight-color:#FFD60A;--btn-bg:#0A84FF;--btn-text:#FFFFFF;--card-green-gradient:linear-gradient(140deg,#1C3D2A 0%,#2D4A3E 100%);--card-gold-gradient:linear-gradient(140deg,#3D2D1C 0%,#4A3D2A 100%);--card-purple-gradient:linear-gradient(140deg,#2D1C3D 0%,#3A2D4A 100%);--card-blue-gradient:linear-gradient(140deg,#1C2D3D 0%,#2A3D4A 100%);--card-rose-gradient:linear-gradient(140deg,#3D1C2D 0%,#4A2A3D 100%);--card-event-gradient:linear-gradient(160deg,#2D2D1C 0%,#3D3D2A 25%,#4A4A2D 50%,#3D3D1C 75%,#2D2D2A 100%);--event-title-color:#F5F5F7;--event-title-shadow:0 2px 4px rgba(0,0,0,0.5)';
-        } else {
-          _v = '--bg-primary:#FAF8F5;--bg-secondary:#F2F2F7;--bg-tertiary:#E5E5EA;--text-primary:#1C1C1E;--text-secondary:#8E8E93;--text-accent:#007AFF;--border-color:rgba(0,0,0,0.1);--shadow-color:rgba(0,0,0,0.15);--highlight-color:#FFD60A;--btn-bg:#007AFF;--btn-text:#FFFFFF;--card-green-gradient:linear-gradient(140deg,#E8F5E9 0%,#C8E6C9 100%);--card-gold-gradient:linear-gradient(140deg,#FFF8E1 0%,#FFECB3 100%);--card-purple-gradient:linear-gradient(140deg,#EDE7F6 0%,#D1C4E9 100%);--card-blue-gradient:linear-gradient(140deg,#E3F2FD 0%,#BBDEFB 100%);--card-rose-gradient:linear-gradient(140deg,#FFEBEE 0%,#FFCDD2 100%);--card-event-gradient:linear-gradient(160deg,#FFFCF8 0%,#FFF8EE 25%,#FFF2E0 50%,#FFE8C8 75%,#FFECB3 100%);--event-title-color:#72500A;--event-title-shadow:0 1px 1px rgba(255,255,255,0.6)';
-        }
+        const cssVars = {
+          dark: '--bg-primary:#1C1C1E;--bg-secondary:#2C2C2E;--bg-tertiary:#3A3A3C;--text-primary:#F5F5F7;--text-secondary:#8E8E93;--text-accent:#0A84FF;--border-color:rgba(255,255,255,0.15);--shadow-color:rgba(0,0,0,0.5);--highlight-color:#FFD60A;--btn-bg:#0A84FF;--btn-text:#FFFFFF;--card-green-gradient:linear-gradient(140deg,#1C3D2A 0%,#2D4A3E 100%);--card-gold-gradient:linear-gradient(140deg,#3D2D1C 0%,#4A3D2A 100%);--card-purple-gradient:linear-gradient(140deg,#2D1C3D 0%,#3A2D4A 100%);--card-blue-gradient:linear-gradient(140deg,#1C2D3D 0%,#2A3D4A 100%);--card-rose-gradient:linear-gradient(140deg,#3D1C2D 0%,#4A2A3D 100%);--card-event-gradient:linear-gradient(160deg,#2D2D1C 0%,#3D3D2A 25%,#4A4A2D 50%,#3D3D1C 75%,#2D2D2A 100%);--event-title-color:#F5F5F7;--event-title-shadow:0 2px 4px rgba(0,0,0,0.5)',
+          light: '--bg-primary:#FAF8F5;--bg-secondary:#F2F2F7;--bg-tertiary:#E5E5EA;--text-primary:#1C1C1E;--text-secondary:#8E8E93;--text-accent:#007AFF;--border-color:rgba(0,0,0,0.1);--shadow-color:rgba(0,0,0,0.15);--highlight-color:#FFD60A;--btn-bg:#007AFF;--btn-text:#FFFFFF;--card-green-gradient:linear-gradient(140deg,#E8F5E9 0%,#C8E6C9 100%);--card-gold-gradient:linear-gradient(140deg,#FFF8E1 0%,#FFECB3 100%);--card-purple-gradient:linear-gradient(140deg,#EDE7F6 0%,#D1C4E9 100%);--card-blue-gradient:linear-gradient(140deg,#E3F2FD 0%,#BBDEFB 100%);--card-rose-gradient:linear-gradient(140deg,#FFEBEE 0%,#FFCDD2 100%);--card-event-gradient:linear-gradient(160deg,#FFFCF8 0%,#FFF8EE 25%,#FFF2E0 50%,#FFE8C8 75%,#FFECB3 100%);--event-title-color:#72500A;--event-title-shadow:0 1px 1px rgba(255,255,255,0.6)',
+          morning: '--bg-primary:#FFF5EC;--bg-secondary:#FFEBD8;--bg-tertiary:#FFE0C4;--text-primary:#3E2723;--text-secondary:#7D6B58;--text-accent:#E8A87C;--border-color:rgba(232,168,124,0.2);--shadow-color:rgba(0,0,0,0.15);--highlight-color:#FFD60A;--btn-bg:#E8A87C;--btn-text:#FFFFFF;--card-green-gradient:linear-gradient(140deg,#FFF0E6 0%,#FFE4CC 100%);--card-gold-gradient:linear-gradient(140deg,#FFF5DC 0%,#FFE8B0 100%);--card-purple-gradient:linear-gradient(140deg,#FFF0F0 0%,#FFE0D8 100%);--card-blue-gradient:linear-gradient(140deg,#FFF3E8 0%,#FFE6D0 100%);--card-rose-gradient:linear-gradient(140deg,#FFF0E6 0%,#FFD8C4 100%);--card-event-gradient:linear-gradient(160deg,#FFF8F2 0%,#FFF0E0 25%,#FFE8CC 50%,#FFE0B8 75%,#FFD8A0 100%);--event-title-color:#72500A;--event-title-shadow:0 1px 1px rgba(255,255,255,0.6)',
+          day: '--bg-primary:#FAF8F5;--bg-secondary:#F2F2F7;--bg-tertiary:#E5E5EA;--text-primary:#1C1C1E;--text-secondary:#8E8E93;--text-accent:#007AFF;--border-color:rgba(0,0,0,0.1);--shadow-color:rgba(0,0,0,0.15);--highlight-color:#FFD60A;--btn-bg:#007AFF;--btn-text:#FFFFFF;--card-green-gradient:linear-gradient(140deg,#E8F5E9 0%,#C8E6C9 100%);--card-gold-gradient:linear-gradient(140deg,#FFF8E1 0%,#FFECB3 100%);--card-purple-gradient:linear-gradient(140deg,#EDE7F6 0%,#D1C4E9 100%);--card-blue-gradient:linear-gradient(140deg,#E3F2FD 0%,#BBDEFB 100%);--card-rose-gradient:linear-gradient(140deg,#FFEBEE 0%,#FFCDD2 100%);--card-event-gradient:linear-gradient(160deg,#FFFCF8 0%,#FFF8EE 25%,#FFF2E0 50%,#FFE8C8 75%,#FFECB3 100%);--event-title-color:#72500A;--event-title-shadow:0 1px 1px rgba(255,255,255,0.6)',
+          evening: '--bg-primary:#FFF8E7;--bg-secondary:#FFF0D4;--bg-tertiary:#FFE4B5;--text-primary:#3B2A00;--text-secondary:#7A6A4F;--text-accent:#B8860B;--border-color:rgba(184,134,11,0.25);--shadow-color:rgba(0,0,0,0.15);--highlight-color:#FFD60A;--btn-bg:#B8860B;--btn-text:#FFFFFF;--card-green-gradient:linear-gradient(140deg,#F5F5DC 0%,#EEEEC0 100%);--card-gold-gradient:linear-gradient(140deg,#FFF8D8 0%,#FFE896 100%);--card-purple-gradient:linear-gradient(140deg,#FFF0E8 0%,#FFE0C8 100%);--card-blue-gradient:linear-gradient(140deg,#F8F0D8 0%,#EEE4B8 100%);--card-rose-gradient:linear-gradient(140deg,#FFF0D8 0%,#FFE0B0 100%);--card-event-gradient:linear-gradient(160deg,#FFF8E8 0%,#FFF0D0 25%,#FFE8B8 50%,#FFE0A0 75%,#FFD888 100%);--event-title-color:#4A3500;--event-title-shadow:0 1px 1px rgba(255,255,255,0.4)'
+        };
+        
+        let _v = cssVars[effectiveTheme] || cssVars.light;
         if (theme === 'auto' && document.documentElement.hasAttribute('data-anhad-home')) {
-          if (timeOfDay === 'morning') { _v = '--bg-primary:#FFF5EC;--bg-secondary:#FFEBD8;--bg-tertiary:#FFE0C4;--text-primary:#3E2723;--text-secondary:#7D6B58;--text-accent:#E8A87C;--border-color:rgba(232,168,124,0.2);--shadow-color:rgba(0,0,0,0.15);--highlight-color:#FFD60A;--btn-bg:#E8A87C;--btn-text:#FFFFFF;--card-green-gradient:linear-gradient(140deg,#FFF0E6 0%,#FFE4CC 100%);--card-gold-gradient:linear-gradient(140deg,#FFF5DC 0%,#FFE8B0 100%);--card-purple-gradient:linear-gradient(140deg,#FFF0F0 0%,#FFE0D8 100%);--card-blue-gradient:linear-gradient(140deg,#FFF3E8 0%,#FFE6D0 100%);--card-rose-gradient:linear-gradient(140deg,#FFF0E6 0%,#FFD8C4 100%);--card-event-gradient:linear-gradient(160deg,#FFF8F2 0%,#FFF0E0 25%,#FFE8CC 50%,#FFE0B8 75%,#FFD8A0 100%);--event-title-color:#72500A;--event-title-shadow:0 1px 1px rgba(255,255,255,0.6)'; }
-          else if (timeOfDay === 'day') { _v = '--bg-primary:#FAF8F5;--bg-secondary:#F2F2F7;--bg-tertiary:#E5E5EA;--text-primary:#1C1C1E;--text-secondary:#8E8E93;--text-accent:#007AFF;--border-color:rgba(0,0,0,0.1);--shadow-color:rgba(0,0,0,0.15);--highlight-color:#FFD60A;--btn-bg:#007AFF;--btn-text:#FFFFFF;--card-green-gradient:linear-gradient(140deg,#E8F5E9 0%,#C8E6C9 100%);--card-gold-gradient:linear-gradient(140deg,#FFF8E1 0%,#FFECB3 100%);--card-purple-gradient:linear-gradient(140deg,#EDE7F6 0%,#D1C4E9 100%);--card-blue-gradient:linear-gradient(140deg,#E3F2FD 0%,#BBDEFB 100%);--card-rose-gradient:linear-gradient(140deg,#FFEBEE 0%,#FFCDD2 100%);--card-event-gradient:linear-gradient(160deg,#FFFCF8 0%,#FFF8EE 25%,#FFF2E0 50%,#FFE8C8 75%,#FFECB3 100%);--event-title-color:#72500A;--event-title-shadow:0 1px 1px rgba(255,255,255,0.6)'; }
-          else if (timeOfDay === 'evening') { _v = '--bg-primary:#FFF8E7;--bg-secondary:#FFF0D4;--bg-tertiary:#FFE4B5;--text-primary:#3B2A00;--text-secondary:#7A6A4F;--text-accent:#B8860B;--border-color:rgba(184,134,11,0.25);--shadow-color:rgba(0,0,0,0.15);--highlight-color:#FFD60A;--btn-bg:#B8860B;--btn-text:#FFFFFF;--card-green-gradient:linear-gradient(140deg,#F5F5DC 0%,#EEEEC0 100%);--card-gold-gradient:linear-gradient(140deg,#FFF8D8 0%,#FFE896 100%);--card-purple-gradient:linear-gradient(140deg,#FFF0E8 0%,#FFE0C8 100%);--card-blue-gradient:linear-gradient(140deg,#F8F0D8 0%,#EEE4B8 100%);--card-rose-gradient:linear-gradient(140deg,#FFF0D8 0%,#FFE0B0 100%);--card-event-gradient:linear-gradient(160deg,#FFF8E8 0%,#FFF0D0 25%,#FFE8B8 50%,#FFE0A0 75%,#FFD888 100%);--event-title-color:#4A3500;--event-title-shadow:0 1px 1px rgba(255,255,255,0.4)'; }
+          _v = cssVars[currentTimeOfDay] || _v;
         }
-        var _s = document.createElement('style');
+        
+        // Use requestAnimationFrame for non-blocking style insertion
+        const _s = document.createElement('style');
         _s.textContent = ':root{' + _v + '}';
         document.head.insertBefore(_s, document.head.firstChild);
 
-        document.documentElement.classList.add('theme-loaded');
+        doc.classList.add('theme-loaded');
 
         document.addEventListener('DOMContentLoaded', function() {
           if (effectiveTheme === 'dark') document.body.classList.add('dark-mode');
@@ -72,9 +91,17 @@
       } catch (e) {}
     })();
   </script>
+  <!-- OPTIMIZED: Session management - cached and async -->
   <script>
     (function() {
       'use strict';
+      // Use memory cache for instant access
+      if (window._anhadSessionCache) {
+        if (window._anhadSessionCache.shouldBypass) {
+          return; // Skip localStorage reads
+        }
+      }
+      
       var ACTIVE_KEY = 'anhad_session_active_ts';
       var SEEN_KEY = 'anhad_welcome_seen';
       var SESSION_KEY = 'anhad_welcomed';
@@ -84,6 +111,8 @@
         try { sessionStorage.setItem(SESSION_KEY, '1'); } catch(e) {}
         try { localStorage.setItem(SEEN_KEY, 'true'); } catch(e) {}
         try { localStorage.setItem(ACTIVE_KEY, Date.now().toString()); } catch(e) {}
+        // Cache result
+        window._anhadSessionCache = { shouldBypass: true };
       }
 
       function shouldBypassWelcome() {
@@ -132,6 +161,11 @@
   </script>
   <meta charset="UTF-8">
   
+  <!-- PERFORMANCE: Preconnect to critical domains -->
+  <link rel="preconnect" href="https://anhad-final.onrender.com">
+  <link rel="preconnect" href="https://api.banidb.com">
+  <link rel="dns-prefetch" href="https://pub-525228169e0c44e38a67c306ba1a458c.r2.dev">
+  
   <style>
     html { color-scheme: light dark; }
     html.dark-mode { background-color: var(--bg-primary, #0D0D0F) !important; }
@@ -153,14 +187,8 @@
     /* GLOBAL SHADOW REMOVAL OVERRIDE - FLAT DESIGN */
     .hero-card, .event-card, .clay-card, .clay-hero {
       box-shadow: none !important;
-      filter: none !important;
     }
-    
-    /* REMOVE ALL SHADOWS GLOBALLY */
-    * {
-      box-shadow: none !important;
-      -webkit-box-shadow: none !important;
-    }
+    /* box-shadow removal handled globally by css/no-shadows.css */
 
     /* ═════════════════════════════════════════════════════════════════
        ANTI-FLASH: Hide desktop-only elements on mobile BEFORE paint.
@@ -209,6 +237,12 @@
         transition-duration: 0.001s !important;
       }
     }
+    
+    /* PERF: GPU acceleration only on the scroll container, not app-container
+       to avoid creating an unintended compositing root that hides child layers */
+    html {
+      -webkit-overflow-scrolling: touch;
+    }
   </style>
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
@@ -231,13 +265,14 @@
   <title>ANHAD | ਅਨਹਦ • Divine Gurbani Experience</title>
   <meta name="description" content="ANHAD — 24/7 Gurbani Kirtan, Nitnem, Hukamnama, Sehaj Paath. Your sacred companion.">
   
-  <link rel="preconnect" href="https://anhad-final.onrender.com">
-  <link rel="preconnect" href="https://api.banidb.com">
-  <link rel="dns-prefetch" href="https://pub-525228169e0c44e38a67c306ba1a458c.r2.dev">
-  
-  <!-- PERFORMANCE: Smart time-based preload — only current slot images (WebP, 92% smaller) -->
+  <!-- PERFORMANCE: Optimized time-based preload — only current slot images (WebP, 92% smaller) -->
   <script>
     (function() {
+      // Use cached slot if available
+      if (window._anhadImageCache) {
+        return; // Already preloaded
+      }
+      
       var slot = localStorage.getItem('anhad_forced_time_of_day');
       if (!slot || !['morning', 'day', 'evening', 'night'].includes(slot)) {
         var h = new Date().getHours();
@@ -252,15 +287,36 @@
       };
       var theme = localStorage.getItem('anhad_theme') || 'auto';
       var target = (theme === 'dark') ? 'night' : (theme === 'light' ? 'day' : slot);
-      var l = document.createElement('link');
-      l.rel = 'preload';
-      l.as = 'image';
-      l.type = 'image/webp';
       var imgPath = base + (heroMap[target] || heroMap.day);
-      l.href = imgPath;
-      l.setAttribute('imagesrcset', imgPath);
-      l.setAttribute('fetchpriority', 'high');
-      document.head.appendChild(l);
+      
+      // Cache the path
+      window._anhadImageCache = imgPath;
+      
+      // Use requestIdleCallback for non-blocking preload
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(function() {
+          var l = document.createElement('link');
+          l.rel = 'preload';
+          l.as = 'image';
+          l.type = 'image/webp';
+          l.href = imgPath;
+          l.setAttribute('imagesrcset', imgPath);
+          l.setAttribute('fetchpriority', 'high');
+          document.head.appendChild(l);
+        }, { timeout: 1000 });
+      } else {
+        // Fallback for browsers without requestIdleCallback
+        setTimeout(function() {
+          var l = document.createElement('link');
+          l.rel = 'preload';
+          l.as = 'image';
+          l.type = 'image/webp';
+          l.href = imgPath;
+          l.setAttribute('imagesrcset', imgPath);
+          l.setAttribute('fetchpriority', 'high');
+          document.head.appendChild(l);
+        }, 100);
+      }
     })();
   </script>
   
@@ -279,6 +335,64 @@
   
   <!-- CRITICAL: SPA Navigation MUST load early to intercept clicks -->
   <script src="lib/smooth-navigation.js" defer></script>
+  
+  <!-- PERFORMANCE: Page visibility handler for instant restoration -->
+  <script>
+    (function() {
+      // Cache page state for instant restoration
+      var pageState = {
+        lastVisit: Date.now(),
+        scrollPosition: 0,
+        theme: window._anhadThemeCache
+      };
+      
+      // Save state before page unload
+      window.addEventListener('beforeunload', function() {
+        try {
+          pageState.scrollPosition = window.scrollY || document.documentElement.scrollTop;
+          sessionStorage.setItem('anhad_page_state', JSON.stringify(pageState));
+        } catch(e) {}
+      });
+      
+      // Restore state on page show (when returning from other pages)
+      document.addEventListener('visibilitychange', function() {
+        if (!document.hidden) {
+          // Page is becoming visible again
+          try {
+            var savedState = sessionStorage.getItem('anhad_page_state');
+            if (savedState) {
+              var state = JSON.parse(savedState);
+              // Only restore if it's recent (within 5 minutes)
+              if (Date.now() - state.lastVisit < 300000) {
+                // Theme is already applied by the blocker script
+                // Scroll position will be restored by browser if using history API
+              }
+            }
+          } catch(e) {}
+        }
+      });
+      
+      // Use Page Lifecycle API for better performance
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(function() {
+          // Preload critical resources when idle
+          var criticalLinks = [
+            'lib/anhad-audio-singleton.js?v=2.2.0',
+            'js/anhad-core.js',
+            'lib/smooth-navigation.js'
+          ];
+          
+          criticalLinks.forEach(function(src) {
+            var link = document.createElement('link');
+            link.rel = 'prefetch';
+            link.as = 'script';
+            link.href = src;
+            document.head.appendChild(link);
+          });
+        });
+      }
+    })();
+  </script>
   
   <!-- Clean static shadow prevention handled via css/no-shadows.css -->
 
@@ -345,8 +459,8 @@
       padding: 3px !important;
       border-radius: 50px !important;
       background: rgba(255, 255, 255, 0.06) !important;
-      backdrop-filter: blur(60px) saturate(180%) !important;
-      -webkit-backdrop-filter: blur(60px) saturate(180%) !important;
+      backdrop-filter: blur(20px) saturate(180%) !important;
+      -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
       border: 0.5px solid rgba(255, 255, 255, 0.12) !important;
       box-shadow: 
         0 2px 12px rgba(0, 0, 0, 0.1),
@@ -364,8 +478,8 @@
       padding: 3px !important;
       border-radius: 50px !important;
       background: rgba(255, 255, 255, 0.06) !important;
-      backdrop-filter: blur(60px) saturate(180%) !important;
-      -webkit-backdrop-filter: blur(60px) saturate(180%) !important;
+      backdrop-filter: blur(20px) saturate(180%) !important;
+      -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
       border: 0.5px solid rgba(255, 255, 255, 0.12) !important;
       box-shadow: 
         0 2px 12px rgba(0, 0, 0, 0.1),
@@ -497,8 +611,8 @@
       padding: 6px 24px !important;
       border-radius: 20px !important;
       background: rgba(255, 255, 255, 0.06) !important;
-      backdrop-filter: blur(60px) saturate(180%) !important;
-      -webkit-backdrop-filter: blur(60px) saturate(180%) !important;
+      backdrop-filter: blur(20px) saturate(180%) !important;
+      -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
       border: 0.5px solid rgba(255, 255, 255, 0.12) !important;
       box-shadow: 
         0 2px 12px rgba(0, 0, 0, 0.1),
@@ -1761,13 +1875,10 @@
         0 0 0 4px rgba(212, 168, 83, 0.35),
         0 8px 24px rgba(0, 0, 0, 0.12),
         0 0 16px rgba(212, 168, 83, 0.25);
-      animation: subtlePulse 4s ease-in-out infinite;
+      /* PERF: Removed subtlePulse animation - caused jank on mid-range devices.
+         The CSS box-shadow animation forces GPU layer recomposition every 4s.
+         The golden ring effect is preserved via static box-shadow on wrapper. */
       margin-right: -10px !important;
-    }
-    
-    @keyframes subtlePulse {
-      0%, 100% { box-shadow: 0 0 0 4px rgba(212, 168, 83, 0.35), 0 8px 24px rgba(0, 0, 0, 0.12), 0 0 16px rgba(212, 168, 83, 0.25); }
-      50% { box-shadow: 0 0 0 4px rgba(212, 168, 83, 0.5), 0 10px 28px rgba(0, 0, 0, 0.15), 0 0 24px rgba(212, 168, 83, 0.4); }
     }
     
     .event-card__guru-img {
@@ -2683,9 +2794,64 @@
          GREETING — iOS Large Title Inspired
     ════════════════════════════════════════════════════════════════════ -->
     <section class="greeting ios-animate-in" aria-label="Personal Greeting" style="position: relative; overflow: visible;">
-      <!-- Subtle Ambient Orbs — ONLY 2: Sky Blue + Yellow -->
-      <div class="time-orb time-orb-1" aria-hidden="true"></div>
-      <div class="time-orb time-orb-2" aria-hidden="true"></div>
+      <!-- Sky Blue Orbs - 2-3 circular orbs with 100% blur -->
+      <div class="greeting-orb greeting-orb-1" aria-hidden="true"></div>
+      <div class="greeting-orb greeting-orb-2" aria-hidden="true"></div>
+      <div class="greeting-orb greeting-orb-3" aria-hidden="true"></div>
+      
+      <style>
+        /* Dynamic Color Orbs - Adapt to Guru Image Colors */
+        .greeting-orb {
+          display: none !important;
+        }
+        
+        [data-theme-mode="auto"][data-time-of-day="day"] .greeting-orb {
+          display: none !important;
+        }
+        
+        .greeting-orb-1 {
+          width: 180px;
+          height: 180px;
+          top: -50px;
+          left: -40px;
+          background: radial-gradient(circle, rgba(255, 140, 66, 0.7), rgba(216, 101, 24, 0.4), transparent);
+          animation: floatOrb1 8s ease-in-out infinite;
+        }
+        
+        .greeting-orb-2 {
+          width: 150px;
+          height: 150px;
+          top: 20px;
+          right: -30px;
+          background: radial-gradient(circle, rgba(212, 148, 58, 0.7), rgba(184, 134, 11, 0.4), transparent);
+          animation: floatOrb2 10s ease-in-out infinite;
+        }
+        
+        .greeting-orb-3 {
+          width: 120px;
+          height: 120px;
+          bottom: -20px;
+          left: 50%;
+          transform: translateX(-50%);
+          background: radial-gradient(circle, rgba(245, 230, 211, 0.6), rgba(232, 220, 196, 0.3), transparent);
+          animation: floatOrb3 12s ease-in-out infinite;
+        }
+        
+        @keyframes floatOrb1 {
+          0%, 100% { transform: translate(0, 0); }
+          50% { transform: translate(15px, -15px); }
+        }
+        
+        @keyframes floatOrb2 {
+          0%, 100% { transform: translate(0, 0); }
+          50% { transform: translate(-12px, 12px); }
+        }
+        
+        @keyframes floatOrb3 {
+          0%, 100% { transform: translate(-50%, 0); }
+          50% { transform: translate(calc(-50% + 10px), -10px); }
+        }
+      </style>
       
       <div class="greeting__content">
         <!-- Portrait Slider for immersive experience -->

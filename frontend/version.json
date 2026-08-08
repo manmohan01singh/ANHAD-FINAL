@@ -1,8 +1,7 @@
 {
-    "version": "4.5.2",
-    "buildTime": "2026-07-23T14:45:00.000Z",
-    "timestamp": 1784834700000,
-    "commitHash": "nitnem-reader-fixes-v10.12.0",
-    "branch": "main",
-    "changelog": "Fixed SW navigation preload warning, font changes not applying in reader, reduced web padding - Service Worker v10.12.0"
+  "version": "4.0.3",
+  "buildTime": "2026-08-08T09:46:38.955Z",
+  "timestamp": 1786182398956,
+  "commitHash": "7f2c62a",
+  "branch": "main"
 }

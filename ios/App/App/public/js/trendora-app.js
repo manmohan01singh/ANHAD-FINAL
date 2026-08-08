@@ -255,7 +255,11 @@
       'vaisakhi': 'guru-gobind',
       'khalsa': 'guru-gobind',
       'sggs': 'sggs',
-      'guru-granth': 'sggs'
+      'guru-granth': 'sggs',
+      'granth-sahib': 'sggs',
+      'first-parkash': 'sggs',
+      'sampuranta': 'sggs',
+      'granth': 'sggs'
     };
 
     for (const [key, guruId] of Object.entries(mapping)) {
@@ -422,31 +426,8 @@
     },
 
     _updateOrbColors() {
-      const guru = this._gurus[this._currentIndex];
-      if (!guru || !guru.colors || guru.colors.length === 0) return;
-
-      const orb1 = document.querySelector('.greeting-orb-1');
-      const orb2 = document.querySelector('.greeting-orb-2');
-      const orb3 = document.querySelector('.greeting-orb-3');
-
-      if (!orb1 || !orb2 || !orb3) return;
-
-      // Helper function to convert hex to rgba
-      const hexToRgba = (hex, alpha) => {
-        const r = parseInt(hex.slice(1, 3), 16);
-        const g = parseInt(hex.slice(3, 5), 16);
-        const b = parseInt(hex.slice(5, 7), 16);
-        return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-      };
-
-      const color1 = guru.colors[0] || '#ddcdb3';
-      const color2 = guru.colors[1] || guru.colors[0] || '#ddcdb3';
-      const color3 = guru.colors[2] || guru.colors[1] || guru.colors[0] || '#ddcdb3';
-
-      // Apply gradient backgrounds with smooth transition
-      orb1.style.background = `radial-gradient(circle, ${hexToRgba(color1, 0.7)}, ${hexToRgba(color1, 0.4)}, transparent)`;
-      orb2.style.background = `radial-gradient(circle, ${hexToRgba(color2, 0.7)}, ${hexToRgba(color2, 0.4)}, transparent)`;
-      orb3.style.background = `radial-gradient(circle, ${hexToRgba(color3, 0.6)}, ${hexToRgba(color3, 0.3)}, transparent)`;
+      // Disabled: Background light behind images removed
+      return;
     },
 
     _syncText() {
@@ -584,14 +565,27 @@
         const response = await fetch(dataUrl);
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const data = await response.json();
-        const guruNames = ['guru nanak', 'ਗੁਰੂ ਨਾਨਕ', 'guru angad', 'ਗੁਰੂ ਅੰਗਦ', 'guru amar das', 'ਗੁਰੂ ਅਮਰ ਦਾਸ', 'guru ram das', 'ਗੁਰੂ ਰਾਮ ਦਾਸ', 'guru arjan', 'ਗੁਰੂ ਅਰਜਨ', 'guru har gobind', 'ਗੁਰੂ ਹਰਿਗੋਬਿੰਦ', 'guru hargobind', 'ਗੁਰੂ ਹਰਗੋਬਿੰਦ', 'guru har rai', 'ਗੁਰੂ ਹਰਿ ਰਾਇ', 'guru har krishan', 'ਗੁਰੂ ਹਰਿ ਕ੍ਰਿਸ਼ਨ', 'guru harkrishan', 'ਗੁਰੂ ਹਰਿਕ੍ਰਿਸ਼ਨ', 'guru tegh bahadur', 'ਗੁਰੂ ਤੇਗ ਬਹਾਦੁਰ', 'guru gobind singh', 'ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ'];
+        const guruNames = [
+          'guru nanak', 'ਗੁਰੂ ਨਾਨਕ', 
+          'guru angad', 'ਗੁਰੂ ਅੰਗਦ', 
+          'guru amar das', 'ਗੁਰੂ ਅਮਰ ਦਾਸ', 
+          'guru ram das', 'ਗੁਰੂ ਰਾਮ ਦਾਸ', 
+          'guru arjan', 'ਗੁਰੂ ਅਰਜਨ', 
+          'guru har gobind', 'ਗੁਰੂ ਹਰਿਗੋਬਿੰਦ', 'guru hargobind', 'ਗੁਰੂ ਹਰਗੋਬਿੰਦ', 
+          'guru har rai', 'ਗੁਰੂ ਹਰਿ ਰਾਇ', 
+          'guru har krishan', 'ਗੁਰੂ ਹਰਿ ਕ੍ਰਿਸ਼ਨ', 'guru harkrishan', 'ਗੁਰੂ ਹਰਿਕ੍ਰਿਸ਼ਨ', 
+          'guru tegh bahadur', 'ਗੁਰੂ ਤੇਗ ਬਹਾਦੁਰ', 'guru teg bahadur', 'ਗੁਰੂ ਤੇਗ ਬਹਾਦਰ',
+          'guru gobind singh', 'ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ',
+          'guru granth', 'ਗੁਰੂ ਗ੍ਰੰਥ', 'granth sahib', 'ਗ੍ਰੰਥ ਸਾਹਿਬ', 'sggs', 'sampuranta', 'first-parkash'
+        ];
         const events = (data.years['2026'] || [])
           .filter(e => {
             if (e.type?.toLowerCase().includes('dastar') || e.name_en?.toLowerCase().includes('dastar')) return false;
             if (nameFilter === 'guru-sahib') {
               const name = String(e.name_en || '').toLowerCase();
               const namePa = String(e.name_pa || '').toLowerCase();
-              return guruNames.some(guruName => name.includes(guruName) || namePa.includes(guruName));
+              const id = String(e.id || '').toLowerCase();
+              return guruNames.some(guruName => name.includes(guruName) || namePa.includes(guruName) || id.includes(guruName));
             }
             return true;
           })
@@ -1057,8 +1051,17 @@
 
       // ── Guru Image Mapping ──
       // Using guruimages/ folder with .jpeg files as requested
+      // PATTERN ORDER MATTERS: Most specific patterns first, generic patterns last
       const guruImageMap = {
-        // Primary patterns
+        // SGGS patterns FIRST (highest priority to prevent mismatches)
+        'sggs': 'guruimages/gurugranthsahebji.jpeg',
+        'guru-granth': 'guruimages/gurugranthsahebji.jpeg',
+        'granth-sahib': 'guruimages/gurugranthsahebji.jpeg',
+        'guru granth sahib': 'guruimages/gurugranthsahebji.jpeg',
+        'gurbani': 'guruimages/gurugranthsahebji.jpeg',
+        'parkash': 'guruimages/gurugranthsahebji.jpeg',
+        
+        // Primary patterns - Gurus in order
         'guru-nanak': 'guruimages/gurunanakdevsahebji.jpeg',
         'guru-angad': 'guruimages/guruangaddevsahebji.jpeg',
         'guru-amar-das': 'guruimages/guruamardasji.jpeg',
@@ -1070,14 +1073,15 @@
         'guru-har-krishan': 'guruimages/guruharkrishansahebji.jpeg',
         'guru-teg-bahadur': 'guruimages/gurutegbahadursahebji.jpeg',
         'guru-gobind': 'guruimages/gurugobindsinghsahebji.jpeg',
-        'sggs': 'guruimages/gurugranthsahebji.jpeg',
-        'guru-granth': 'guruimages/gurugranthsahebji.jpeg',
+        
+        // Special events
         'sahibzad': 'guruimages/gurugobindsinghsahebji.jpeg',
         'vaisakhi': 'guruimages/gurugobindsinghsahebji.jpeg',
         'khalsa': 'guruimages/gurugobindsinghsahebji.jpeg',
         'bandi-chhor': 'guruimages/guruhargobindsahebji.jpeg',
         'miri-piri': 'guruimages/guruhargobindsahebji.jpeg',
-        // Additional patterns for better matching
+        
+        // Additional short patterns (keep at end as they're more generic)
         'nanak': 'guruimages/gurunanakdevsahebji.jpeg',
         'angad': 'guruimages/guruangaddevsahebji.jpeg',
         'amar-das': 'guruimages/guruamardasji.jpeg',
@@ -1095,17 +1099,30 @@
       // Match event name to Guru image (use name instead of ID for better matching)
       let guruImg = null;
       let guruName = null;
-      const evName = (event.name || '').toLowerCase();
+      const evName = (event.name_en || event.name || '').toLowerCase();
       const evId = (event.id || '').toLowerCase();
 
-      // Check both name and ID for patterns
-      const searchStrings = [evName, evId];
+      console.log('[GuruImage] Event ID:', evId, 'Event Name:', evName);
 
-      console.log('[GuruImage] Search strings:', searchStrings);
+      // CRITICAL FIX: Check event ID first for explicit SGGS patterns
+      // This prevents "arjan" in "sampuranta-sggs" or "parkash-sggs" from matching Guru Arjan
+      if (evId.includes('sggs') || evId.includes('granth-sahib') || evId.includes('first-parkash') || evId.includes('sampuranta') ||
+          evName.includes('guru granth sahib') || evName.includes('sri guru granth')) {
+        guruImg = 'guruimages/gurugranthsahebji.jpeg';
+        guruName = 'Sri Guru Granth Sahib Ji';
+        console.log('[GuruImage] Matched SGGS (explicit check)');
+      }
 
-      for (const [key, filename] of Object.entries(guruImageMap)) {
-        if (searchStrings.some(s => s.includes(key))) {
-          guruImg = filename; // Full path from map
+      // If not SGGS, check other patterns
+      if (!guruImg) {
+        // Check both name and ID for patterns
+        const searchStrings = [evName, evId];
+
+        console.log('[GuruImage] Search strings:', searchStrings);
+
+        for (const [key, filename] of Object.entries(guruImageMap)) {
+          if (searchStrings.some(s => s.includes(key))) {
+            guruImg = filename; // Full path from map
           const nameMap = {
             'guru-nanak': 'Sri Guru Nanak Dev Sahib Ji',
             'guru-angad': 'Sri Guru Angad Dev Sahib Ji',
@@ -1138,9 +1155,10 @@
             'gobind': 'Sri Guru Gobind Singh Sahib Ji',
             'gobind-singh': 'Sri Guru Gobind Singh Sahib Ji',
           };
-          guruName = nameMap[key] || event.name;
-          console.log('[GuruImage] Matched pattern:', key, '->', guruName, guruImg);
-          break;
+            guruName = nameMap[key] || event.name_en || event.name;
+            console.log('[GuruImage] Matched pattern:', key, '->', guruName, guruImg);
+            break;
+          }
         }
       }
 

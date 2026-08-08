@@ -13,6 +13,11 @@ class BaniDBAPI {
         this.cacheTimeout = 5 * 60 * 1000; // 5 minutes
         this.retryAttempts = 3;
         this.retryDelay = 1000; // 1 second
+        
+        // ═══════════════════════════════════════════════════════════════════════════
+        // CRITICAL FIX: Flag to prevent infinite prefetch loops
+        // ═══════════════════════════════════════════════════════════════════════════
+        this._prefetchInProgress = false;
     }
 
     async fetchWithRetry(url, options = {}, attempt = 1) {
@@ -168,6 +173,14 @@ class BaniDBAPI {
      */
     prefetchNextAngs(currentAng) {
         if (!window.sehajPaathCache) return;
+        
+        // ═══════════════════════════════════════════════════════════════════════════
+        // CRITICAL FIX: Prevent infinite loop by checking if prefetch is already running
+        // ═══════════════════════════════════════════════════════════════════════════
+        if (this._prefetchInProgress) {
+            console.log('[BaniDBAPI] Prefetch already in progress, skipping...');
+            return;
+        }
 
         const nextAngs = [];
         for (let i = 1; i <= 5; i++) {
@@ -177,14 +190,42 @@ class BaniDBAPI {
         }
 
         if (nextAngs.length > 0) {
+            // Mark prefetch as in progress
+            this._prefetchInProgress = true;
+            
             // Prefetch in background without blocking
-            setTimeout(() => {
-                nextAngs.forEach(ang => {
-                    this.getAng(ang).catch(() => {
-                        // Silent fail for prefetch
-                        console.log(`Prefetch failed for Ang ${ang}`);
-                    });
-                });
+            setTimeout(async () => {
+                try {
+                    for (const ang of nextAngs) {
+                        // Check if already cached
+                        if (window.sehajPaathCache) {
+                            const cached = await window.sehajPaathCache.getAng(ang);
+                            if (cached?.lines?.length > 0 || cached?.verses?.length > 0) {
+                                console.log(`[BaniDBAPI] Ang ${ang} already cached, skipping prefetch`);
+                                continue;
+                            }
+                        }
+                        
+                        // Fetch from API directly without triggering recursive prefetch
+                        console.log(`[BaniDBAPI] Prefetching Ang ${ang}...`);
+                        const data = await this.fetch(`/angs/${ang}/G`);
+                        const formatted = this.formatAngData(data, ang);
+                        
+                        // Save to cache
+                        if (window.sehajPaathCache && formatted?.lines) {
+                            await window.sehajPaathCache.saveAng(ang, formatted);
+                            console.log(`[BaniDBAPI] ✓ Prefetched and cached Ang ${ang}`);
+                        }
+                        
+                        // Small delay to avoid rate limiting
+                        await new Promise(resolve => setTimeout(resolve, 300));
+                    }
+                } catch (error) {
+                    console.warn('[BaniDBAPI] Prefetch error:', error);
+                } finally {
+                    // Reset flag after prefetch completes
+                    this._prefetchInProgress = false;
+                }
             }, 2000);
         }
     }

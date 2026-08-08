@@ -136,7 +136,52 @@
   <script src="offline-db.js"></script>
 
   <!-- Cache bust version to enforce reload -->
-  <link rel="stylesheet" href="gurbani-khoj.css?v=38">
+  <link rel="stylesheet" href="gurbani-khoj.css?v=40">
+
+  <!-- ✅ CRITICAL: Dark mode quick-card fix - MUST load last, highest specificity -->
+  <style>
+    /* Force dark card backgrounds in ALL dark mode scenarios */
+    html[data-theme="dark"] .quick-card,
+    html.dark .quick-card,
+    html.dark-mode .quick-card,
+    body.dark-mode .quick-card,
+    [data-theme="dark"] .quick-card {
+      background: #1C1C1E !important;
+      border: 1px solid rgba(255,255,255,0.08) !important;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.35) !important;
+    }
+    html[data-theme="dark"] .card-title-punjabi,
+    html.dark .card-title-punjabi,
+    html.dark-mode .card-title-punjabi,
+    body.dark-mode .card-title-punjabi,
+    [data-theme="dark"] .card-title-punjabi {
+      color: #F2F2F7 !important;
+    }
+
+    /* NUCLEAR OPTION: Override time-of-day rules for this page's quick-cards when dark */
+    html[data-theme="dark"] .quick-card,
+    html.dark .quick-card {
+      background: #1C1C1E !important;
+    }
+
+    /* Kill any ::before white highlight on dark mode cards */
+    html[data-theme="dark"] .quick-card::before,
+    html.dark .quick-card::before,
+    body.dark-mode .quick-card::before {
+      background: none !important;
+      display: none !important;
+    }
+
+    /* Prevent global time-of-day theme rules bleeding into THIS page */
+    html[data-theme="dark"][data-time-of-day] .quick-card,
+    html[data-theme="dark"][data-time-of-day="morning"] .quick-card,
+    html[data-theme="dark"][data-time-of-day="evening"] .quick-card,
+    html[data-theme="dark"][data-time-of-day="day"] .quick-card,
+    html[data-theme="dark"][data-time-of-day="night"] .quick-card {
+      background: #1C1C1E !important;
+      border: 1px solid rgba(255,255,255,0.08) !important;
+    }
+  </style>
 </head>
 <body>
 <div class="app" id="app">

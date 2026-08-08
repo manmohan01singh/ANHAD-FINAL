@@ -2192,30 +2192,30 @@ a:active {
   margin-bottom: var(--space-8);
 }
 
-/* Light mode colored backgrounds - soft pastel versions of dark mode colors */
-.quick-card--green {
-  background: linear-gradient(140deg, #E8F5E9 0%, #C8E6C9 100%) !important;
-  border-color: rgba(48, 209, 88, 0.25) !important;
+/* Light mode colored backgrounds - soft pastel versions */
+:root:not([data-theme="dark"]):not(.dark):not(.dark-mode) .quick-card--green {
+  background: linear-gradient(140deg, #E8F5E9 0%, #C8E6C9 100%);
+  border-color: rgba(48, 209, 88, 0.25);
 }
 
-.quick-card--gold {
-  background: linear-gradient(140deg, #FFF8E1 0%, #FFECB3 100%) !important;
-  border-color: rgba(212, 148, 58, 0.25) !important;
+:root:not([data-theme="dark"]):not(.dark):not(.dark-mode) .quick-card--gold {
+  background: linear-gradient(140deg, #FFF8E1 0%, #FFECB3 100%);
+  border-color: rgba(212, 148, 58, 0.25);
 }
 
-.quick-card--purple {
-  background: linear-gradient(140deg, #EDE7F6 0%, #D1C4E9 100%) !important;
-  border-color: rgba(88, 86, 214, 0.25) !important;
+:root:not([data-theme="dark"]):not(.dark):not(.dark-mode) .quick-card--purple {
+  background: linear-gradient(140deg, #EDE7F6 0%, #D1C4E9 100%);
+  border-color: rgba(88, 86, 214, 0.25);
 }
 
-.quick-card--blue {
-  background: linear-gradient(140deg, #E3F2FD 0%, #BBDEFB 100%) !important;
-  border-color: rgba(0, 122, 255, 0.25) !important;
+:root:not([data-theme="dark"]):not(.dark):not(.dark-mode) .quick-card--blue {
+  background: linear-gradient(140deg, #E3F2FD 0%, #BBDEFB 100%);
+  border-color: rgba(0, 122, 255, 0.25);
 }
 
-.quick-card--rose {
-  background: linear-gradient(140deg, #FFEBEE 0%, #FFCDD2 100%) !important;
-  border-color: rgba(255, 107, 107, 0.25) !important;
+:root:not([data-theme="dark"]):not(.dark):not(.dark-mode) .quick-card--rose {
+  background: linear-gradient(140deg, #FFEBEE 0%, #FFCDD2 100%);
+  border-color: rgba(255, 107, 107, 0.25);
 }
 
 /* Subtle glass highlight on top */
@@ -3355,32 +3355,46 @@ a:active {
 }
 
 
+[data-theme="dark"] .quick-card--green,
+.dark .quick-card--green,
 .dark-mode .quick-card--green {
-  background: linear-gradient(140deg, #0C2616 0%, #11301C 100%);
+  background: linear-gradient(140deg, #0C2616 0%, #11301C 100%) !important;
 }
 
+[data-theme="dark"] .quick-card--gold,
+.dark .quick-card--gold,
 .dark-mode .quick-card--gold {
-  background: linear-gradient(140deg, #2A2215 0%, #302818 100%);
+  background: linear-gradient(140deg, #2A2215 0%, #302818 100%) !important;
 }
 
+[data-theme="dark"] .quick-card--purple,
+.dark .quick-card--purple,
 .dark-mode .quick-card--purple {
-  background: linear-gradient(140deg, #1D1C2E 0%, #23213E 100%);
+  background: linear-gradient(140deg, #1D1C2E 0%, #23213E 100%) !important;
 }
 
+[data-theme="dark"] .quick-card--blue,
+.dark .quick-card--blue,
 .dark-mode .quick-card--blue {
-  background: linear-gradient(140deg, #0C1D2C 0%, #112434 100%);
+  background: linear-gradient(140deg, #0C1D2C 0%, #112434 100%) !important;
 }
 
+[data-theme="dark"] .quick-card--teal,
+.dark .quick-card--teal,
 .dark-mode .quick-card--teal {
-  background: linear-gradient(140deg, #0A2520 0%, #0F302A 100%);
+  background: linear-gradient(140deg, #0A2520 0%, #0F302A 100%) !important;
 }
 
+[data-theme="dark"] .quick-card--rose,
+.dark .quick-card--rose,
 .dark-mode .quick-card--rose {
-  background: linear-gradient(140deg, #2C1515 0%, #351A1A 100%);
+  background: linear-gradient(140deg, #2C1515 0%, #351A1A 100%) !important;
 }
 
+[data-theme="dark"] .quick-card::before,
+.dark .quick-card::before,
 .dark-mode .quick-card::before {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, transparent 100%);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, transparent 100%) !important;
 }
 
 .dark-mode .quick-card__icon {

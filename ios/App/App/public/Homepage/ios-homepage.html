@@ -2,13 +2,76 @@
 <html lang="en">
 
 <head>
-      <!-- CRITICAL: Theme blocker - MUST run before paint -->
+      <!-- CRITICAL: Optimized Theme blocker - Cached and async-friendly -->
   <script>
     (function() {
       try {
+        // Use cache from index.html if available
+        if (window._anhadThemeCache) {
+          const { theme, timeOfDay } = window._anhadThemeCache;
+          let effectiveTheme = theme;
+          let currentTimeOfDay = timeOfDay;
+          
+          if (theme === 'auto') {
+            if (currentTimeOfDay && ['morning', 'day', 'evening', 'night'].includes(currentTimeOfDay)) {
+              effectiveTheme = (currentTimeOfDay === 'night') ? 'dark' : 'light';
+            } else {
+              const hour = new Date().getHours();
+              effectiveTheme = (hour >= 5 && hour < 20) ? 'light' : 'dark';
+              
+              if (hour >= 5 && hour < 9) currentTimeOfDay = 'morning';
+              else if (hour >= 9 && hour < 16) currentTimeOfDay = 'day';
+              else if (hour >= 16 && hour < 20) currentTimeOfDay = 'evening';
+              else currentTimeOfDay = 'night';
+              
+              window._anhadThemeCache.timeOfDay = currentTimeOfDay;
+            }
+          }
+          
+          // Batch DOM operations
+          const doc = document.documentElement;
+          doc.setAttribute('data-theme', effectiveTheme);
+          doc.setAttribute('data-theme-mode', theme);
+          if (theme === 'auto') {
+            doc.setAttribute('data-time-of-day', currentTimeOfDay);
+          }
+          doc.style.colorScheme = effectiveTheme;
+          
+          if (effectiveTheme === 'dark') {
+            doc.classList.add('dark', 'dark-mode');
+          } else {
+            doc.classList.remove('dark', 'dark-mode');
+          }
+          
+          let bg = (effectiveTheme === 'dark') ? '#0D0D0F' : '#FAF8F5';
+          if (theme === 'auto') {
+            if (currentTimeOfDay === 'morning') bg = '#FFF5EC';
+            else if (currentTimeOfDay === 'day') bg = '#FFFDF9';
+            else if (currentTimeOfDay === 'evening') bg = '#FFF8E7';
+            else if (currentTimeOfDay === 'night') bg = '#0F0F12';
+          }
+          doc.style.backgroundColor = bg;
+          doc.classList.add('theme-loaded');
+
+          document.addEventListener('DOMContentLoaded', function() {
+            if (effectiveTheme === 'dark') document.body.classList.add('dark-mode');
+            document.body.classList.add('theme-loaded');
+          }, { once: true });
+
+          if (doc.hasAttribute('data-anhad-home')) {
+            try { sessionStorage.removeItem('gurbaniKhoj_state'); } catch(e) {}
+          }
+          return; // Skip localStorage reads
+        }
+        
+        // Fallback: Read from localStorage if cache not available
         const theme = localStorage.getItem('anhad_theme') || 'auto';
         let effectiveTheme = theme;
         let timeOfDay = localStorage.getItem('anhad_forced_time_of_day');
+        
+        // Initialize cache
+        window._anhadThemeCache = { theme, timeOfDay };
+        
         if (theme === 'auto') {
           if (timeOfDay && ['morning', 'day', 'evening', 'night'].includes(timeOfDay)) {
             effectiveTheme = (timeOfDay === 'night') ? 'dark' : 'light';
@@ -20,18 +83,24 @@
             else if (hour >= 9 && hour < 16) timeOfDay = 'day';
             else if (hour >= 16 && hour < 20) timeOfDay = 'evening';
             else timeOfDay = 'night';
+            
+            window._anhadThemeCache.timeOfDay = timeOfDay;
           }
         }
-        document.documentElement.setAttribute('data-theme', effectiveTheme);
-        document.documentElement.setAttribute('data-theme-mode', theme);
+        
+        // Batch DOM operations
+        const doc = document.documentElement;
+        doc.setAttribute('data-theme', effectiveTheme);
+        doc.setAttribute('data-theme-mode', theme);
         if (theme === 'auto') {
-          document.documentElement.setAttribute('data-time-of-day', timeOfDay);
+          doc.setAttribute('data-time-of-day', timeOfDay);
         }
-        document.documentElement.style.colorScheme = effectiveTheme;
+        doc.style.colorScheme = effectiveTheme;
+        
         if (effectiveTheme === 'dark') {
-          document.documentElement.classList.add('dark', 'dark-mode');
+          doc.classList.add('dark', 'dark-mode');
         } else {
-          document.documentElement.classList.remove('dark', 'dark-mode');
+          doc.classList.remove('dark', 'dark-mode');
         }
         
         let bg = (effectiveTheme === 'dark') ? '#0D0D0F' : '#FAF8F5';
@@ -41,21 +110,21 @@
           else if (timeOfDay === 'evening') bg = '#FFF8E7';
           else if (timeOfDay === 'night') bg = '#0F0F12';
         }
-        document.documentElement.style.backgroundColor = bg;
-        document.documentElement.classList.add('theme-loaded');
+        doc.style.backgroundColor = bg;
+        doc.classList.add('theme-loaded');
 
         document.addEventListener('DOMContentLoaded', function() {
           if (effectiveTheme === 'dark') document.body.classList.add('dark-mode');
           document.body.classList.add('theme-loaded');
         }, { once: true });
 
-        if (document.documentElement.hasAttribute('data-anhad-home')) {
+        if (doc.hasAttribute('data-anhad-home')) {
           try { sessionStorage.removeItem('gurbaniKhoj_state'); } catch(e) {}
         }
       } catch (e) {}
     })();
   </script>
-  <meta name="color-scheme" content="light dark">
+    <meta name="color-scheme" content="light dark">
     <meta charset="UTF-8">
     <meta name="viewport"
         content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -63,18 +132,23 @@
     <meta name="description" content="ANHAD — Immersive Gurbani experience with live Darbar Sahib Kirtan">
     <title>ANHAD — Sri Harmandir Sahib</title>
 
-    <!-- Global Theme System -->
+    <!-- PERFORMANCE: Preconnect to critical domains -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- Global Theme System - Async Loading -->
     <link rel="stylesheet" href="../css/mobile-lock.css" media="print" onload="this.media='all'">
     <link rel="stylesheet" href="../css/theme-variables.css" media="print" onload="this.media='all'">
     
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Fonts - Async Loading -->
     <link rel="preload" as="style"
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Noto+Sans+Gurmukhi:wght@400;500;600;700&display=optional"
         onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Noto+Sans+Gurmukhi:wght@400;500;600;700&display=optional"
         rel="stylesheet"></noscript>
+    
+    <!-- Main CSS - Critical -->
     <link rel="stylesheet" href="ios-homepage.css">
 </head>
 

@@ -162,6 +162,11 @@
             const banis = await BaniDB.getAllBanis();
             state.allBanis = banis.map(b => BaniDB.formatBaniInfo(b));
             console.log(`Loaded ${state.allBanis.length} Banis for search`);
+            
+            // Update global reference for inline search
+            if (window.HubApp) {
+                window.HubApp.allBanis = state.allBanis;
+            }
         } catch (error) {
             console.error('Failed to load Banis:', error);
             showError('Could not load Banis. Please check your connection.');
@@ -178,16 +183,18 @@
         card.href = `reader.html?id=${bani.id}`;
         card.className = `bani-card${options.featured ? ' bani-card--featured' : ''}`;
         card.dataset.baniId = bani.id;
+        // Inline iOS-style styling
+        card.style.cssText = 'display:flex;flex-direction:column;gap:8px;padding:18px 16px;background:#FFFFFF;border:1px solid rgba(0,0,0,0.06);border-radius:16px;text-decoration:none;color:inherit;box-shadow:0 2px 8px rgba(0,0,0,0.04);margin-bottom:12px;transition:all 0.2s ease;';
 
         card.innerHTML = `
-      <div class="bani-card__header">
-        <h3 class="bani-card__title">${bani.nameGurmukhi || bani.nameEnglish}</h3>
-        ${meta.featured ? '<span class="bani-card__badge">Featured</span>' : ''}
+      <div class="bani-card__header" style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+        <h3 class="bani-card__title" style="font-family:var(--font-gurmukhi);font-size:18px;font-weight:600;line-height:1.3;color:#1C1C1E;margin:0;flex:1;">${bani.nameGurmukhi || bani.nameEnglish}</h3>
+        ${meta.featured ? '<span class="bani-card__badge" style="font-size:11px;font-weight:700;color:#007AFF;background:rgba(0,122,255,0.1);padding:4px 10px;border-radius:8px;">Featured</span>' : ''}
       </div>
-      <p class="bani-card__english">${bani.nameEnglish}</p>
-      <div class="bani-card__meta">
-        ${meta.author ? `<span class="bani-card__meta-item">${meta.author}</span>` : ''}
-        ${meta.time ? `<span class="bani-card__meta-item">⏱ ${meta.time}</span>` : ''}
+      <p class="bani-card__english" style="font-size:14px;font-weight:500;color:#8E8E93;line-height:1.3;margin:0;">${bani.nameEnglish}</p>
+      <div class="bani-card__meta" style="display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:#8E8E93;">
+        ${meta.author ? `<span class="bani-card__meta-item" style="display:flex;align-items:center;gap:4px;">👤 ${meta.author}</span>` : ''}
+        ${meta.time ? `<span class="bani-card__meta-item" style="display:flex;align-items:center;gap:4px;color:#007AFF;font-weight:600;">⏱ ${meta.time}</span>` : ''}
       </div>
     `;
 
@@ -678,6 +685,16 @@
         console.error(message);
         // Could show a toast notification here
     }
+
+    // ═══════════════════════════════════════════════════════════════
+    // EXPOSE TO GLOBAL SCOPE FOR INLINE SEARCH
+    // ═══════════════════════════════════════════════════════════════
+    
+    window.HubApp = {
+        allBanis: state.allBanis,
+        baniMeta: baniMeta,
+        createBaniCard: createBaniCard
+    };
 
     // ═══════════════════════════════════════════════════════════════
     // INITIALIZE

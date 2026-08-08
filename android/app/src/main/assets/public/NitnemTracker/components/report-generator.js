@@ -180,29 +180,44 @@ class ReportGenerator {
     }
 
     /**
-     * Calculate Nitnem statistics
+     * Calculate Nitnem statistics - FIXED to use historical target banis
      */
     calculateNitnemStats(dates, log, targetBanis) {
         let totalCompleted = 0;
         let completeDays = 0;
         const dailyStats = {};
 
+        // Load historical bani selections
+        const selectedBanisHistory = this.storage.load('nitnemTracker_selectedBanis_history', {});
+
         dates.forEach(date => {
             const entry = log[date] || {};
             const completed = entry.completed || [];
             const completedCount = Array.isArray(completed) ? completed.length : 0;
 
+            // CRITICAL FIX: Use historical target for this specific date
+            // If we added banis today, yesterday's target should use yesterday's bani count
+            const historicalBanis = selectedBanisHistory[date];
+            let dayTarget = targetBanis; // Default to current
+
+            if (historicalBanis) {
+                // Calculate target from historical snapshot
+                dayTarget = (historicalBanis.amritvela?.length || 0) +
+                           (historicalBanis.rehras?.length || 0) +
+                           (historicalBanis.sohila?.length || 0);
+            }
+
             dailyStats[date] = {
                 completed: completedCount,
-                total: targetBanis,
-                percentage: targetBanis > 0 ? Math.round((completedCount / targetBanis) * 100) : 0,
+                total: dayTarget, // Use historical target for this date
+                percentage: dayTarget > 0 ? Math.round((completedCount / dayTarget) * 100) : 0,
                 banis: completed
             };
 
             totalCompleted += completedCount;
 
-            // A day is complete if all selected banis are done
-            if (targetBanis > 0 && completedCount >= targetBanis) {
+            // A day is complete if all banis for THAT DAY were done
+            if (dayTarget > 0 && completedCount >= dayTarget) {
                 completeDays++;
             }
         });

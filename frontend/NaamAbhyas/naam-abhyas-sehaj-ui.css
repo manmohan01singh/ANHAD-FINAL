@@ -1,0 +1,232 @@
+/**
+ * ═══════════════════════════════════════════════════════════════════════════
+ * NAAM ABHYAS - SEHAJ PAATH UI INTEGRATION
+ * Premium claymorphism background effects from Sehaj Paath
+ * ═══════════════════════════════════════════════════════════════════════════
+ */
+
+/* ═══ PREMIUM BACKGROUND EFFECTS (from Sehaj Paath) ═══ */
+.background-effects {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.gradient-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.15;
+    animation: float 20s ease-in-out infinite;
+    will-change: transform;
+}
+
+.gradient-orb-1 {
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, #D4943A 0%, #C17F2E 50%, transparent 100%);
+    top: -200px;
+    left: -200px;
+    animation-duration: 25s;
+}
+
+.gradient-orb-2 {
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, #F5A623 0%, #D4943A 50%, transparent 100%);
+    bottom: -250px;
+    right: -250px;
+    animation-duration: 30s;
+    animation-delay: -5s;
+}
+
+.gradient-orb-3 {
+    width: 350px;
+    height: 350px;
+    background: radial-gradient(circle, #A06E1E 0%, #8B5A1A 50%, transparent 100%);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation-duration: 35s;
+    animation-delay: -10s;
+}
+
+.mesh-gradient {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(at 20% 30%, rgba(212, 148, 58, 0.08) 0%, transparent 50%),
+        radial-gradient(at 80% 70%, rgba(245, 166, 35, 0.06) 0%, transparent 50%),
+        radial-gradient(at 50% 50%, rgba(160, 110, 30, 0.04) 0%, transparent 50%);
+    opacity: 0.6;
+}
+
+.noise-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23noise)" opacity="0.05"/></svg>');
+    opacity: 0.4;
+    mix-blend-mode: overlay;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translate(0, 0);
+    }
+    33% {
+        transform: translate(30px, -30px);
+    }
+    66% {
+        transform: translate(-20px, 20px);
+    }
+}
+
+/* ═══ ENSURE CONTENT IS ABOVE BACKGROUND ═══ */
+.app-container {
+    position: relative;
+    z-index: 1;
+}
+
+.app-header {
+    position: relative;
+    z-index: 10;
+}
+
+.main-content {
+    position: relative;
+    z-index: 1;
+}
+
+/* ═══ DARK MODE ADJUSTMENTS ═══ */
+[data-theme="dark"] .gradient-orb {
+    opacity: 0.12;
+}
+
+[data-theme="dark"] .gradient-orb-1 {
+    background: radial-gradient(circle, #D4943A 0%, #A06E1E 50%, transparent 100%);
+}
+
+[data-theme="dark"] .gradient-orb-2 {
+    background: radial-gradient(circle, #C17F2E 0%, #8B5A1A 50%, transparent 100%);
+}
+
+[data-theme="dark"] .gradient-orb-3 {
+    background: radial-gradient(circle, #F5A623 0%, #D4943A 50%, transparent 100%);
+}
+
+[data-theme="dark"] .mesh-gradient {
+    opacity: 0.4;
+}
+
+[data-theme="dark"] .noise-overlay {
+    opacity: 0.3;
+}
+
+/* ═══ LIGHT MODE ADJUSTMENTS ═══ */
+[data-theme="light"] .gradient-orb {
+    opacity: 0.08;
+    filter: blur(100px);
+}
+
+[data-theme="light"] .mesh-gradient {
+    opacity: 0.3;
+}
+
+[data-theme="light"] .noise-overlay {
+    opacity: 0.2;
+}
+
+/* ═══ AUTO MODE TIME-BASED ADJUSTMENTS ═══ */
+[data-theme-mode="auto"][data-time-of-day="morning"] .gradient-orb {
+    opacity: 0.06;
+}
+
+[data-theme-mode="auto"][data-time-of-day="evening"] .gradient-orb {
+    opacity: 0.10;
+}
+
+[data-theme-mode="auto"][data-time-of-day="night"] .gradient-orb {
+    opacity: 0.14;
+}
+
+/* ═══ CARD GLOW EFFECTS (from Sehaj Paath) ═══ */
+.glass-card {
+    position: relative;
+    overflow: visible;
+}
+
+.glass-card::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(135deg, 
+        rgba(212, 148, 58, 0.15) 0%, 
+        transparent 50%, 
+        rgba(245, 166, 35, 0.15) 100%);
+    border-radius: inherit;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.glass-card:hover::before {
+    opacity: 1;
+}
+
+/* ═══ PREMIUM FLOATING ANIMATION ═══ */
+@keyframes clay-float {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-8px);
+    }
+}
+
+.toggle-card,
+.next-card,
+.stats-card,
+.sync-hub-card {
+    animation: clay-float 6s ease-in-out infinite;
+}
+
+.toggle-card {
+    animation-delay: 0s;
+}
+
+.next-card {
+    animation-delay: 0.5s;
+}
+
+.stats-card {
+    animation-delay: 1s;
+}
+
+.sync-hub-card {
+    animation-delay: 1.5s;
+}
+
+/* ═══ REDUCE MOTION FOR ACCESSIBILITY ═══ */
+@media (prefers-reduced-motion: reduce) {
+    .gradient-orb,
+    .toggle-card,
+    .next-card,
+    .stats-card,
+    .sync-hub-card {
+        animation: none;
+    }
+}

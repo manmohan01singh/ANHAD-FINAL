@@ -394,9 +394,15 @@ const Utils = {
 
         // Check if streak is active (today or yesterday)
         const mostRecent = dayNumbers[0];
-        const isStreakActive = mostRecent === todayDay || mostRecent === yesterdayDay;
+        // FIX: Only count streak if TODAY is completed, not yesterday
+        // If only yesterday is completed, the streak shows as 0 until today is marked
+        const isStreakActive = mostRecent === todayDay;
+        
+        // Special case: If yesterday was completed but not today yet, 
+        // the streak is still "alive" but should show the count up to yesterday
+        const streakAliveButNotToday = mostRecent === yesterdayDay;
 
-        if (!isStreakActive) {
+        if (!isStreakActive && !streakAliveButNotToday) {
             return 0;
         }
 
@@ -3236,13 +3242,21 @@ const TabBarManager = {
      * Switch to tab
      */
     switchTab(tabName) {
-        if (this.activeTab === tabName) {
-            // Scroll to top if already on this tab
-            this.scrollToSection(tabName);
-            return;
+        HapticManager.selection();
+
+        if (tabName === 'nitnem') {
+            const card = document.getElementById('pothiRedirectCard');
+            if (card) {
+                card.classList.remove('pothi-highlight-pulse');
+                void card.offsetWidth;
+                card.classList.add('pothi-highlight-pulse');
+            }
+            if (this.activeTab === 'nitnem') {
+                window.location.href = '../nitnem/my-pothi.html';
+                return;
+            }
         }
 
-        HapticManager.selection();
         this.activeTab = tabName;
 
         // Update active states
@@ -3260,7 +3274,7 @@ const TabBarManager = {
     scrollToSection(tabName) {
         const sectionMap = {
             home: 'amritvelaSection',
-            nitnem: 'nitnemProgressSection',
+            nitnem: 'pothiRedirectCard',
             mala: 'malaSection',
             stats: 'streakSection'
         };
@@ -3271,7 +3285,30 @@ const TabBarManager = {
         const section = document.getElementById(sectionId);
         if (!section) return;
 
-        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        // FIX: Calculate proper scroll position accounting for fixed header
+        const header = document.querySelector('.app-header') || document.querySelector('.nitnem-header');
+        const headerHeight = header ? header.offsetHeight : 80;
+        const sectionTop = section.getBoundingClientRect().top + window.pageYOffset;
+        const offsetPosition = Math.max(0, sectionTop - headerHeight - 16);
+
+        try {
+            window.scrollTo({
+                top: offsetPosition,
+                behavior: 'smooth'
+            });
+        } catch (e) {
+            window.scrollTo(0, offsetPosition);
+        }
+
+        // WebView fallback scroll check
+        setTimeout(() => {
+            const currentY = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+            if (Math.abs(currentY - offsetPosition) > 40) {
+                window.scrollTo(0, offsetPosition);
+                document.documentElement.scrollTop = offsetPosition;
+                document.body.scrollTop = offsetPosition;
+            }
+        }, 200);
     }
 };
 
@@ -3669,14 +3706,9 @@ const AmritvelaManager = {
         const log = StorageManager.load(CONFIG.STORAGE_KEYS.AMRITVELA_LOG, {});
         const dates = Object.keys(log);
 
-        // SYNC: Use global streak data to match header streak
-        let streak = 0;
-        if (typeof AnhadStats !== 'undefined') {
-            streak = AnhadStats.getStreak().currentStreak;
-        } else {
-            const streakData = StorageManager.load(CONFIG.STORAGE_KEYS.STREAK_DATA, { currentStreak: 0 });
-            streak = streakData.currentStreak || streakData.current || 0;
-        }
+        // SYNC: Use exact recalculation from logs to avoid pre-increment before marking present
+        StreakManager.recalculateStreak();
+        let streak = StreakManager.state.currentStreak || 0;
 
         if (this.elements.streakDisplay) {
             Utils.animateNumber(this.elements.streakDisplay,
@@ -4278,6 +4310,11 @@ const NitnemManager = {
         this.updateProgress();
         this.updateCounts();
 
+        // CRITICAL FIX: Check if this completes a punishment task
+        if (typeof StreakSaverManager !== 'undefined') {
+            StreakSaverManager.checkPunishmentCompletion();
+        }
+
         // CRITICAL FIX: Dispatch storage event to update homepage cards in real-time
         window.dispatchEvent(new StorageEvent('storage', {
             key: 'nitnemTracker_nitnemLog',
@@ -4392,6 +4429,11 @@ const NitnemManager = {
         this.updateProgress();
         this.updateCounts();
         this.checkAllComplete();
+
+        // CRITICAL FIX: Check if completing all includes punishment banis
+        if (typeof StreakSaverManager !== 'undefined') {
+            StreakSaverManager.checkPunishmentCompletion();
+        }
 
         // CRITICAL FIX: Dispatch storage event to update homepage cards
         window.dispatchEvent(new StorageEvent('storage', {
@@ -5094,18 +5136,13 @@ const SettingsManager = {
      */
     exportData() {
         const data = StorageManager.exportData();
-        const blob = new Blob([data], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `nitnem-tracker-backup-${Utils.getTodayString()}.json`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-
-        Toast.success('Export Complete', 'Your data has been downloaded');
+        const filename = `nitnem-tracker-backup-${Utils.getTodayString()}.json`;
+        if (typeof ReportsManager !== 'undefined' && ReportsManager.downloadBackupFile) {
+            ReportsManager.downloadBackupFile(data, filename);
+        } else {
+            navigator.clipboard?.writeText?.(data);
+            Toast.success('Export Copied', 'JSON backup copied to clipboard');
+        }
     },
 
     /**
@@ -7292,33 +7329,29 @@ const StreakManager = {
      */
     recalculateStreak() {
         const amritvelaLog = StorageManager.load(CONFIG.STORAGE_KEYS.AMRITVELA_LOG, {});
+        const nitnemLog = StorageManager.load(CONFIG.STORAGE_KEYS.NITNEM_LOG, {});
 
-        // A day is "complete" ONLY if Amritvela is marked before 6 AM (or saved by Streak Saver)
         const completeDates = new Set();
-        const amritvelaDates = Object.keys(amritvelaLog);
 
-        amritvelaDates.forEach(date => {
+        // 1. Add Amritvela logged dates (including Streak Saver patches)
+        Object.keys(amritvelaLog).forEach(date => {
             const entry = amritvelaLog[date];
             if (entry) {
-                // If it's a streak saver patch, it counts!
-                if (entry.isStreakSaverPatch) {
-                    completeDates.add(date);
-                } else if (entry.time) {
-                    const [hours, minutes] = entry.time.split(':').map(Number);
-                    if (hours < 6) {
-                        completeDates.add(date);
-                    }
-                } else {
-                    // Legacy data without time
-                    completeDates.add(date);
-                }
+                completeDates.add(date);
             }
         });
 
-        // Convert Set to Array for calculation
+        // 2. Add Nitnem 100% completed dates
+        Object.keys(nitnemLog).forEach(date => {
+            const entry = nitnemLog[date];
+            if (entry && (entry.completed === true || entry.percentage === 100)) {
+                completeDates.add(date);
+            }
+        });
+
         const datesToUse = Array.from(completeDates);
 
-        // Calculate current streak
+        // Calculate current streak using Utils.calculateStreak
         this.state.currentStreak = Utils.calculateStreak(datesToUse);
 
         // Calculate longest streak
@@ -7336,24 +7369,18 @@ const StreakManager = {
      */
     calculateHistoricalStreak(targetDateStr) {
         const amritvelaLog = StorageManager.load(CONFIG.STORAGE_KEYS.AMRITVELA_LOG, {});
+        const nitnemLog = StorageManager.load(CONFIG.STORAGE_KEYS.NITNEM_LOG, {});
 
         const completeDates = new Set();
-        const amritvelaDates = Object.keys(amritvelaLog);
 
-        // Add Amritvela dates that match the criteria
-        amritvelaDates.forEach(date => {
-            const entry = amritvelaLog[date];
-            if (entry) {
-                if (entry.isStreakSaverPatch) {
-                    completeDates.add(date);
-                } else if (entry.time) {
-                    const [hours, minutes] = entry.time.split(':').map(Number);
-                    if (hours < 6) {
-                        completeDates.add(date);
-                    }
-                } else {
-                    completeDates.add(date);
-                }
+        Object.keys(amritvelaLog).forEach(date => {
+            if (amritvelaLog[date]) completeDates.add(date);
+        });
+
+        Object.keys(nitnemLog).forEach(date => {
+            const entry = nitnemLog[date];
+            if (entry && (entry.completed === true || entry.percentage === 100)) {
+                completeDates.add(date);
             }
         });
 
@@ -7576,13 +7603,21 @@ const StreakSaverManager = {
 
     STORAGE_KEY: 'nitnemTracker_streakSaver',
     ATTENDANCE_KEY: 'nitnemTracker_weakAttendance',
+    PUNISHMENT_USAGE_KEY: 'nitnemTracker_punishmentUsage',
     continuousCheckInterval: null,
+
+    // Punishment limit system (5 saves per month - like Snapchat)
+    PUNISHMENT_CONFIG: {
+        maxSavesPerMonth: 5,          // Only 5 punishment saves per month (like Snapchat)
+        monthlyResetDay: 1            // Reset on 1st of each month
+    },
 
     /**
      * Initialize Streak Saver
      */
     init() {
         this.checkAndCleanupExpired();
+        this.initializePunishmentLimitSystem(); // Initialize Snapchat-style monthly limits
 
         // ═══ 6 AM AUTO-CHECK: Ensure streak is evaluated on first app open ═══
         // If it's past 6 AM and we haven't checked today, run immediately.
@@ -7606,6 +7641,102 @@ const StreakSaverManager = {
         // ═══ ENHANCED: Add continuous check every 5 minutes for 6 AM threshold ═══
         // This ensures streak saver activates even if user stays on page past 6 AM
         this.startContinuousCheck();
+    },
+
+    /**
+     * Initialize Snapchat-style Punishment Limit System
+     * User gets 5 punishment saves per month - resets on 1st
+     */
+    initializePunishmentLimitSystem() {
+        const usageData = this.getPunishmentUsageData();
+        const currentMonth = new Date().toISOString().slice(0, 7); // YYYY-MM
+
+        // Reset monthly usage if new month
+        if (usageData.month !== currentMonth) {
+            this.resetMonthlyPunishmentUsage();
+            console.log('[StreakSaver] 🔄 Monthly punishment usage reset to 5');
+        }
+    },
+
+    /**
+     * Get punishment usage data (Snapchat-style monthly tracking)
+     */
+    getPunishmentUsageData() {
+        try {
+            const raw = localStorage.getItem(this.PUNISHMENT_USAGE_KEY);
+            if (!raw) {
+                return this.createDefaultPunishmentUsageData();
+            }
+            return JSON.parse(raw);
+        } catch (e) {
+            console.warn('[StreakSaver] Could not parse punishment usage data:', e);
+            return this.createDefaultPunishmentUsageData();
+        }
+    },
+
+    /**
+     * Create default punishment usage data
+     */
+    createDefaultPunishmentUsageData() {
+        const currentMonth = new Date().toISOString().slice(0, 7);
+        return {
+            month: currentMonth,
+            savesUsed: 0,
+            savesRemaining: this.PUNISHMENT_CONFIG.maxSavesPerMonth,
+            history: []
+        };
+    },
+
+    /**
+     * Save punishment usage data
+     */
+    savePunishmentUsageData(data) {
+        localStorage.setItem(this.PUNISHMENT_USAGE_KEY, JSON.stringify(data));
+    },
+
+    /**
+     * Reset monthly punishment usage (called on 1st of month)
+     */
+    resetMonthlyPunishmentUsage() {
+        const currentMonth = new Date().toISOString().slice(0, 7);
+        const usageData = {
+            month: currentMonth,
+            savesUsed: 0,
+            savesRemaining: this.PUNISHMENT_CONFIG.maxSavesPerMonth,
+            history: []
+        };
+        this.savePunishmentUsageData(usageData);
+    },
+
+    /**
+     * Check if user has punishment saves remaining this month
+     */
+    hasPunishmentSavesRemaining() {
+        const usageData = this.getPunishmentUsageData();
+        return usageData.savesRemaining > 0;
+    },
+
+    /**
+     * Use one punishment save (called when punishment is completed)
+     */
+    usePunishmentSave(reason) {
+        const usageData = this.getPunishmentUsageData();
+        
+        if (usageData.savesRemaining <= 0) {
+            return false;
+        }
+
+        usageData.savesUsed++;
+        usageData.savesRemaining--;
+        usageData.history.push({
+            date: new Date().toISOString(),
+            reason: reason,
+            streakSaved: StreakManager.state.currentStreak
+        });
+
+        this.savePunishmentUsageData(usageData);
+        console.log(`[StreakSaver] Punishment save used - ${usageData.savesRemaining}/5 remaining this month`);
+        return true;
     },
 
     /**
@@ -7652,35 +7783,12 @@ const StreakSaverManager = {
         const currentMinute = new Date().getMinutes();
         const hasStreak = StreakManager.state.currentStreak > 0;
 
-        // ═══════════════════════════════════════════════════════════════
-        // PROACTIVE CHECK: Amritvela not marked by 6:00 AM today
-        // If it's past 6 AM and no Amritvela marked, activate Streak Saver
-        // ═══════════════════════════════════════════════════════════════
-        const todayNotMarked = !amritvelaLog[today];
-        const past6AM = currentHour >= 6;
-
         // Check if user already dismissed the streak saver this session
         const dismissedKey = 'streakSaverDismissed_' + today;
         if (sessionStorage.getItem(dismissedKey) === 'true') return;
 
-        // If it's past 6 AM and Amritvela not marked today, activate Streak Saver warning
-        if (todayNotMarked && past6AM && hasStreak) {
-            // Check if we already have an active punishment for today
-            const existing = this.getActivePunishment();
-            if (!existing) {
-                // Offer streak saver as a warning
-                this.offerStreakSaver(StreakManager.state.currentStreak, {
-                    type: 'same_day_warning',
-                    missedAmritvela: false,
-                    warning: 'Amritvela not marked by 6:00 AM',
-                    missedDate: today
-                });
-            }
-            return; // Don't proceed to yesterday check if today is the issue
-        }
-
         // ═══════════════════════════════════════════════════════════════
-        // RETROACTIVE CHECK: User missed yesterday's Amritvela
+        // RETROACTIVE CHECK: User missed yesterday's Amritvela & Nitnem
         // ═══════════════════════════════════════════════════════════════
         const missedYesterday = !amritvelaLog[yesterdayString];
 
@@ -7784,6 +7892,19 @@ const StreakSaverManager = {
         const existing = this.getActivePunishment();
         if (existing) return;
 
+        // Check if user has punishment saves remaining this month (Snapchat-style 5/month limit)
+        const usageData = this.getPunishmentUsageData();
+        const hasSavesRemaining = usageData.savesRemaining > 0;
+
+        // If no saves remaining, don't offer punishment - streak is lost
+        if (!hasSavesRemaining) {
+            Toast.error('❌ No Streak Saves Left', `You've used all 5 saves this month. Streak will reset. Saves reset on ${this.PUNISHMENT_CONFIG.monthlyResetDay}st.`);
+            StreakManager.state.currentStreak = 0;
+            StreakManager.saveStreakData();
+            StreakManager.recalculateStreak();
+            return;
+        }
+
         // Generate punishment based on tier
         const punishment = this.generatePunishment(brokenStreakCount);
 
@@ -7795,7 +7916,8 @@ const StreakSaverManager = {
             expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
             completed: false,
             punishmentBanisAdded: false,
-            context: context || {}
+            context: context || {},
+            savesRemaining: usageData.savesRemaining  // Add remaining count
         };
 
         this.savePunishmentData(saverData);
@@ -7946,11 +8068,19 @@ const StreakSaverManager = {
 
     /**
      * Complete punishment and save streak
-     * ENHANCED: Clean up ATTENDANCE_KEY to prevent stale state
+     * ENHANCED: Counts toward monthly 5-save limit
      */
     completePunishment() {
         const saverData = this.getActivePunishment();
         if (!saverData) return;
+
+        // ═══ USE ONE PUNISHMENT SAVE (counts toward 5/month limit) ═══
+        const saveUsed = this.usePunishmentSave(`Saved ${saverData.brokenStreak}-day streak via punishment`);
+        
+        if (!saveUsed) {
+            Toast.error('❌ Save Failed', 'Could not use punishment save. Please try again.');
+            return;
+        }
 
         saverData.completed = true;
         saverData.completedAt = new Date().toISOString();
@@ -7966,7 +8096,8 @@ const StreakSaverManager = {
             if (!amritvelaLog[missedDate]) {
                 amritvelaLog[missedDate] = {
                     timestamp: new Date().toISOString(),
-                    isStreakSaverPatch: true
+                    isStreakSaverPatch: true,
+                    usedPunishmentSave: true  // Mark as punishment-saved
                 };
                 StorageManager.save(CONFIG.STORAGE_KEYS.AMRITVELA_LOG, amritvelaLog);
             }
@@ -7983,8 +8114,12 @@ const StreakSaverManager = {
         // ═══ ENHANCED: Clean up ATTENDANCE_KEY to prevent stale state ═══
         localStorage.removeItem(this.ATTENDANCE_KEY);
 
-        // Show celebration
-        Toast.success('🎉 Streak Saved!', `Your ${restoredStreak}-day streak is restored!`);
+        // Get remaining saves for toast
+        const usageData = this.getPunishmentUsageData();
+        const remaining = usageData.savesRemaining;
+
+        // Show celebration with remaining count
+        Toast.success('🎉 Streak Saved!', `${restoredStreak}-day streak restored! ${remaining}/5 saves left this month.`);
         CelebrationManager.show('streakSaved');
 
         this.renderPunishmentUI();
@@ -8036,6 +8171,9 @@ const StreakSaverManager = {
             message = `Complete ${count}× ${baniName} within 24h to save your ${saverData.brokenStreak}-day streak!`;
         }
 
+        // Add remaining saves info (Snapchat-style)
+        message += ` (${saverData.savesRemaining}/5 saves left this month)`;
+
         // Show toast notification
         Toast.warning('⚡ Streak Saver Available!', message, 10000);
 
@@ -8044,7 +8182,7 @@ const StreakSaverManager = {
     },
 
     /**
-     * Show streak saver modal
+     * Show streak saver modal (Snapchat-style - punishment only, shows X/5 saves)
      */
     showStreakSaverModal(saverData) {
         const punishment = saverData.punishment;
@@ -8076,6 +8214,13 @@ const StreakSaverManager = {
                                 <p class="punishment-note">Complete within <strong>${timeRemaining} hours</strong></p>
                             </div>
                         </div>
+                        <div class="punishment-saves-info">
+                            <div class="saves-icon">💾</div>
+                            <div class="saves-text">
+                                <strong>Streak Saves: ${saverData.savesRemaining}/5 left this month</strong>
+                                <p>Complete punishment to use 1 save. Resets on 1st of each month.</p>
+                            </div>
+                        </div>
                         <div class="punishment-explanation">
                             <p>💡 Complete the punishment Bani to restore your ${saverData.brokenStreak}-day streak!</p>
                             <p class="punishment-warning">⚠️ If you decline, your streak will be reset to 0.</p>
@@ -8086,7 +8231,7 @@ const StreakSaverManager = {
                             Decline (Lose Streak)
                         </button>
                         <button class="modal-btn primary" onclick="StreakSaverManager.acceptStreakSaver()">
-                            Accept Punishment
+                            Accept Punishment (${saverData.savesRemaining}/5)
                         </button>
                     </div>
                 </div>
@@ -8100,8 +8245,11 @@ const StreakSaverManager = {
      * Accept streak saver punishment
      */
     acceptStreakSaver() {
-        document.getElementById('streakSaverModal').remove();
-        Toast.success('✅ Punishment Accepted', 'Complete the Bani to save your streak!');
+        const saverData = this.getActivePunishment();
+        const remaining = saverData ? saverData.savesRemaining : 5;
+        
+        document.getElementById('streakSaverModal')?.remove();
+        Toast.success('✅ Punishment Accepted', `Complete the Bani to save your streak! (${remaining}/5 saves left)`);
     },
 
     /**
@@ -8222,7 +8370,10 @@ const AchievementManager = {
     async init() {
         // Cache elements
         this.elements = {
-            grid: document.getElementById('achievementsGrid')
+            grid: document.getElementById('achievementsGrid'),
+            summaryBadge: document.getElementById('achievementSummaryBadge'),
+            progressPill: document.getElementById('achievementsProgressPill'),
+            progressBarFill: document.getElementById('achievementsProgressBarFill')
         };
 
         // Load achievements data
@@ -8231,8 +8382,109 @@ const AchievementManager = {
         // Load unlocked achievements
         this.loadUnlockedAchievements();
 
+        // Automatically evaluate user storage for unlocked achievements
+        this.checkAll();
+
         // Render achievements
         this.renderAchievements();
+        this.updateSummaryCounts();
+    },
+
+    /**
+     * Evaluate all achievement conditions against storage logs
+     */
+    checkAll() {
+        try {
+            const amritvelaLog = StorageManager.load(CONFIG.STORAGE_KEYS.AMRITVELA_LOG, {});
+            const nitnemLog = StorageManager.load(CONFIG.STORAGE_KEYS.NITNEM_LOG, {});
+            const malaLog = StorageManager.load(CONFIG.STORAGE_KEYS.MALA_LOG, {});
+            const streakData = StorageManager.load(CONFIG.STORAGE_KEYS.STREAK, {});
+            
+            const currentStreak = streakData.currentStreak || streakData.streak || 0;
+            const longestStreak = streakData.longestStreak || 0;
+            const maxStreak = Math.max(currentStreak, longestStreak);
+
+            // 1. Early Riser (first-amritvela)
+            if (Object.keys(amritvelaLog).length > 0 || Object.values(amritvelaLog).some(v => v)) {
+                this.unlockSilent('first-amritvela');
+            }
+
+            // 2. Week Warrior (week-streak)
+            if (maxStreak >= 7) {
+                this.unlockSilent('week-streak');
+            }
+
+            // 3. Month Master (month-streak)
+            if (maxStreak >= 30) {
+                this.unlockSilent('month-streak');
+            }
+
+            // 4. Mala Master (mala-master)
+            let hasMala = false;
+            if (typeof malaLog === 'object') {
+                for (const k in malaLog) {
+                    const entry = malaLog[k];
+                    if (entry && (entry.completedMalas >= 1 || entry.count >= 108 || entry >= 108)) {
+                        hasMala = true;
+                        break;
+                    }
+                }
+            }
+            if (hasMala) {
+                this.unlockSilent('mala-master');
+            }
+
+            // 5. Nitnem Complete (nitnem-complete)
+            let hasNitnemComplete = false;
+            if (typeof nitnemLog === 'object') {
+                for (const k in nitnemLog) {
+                    const entry = nitnemLog[k];
+                    if (entry && (entry.completed === true || entry.percentage === 100)) {
+                        hasNitnemComplete = true;
+                        break;
+                    }
+                }
+            }
+            if (hasNitnemComplete) {
+                this.unlockSilent('nitnem-complete');
+            }
+
+            // 6. Perfect Week (perfect-week)
+            if (maxStreak >= 7 || Object.keys(amritvelaLog).length >= 7) {
+                this.unlockSilent('perfect-week');
+            }
+        } catch (err) {
+            console.warn('⚠️ Error checking achievements:', err);
+        }
+        this.updateSummaryCounts();
+    },
+
+    unlockSilent(achievementId) {
+        if (!this.unlockedAchievements.includes(achievementId)) {
+            this.unlockedAchievements.push(achievementId);
+            this.saveUnlockedAchievements();
+        }
+    },
+
+    updateSummaryCounts() {
+        const total = (Array.isArray(this.achievements) && this.achievements.length) ? this.achievements.length : 6;
+        const unlockedCount = Array.isArray(this.unlockedAchievements) ? this.unlockedAchievements.length : 0;
+        const pct = Math.round((unlockedCount / total) * 100);
+
+        const summaryBadge = document.getElementById('achievementSummaryBadge');
+        if (summaryBadge) {
+            summaryBadge.textContent = `🏆 ${unlockedCount}/${total}`;
+        }
+
+        const progressPill = document.getElementById('achievementsProgressPill');
+        if (progressPill) {
+            progressPill.textContent = `🏆 ${unlockedCount} of ${total} Unlocked (${pct}%)`;
+        }
+
+        const barFill = document.getElementById('achievementsProgressBarFill');
+        if (barFill) {
+            barFill.style.width = `${pct}%`;
+        }
     },
 
     /**
@@ -8353,6 +8605,8 @@ const AchievementManager = {
                 this.showAchievementDetails(card.dataset.achievement);
             });
         });
+
+        this.updateSummaryCounts();
     },
 
     /**
@@ -8391,6 +8645,8 @@ const AchievementManager = {
             card.classList.add('unlocked');
         }
 
+        this.updateSummaryCounts();
+
         // Show celebration
         HapticManager.success();
         SoundManager.success();
@@ -8405,10 +8661,10 @@ const AchievementManager = {
      * Check Amritvela achievements
      */
     checkAmritvela(entry) {
-        // First Amritvela
         if (!this.unlockedAchievements.includes(ACHIEVEMENT_IDS.FIRST_AMRITVELA)) {
             this.unlock(ACHIEVEMENT_IDS.FIRST_AMRITVELA);
         }
+        this.checkAll();
     },
 
     /**
@@ -8418,6 +8674,7 @@ const AchievementManager = {
         if (!this.unlockedAchievements.includes(ACHIEVEMENT_IDS.NITNEM_COMPLETE)) {
             this.unlock(ACHIEVEMENT_IDS.NITNEM_COMPLETE);
         }
+        this.checkAll();
     },
 
     /**
@@ -8427,6 +8684,7 @@ const AchievementManager = {
         if (completedMalas >= 1 && !this.unlockedAchievements.includes(ACHIEVEMENT_IDS.MALA_MASTER)) {
             this.unlock(ACHIEVEMENT_IDS.MALA_MASTER);
         }
+        this.checkAll();
     },
 
     /**
@@ -8436,6 +8694,155 @@ const AchievementManager = {
         const rate = AlarmManager.getObedienceRate();
         if (rate === 100 && !this.unlockedAchievements.includes(ACHIEVEMENT_IDS.PERFECT_WEEK)) {
             this.unlock(ACHIEVEMENT_IDS.PERFECT_WEEK);
+        }
+        this.checkAll();
+    }
+};
+
+/**
+ * PothiCardManager - Real-Time Dynamic Data Renderer for My Pothi Card
+ */
+const PothiCardManager = {
+    init() {
+        this.updateCard();
+        // Listen for storage changes when Banis are completed in My Pothi page
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'nitnemTracker_selectedBanis' || e.key === 'nitnemTracker_nitnemLog' || e.key === 'nitnemTracker_selectedBanis_history') {
+                this.updateCard();
+            }
+        });
+        // Also listen for custom events & tab focus
+        document.addEventListener('nitnemCompleted', () => this.updateCard());
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) this.updateCard();
+        });
+    },
+
+    updateCard() {
+        const card = document.getElementById('pothiRedirectCard');
+        if (!card) return;
+
+        const today = new Date().toLocaleDateString('en-CA');
+        
+        // 1. Load user selected banis from storage
+        let selectedBanisData = StorageManager.load(CONFIG.STORAGE_KEYS.SELECTED_BANIS, null);
+        if (!selectedBanisData) {
+            try {
+                selectedBanisData = JSON.parse(localStorage.getItem('nitnemTracker_selectedBanis') || 'null');
+            } catch (e) {}
+        }
+
+        // Default Gurmukhi Banis
+        const DEFAULT_BANIS = [
+            { id: 'japji', name: 'Japji Sahib', punjabi: 'ਜਪੁਜੀ ਸਾਹਿਬ' },
+            { id: 'jaap', name: 'Jaap Sahib', punjabi: 'ਜਾਪੁ ਸਾਹਿਬ' },
+            { id: 'tav_prasad', name: 'Tav Prasad Savaiye', punjabi: 'ਤ੍ਵ ਪ੍ਰਸਾਦਿ' },
+            { id: 'chaupai', name: 'Chaupai Sahib', punjabi: 'ਚੌਪਈ ਸਾਹਿਬ' },
+            { id: 'anand', name: 'Anand Sahib', punjabi: 'ਅਨੰਦੁ ਸਾਹਿਬ' }
+        ];
+
+        let userBanis = [];
+        if (selectedBanisData) {
+            if (Array.isArray(selectedBanisData) && selectedBanisData.length > 0) {
+                userBanis = selectedBanisData;
+            } else if (typeof selectedBanisData === 'object') {
+                const combined = [
+                    ...(selectedBanisData.amritvela || []),
+                    ...(selectedBanisData.rehras || []),
+                    ...(selectedBanisData.sohila || [])
+                ];
+                if (combined.length > 0) {
+                    userBanis = combined;
+                }
+            }
+        }
+
+        if (userBanis.length === 0) {
+            userBanis = DEFAULT_BANIS;
+        }
+
+        // 2. Load today's completion log
+        let nitnemLog = StorageManager.load(CONFIG.STORAGE_KEYS.NITNEM_LOG, {});
+        if (typeof nitnemLog !== 'object') nitnemLog = {};
+
+        const todayEntry = nitnemLog[today] || {};
+        let completedIds = [];
+
+        if (Array.isArray(todayEntry)) {
+            completedIds = todayEntry;
+        } else if (todayEntry && typeof todayEntry === 'object') {
+            if (Array.isArray(todayEntry.completedBanis)) {
+                completedIds = todayEntry.completedBanis;
+            } else if (Array.isArray(todayEntry.banis)) {
+                completedIds = todayEntry.banis;
+            } else if (typeof todayEntry.banis === 'object') {
+                const bObj = todayEntry.banis;
+                for (const k in bObj) {
+                    if (bObj[k] === true) completedIds.push(k);
+                }
+            } else {
+                const subCombined = [
+                    ...(todayEntry.amritvela || []),
+                    ...(todayEntry.rehras || []),
+                    ...(todayEntry.sohila || [])
+                ];
+                if (subCombined.length > 0) completedIds = subCombined;
+            }
+        }
+
+        const totalBanisCount = userBanis.length;
+        let completedCount = 0;
+
+        // Map banis to chip objects with completion status
+        const baniChipsData = userBanis.map(b => {
+            const id = typeof b === 'string' ? b : (b.id || b.name);
+            const title = typeof b === 'string' ? b : (b.punjabi || b.name || id);
+            
+            const isDone = completedIds.some(c => {
+                if (typeof c === 'string') {
+                    return c.toLowerCase() === String(id).toLowerCase() || 
+                           c.toLowerCase() === String(title).toLowerCase();
+                }
+                if (c && (c.id || c.name)) {
+                    return String(c.id || c.name).toLowerCase() === String(id).toLowerCase();
+                }
+                return false;
+            });
+
+            if (isDone) completedCount++;
+
+            return {
+                title: title,
+                isDone: isDone
+            };
+        });
+
+        // 3. Update Chips UI inside .card-body
+        const chipsContainer = card.querySelector('.pothi-chips-row');
+        if (chipsContainer) {
+            chipsContainer.innerHTML = baniChipsData.map(b => `
+                <span class="pothi-chip ${b.isDone ? 'completed' : ''}">
+                    ${b.isDone ? '✅ ' : '⭕ '}${b.title}
+                </span>
+            `).join('');
+        }
+
+        // 4. Update Stat Items inside .card-footer
+        const statItems = card.querySelectorAll('.card-footer .stat-item');
+        if (statItems.length >= 3) {
+            const stat1Value = statItems[0].querySelector('.stat-value');
+            const stat1Label = statItems[0].querySelector('.stat-label');
+            if (stat1Value) stat1Value.textContent = `${completedCount}/${totalBanisCount} Done`;
+            if (stat1Label) stat1Label.textContent = completedCount === totalBanisCount ? '100% Complete' : 'Daily Path';
+
+            const stat2Value = statItems[1].querySelector('.stat-value');
+            if (stat2Value) stat2Value.textContent = '📖 Open Pothi';
+
+            const stat3Value = statItems[2].querySelector('.stat-value');
+            const stat3Label = statItems[2].querySelector('.stat-label');
+            const pct = totalBanisCount > 0 ? Math.round((completedCount / totalBanisCount) * 100) : 0;
+            if (stat3Value) stat3Value.textContent = `⚡ ${pct}%`;
+            if (stat3Label) stat3Label.textContent = 'Today Progress';
         }
     }
 };
@@ -8593,15 +9000,21 @@ const ReportsManager = {
         const dates = this.generator.getWeekDates().reverse(); // ReportGenerator returns current to past
 
         dates.forEach(date => {
-            const hasAmritvela = report.amritvela.dailyStats[date]?.woke;
+            const hasAmritvela = !!report.amritvela.dailyStats[date]?.woke;
+            const wakeTime = report.amritvela.dailyStats[date]?.time || '';
             const nitnemStats = report.nitnem.dailyStats[date];
-            const hasNitnem = nitnemStats?.percentage === 100;
+            const nitnemPct = nitnemStats?.percentage || 0;
+            const hasNitnem = nitnemPct === 100;
+
+            const score = (hasAmritvela ? 40 : 0) + Math.round((nitnemPct / 100) * 60);
 
             dailyData.push({
                 date: date,
                 amritvela: hasAmritvela,
+                wakeTime: wakeTime,
                 nitnem: hasNitnem,
-                score: (hasAmritvela ? 50 : 0) + (hasNitnem ? 50 : 0)
+                nitnemPct: nitnemPct,
+                score: score
             });
         });
 
@@ -8631,14 +9044,25 @@ const ReportsManager = {
             this.elements.weeklyAlarmsValue.textContent = `${alarmRate}%`;
         }
 
-        // Render chart bars
+        // Render chart bars with Amritvela badges & tooltips
         if (this.elements.weeklyChartBars) {
             this.elements.weeklyChartBars.innerHTML = dailyData.map(day => {
-                const height = day.score;
-                const barClass = height === 100 ? '' : height > 0 ? 'partial' : 'empty';
+                const height = day.score > 0 ? Math.max(day.score, 6) : 0;
+                const barClass = day.score >= 90 ? 'full' : day.score > 0 ? 'partial' : 'empty';
+                const dayName = new Date(day.date + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short' });
+                
+                const amritvelaBadge = day.amritvela 
+                    ? `<div class="chart-amritvela-badge attended" title="🌅 Amritvela Attended ${day.wakeTime ? '(' + day.wakeTime + ')' : ''}">🌅</div>`
+                    : `<div class="chart-amritvela-badge missed" title="Amritvela Missed"></div>`;
+                
+                const tooltipText = `${dayName}: ${day.amritvela ? '🌅 Amritvela Attended' : '❌ Amritvela Missed'} | 📖 Nitnem ${day.nitnemPct}%`;
+
                 return `
-                    <div class="chart-bar">
-                        <div class="bar-fill ${barClass}" style="height: ${Math.max(height, 4)}%"></div>
+                    <div class="chart-bar" title="${tooltipText}" data-tooltip="${tooltipText}">
+                        ${amritvelaBadge}
+                        <div class="bar-fill-track">
+                            <div class="bar-fill ${barClass} ${day.amritvela ? 'has-amritvela' : ''}" style="height: ${height}%"></div>
+                        </div>
                     </div>
                 `;
             }).join('');
@@ -8665,9 +9089,23 @@ const ReportsManager = {
         let amritvelaDays = 0;
         let nitnemDays = 0;
 
-        dates.forEach(date => {
-            if (amritvelaLog[date]) amritvelaDays++;
-            if (nitnemLog[date]) nitnemDays++;
+        const dailyData = dates.map(date => {
+            const woke = !!amritvelaLog[date];
+            if (woke) amritvelaDays++;
+
+            const nitnemEntry = nitnemLog[date] || {};
+            const completedCount = typeof nitnemEntry === 'object' ? Object.keys(nitnemEntry).length : (nitnemEntry ? 5 : 0);
+            if (completedCount >= 5) nitnemDays++;
+            const nitnemPct = Math.min(100, Math.round((completedCount / 5) * 100));
+
+            const score = (woke ? 40 : 0) + Math.round((nitnemPct / 100) * 60);
+
+            return {
+                date,
+                amritvela: woke,
+                nitnemPct,
+                score
+            };
         });
 
         const amritvelaRate = Math.round((amritvelaDays / 7) * 100);
@@ -8688,9 +9126,26 @@ const ReportsManager = {
         }
 
         if (this.elements.weeklyChartBars) {
-            this.elements.weeklyChartBars.innerHTML = dates.map(() => `
-                <div class="chart-bar"><div class="bar-fill empty" style="height: 4%"></div></div>
-            `).join('');
+            this.elements.weeklyChartBars.innerHTML = dailyData.map(day => {
+                const height = day.score > 0 ? Math.max(day.score, 6) : 0;
+                const barClass = day.score >= 90 ? 'full' : day.score > 0 ? 'partial' : 'empty';
+                const dayName = new Date(day.date + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short' });
+                
+                const amritvelaBadge = day.amritvela 
+                    ? `<div class="chart-amritvela-badge attended" title="🌅 Amritvela Attended">🌅</div>`
+                    : `<div class="chart-amritvela-badge missed" title="Amritvela Missed"></div>`;
+
+                const tooltipText = `${dayName}: ${day.amritvela ? '🌅 Amritvela Attended' : '❌ Amritvela Missed'} | 📖 Nitnem ${day.nitnemPct}%`;
+
+                return `
+                    <div class="chart-bar" title="${tooltipText}" data-tooltip="${tooltipText}">
+                        ${amritvelaBadge}
+                        <div class="bar-fill-track">
+                            <div class="bar-fill ${barClass} ${day.amritvela ? 'has-amritvela' : ''}" style="height: ${height}%"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
         }
 
         this.updateWeeklyInsight(amritvelaDays, nitnemDays, 0);
@@ -8854,23 +9309,211 @@ const ReportsManager = {
     },
 
     /**
-     * Export report
+     * Export report - Show popup with download button
      */
     exportReport() {
-        const report = this.generateReportData();
-        const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
+        // Generate comprehensive backup data
+        const backupData = this.generateBackupData();
+        
+        // Create and show export modal
+        this.showExportModal(backupData);
+    },
 
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `nitnem-report-${Utils.getTodayString()}.json`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
+    /**
+     * Generate comprehensive backup data including My Pothi
+     */
+    generateBackupData() {
+        const today = Utils.getTodayString();
+        
+        // Core Nitnem Tracker data
+        const nitnemData = {
+            exportDate: today,
+            exportTimestamp: new Date().toISOString(),
+            appVersion: '2.0',
+            
+            // Main tracking data
+            amritvelaLog: StorageManager.load(CONFIG.STORAGE_KEYS.AMRITVELA_LOG, {}),
+            nitnemLog: StorageManager.load(CONFIG.STORAGE_KEYS.NITNEM_LOG, {}),
+            malaLog: StorageManager.load(CONFIG.STORAGE_KEYS.MALA_LOG, {}),
+            alarmLog: StorageManager.load(CONFIG.STORAGE_KEYS.ALARM_LOG, {}),
+            
+            // Configuration
+            selectedBanis: StorageManager.load(CONFIG.STORAGE_KEYS.SELECTED_BANIS, {}),
+            selectedBanisHistory: StorageManager.load('nitnemTracker_selectedBanis_history', {}),
+            settings: StorageManager.load(CONFIG.STORAGE_KEYS.SETTINGS, {}),
+            userData: StorageManager.load(CONFIG.STORAGE_KEYS.USER_DATA, {}),
+            
+            // Streak and achievements
+            streakData: StorageManager.load(CONFIG.STORAGE_KEYS.STREAK_DATA, {}),
+            achievements: StorageManager.load(CONFIG.STORAGE_KEYS.ACHIEVEMENTS, {}),
+            
+            // My Pothi data (CRITICAL: backup user's custom bani list)
+            myPothi: {
+                order: JSON.parse(localStorage.getItem('anhad_my_pothi') || '[]'),
+                data: JSON.parse(localStorage.getItem('anhad_my_pothi_data') || '[]'),
+                completed: JSON.parse(localStorage.getItem('anhad_my_pothi_completed') || '{}'),
+                snapshots: JSON.parse(localStorage.getItem('anhad_my_pothi_snapshots') || '{}')
+            },
+            
+            // Theme preference
+            theme: localStorage.getItem('anhad_theme') || 'light'
+        };
+        
+        return nitnemData;
+    },
 
-        Toast.success('Report Exported', 'Your report has been downloaded');
-        HapticManager.success();
+    /**
+     * Show export modal with download & copy options
+     */
+    showExportModal(data) {
+        const today = Utils.getTodayString();
+        const filename = `anhad-backup-${today}.json`;
+        
+        // Create modal if it doesn't exist
+        let modal = document.getElementById('exportModal');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'exportModal';
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-overlay" data-close-export></div>
+                <div class="modal-content export-modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title">📥 Export Backup</h3>
+                        <button class="modal-close" data-close-export>&times;</button>
+                    </div>
+                    <div class="modal-body export-modal-body">
+                        <div class="export-info">
+                            <div class="export-icon">💾</div>
+                            <p class="export-message">Your complete backup is ready!</p>
+                            <p class="export-details">
+                                This includes:<br>
+                                ✓ Nitnem completion history<br>
+                                ✓ Amritvela wake times<br>
+                                ✓ Mala counts & streaks<br>
+                                ✓ <strong>My Pothi configuration</strong><br>
+                                ✓ All settings & preferences
+                            </p>
+                            <div class="export-filename">${filename}</div>
+                        </div>
+                    </div>
+                    <div class="modal-footer export-modal-footer" style="display:flex;gap:8px;justify-content:flex-end;">
+                        <button class="btn btn-secondary" data-close-export>Close</button>
+                        <button class="btn btn-secondary" id="copyBackupBtn">
+                            <span>📋 Copy JSON</span>
+                        </button>
+                        <button class="btn btn-primary" id="downloadBackupBtn">
+                            <span>⬇️ Save Backup</span>
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            // Add close handlers
+            modal.querySelectorAll('[data-close-export]').forEach(el => {
+                el.addEventListener('click', () => this.closeExportModal());
+            });
+
+            // Add Copy JSON handler
+            const copyBtn = modal.querySelector('#copyBackupBtn');
+            if (copyBtn) {
+                copyBtn.addEventListener('click', () => {
+                    const jsonStr = typeof data === 'string' ? data : JSON.stringify(data, null, 2);
+                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                        navigator.clipboard.writeText(jsonStr).then(() => {
+                            Toast.success('Copied!', 'JSON backup copied to clipboard');
+                            HapticManager.success();
+                        }).catch(() => {
+                            Toast.error('Copy Failed', 'Unable to copy to clipboard');
+                        });
+                    } else {
+                        Toast.error('Clipboard Unavailable', 'Please use Save Backup');
+                    }
+                });
+            }
+            
+            // Add download handler
+            const downloadBtn = modal.querySelector('#downloadBackupBtn');
+            downloadBtn.addEventListener('click', () => {
+                this.downloadBackupFile(data, filename);
+                this.closeExportModal();
+            });
+        } else {
+            // Update filename if modal already exists
+            modal.querySelector('.export-filename').textContent = filename;
+        }
+        
+        // Open modal
+        ModalManager.open('exportModal');
+        HapticManager.selection();
+    },
+
+    /**
+     * Download backup file (Capacitor & WebView Safe - Never navigates to Blob URL)
+     */
+    downloadBackupFile(data, filename) {
+        try {
+            const jsonStr = typeof data === 'string' ? data : JSON.stringify(data, null, 2);
+            const isNativeApp = !!(window.Capacitor && window.Capacitor.isNative);
+
+            // 1. Always copy JSON to clipboard as immediate safe backup
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(jsonStr).catch(() => {});
+            }
+
+            // 2. Native Capacitor Filesystem plugin
+            if (isNativeApp && window.Capacitor.Plugins && window.Capacitor.Plugins.Filesystem) {
+                window.Capacitor.Plugins.Filesystem.writeFile({
+                    path: filename,
+                    data: jsonStr,
+                    directory: 'DOCUMENTS',
+                    encoding: 'utf8'
+                }).then(() => {
+                    Toast.success('Backup Saved!', 'Saved to Documents folder & copied to clipboard');
+                    HapticManager.success();
+                }).catch(() => {
+                    Toast.success('Backup Copied!', 'JSON backup copied to clipboard');
+                    HapticManager.success();
+                });
+                return;
+            }
+
+            // 3. Web download using Data URI (prevents WebView from navigating to blob: page)
+            try {
+                const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(jsonStr);
+                const a = document.createElement('a');
+                a.href = dataUri;
+                a.download = filename;
+                a.target = '_blank';
+                a.rel = 'noopener';
+                a.style.display = 'none';
+                document.body.appendChild(a);
+                a.click();
+                
+                setTimeout(() => {
+                    if (a.parentNode) document.body.removeChild(a);
+                }, 300);
+
+                Toast.success('Backup Saved!', 'File download started & copied to clipboard');
+                HapticManager.success();
+            } catch (dlErr) {
+                console.warn('Data URI download warning:', dlErr);
+                Toast.success('Backup Copied!', 'JSON backup copied to clipboard');
+                HapticManager.success();
+            }
+        } catch (error) {
+            console.error('Export failed:', error);
+            Toast.error('Export Failed', 'Could not save backup file');
+        }
+    },
+
+    /**
+     * Close export modal
+     */
+    closeExportModal() {
+        ModalManager.close('exportModal');
+        HapticManager.light();
     },
 
     /**
@@ -10317,11 +10960,11 @@ const EnhancedReports = {
 
         const nitnemLog = StorageManager.load(CONFIG.STORAGE_KEYS.NITNEM_LOG, {});
 
-        // Calculate total banis per day
+        // Calculate total banis per day (default to 7 if empty)
         const totalBanisPerDay =
-            (selectedBanis.amritvela?.length || 0) +
+            ((selectedBanis.amritvela?.length || 0) +
             (selectedBanis.rehras?.length || 0) +
-            (selectedBanis.sohila?.length || 0);
+            (selectedBanis.sohila?.length || 0)) || 7;
 
         const totalPossible = totalBanisPerDay * 7;
         let totalCompleted = 0;
@@ -10367,7 +11010,7 @@ const EnhancedReports = {
         const nitnemFill = document.getElementById('weeklyNitnemFill');
 
         if (nitnemValue) {
-            nitnemValue.textContent = `${stats.totalCompleted}/${stats.totalPossible}`;
+            nitnemValue.textContent = `${stats.completeDays}/7`;
         }
         if (nitnemFill) {
             nitnemFill.style.width = `${stats.percentage}%`;

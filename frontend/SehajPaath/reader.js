@@ -25,6 +25,12 @@ class SehajPaathReader {
         // Detached Reading Mode - prevents Random/Search from corrupting progress
         this.isDetachedMode = false;
         this.detachedSource = null;
+        
+        // ═══════════════════════════════════════════════════════════════════════════
+        // CRITICAL FIX: Add flags to prevent infinite loops
+        // ═══════════════════════════════════════════════════════════════════════════
+        this._isNavigating = false;
+        this._autoDownloadInProgress = false;
 
         this.init();
     }
@@ -876,14 +882,37 @@ class SehajPaathReader {
     }
 
     goBack() {
-        // Use unified smart-back navigation with sehaj-paath.html as fallback
-        if (window.anhadGoBack) {
-            window.anhadGoBack('sehaj-paath.html');
-        } else if (document.referrer && document.referrer.includes(window.location.origin)) {
-            window.history.back();
-        } else {
-            if (window.navigateTo) window.navigateTo('sehaj-paath.html');
-            else window.location.href = 'sehaj-paath.html';
+        // ═══════════════════════════════════════════════════════════════════════════
+        // CRITICAL FIX: Prevent navigation loops by tracking navigation state
+        // ═══════════════════════════════════════════════════════════════════════════
+        if (this._isNavigating) {
+            console.log('[SehajPaath] Navigation already in progress, ignoring...');
+            return;
+        }
+        
+        this._isNavigating = true;
+        
+        try {
+            // Use unified smart-back navigation with sehaj-paath.html as fallback
+            if (window.anhadGoBack) {
+                window.anhadGoBack('sehaj-paath.html');
+            } else if (document.referrer && document.referrer.includes(window.location.origin)) {
+                window.history.back();
+            } else {
+                if (window.navigateTo) {
+                    window.navigateTo('sehaj-paath.html');
+                } else {
+                    window.location.href = 'sehaj-paath.html';
+                }
+            }
+            
+            // Reset flag after navigation completes (with timeout as safety)
+            setTimeout(() => {
+                this._isNavigating = false;
+            }, 1000);
+        } catch (error) {
+            console.error('[SehajPaath] Navigation error:', error);
+            this._isNavigating = false;
         }
     }
 
@@ -1577,6 +1606,15 @@ class SehajPaathReader {
             console.warn('[AutoDownload] Cache not available');
             return;
         }
+        
+        // ═══════════════════════════════════════════════════════════════════════════
+        // CRITICAL FIX: Prevent multiple simultaneous downloads
+        // ═══════════════════════════════════════════════════════════════════════════
+        if (this._autoDownloadInProgress) {
+            console.log('[AutoDownload] Already in progress, skipping...');
+            return;
+        }
+        this._autoDownloadInProgress = true;
 
         // Calculate range: current ang + next 4 (5 total)
         const startAng = this.currentAng;
@@ -1590,52 +1628,57 @@ class SehajPaathReader {
         // Show subtle toast notification
         this.showToast('📥 Downloading next 5 Angs for offline reading...');
 
-        for (let ang = startAng; ang <= endAng; ang++) {
-            // Check if already cached
-            if (window.sehajPaathCache.isCached(ang)) {
-                skipped++;
-                completed++;
-                continue;
+        try {
+            for (let ang = startAng; ang <= endAng; ang++) {
+                // Check if already cached
+                const cached = await window.sehajPaathCache.getAng(ang);
+                if (cached?.lines?.length > 0 || cached?.verses?.length > 0) {
+                    skipped++;
+                    completed++;
+                    console.log(`[AutoDownload] Ang ${ang} already cached, skipping`);
+                    continue;
+                }
+
+                try {
+                    console.log(`[AutoDownload] Downloading Ang ${ang}...`);
+
+                    // ═══════════════════════════════════════════════════════════════
+                    // CRITICAL FIX: Use BaniDB API directly, not non-existent /api/ route
+                    // ═══════════════════════════════════════════════════════════════
+                    const data = await this.api.fetch(`/angs/${ang}/G`);
+
+                    // Format data using the existing API method
+                    const formatted = this.api.formatAngData(data, ang);
+
+                    // Cache it
+                    await window.sehajPaathCache.saveAng(ang, formatted);
+
+                    completed++;
+                    console.log(`[AutoDownload] ✓ Cached Ang ${ang}`);
+
+                    // Small delay to avoid rate limiting
+                    await new Promise(resolve => setTimeout(resolve, 300));
+
+                } catch (error) {
+                    console.error(`[AutoDownload] Failed to download Ang ${ang}:`, error);
+                    failed++;
+                }
             }
 
-            try {
-                console.log(`[AutoDownload] Downloading Ang ${ang}...`);
-
-                // Fetch from API using the proxy
-                const response = await fetch(`/api/banidb/angs/${ang}/G`);
-                if (!response.ok) throw new Error(`Failed to fetch Ang ${ang}`);
-
-                const data = await response.json();
-
-                // Format data
-                const formatted = this.formatAngDataForCache(data, ang);
-
-                // Cache it
-                await window.sehajPaathCache.cacheAng(ang, formatted);
-
-                completed++;
-                console.log(`[AutoDownload] ✓ Cached Ang ${ang}`);
-
-                // Small delay to avoid rate limiting
-                await new Promise(resolve => setTimeout(resolve, 300));
-
-            } catch (error) {
-                console.error(`[AutoDownload] Failed to download Ang ${ang}:`, error);
-                failed++;
+            // Show completion toast
+            if (failed === 0) {
+                this.showToast(`✅ Downloaded ${completed} Angs for offline reading`);
+            } else {
+                this.showToast(`⚠️ Downloaded ${completed}, Failed: ${failed}, Skipped: ${skipped}`);
             }
-        }
 
-        // Show completion toast
-        if (failed === 0) {
-            this.showToast(`✅ Downloaded ${completed} Angs for offline reading`);
-        } else {
-            this.showToast(`⚠️ Downloaded ${completed}, Failed: ${failed}, Skipped: ${skipped}`);
+            // Update cached count in download modal if open
+            this.updateCachedCount();
+            
+            console.log(`[AutoDownload] Complete: ${completed} success, ${failed} failed, ${skipped} skipped`);
+        } finally {
+            this._autoDownloadInProgress = false;
         }
-
-        // Update cached count in download modal if open
-        this.updateCachedCount();
-        
-        console.log(`[AutoDownload] Complete: ${completed} success, ${failed} failed, ${skipped} skipped`);
     }
 
     formatAngDataForCache(data, angNumber) {

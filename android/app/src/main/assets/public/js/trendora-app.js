@@ -255,7 +255,11 @@
       'vaisakhi': 'guru-gobind',
       'khalsa': 'guru-gobind',
       'sggs': 'sggs',
-      'guru-granth': 'sggs'
+      'guru-granth': 'sggs',
+      'granth-sahib': 'sggs',
+      'first-parkash': 'sggs',
+      'sampuranta': 'sggs',
+      'granth': 'sggs'
     };
 
     for (const [key, guruId] of Object.entries(mapping)) {
@@ -271,17 +275,17 @@
     _startX: 0,
     _isDragging: false,
     _gurus: [
-      { id: 'guru-nanak', name: 'Sri Guru Nanak Dev Sahib Ji', img: 'guruimages/gurunanakdevsahebji.jpeg', pos: 'center 20%' },
-      { id: 'guru-angad', name: 'Sri Guru Angad Dev Sahib Ji', img: 'guruimages/guruangaddevsahebji.jpeg', pos: 'center 25%' },
-      { id: 'guru-amar-das', name: 'Sri Guru Amar Das Sahib Ji', img: 'guruimages/guruamardasji.jpeg', pos: 'center 25%' },
-      { id: 'guru-ram-das', name: 'Sri Guru Ram Das Sahib Ji', img: 'guruimages/gururamdassahebji.jpeg', pos: 'center 25%' },
-      { id: 'guru-arjan', name: 'Sri Guru Arjan Dev Sahib Ji', img: 'guruimages/guruarjanddevsahebji.jpeg', gurbani: 'ਅੰਮ੍ਰਿਤ ਵੇਲਾ ਸਚੁ ਨਾਉ ਵਡਿਆਈ ਵੀਚਾਰੁ ॥', translation: 'In the Amrit Vela, chant the True Name, and contemplate His Glorious Greatness.', pos: 'center 25%' },
-      { id: 'guru-hargobind', name: 'Sri Guru Hargobind Sahib Ji', img: 'guruimages/guruhargobindsahebji.jpeg', pos: 'center 25%' },
-      { id: 'guru-har-rai', name: 'Sri Guru Har Rai Sahib Ji', img: 'guruimages/guruharraisahebji.jpeg', pos: 'center 25%' },
-      { id: 'guru-harkrishan', name: 'Sri Guru Har Krishan Sahib Ji', img: 'guruimages/guruharkrishansahebji.jpeg', pos: 'center 25%' },
-      { id: 'guru-teg-bahadur', name: 'Sri Guru Tegh Bahadur Sahib Ji', img: 'guruimages/gurutegbahadursahebji.jpeg', pos: 'center 45%' },
-      { id: 'guru-gobind', name: 'Sri Guru Gobind Singh Sahib Ji', img: 'guruimages/gurugobindsinghsahebji.jpeg', pos: 'center 25%' },
-      { id: 'sggs', name: 'Sri Guru Granth Sahib Ji', img: 'guruimages/gurugranthsahebji.jpeg', pos: 'center 25%' }
+      { id: 'guru-nanak', name: 'Sri Guru Nanak Dev Sahib Ji', img: 'guruimages/gurunanakdevsahebji.jpeg', pos: 'center 20%', colors: ['#ddcdb3', '#c9b89f', '#b8a88e'] },
+      { id: 'guru-angad', name: 'Sri Guru Angad Dev Sahib Ji', img: 'guruimages/guruangaddevsahebji.jpeg', pos: 'center 25%', colors: ['#ab9468', '#e6d8bf', '#624d31'] },
+      { id: 'guru-amar-das', name: 'Sri Guru Amar Das Sahib Ji', img: 'guruimages/guruamardasji.jpeg', pos: 'center 25%', colors: ['#e7be7f', '#e4dccd', '#a37f4f'] },
+      { id: 'guru-ram-das', name: 'Sri Guru Ram Das Sahib Ji', img: 'guruimages/gururamdassahebji.jpeg', pos: 'center 25%', colors: ['#a97634', '#e3bc7b', '#8b5e28'] },
+      { id: 'guru-arjan', name: 'Sri Guru Arjan Dev Sahib Ji', img: 'guruimages/guruarjanddevsahebji.jpeg', gurbani: 'ਅੰਮ੍ਰਿਤ ਵੇਲਾ ਸਚੁ ਨਾਉ ਵਡਿਆਈ ਵੀਚਾਰੁ ॥', translation: 'In the Amrit Vela, chant the True Name, and contemplate His Glorious Greatness.', pos: 'center 25%', colors: ['#edeef0', '#e0c195', '#c9a876'] },
+      { id: 'guru-hargobind', name: 'Sri Guru Hargobind Sahib Ji', img: 'guruimages/guruhargobindsahebji.jpeg', pos: 'center 25%', colors: ['#ecedef', '#c0c0bf', '#916026'] },
+      { id: 'guru-har-rai', name: 'Sri Guru Har Rai Sahib Ji', img: 'guruimages/guruharraisahebji.jpeg', pos: 'center 25%', colors: ['#ac7d3d', '#afab85', '#875515'] },
+      { id: 'guru-harkrishan', name: 'Sri Guru Har Krishan Sahib Ji', img: 'guruimages/guruharkrishansahebji.jpeg', pos: 'center 25%', colors: ['#ece5d5', '#d9d0c0', '#c6bbab'] },
+      { id: 'guru-teg-bahadur', name: 'Sri Guru Tegh Bahadur Sahib Ji', img: 'guruimages/gurutegbahadursahebji.jpeg', pos: 'center 45%', colors: ['#2f3d46', '#4a5a63', '#5d6d76'] },
+      { id: 'guru-gobind', name: 'Sri Guru Gobind Singh Sahib Ji', img: 'guruimages/gurugobindsinghsahebji.jpeg', pos: 'center 25%', colors: ['#b77928', '#e1cdac', '#8e5f1f'] },
+      { id: 'sggs', name: 'Sri Guru Granth Sahib Ji', img: 'guruimages/gurugranthsahebji.jpeg', pos: 'center 25%', colors: ['#a06f2c', '#53371e', '#c89035'] }
     ],
 
     init() {
@@ -415,7 +419,15 @@
         else if (diff > 1) slide.classList.add('greeting__slide--far-next');
       });
 
+      // Update background orb colors based on current Guru
+      this._updateOrbColors();
+      
       this._syncText();
+    },
+
+    _updateOrbColors() {
+      // Disabled: Background light behind images removed
+      return;
     },
 
     _syncText() {
@@ -553,14 +565,27 @@
         const response = await fetch(dataUrl);
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const data = await response.json();
-        const guruNames = ['guru nanak', 'ਗੁਰੂ ਨਾਨਕ', 'guru angad', 'ਗੁਰੂ ਅੰਗਦ', 'guru amar das', 'ਗੁਰੂ ਅਮਰ ਦਾਸ', 'guru ram das', 'ਗੁਰੂ ਰਾਮ ਦਾਸ', 'guru arjan', 'ਗੁਰੂ ਅਰਜਨ', 'guru har gobind', 'ਗੁਰੂ ਹਰਿਗੋਬਿੰਦ', 'guru hargobind', 'ਗੁਰੂ ਹਰਗੋਬਿੰਦ', 'guru har rai', 'ਗੁਰੂ ਹਰਿ ਰਾਇ', 'guru har krishan', 'ਗੁਰੂ ਹਰਿ ਕ੍ਰਿਸ਼ਨ', 'guru harkrishan', 'ਗੁਰੂ ਹਰਿਕ੍ਰਿਸ਼ਨ', 'guru tegh bahadur', 'ਗੁਰੂ ਤੇਗ ਬਹਾਦੁਰ', 'guru gobind singh', 'ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ'];
+        const guruNames = [
+          'guru nanak', 'ਗੁਰੂ ਨਾਨਕ', 
+          'guru angad', 'ਗੁਰੂ ਅੰਗਦ', 
+          'guru amar das', 'ਗੁਰੂ ਅਮਰ ਦਾਸ', 
+          'guru ram das', 'ਗੁਰੂ ਰਾਮ ਦਾਸ', 
+          'guru arjan', 'ਗੁਰੂ ਅਰਜਨ', 
+          'guru har gobind', 'ਗੁਰੂ ਹਰਿਗੋਬਿੰਦ', 'guru hargobind', 'ਗੁਰੂ ਹਰਗੋਬਿੰਦ', 
+          'guru har rai', 'ਗੁਰੂ ਹਰਿ ਰਾਇ', 
+          'guru har krishan', 'ਗੁਰੂ ਹਰਿ ਕ੍ਰਿਸ਼ਨ', 'guru harkrishan', 'ਗੁਰੂ ਹਰਿਕ੍ਰਿਸ਼ਨ', 
+          'guru tegh bahadur', 'ਗੁਰੂ ਤੇਗ ਬਹਾਦੁਰ', 'guru teg bahadur', 'ਗੁਰੂ ਤੇਗ ਬਹਾਦਰ',
+          'guru gobind singh', 'ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ',
+          'guru granth', 'ਗੁਰੂ ਗ੍ਰੰਥ', 'granth sahib', 'ਗ੍ਰੰਥ ਸਾਹਿਬ', 'sggs', 'sampuranta', 'first-parkash'
+        ];
         const events = (data.years['2026'] || [])
           .filter(e => {
             if (e.type?.toLowerCase().includes('dastar') || e.name_en?.toLowerCase().includes('dastar')) return false;
             if (nameFilter === 'guru-sahib') {
               const name = String(e.name_en || '').toLowerCase();
               const namePa = String(e.name_pa || '').toLowerCase();
-              return guruNames.some(guruName => name.includes(guruName) || namePa.includes(guruName));
+              const id = String(e.id || '').toLowerCase();
+              return guruNames.some(guruName => name.includes(guruName) || namePa.includes(guruName) || id.includes(guruName));
             }
             return true;
           })
@@ -1026,8 +1051,17 @@
 
       // ── Guru Image Mapping ──
       // Using guruimages/ folder with .jpeg files as requested
+      // PATTERN ORDER MATTERS: Most specific patterns first, generic patterns last
       const guruImageMap = {
-        // Primary patterns
+        // SGGS patterns FIRST (highest priority to prevent mismatches)
+        'sggs': 'guruimages/gurugranthsahebji.jpeg',
+        'guru-granth': 'guruimages/gurugranthsahebji.jpeg',
+        'granth-sahib': 'guruimages/gurugranthsahebji.jpeg',
+        'guru granth sahib': 'guruimages/gurugranthsahebji.jpeg',
+        'gurbani': 'guruimages/gurugranthsahebji.jpeg',
+        'parkash': 'guruimages/gurugranthsahebji.jpeg',
+        
+        // Primary patterns - Gurus in order
         'guru-nanak': 'guruimages/gurunanakdevsahebji.jpeg',
         'guru-angad': 'guruimages/guruangaddevsahebji.jpeg',
         'guru-amar-das': 'guruimages/guruamardasji.jpeg',
@@ -1039,14 +1073,15 @@
         'guru-har-krishan': 'guruimages/guruharkrishansahebji.jpeg',
         'guru-teg-bahadur': 'guruimages/gurutegbahadursahebji.jpeg',
         'guru-gobind': 'guruimages/gurugobindsinghsahebji.jpeg',
-        'sggs': 'guruimages/gurugranthsahebji.jpeg',
-        'guru-granth': 'guruimages/gurugranthsahebji.jpeg',
+        
+        // Special events
         'sahibzad': 'guruimages/gurugobindsinghsahebji.jpeg',
         'vaisakhi': 'guruimages/gurugobindsinghsahebji.jpeg',
         'khalsa': 'guruimages/gurugobindsinghsahebji.jpeg',
         'bandi-chhor': 'guruimages/guruhargobindsahebji.jpeg',
         'miri-piri': 'guruimages/guruhargobindsahebji.jpeg',
-        // Additional patterns for better matching
+        
+        // Additional short patterns (keep at end as they're more generic)
         'nanak': 'guruimages/gurunanakdevsahebji.jpeg',
         'angad': 'guruimages/guruangaddevsahebji.jpeg',
         'amar-das': 'guruimages/guruamardasji.jpeg',
@@ -1064,17 +1099,30 @@
       // Match event name to Guru image (use name instead of ID for better matching)
       let guruImg = null;
       let guruName = null;
-      const evName = (event.name || '').toLowerCase();
+      const evName = (event.name_en || event.name || '').toLowerCase();
       const evId = (event.id || '').toLowerCase();
 
-      // Check both name and ID for patterns
-      const searchStrings = [evName, evId];
+      console.log('[GuruImage] Event ID:', evId, 'Event Name:', evName);
 
-      console.log('[GuruImage] Search strings:', searchStrings);
+      // CRITICAL FIX: Check event ID first for explicit SGGS patterns
+      // This prevents "arjan" in "sampuranta-sggs" or "parkash-sggs" from matching Guru Arjan
+      if (evId.includes('sggs') || evId.includes('granth-sahib') || evId.includes('first-parkash') || evId.includes('sampuranta') ||
+          evName.includes('guru granth sahib') || evName.includes('sri guru granth')) {
+        guruImg = 'guruimages/gurugranthsahebji.jpeg';
+        guruName = 'Sri Guru Granth Sahib Ji';
+        console.log('[GuruImage] Matched SGGS (explicit check)');
+      }
 
-      for (const [key, filename] of Object.entries(guruImageMap)) {
-        if (searchStrings.some(s => s.includes(key))) {
-          guruImg = filename; // Full path from map
+      // If not SGGS, check other patterns
+      if (!guruImg) {
+        // Check both name and ID for patterns
+        const searchStrings = [evName, evId];
+
+        console.log('[GuruImage] Search strings:', searchStrings);
+
+        for (const [key, filename] of Object.entries(guruImageMap)) {
+          if (searchStrings.some(s => s.includes(key))) {
+            guruImg = filename; // Full path from map
           const nameMap = {
             'guru-nanak': 'Sri Guru Nanak Dev Sahib Ji',
             'guru-angad': 'Sri Guru Angad Dev Sahib Ji',
@@ -1107,9 +1155,10 @@
             'gobind': 'Sri Guru Gobind Singh Sahib Ji',
             'gobind-singh': 'Sri Guru Gobind Singh Sahib Ji',
           };
-          guruName = nameMap[key] || event.name;
-          console.log('[GuruImage] Matched pattern:', key, '->', guruName, guruImg);
-          break;
+            guruName = nameMap[key] || event.name_en || event.name;
+            console.log('[GuruImage] Matched pattern:', key, '->', guruName, guruImg);
+            break;
+          }
         }
       }
 

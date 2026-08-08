@@ -107,9 +107,9 @@ const OfflineDB = {
                 ang: verse.verse?.pageNo || verse.pageNo || verse.ang || 0,
                 source: verse._source?.id || 'G',
                 sourceName: verse._source?.name || 'Sri Guru Granth Sahib Ji',
-                raag: verse.verse?.raag?.gurmukhi || verse.raag?.gurmukhi || '',
+                raag: verse.verse?.raag?.unicode || verse.verse?.raag?.gurmukhi || verse.raag?.unicode || verse.raag?.gurmukhi || '',
                 raagEnglish: verse.verse?.raag?.english || verse.raag?.english || '',
-                writer: verse.verse?.writer?.gurmukhi || verse.writer?.gurmukhi || '',
+                writer: verse.verse?.writer?.unicode || verse.verse?.writer?.gurmukhi || verse.writer?.unicode || verse.writer?.gurmukhi || '',
                 writerEnglish: verse.verse?.writer?.english || verse.writer?.english || '',
                 timestamp: Date.now()
             };
@@ -169,8 +169,9 @@ const OfflineDB = {
                 if (cursor) {
                     const verse = cursor.value;
                     
-                    // Source filter
-                    if (source !== 'all' && verse.source !== source) {
+                    // Source filter using normalized source mapping
+                    const normSource = typeof normalizeSourceFilter === 'function' ? normalizeSourceFilter(source) : source;
+                    if (normSource !== 'all' && verse.source !== normSource) {
                         cursor.continue();
                         return;
                     }
@@ -217,6 +218,8 @@ const OfflineDB = {
      * Convert stored verse back to API format
      */
     denormalizeVerse(storedVerse) {
+        const raagUnicode = typeof convertGurbaniAsciiToUnicode === 'function' ? convertGurbaniAsciiToUnicode(storedVerse.raag) : storedVerse.raag;
+        const writerUnicode = typeof convertGurbaniAsciiToUnicode === 'function' ? convertGurbaniAsciiToUnicode(storedVerse.writer) : storedVerse.writer;
         return {
             verseId: storedVerse.verseId,
             shabadId: storedVerse.shabadId,
@@ -226,11 +229,13 @@ const OfflineDB = {
                 pageNo: storedVerse.ang,
                 verseId: storedVerse.verseId,
                 raag: {
-                    gurmukhi: storedVerse.raag,
+                    unicode: raagUnicode,
+                    gurmukhi: raagUnicode,
                     english: storedVerse.raagEnglish
                 },
                 writer: {
-                    gurmukhi: storedVerse.writer,
+                    unicode: writerUnicode,
+                    gurmukhi: writerUnicode,
                     english: storedVerse.writerEnglish
                 }
             },
