@@ -150,32 +150,11 @@
   background: rgba(0, 0, 0, 0.4) !important;
 }
 
-/* Auto Mode: Hide greeting text, enlarge Guru portraits (HOME ONLY) */
-[data-anhad-home][data-theme-mode="auto"] .greeting__text {
-  display: none !important;
-}
-[data-anhad-home][data-theme-mode="auto"] .greeting__portrait-slider {
-  height: 185px !important;
-  margin-bottom: 10px !important;
-}
-[data-anhad-home][data-theme-mode="auto"] .greeting__guru-portrait {
-  width: 170px !important;
-  height: 170px !important;
-  min-width: 170px !important;
-  min-height: 170px !important;
-}
-[data-anhad-home][data-theme-mode="auto"] .greeting__slide {
-  width: 170px !important;
-  height: 170px !important;
-}
-[data-anhad-home][data-theme-mode="auto"] .greeting {
-  margin-top: -12px !important;
-  margin-bottom: 2px !important;
-  padding: 0 !important;
-}
-[data-anhad-home][data-theme-mode="auto"] .progress-inline {
-  margin-top: 4px !important;
-}
+/* Auto/dynamic mode intentionally matches light/dark mode's greeting layout:
+   guru name + Gurbani line + translation visible, portrait the same 152px
+   size as the base .greeting__guru-portrait rule. (Previously this hid the
+   text and enlarged the portrait to 170px — removed per explicit request:
+   the size/text mismatch between auto and light/dark was itself the bug.) */
 
 /* Hide celestial elements entirely so they never waste GPU */
 #anhad-sky-canvas,

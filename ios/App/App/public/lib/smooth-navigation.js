@@ -20,6 +20,13 @@
 
   const MAIN_TARGET_ID = 'app';
   const PAGE_CACHE = new Map();
+  // Declared here, beside PAGE_CACHE, and NOT next to cachePage() further down:
+  // cachePage is a hoisted function declaration called during this IIFE's own
+  // startup (the initial-page snapshot below), so a `const` declared later sits
+  // in the temporal dead zone at that moment and throws — which aborts the
+  // whole IIFE and leaves window.navigateTo undefined, silently disabling the
+  // entire SPA. Keep this above its first possible use.
+  const PAGE_CACHE_MAX = 8;
   const FETCH_QUEUE = new Set();
   const SCROLL_POSITIONS = new Map();
   const EXECUTED_INLINE_PAGES = new Set();
@@ -203,10 +210,10 @@
   // Cache the initial page's HTML response immediately
   const _initApp = document.getElementById('app');
   if (_initApp) {
-    PAGE_CACHE.set(currentActiveUrl, document.documentElement.outerHTML);
+    cachePage(currentActiveUrl, document.documentElement.outerHTML);
     try {
       fetch(currentActiveUrl).then(r => r.text()).then(t => {
-        if (t) PAGE_CACHE.set(currentActiveUrl, t);
+        if (t) cachePage(currentActiveUrl, t);
       }).catch(() => {});
     } catch(e) {}
   }
@@ -318,10 +325,15 @@
     try {
       const leavingPath = new URL(url, window.location.origin).pathname;
       const cleanPath = leavingPath.replace(/\/index\.html$/, '/').replace(/\/$/, '') || '/';
-      const cleanups = [
+      // De-duplicated: for any path that isn't an index.html/trailing-slash
+      // form (i.e. every sub-page, e.g. /frontend/Insights/insights.html) the
+      // two .replace() calls are no-ops, so cleanPath === leavingPath and both
+      // lookups resolve to the SAME function — running every page hook twice
+      // per navigation.
+      const cleanups = [...new Set([
         window.__anhadPageCleanup && window.__anhadPageCleanup[leavingPath],
         window.__anhadPageCleanup && window.__anhadPageCleanup[cleanPath]
-      ];
+      ])];
       cleanups.forEach(fn => {
         if (typeof fn === 'function') {
           try { fn(); } catch (err) { console.warn('[SmoothNav] Cleanup error for', leavingPath, err); }
@@ -334,10 +346,13 @@
     try {
       const enterPath = new URL(url, window.location.origin).pathname;
       const cleanPath = enterPath.replace(/\/index\.html$/, '/').replace(/\/$/, '') || '/';
-      const inits = [
+      // De-duplicated — see the matching note in runPageCleanup(). Without
+      // this, Insights' init() ran twice on every arrival: two sets of its
+      // JSON fetches and two more permanent window scroll listeners per visit.
+      const inits = [...new Set([
         window.__anhadPageInit && window.__anhadPageInit[enterPath],
         window.__anhadPageInit && window.__anhadPageInit[cleanPath]
-      ];
+      ])];
       inits.forEach(fn => {
         if (typeof fn === 'function') {
           try { fn(); } catch (err) { console.warn('[SmoothNav] PageInit error for', enterPath, err); }
@@ -459,8 +474,8 @@
       if (!response.ok) throw new Error(`HTTP ${response.status} for ${fetchUrl}`);
       const text = await response.text();
       
-      PAGE_CACHE.set(url, text);
-      
+      cachePage(url, text);
+
       transitionFinished = true;
       clearTimeout(loaderTimeout);
       loaderTimeout = null;
@@ -604,8 +619,27 @@
 
     if (isHomeUrl(url)) {
       htmlEl.setAttribute('data-anhad-home', '');
-      const timeOfDay = localStorage.getItem('anhad_forced_time_of_day') || htmlEl.getAttribute('data-time-of-day');
-      if (timeOfDay) htmlEl.setAttribute('data-time-of-day', timeOfDay);
+      // Falling back to htmlEl.getAttribute('data-time-of-day') here is only
+      // valid when Home is the page we're LEAVING. Arriving at Home from
+      // Insights/Favorites, that attribute was just removed by this same
+      // function's own non-Home branch on the PREVIOUS navigation — so
+      // timeOfDay resolved to null, every slot comparison below silently
+      // fell through to the 'day'/light default, and this painted the wrong
+      // background for one frame until AnhadTheme.apply() (a few lines down,
+      // computing the real hour-based slot independently) corrected it —
+      // a real, visible light-to-dark (or vice versa) flash on every arrival
+      // at Home from another page. Compute it the same way
+      // global-theme.js's getAutoTheme()/applyTheme() do instead of trusting
+      // a DOM attribute that may have just been cleared.
+      let timeOfDay = localStorage.getItem('anhad_forced_time_of_day');
+      if (!timeOfDay || !['morning', 'day', 'evening', 'night'].includes(timeOfDay)) {
+        const hour = new Date().getHours();
+        if (hour >= 5 && hour < 9) timeOfDay = 'morning';
+        else if (hour >= 9 && hour < 16) timeOfDay = 'day';
+        else if (hour >= 16 && hour < 20) timeOfDay = 'evening';
+        else timeOfDay = 'night';
+      }
+      htmlEl.setAttribute('data-time-of-day', timeOfDay);
       if (currentMode === 'auto') {
         let autoBg = '#FAF8F5';
         if (timeOfDay === 'morning') autoBg = '#FFF5EC';
@@ -620,6 +654,13 @@
       htmlEl.removeAttribute('data-anhad-home');
       htmlEl.removeAttribute('data-time-of-day');
       htmlEl.style.removeProperty('--dynamic-bg-url');
+      // The eight --sky-card-* custom properties are set INLINE on <html> by
+      // anhad-sky-bg.js, so they are invisible to the data-spa-page CSS
+      // ownership system below and survive the swap unless cleared explicitly.
+      // Left behind, they tint shared card/nav classes on Insights/Favorites.
+      if (window.AnhadSky && window.AnhadSky.clearTimeAdaptiveCardColors) {
+        try { window.AnhadSky.clearTimeAdaptiveCardColors(); } catch (e) {}
+      }
       htmlEl.style.setProperty('background-color', currentTheme === 'dark' ? '#0D0D0F' : '#FAF8F5', 'important');
     }
 
@@ -768,7 +809,13 @@
     'all.min.css',
     'global-mini-player.css',
     'anhad-sky-bg.css',
-    'ios-override.css',
+    // 'ios-override.css' deliberately NOT listed. It is loaded by index.html
+    // ONLY, but allowlisting it meant it was never tagged data-spa-page, never
+    // claimed, and therefore never deactivatable — so Home's time-of-day card
+    // rules stayed live on Insights/Favorites for the rest of the session and
+    // repainted their .glass-card elements cream/orange. Treating it as
+    // page-owned lets deactivateForeignPageCss() mute it off Home, which is
+    // what makes SPA-navigated Insights match a hard refresh of Insights.
     'hero-clean-desktop.css',
     'desktop-responsive.css',
     'gurpurab-special-mode.css',
@@ -790,10 +837,21 @@
   async function syncHeadAssets(newDoc, sourceUrl) {
     const pageKey = pageKeyForUrl(sourceUrl);
 
-    // Index what's already installed, keyed by the browser's resolved URL.
+    // Index what's already installed, keyed by resolved PATHNAME — not the
+    // full href. The same physical stylesheet is referenced with differing
+    // cache-busting queries across pages (`anhad-sky-bg.css?v=2` here, bare
+    // there), and keying on the full URL treated those as different sheets, so
+    // each one got installed a second time on first navigation. Within a
+    // single session they are the same bytes; reuse the installed node.
+    const cssKey = (u) => {
+      try { return new URL(u, window.location.origin).pathname; }
+      catch (e) { return u; }
+    };
     const existingByHref = new Map();
     document.querySelectorAll('link[rel="stylesheet"]').forEach(l => {
-      if (l.href && !existingByHref.has(l.href)) existingByHref.set(l.href, l);
+      if (!l.href) return;
+      const k = cssKey(l.href);
+      if (!existingByHref.has(k)) existingByHref.set(k, l);
     });
 
     const loadPromises = [];
@@ -808,7 +866,7 @@
         return;
       }
 
-      const existing = existingByHref.get(absoluteHref);
+      const existing = existingByHref.get(cssKey(absoluteHref));
       if (existing) {
         // Already installed — possibly deactivated by an earlier navigation.
         // Re-activate in place; no re-fetch, no re-parse, no flash.
@@ -883,6 +941,34 @@
   }
 
   /**
+   * True if a script with this src is already in the document.
+   *
+   * Compares by pathname, not full href: the SAME file is referenced with
+   * different cache-busting queries across pages (Insights loads
+   * `smooth-navigation.js?v=2`, Home loads it bare), and those are one script
+   * as far as "has this already executed in this realm" is concerned.
+   */
+  function findLoadedScripts(absoluteSrc) {
+    let targetPath;
+    try {
+      targetPath = new URL(absoluteSrc, window.location.origin).pathname;
+    } catch (e) {
+      return [];
+    }
+    return Array.from(document.querySelectorAll('script[src]')).filter(el => {
+      try {
+        return new URL(el.src, window.location.origin).pathname === targetPath;
+      } catch (e) {
+        return false;
+      }
+    });
+  }
+
+  function isScriptAlreadyLoaded(absoluteSrc) {
+    return findLoadedScripts(absoluteSrc).length > 0;
+  }
+
+  /**
    * Finds and executes scripts from the new document.
    */
   async function executePageScripts(newDoc, sourceUrl) {
@@ -895,17 +981,52 @@
     
     for (const script of scripts) {
       const src = script.getAttribute('src');
-      
+
+      // SHELL_SCRIPTS means "already owned by the live JS realm — don't run it
+      // a SECOND time", NOT "never load it". Those are only the same thing for
+      // scripts every SPA page ships. trendora-app.js / homepage-data.js /
+      // anhad-sky-bg.js are Home-ONLY, and Insights/Favorites don't load them —
+      // so an unconditional `continue` meant that arriving at Home from a
+      // hard-refreshed Insights left Home with none of its content scripts ever
+      // loaded, rendering the raw shipped placeholders (empty guru slider,
+      // skeleton event card, a literal "-- days left"). Skip only when the
+      // script is genuinely already in this document; otherwise fall through
+      // and inject it once. Revisits still skip it, so nothing re-runs and the
+      // no-double-flash behaviour is preserved.
       if (src && SHELL_SCRIPTS.some(shell => src.includes(shell))) {
+        let shellAbsoluteSrc;
+        try {
+          shellAbsoluteSrc = new URL(src, sourceUrl).href;
+        } catch (e) {
+          continue;
+        }
+        if (isScriptAlreadyLoaded(shellAbsoluteSrc)) continue;
+        externalScripts.push(new Promise((resolve) => {
+          const shellScript = document.createElement('script');
+          Array.from(script.attributes).forEach(attr => {
+            if (attr.name !== 'src') shellScript.setAttribute(attr.name, attr.value);
+          });
+          // A dynamically-created <script> defaults to async, and the `defer`
+          // attribute copied above is ignored for such scripts — so without
+          // this these would race each other. These are the page's own content
+          // scripts and can depend on document order, so force ordered exec.
+          shellScript.async = false;
+          shellScript.src = shellAbsoluteSrc;
+          shellScript.onload = resolve;
+          shellScript.onerror = resolve;
+          document.body.appendChild(shellScript);
+        }));
         continue;
       }
 
       if (src) {
         const absoluteSrc = new URL(src, sourceUrl).href;
-        const existingScript = document.querySelector(`script[src="${absoluteSrc}"]`);
-        if (existingScript) {
-          existingScript.remove();
-        }
+        // Match on the RESOLVED url, not an attribute selector. The page's
+        // original tags carry relative attributes (src="lib/fetch-utils.js"),
+        // so `script[src="http://host/lib/fetch-utils.js"]` never matched them
+        // — the old copy was left in place and a second, absolute-src copy was
+        // appended, permanently doubling every re-executed body script.
+        findLoadedScripts(absoluteSrc).forEach(el => el.remove());
         externalScripts.push(new Promise((resolve) => {
           const newScript = document.createElement('script');
           Array.from(script.attributes).forEach(attr => {
@@ -928,6 +1049,13 @@
         const newScript = document.createElement('script');
         newScript.textContent = "(function(){\n" + content + "\n})();";
         document.body.appendChild(newScript);
+        // Remove the node once it has run. Inline scripts execute synchronously
+        // on append, so by this line the work is done and the element is inert
+        // DOM. Left in place (the previous behaviour) every visit to Home added
+        // 12 more permanent <script> nodes — and, worse, each kept its closure
+        // scope alive, so stale copies of Home's audio listeners kept firing
+        // with their own out-of-date state.
+        newScript.remove();
       }
     }
     
@@ -941,10 +1069,17 @@
   async function prefetchPage(url) {
     if (!url || url.includes('#')) return;
     const resolvedUrl = resolveAppUrl(url);
+    // Only SPA-navigable pages are worth caching. navigateTo() hands anything
+    // else to a full page load, so its HTML can never be served from
+    // PAGE_CACHE — fetching it is pure waste that also pins the bytes in
+    // memory. The bottom tab bar is permanently in-viewport, so the
+    // IntersectionObserver prefetcher was eagerly pulling
+    // sadhsangat-live/index.html (~383 KB) into the cache on every cold load.
+    if (!isShellPage(resolvedUrl)) return;
     const normalized = normalizeUrl(resolvedUrl);
     if (PAGE_CACHE.has(normalized) || FETCH_QUEUE.has(normalized)) return;
     if (FETCH_QUEUE.size >= MAX_CONCURRENT_PREFETCH) return;
-    
+
     const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
     if (conn && (conn.saveData || conn.effectiveType === 'slow-2g' || conn.effectiveType === '2g')) return;
     
@@ -956,7 +1091,7 @@
       const response = await fetch(resolvedUrl);
       if (response.ok) {
         const text = await response.text();
-        PAGE_CACHE.set(normalized, text);
+        cachePage(normalized, text);
       }
     } catch (e) {
     } finally {
@@ -1119,18 +1254,61 @@
   
   window.addEventListener('anhad_page_changed', convertOnclickToDataHref);
 
-  const _cacheMaintenanceInterval = setInterval(() => {
-    if (PAGE_CACHE.size > 20) {
-      const keys = Array.from(PAGE_CACHE.keys());
-      keys.slice(1, keys.length - 10).forEach(key => PAGE_CACHE.delete(key));
+  // Eviction runs on WRITE, not on a timer. The previous timer-based version
+  // was torn down by the first `pagehide` with { once: true } — and pagehide
+  // fires whenever a mobile PWA is backgrounded, so after the first time the
+  // user switched apps the cache grew without bound for the rest of the
+  // session. Each entry is a full HTML document held as a JS string, so that
+  // was multiple MB of retained memory — the likeliest cause of the renderer
+  // being discarded and the app "reloading itself" (the reported instability).
+  function cachePage(key, html) {
+    PAGE_CACHE.set(key, html);
+    if (PAGE_CACHE.size <= PAGE_CACHE_MAX) return;
+    // Map preserves insertion order: drop oldest first, but never evict the
+    // entry for the page currently on screen.
+    for (const k of PAGE_CACHE.keys()) {
+      if (PAGE_CACHE.size <= PAGE_CACHE_MAX) break;
+      if (k !== currentActiveUrl) PAGE_CACHE.delete(k);
     }
-  }, 60000);
+  }
 
-  window.addEventListener('pagehide', () => {
-    clearInterval(_cacheMaintenanceInterval);
-  }, { once: true });
+  // Home-only content scripts. Not in SHELL_SCRIPTS' sense of "always
+  // present" — Insights/Favorites never load them, so the FIRST arrival at
+  // Home from either one has to fetch, parse, and execute these (112KB+
+  // combined) after the DOM swap, before the guru slider / event card /
+  // sky background can populate. That gap is exactly the "flash like a
+  // reload happened" — real, not perceived: a real trace showed the guru
+  // slider sitting empty for ~140ms after the swap on a bare localhost
+  // round-trip; on a real network it's worse. Warming these into the HTTP
+  // cache while the user is idle on Insights/Favorites (nothing to lose —
+  // they're no-cache/etag-revalidated per backend/server.js, so a warm
+  // fetch here just means the later real one resolves from a fast
+  // conditional 304 instead of a cold full download) hides most of that gap
+  // without changing the actual loading mechanism in executePageScripts().
+  const HOME_ONLY_SCRIPTS = [
+    'js/trendora-app.js',
+    'js/homepage-data.js',
+    'js/anhad-sky-bg.js'
+  ];
 
   function prefetchCoreShell() {
+    setTimeout(() => {
+      if (isHomeUrl(window.location.href)) return;
+
+      HOME_ONLY_SCRIPTS.forEach(src => {
+        try {
+          const absolute = new URL(src, window.ANHAD_ROOT || '/').href;
+          if (isScriptAlreadyLoaded(absolute)) return;
+          fetch(absolute).catch(() => {});
+        } catch (e) {}
+      });
+
+      try {
+        const homeUrl = new URL('index.html', window.ANHAD_ROOT || '/').href;
+        prefetchPage(homeUrl);
+      } catch (e) {}
+    }, 1500);
+
     setTimeout(() => {
       const shellPages = [
         'Insights/insights.html',
@@ -1144,7 +1322,7 @@
       });
     }, 1500);
   }
-  
+
   if (document.readyState === 'loading') {
     window.addEventListener('DOMContentLoaded', prefetchCoreShell);
   } else {

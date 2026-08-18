@@ -703,22 +703,37 @@ function _anhadHomepageDataInit() {
     }, 0); // Next tick - non-blocking
   }
   
-  // FIX: Store interval IDs so they can be cleaned up on page unload
-  _hpIntervals.push(
+  // Intervals are tracked on `window`, not in a per-call local, and any set
+  // from a previous init are cleared first — otherwise each re-entry into this
+  // body leaked another five permanently-running timers.
+  (window.__anhadHomepageIntervals || []).forEach(id => clearInterval(id));
+  window.__anhadHomepageIntervals = [
     setInterval(() => { if (!document.hidden) updateClock(); }, 15000),
     setInterval(() => { if (!document.hidden) updateListenerCount(); }, 60000),
     setInterval(() => { if (!document.hidden) updateGreeting(); }, 300000),
     setInterval(() => { if (!document.hidden) updateNitnemSubtitle(); }, 300000),
     setInterval(() => { if (!document.hidden) updateNotificationBadge(); }, 300000)
-  );
+  ];
+  _hpIntervals.push(...window.__anhadHomepageIntervals);
 
-  // FIX: Clean up intervals on page unload to prevent memory leaks
-  window.addEventListener('pagehide', () => {
-    _hpIntervals.forEach(id => clearInterval(id));
-    _hpIntervals.length = 0;
-    // CRITICAL: Reset initialization flag so data re-initializes on SPA return
-    window._homepageDataInitialized = false;
-  });
+  // Clean up intervals on genuine page unload.
+  //
+  // Deliberately does NOT reset window._homepageDataInitialized any more.
+  // `pagehide` fires whenever a mobile PWA is backgrounded — not just on real
+  // unload — so resetting the guard there meant that every app switch re-armed
+  // this entire init body, re-registering ~10 undeduped listeners on window /
+  // document (including an anhad_page_changed handler that runs 10 update
+  // functions). Those stacked for the rest of the session and made every
+  // subsequent navigation progressively slower. Repopulating Home on SPA
+  // return is trendora-app.js's job (refreshAll via __anhadPageInit /
+  // anhad_page_changed), not something to buy with a guard reset here.
+  if (!window.__anhadHomepagePagehideBound) {
+    window.__anhadHomepagePagehideBound = true;
+    window.addEventListener('pagehide', () => {
+      (window.__anhadHomepageIntervals || []).forEach(id => clearInterval(id));
+      window.__anhadHomepageIntervals = [];
+    });
+  }
 
   // ━━━ REFRESH ON RETURN ━━━
   // OPTIMIZED: Only update time-sensitive data to prevent splash effect

@@ -5019,6 +5019,21 @@ app.post('/api/chat/completions', async (req, res) => {
 // ═══════════════════════════════════════════════════════════════════
 
 // Serve OPPO weather assets (shaders, textures, etc.)
+//
+// `maxAge: '1y', immutable: true` below is the RIGHT policy for
+// content-hashed assets (e.g. app.a3f9c1.js) — the filename changes when the
+// content does, so caching forever is safe. This codebase's JS/CSS are NOT
+// content-hashed: they're plain filenames (trendora-app.js, insights.css,
+// ...) edited in place, with only a handful of pages manually appending a
+// "?v=X.Y.Z" cache-buster, inconsistently. Every .js/.css file WITHOUT one
+// inherited the blanket immutable/1y default and got permanently cached by
+// the browser (and re-fetched into the service worker's cacheFirst store)
+// the very first time it was ever requested — invisible to every edit made
+// since, no matter how the file changed on disk. This is why "hard refresh
+// works, returning via the SPA doesn't": .html already overrides this to
+// no-cache below and is always revalidated; .js/.css never were. Overriding
+// them the same way (matching .html) trades one extra conditional request
+// (a fast 304 when unchanged, via etag) for edits actually being visible.
 const staticOptions = {
     etag: true,
     maxAge: '1y',
@@ -5030,8 +5045,10 @@ const staticOptions = {
             res.setHeader('Cache-Control', 'no-cache');
         } else if (ext === '.js') {
             res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+            res.setHeader('Cache-Control', 'no-cache');
         } else if (ext === '.css') {
             res.setHeader('Content-Type', 'text/css; charset=utf-8');
+            res.setHeader('Cache-Control', 'no-cache');
         } else if (ext === '.json') {
             res.setHeader('Content-Type', 'application/json; charset=utf-8');
             if (filePath.endsWith('version.json')) {

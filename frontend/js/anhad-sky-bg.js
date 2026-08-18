@@ -79,14 +79,27 @@
 
   // ── Update time-of-day attribute on <html> ───────────────────────────────
   function applyTimeOfDay() {
+    // HOME ONLY. `data-time-of-day` and the --sky-card-* palette drive Home's
+    // sky/claymorphism theme, and several rules keyed off them are not
+    // [data-anhad-home]-scoped — so setting them on Insights/Favorites tints
+    // those pages' cards orange. This function is reached from a 1s interval
+    // and a visibilitychange handler that both outlive navigation, so without
+    // this guard the shell's cleanup in applyNewContent() was undone within a
+    // second of every arrival at a non-Home page.
+    if (!document.documentElement.hasAttribute('data-anhad-home')) {
+      document.documentElement.removeAttribute('data-time-of-day');
+      clearTimeAdaptiveCardColors();
+      return;
+    }
+
     const slot = getSlot();
     const currentSlot = document.documentElement.getAttribute('data-time-of-day');
-    
+
     // NATIVE APP FIX: If slot hasn't changed, skip expensive updates
     if (currentSlot === slot) {
       return;
     }
-    
+
     document.documentElement.setAttribute('data-time-of-day', slot);
 
     applyTimeAdaptiveCardColors(slot);
@@ -279,6 +292,13 @@
   let _lastMode = null;
 
   function smartRefresh() {
+    // Cheapest possible checks first — this runs on a timer for the entire
+    // session. Skipping while hidden or off-Home avoids a synchronous
+    // localStorage read (getSlot) on every tick of every non-Home page, which
+    // is pure waste: nothing here has any effect outside Home.
+    if (document.hidden) return;
+    if (!document.documentElement.hasAttribute('data-anhad-home')) return;
+
     const slot = getSlot();
     const mode = document.documentElement.getAttribute('data-theme-mode') || 'light';
     const expectedBgUrl = BG_IMAGES[slot];
@@ -304,22 +324,41 @@
   }
 
   // ── Init ─────────────────────────────────────────────────────────────────
-  // This script is not in smooth-navigation.js's SHELL_SCRIPTS, so its tag
-  // re-executes fresh on every non-cached SPA arrival at Home. The DOM-facing
-  // calls below (applyTimeOfDay/updateHeroCardImages/etc.) are meant to
-  // re-run each time — they refresh visuals against whatever DOM currently
-  // exists. But window/document listeners and the interval attach to targets
-  // that persist for the whole SPA session, so re-registering them on every
-  // revisit would stack duplicates (each stacking revisit then runs the same
-  // handler N times per event). Gate those via _skyBgFirstBoot instead.
+  // This script IS in smooth-navigation.js's SHELL_SCRIPTS, so it executes at
+  // most once per JS realm: skipped on SPA revisits to Home, but still injected
+  // on first arrival at Home even when the session started on Insights or
+  // Favorites (neither of which loads it). The window/document listeners and
+  // the interval below therefore register once and outlive every navigation —
+  // which is exactly why each of them has to guard on data-anhad-home itself
+  // rather than assuming it only ever runs while Home is on screen.
   function init() {
     injectInstantBgCSS();
     preloadBgImages();
     _lastSlot = getSlot();
     _lastMode = document.documentElement.getAttribute('data-theme-mode') || 'light';
-    applyTimeOfDay();
-    updateHeroCardImages();
-    applyTimeAdaptiveCardColors(_lastSlot);
+
+    // Mid-SPA-navigation injection (this script wasn't loaded yet, e.g. the
+    // session started on Insights/Favorites and just arrived at Home for the
+    // first time) vs. a genuine cold load. history.state.spa is only ever set
+    // by smooth-navigation.js's own pushState/replaceState, which runs BEFORE
+    // this script gets injected — so on SPA arrival it's already true here.
+    // applyNewContent() makes its own explicit, correctly-ordered call to
+    // these same functions (after AnhadTheme.apply() has settled data-theme-
+    // mode/data-time-of-day for the incoming page) a few lines after
+    // injecting this script. Self-triggering here too raced that later call
+    // with STALE state — the doubled data-time-of-day/class/data-theme
+    // mutations seen in a real trace, and the theme flash it caused. On a
+    // true cold load there is no such later call, so self-trigger normally.
+    const isMidSpaInjection = window.history.state && window.history.state.spa === true;
+    if (!isMidSpaInjection) {
+      applyTimeOfDay();
+      updateHeroCardImages();
+      // Home-only, same reason as the guard inside applyTimeOfDay(): the
+      // --sky-card-* palette tints shared card classes on every page.
+      if (document.documentElement.hasAttribute('data-anhad-home')) {
+        applyTimeAdaptiveCardColors(_lastSlot);
+      }
+    }
 
     if (!_skyBgFirstBoot) return;
 
@@ -327,7 +366,10 @@
     window.addEventListener('storage', (e) => {
       if (e.key === 'anhad_forced_time_of_day' || e.key === 'anhad_theme') instantRefresh();
     });
-    setInterval(smartRefresh, 1000);
+    // 5s, not 1s: this only detects time-of-day slot rollover (hour boundaries)
+    // and background staleness — neither needs sub-second latency, and forced
+    // changes come through the anhadTimeForced/storage listeners instantly.
+    setInterval(smartRefresh, 5000);
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible') {
         _lastSlot = null;
@@ -335,6 +377,7 @@
         requestAnimationFrame(() => {
           applyTimeOfDay();
           updateHeroCardImages();
+          if (!document.documentElement.hasAttribute('data-anhad-home')) return;
           const slot = getSlot();
           const mode = document.documentElement.getAttribute('data-theme-mode') || 'auto';
           if (mode === 'auto') applyTimeAdaptiveCardColors(slot);

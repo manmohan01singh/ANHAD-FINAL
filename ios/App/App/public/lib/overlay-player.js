@@ -122,7 +122,12 @@
     const isPlayerPage = currentPath.includes('gurbani-radio');
     const isDashboardPage = currentPath.includes('dashboard');
 
-    if (isPlayerPage || isDashboardPage || (!state.isPlaying && !state.isLoading)) {
+    // Hide only when there's genuinely nothing loaded (stop() clears
+    // currentStream) or on a page that shouldn't show it — NOT on
+    // `!state.isPlaying`, which is also true while paused. That made the
+    // mini player vanish the instant its own pause button was tapped, with
+    // no way to see it again short of starting playback from elsewhere.
+    if (isPlayerPage || isDashboardPage || (!state.currentStream && !state.isLoading)) {
       miniPlayerEl.style.display = 'none';
       miniPlayerEl.classList.remove('gmp--visible');
       return;

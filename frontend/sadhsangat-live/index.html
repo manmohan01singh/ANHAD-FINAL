@@ -4507,10 +4507,25 @@
       padding: 4px 10px !important;
     }
     .carousel-content.carousel-minimal {
-      padding: 50px 14px 14px !important;
-      background: linear-gradient(to top, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.2) 60%, transparent 100%) !important;
+      padding: 60px 14px 14px !important;
+      background: linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.55) 45%, transparent 100%) !important;
+      flex-direction: row !important;
+      align-items: center !important;
+      gap: 10px !important;
     }
-    .carousel-channel-name { font-size: 15px !important; font-weight: 800 !important; letter-spacing: -0.3px !important; }
+    .carousel-channel-avatar {
+      width: 36px !important; height: 36px !important; border-radius: 50% !important;
+      object-fit: cover !important; flex-shrink: 0 !important;
+      border: 2px solid rgba(255,255,255,0.85) !important;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.35) !important;
+    }
+    .carousel-text-col { display: flex !important; flex-direction: column !important; gap: 2px !important; min-width: 0 !important; }
+    .carousel-channel-name {
+      font-size: 15px !important; font-weight: 800 !important; letter-spacing: -0.3px !important;
+      white-space: nowrap !important; overflow: hidden !important; text-overflow: ellipsis !important;
+    }
+    .carousel-time-chip { display: flex !important; align-items: center !important; gap: 5px !important; }
+    .carousel-viewer-dot { width: 6px !important; height: 6px !important; border-radius: 50% !important; background: #2ECC71 !important; box-shadow: 0 0 6px rgba(46,204,113,0.7) !important; flex-shrink: 0 !important; }
     .carousel-dot { width: 6px !important; height: 6px !important; }
     .carousel-dot.active { width: 22px !important; background: var(--gold-accent) !important; }
 
@@ -4583,9 +4598,34 @@
     .section-subtitle { font-size: 12px !important; margin-top: 2px !important; }
     .see-all-pill-btn { font-size: 12px !important; padding: 7px 16px !important; box-shadow: 0 2px 12px rgba(212,160,58,0.25) !important; }
 
+    /* SUBSCRIPTIONS TAB — per-channel header row */
+    .subscription-channel-header {
+      display: flex; align-items: center; gap: 12px;
+      padding: 0 16px 12px; margin-top: 6px;
+    }
+    .subscription-channel-avatar {
+      width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0;
+      box-shadow: var(--clay-shadow-raised);
+      border: 1.5px solid rgba(212,160,58,0.25);
+    }
+    .subscription-channel-meta { flex: 1; min-width: 0; }
+    .subscription-channel-name {
+      font-size: 15px; font-weight: 800; color: var(--text-primary);
+      display: flex; align-items: center; gap: 4px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .subscription-channel-sub { font-size: 12px; color: var(--text-secondary); font-weight: 500; margin-top: 2px; }
+
     /* CONTINUE WATCHING SHELF */
     .scroll-card-item { width: 175px !important; }
     .scroll-card-thumb-wrap { border-radius: 14px !important; box-shadow: 0 4px 16px rgba(0,0,0,0.12) !important; }
+    .scroll-card-continue-chip {
+      position: absolute !important; top: 7px !important; left: 7px !important;
+      background: var(--gold-gradient) !important; color: #1C1008 !important;
+      font-size: 9.5px !important; font-weight: 800 !important; letter-spacing: 0.2px !important;
+      padding: 3px 8px !important; border-radius: 100px !important;
+      box-shadow: 0 2px 8px rgba(212,160,58,0.4) !important; z-index: 2 !important;
+    }
     .scroll-card-duration { font-size: 10px !important; font-weight: 700 !important; padding: 3px 7px !important; border-radius: 6px !important; bottom: 7px !important; right: 7px !important; }
     .scroll-card-title { font-size: 13px !important; font-weight: 700 !important; margin-top: 10px !important; }
     .scroll-card-channel { font-size: 11px !important; font-weight: 500 !important; margin-top: 3px !important; }
@@ -4658,6 +4698,42 @@
     .player-pill-btn { padding: 10px 18px !important; font-size: 13px !important; font-weight: 600 !important; border-radius: 100px !important; }
     .player-playback-controls { gap: 36px !important; margin: 16px 0 12px !important; }
     .player-details-row { border-left: 4px solid var(--gold-accent) !important; padding-left: 14px !important; margin-top: 10px !important; }
+
+    /* PLAYER SETTINGS OVERLAY — same premium clay/gold material as the rest of the sheet */
+    .player-settings-card {
+      border-radius: 28px 28px 0 0 !important;
+      box-shadow: var(--clay-shadow-lg) !important;
+      border-top: 0.5px solid rgba(212,160,58,0.2) !important;
+      gap: 18px !important;
+      padding: 22px 18px calc(26px + var(--safe-bottom)) !important;
+    }
+    .player-settings-title { font-size: 17px !important; font-weight: 800 !important; }
+    .player-settings-title::before {
+      background: var(--gold-gradient) !important;
+      box-shadow: 0 0 8px rgba(212,160,58,0.5) !important;
+    }
+    #closePlayerSettingsBtn {
+      width: 30px !important; height: 30px !important; border-radius: 50% !important;
+      background: var(--bg-secondary) !important; display: flex !important;
+      align-items: center !important; justify-content: center !important;
+      font-size: 13px !important; color: var(--text-secondary) !important;
+    }
+    .player-settings-row { padding: 8px 0 !important; }
+    .player-settings-label { font-size: 14.5px !important; font-weight: 700 !important; }
+    .player-settings-control {
+      box-shadow: var(--clay-shadow-raised) !important;
+      border: 0.5px solid rgba(212,160,58,0.15) !important;
+      padding: 9px 18px !important;
+    }
+    .player-settings-control:focus { border-color: var(--gold-accent) !important; }
+    .player-settings-row .player-pill-btn {
+      box-shadow: var(--clay-shadow-raised) !important;
+      border: 0.5px solid rgba(212,160,58,0.15) !important;
+    }
+    .player-settings-row #playerAudioToggleBtn.active,
+    .player-settings-row .player-pill-btn.active {
+      background: var(--gold-gradient) !important; color: #1C1008 !important; border-color: transparent !important;
+    }
 
     /* LOADING SKELETON - Gold shimmer */
     .shimmer-card {
@@ -4914,6 +4990,12 @@
         <path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"/>
       </svg>
       <span>Live</span>
+    </button>
+    <button class="nav-tab-btn tap-ripple" data-tab="subscriptions" id="navTabSubscriptions">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="7" width="15" height="15" rx="2"/><path d="M17 2H5a2 2 0 0 0-2 2v13"/>
+      </svg>
+      <span>Subs</span>
     </button>
     <button class="nav-tab-btn tap-ripple" data-tab="videos" id="navTabVideos">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -7140,6 +7222,8 @@
         renderHomeLiveTab(main);
       } else if (State.activeTab === 'live') {
         renderLiveTab(main);
+      } else if (State.activeTab === 'subscriptions') {
+        renderSubscriptionsTab(main);
       } else if (State.activeTab === 'videos') {
         renderVideosTab(main);
       } else if (State.activeTab === 'playlists') {
@@ -7597,9 +7681,11 @@
           card.className = 'scroll-card-item';
           const thumbSrc = `https://i.ytimg.com/vi/${item.videoId}/hqdefault.jpg`;
           const progressVal = typeof item.progress === 'string' ? item.progress : (item.progress + '%');
+          const progressNum = parseFloat(progressVal) || 0;
           card.innerHTML = `
             <div class="scroll-card-thumb-wrap">
               <img decoding="async" class="scroll-card-thumb" src="${thumbSrc}" data-tried-fallback="false" loading="lazy">
+              ${progressNum > 0 ? '<span class="scroll-card-continue-chip">Continue</span>' : ''}
               ${item.isLive ? '<span class="scroll-card-duration" style="background:var(--yt-red);">LIVE</span>' : `<span class="scroll-card-duration">${item.duration}</span>`}
               <div class="scroll-card-progress-bar">
                 <div class="scroll-card-progress-fill" style="width:${progressVal}"></div>
@@ -7619,6 +7705,70 @@
         });
         continueSection.appendChild(scrollRow);
         container.appendChild(continueSection);
+      }
+
+      // ── SECTION 2b: UPCOMING LIVE ─────────────────
+      // Reuses .upcoming-card-row/.upcoming-calendar-block/.upcoming-notify-btn —
+      // a fully-styled component that already existed in CSS but was never
+      // wired to any real markup (only ever rendered as plain text rows in
+      // the notification-bell popup). State.upcoming items are only reliably
+      // known to carry .title, so every other field degrades gracefully
+      // instead of assuming a date/videoId/thumbnail that may not exist.
+      if (State.upcoming && State.upcoming.length > 0) {
+        const upcomingSection = CE('section');
+        const upcomingHeader = CE('div');
+        upcomingHeader.className = 'section-header-row';
+        upcomingHeader.innerHTML = `
+          <div class="section-title-block">
+            <div class="section-main-title">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--gold-accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px;vertical-align:middle;"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+              <span style="vertical-align:middle;">Upcoming</span>
+            </div>
+            <div class="section-subtitle">Scheduled Gurbani broadcasts</div>
+          </div>
+        `;
+        upcomingSection.appendChild(upcomingHeader);
+
+        const upcomingList = CE('div');
+        upcomingList.style.cssText = 'display:flex; flex-direction:column; gap:10px; padding:0 16px 4px;';
+
+        State.upcoming.slice(0, 4).forEach(item => {
+          // Try a handful of plausible date field names; fall back to a
+          // bell icon block rather than guessing a wrong date.
+          const rawDate = item.scheduledTime || item.scheduledDate || item.startTime || item.date || null;
+          const parsed = rawDate ? new Date(rawDate) : null;
+          const hasValidDate = parsed && !isNaN(parsed.getTime());
+
+          const row = CE('div');
+          row.className = 'upcoming-card-row';
+          row.innerHTML = `
+            <div class="upcoming-calendar-block">
+              ${hasValidDate
+                ? `<div class="upcoming-cal-day">${parsed.getDate()}</div><div class="upcoming-cal-month">${parsed.toLocaleDateString('en-US', { month: 'short' })}</div>`
+                : `<div class="upcoming-cal-day" style="font-size:20px;">🔔</div><div class="upcoming-cal-month">Soon</div>`}
+            </div>
+            <div class="upcoming-info-block">
+              <div class="upcoming-time-label">${hasValidDate ? parsed.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }) : 'Coming soon'}</div>
+              <div class="upcoming-title">${item.title || 'Gurbani Live'}</div>
+            </div>
+            <button class="upcoming-notify-btn" type="button">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 22a2.5 2.5 0 0 0 2.45-2h-4.9A2.5 2.5 0 0 0 12 22zm7-6v-5a7 7 0 0 0-5.5-6.84V3.5a1.5 1.5 0 0 0-3 0v.66A7 7 0 0 0 5 11v5l-1.6 1.6a1 1 0 0 0 .7 1.7h15.8a1 1 0 0 0 .7-1.7z"/></svg>
+              Notify
+            </button>
+          `;
+          row.querySelector('.upcoming-notify-btn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            haptic();
+            showToast(`🔔 We'll notify you before "${item.title || 'this broadcast'}" goes live`);
+          });
+          if (item.videoId) {
+            row.addEventListener('click', () => openPlayer(item.videoId, item.title || 'Gurbani Live', item.channelName || 'Gurbani Channel', item.channelThumbnail || '', false));
+          }
+          upcomingList.appendChild(row);
+        });
+
+        upcomingSection.appendChild(upcomingList);
+        container.appendChild(upcomingSection);
       }
 
       // ── SECTION 3: PREVIOUS LIVES ─────────────────
@@ -7826,6 +7976,22 @@
           badge.innerHTML = '▶ LIVE';
           slide.appendChild(badge);
         }
+
+        // Bottom strip: channel avatar + name + live viewer count / title
+        const content = CE('div');
+        content.className = 'carousel-content carousel-minimal';
+        content.innerHTML = `
+          <img class="carousel-channel-avatar" alt="">
+          <div class="carousel-text-col">
+            <div class="carousel-channel-name">${ch.channelName}</div>
+            <div class="carousel-time-chip">${isLive ? '<span class="carousel-viewer-dot"></span>12.5K watching' : (ch.liveTitle || 'Tap to watch')}</div>
+          </div>
+        `;
+        const heroAvatar = content.querySelector('.carousel-channel-avatar');
+        const heroAvatarFallback = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 38 38"><rect width="100%" height="100%" fill="%23D4A03A"/><text x="50%" y="55%" text-anchor="middle" fill="black" font-size="16" font-family="sans-serif" font-weight="bold">${getInitials(ch.channelName)}</text></svg>`;
+        heroAvatar.src = ch.thumbnail || heroAvatarFallback;
+        heroAvatar.onerror = () => { heroAvatar.onerror = null; heroAvatar.src = heroAvatarFallback; };
+        slide.appendChild(content);
 
         slide.addEventListener('click', () => {
           haptic();
@@ -8036,6 +8202,93 @@
       document.head.appendChild(styleSheet);
     }
 
+    // SUBSCRIPTIONS TAB — channel-grouped view of your subscribed channels'
+    // content (State.myChannels + State.videos/State.streams, which the
+    // backend already scopes to only-subscribed-channels, so no new API
+    // is needed). Distinct from the flat "Videos" tab by grouping per
+    // channel rather than one mixed list.
+    function renderSubscriptionsTab(container) {
+      container.appendChild(renderSubscriptionsCircleBar());
+
+      const header = CE('div');
+      header.className = 'section-header-row';
+      header.innerHTML = `
+        <div class="section-title-block">
+          <div class="section-main-title">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--gold-accent)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px;vertical-align:middle;"><rect x="2" y="7" width="15" height="15" rx="2"/><path d="M17 2H5a2 2 0 0 0-2 2v13"/></svg>
+            <span style="vertical-align:middle;">Your Subscriptions</span>
+          </div>
+          <div class="section-subtitle">${State.myChannels.length} channel${State.myChannels.length === 1 ? '' : 's'} you follow</div>
+        </div>
+      `;
+      container.appendChild(header);
+
+      if (State.myChannels.length === 0) {
+        const empty = CE('div');
+        empty.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">🙏</div>
+            <div class="empty-heading">No subscriptions yet</div>
+            <div class="empty-desc">Add channels from the Library tab to see them here.</div>
+          </div>
+        `;
+        container.appendChild(empty);
+        return;
+      }
+
+      if (State.loadingVideos) {
+        const loading = CE('div');
+        loading.style.cssText = 'padding:0 14px;';
+        loading.innerHTML = '<div class="shimmer-card"></div><div class="shimmer-card"></div>';
+        container.appendChild(loading);
+        return;
+      }
+
+      State.myChannels.forEach(ch => {
+        const channelVideos = (State.videos || []).filter(v => v.channelId === ch.channelId).slice(0, 3);
+        if (channelVideos.length === 0 && ch.isLive !== 1) return; // nothing to show for this channel yet
+
+        const block = CE('section');
+        block.className = 'channels-feed-section';
+
+        const chHeader = CE('div');
+        chHeader.className = 'subscription-channel-header';
+        chHeader.innerHTML = `
+          <div class="subscription-channel-avatar">${getChannelAvatarHTML(ch)}</div>
+          <div class="subscription-channel-meta">
+            <div class="subscription-channel-name">${ch.channelName} ${GOLD_CHECK_SVG}</div>
+            <div class="subscription-channel-sub">${ch.isLive === 1 ? '🔴 Live now' : (ch.subscriberCount || 'Gurbani Channel')}</div>
+          </div>
+          <button class="see-all-pill-btn subscription-see-all-btn">See All</button>
+        `;
+        chHeader.querySelector('.subscription-see-all-btn').addEventListener('click', () => {
+          State.selectedChannelId = ch.channelId;
+          State.videos = [];
+          State.streams = [];
+          switchTab('videos');
+        });
+        block.appendChild(chHeader);
+
+        const list = CE('div');
+        list.style.cssText = 'display:flex; flex-direction:column;';
+
+        if (ch.isLive === 1 && ch.videoId) {
+          list.appendChild(createYtVideoCard({
+            videoId: ch.videoId,
+            title: ch.liveTitle || `${ch.channelName} — Live Now`,
+            channelName: ch.channelName,
+            channelThumbnail: ch.thumbnail,
+            channelId: ch.channelId,
+            views: '12.5K watching'
+          }, true));
+        }
+        channelVideos.forEach(v => list.appendChild(createYtVideoCard(v, false, false)));
+
+        block.appendChild(list);
+        container.appendChild(block);
+      });
+    }
+
     // PLAYLISTS TAB
     async function renderPlaylistsTab(container) {
       if (State.selectedChannelId !== 'all') {
@@ -8240,7 +8493,7 @@
     async function loadTabContent(tabId) {
       if (tabId === 'home' || tabId === 'live') {
         if (State.streams.length === 0) fetchVideosForSelectedChannel();
-      } else if (tabId === 'videos') {
+      } else if (tabId === 'videos' || tabId === 'subscriptions') {
         if (State.videos.length === 0) fetchVideosForSelectedChannel();
       }
     }

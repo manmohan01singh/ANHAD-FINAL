@@ -1388,16 +1388,26 @@
     },
 
     refreshAll() {
-      Store.clearCache();
-      this.updateNitnemCard();
-      this.updateSehajCard();
-      this.updateHukamCard();
-      this.updateNaamCard();
-      this.updateProgressBar();
-      this.updateNotificationBadge();
-      this.updateNanakshahiDate();
-      this.updateNotesCard();
-      this.updateNitnemQuickAccess();
+      // Each updater is isolated: this is the ONLY path that repopulates Home
+      // after an SPA return, and it was a bare sequential call list — so a
+      // throw in any one of them (a missing element on a page that landed
+      // elsewhere, a corrupt localStorage value) silently blanked every card
+      // after it, including the gurpurab card and the guru slider at the end.
+      const safe = (label, fn) => {
+        try { fn.call(this); }
+        catch (err) { console.warn('[Trendora] refreshAll:' + label + ' failed', err); }
+      };
+
+      safe('clearCache', () => Store.clearCache());
+      safe('nitnemCard', this.updateNitnemCard);
+      safe('sehajCard', this.updateSehajCard);
+      safe('hukamCard', this.updateHukamCard);
+      safe('naamCard', this.updateNaamCard);
+      safe('progressBar', this.updateProgressBar);
+      safe('notificationBadge', this.updateNotificationBadge);
+      safe('nanakshahiDate', this.updateNanakshahiDate);
+      safe('notesCard', this.updateNotesCard);
+      safe('nitnemQuickAccess', this.updateNitnemQuickAccess);
       // updateEventCard() populates the Upcoming Gurpurab card. It was the ONE
       // member of App.init()'s criticalUpdates not mirrored here, and it is the
       // only writer of #eventTitle/#eventDate/#eventCountdown/#eventGuruImg —
@@ -1407,13 +1417,13 @@
       // synchronous localStorage fast path, so this renders without a flash.
       // autoRemindUpcomingGurpurab() below fetches the same data but writes no
       // DOM — it is not a substitute.
-      this.updateEventCard();
+      safe('eventCard', this.updateEventCard);
       // Same class of omission as updateEventCard(): only ever called from
       // App.init(), so the Hukamnama hero card kept whatever text it was left
       // with on any refreshAll()-only re-entry. Self-guards when absent.
-      this.updateHukamHeroCard();
-      this.autoRemindUpcomingGurpurab();
-      this.reviveHomepageVisuals();
+      safe('hukamHeroCard', this.updateHukamHeroCard);
+      safe('autoRemind', this.autoRemindUpcomingGurpurab);
+      safe('homepageVisuals', this.reviveHomepageVisuals);
     },
 
     // RE-INIT HOMEPAGE COMPONENTS
@@ -2448,9 +2458,66 @@
   // ═══════════════════════════════════════════════════════════════════════════
   // BOOT
   // ═══════════════════════════════════════════════════════════════════════════
+  // ── SPA re-entry, registered BEFORE boot() ────────────────────────────────
+  // Order is load-bearing. This module is one IIFE, and boot()/App.init() below
+  // runs a long synchronous chain with no error handling of its own. Registered
+  // after boot(), a single throw anywhere in App.init() aborted the IIFE and
+  // this listener never existed — permanently killing every future SPA return
+  // to Home while a hard load still looked fine. Registering first (plus the
+  // try/catch on boot) means repopulation survives an init failure.
+  // Set the instant boot() below completes App.init() for a FRESH script
+  // injection (arriving at Home from a page that never loaded this file, e.g.
+  // Insights). That happens synchronously mid-way through
+  // smooth-navigation.js's executePageScripts(), which is BEFORE the
+  // anhad_page_changed event this module also listens for — so on that exact
+  // navigation, App.init() (which already runs PortraitSlider.init(),
+  // updateEventCard(), etc. as part of its own criticalUpdates) and
+  // refreshHomeForSpa() (which reruns the same work via refreshAll() /
+  // reviveHomepageVisuals()) both fired for the SAME arrival, back to back —
+  // a real double DOM rebuild of the guru slider and every home card, visible
+  // as a flash/"looks like it reloaded". On every later, ordinary return to
+  // Home the script is never re-injected, App.init() never runs again, and
+  // only the listener below fires — this window only needs to suppress the
+  // one redundant call that follows an App.init() moments earlier.
+  window.__anhadHomeBootedAt = 0;
+
+  const refreshHomeForSpa = () => {
+    Store.clearCache();
+    requestAnimationFrame(() => {
+      try { UIController.refreshAll(); }
+      catch (err) { console.warn('[Trendora] refreshAll failed', err); }
+    });
+  };
+
+  if (!_trendoraModuleListenersAlreadyBound) {
+    window.addEventListener('anhad_page_changed', () => {
+      if (Date.now() - window.__anhadHomeBootedAt < 2500) {
+        console.log('[Trendora] Skipping refresh — App.init() just fully populated Home for this arrival');
+        return;
+      }
+      console.log('[Trendora] Page change detected, refreshing UI data...');
+      refreshHomeForSpa();
+    });
+  }
+
+  // Second, independent repopulation path via the shell's own page-lifecycle
+  // registry (smooth-navigation.js runPageInit), mirroring how
+  // homepage-data.js and Insights/insights.js already register. Belt and
+  // braces: if the event listener above is ever lost, Home still repopulates.
+  window.__anhadPageInit = window.__anhadPageInit || {};
+  ['/', '/index.html', '/frontend/', '/frontend/index.html'].forEach(p => {
+    window.__anhadPageInit[p] = refreshHomeForSpa;
+  });
+
   const boot = () => {
-    App.init();
-    console.log('[Trendora] App Initialized');
+    try {
+      App.init();
+      window.__anhadHomeBootedAt = Date.now();
+      console.log('[Trendora] App Initialized');
+    } catch (err) {
+      // Never let an init failure take down the rest of this module.
+      console.error('[Trendora] App.init() failed — SPA refresh path still active', err);
+    }
   };
 
   if (document.readyState === 'loading') {
@@ -2509,22 +2576,9 @@
     setTimeout(removeOverlays, 1000);
   }
 
-  // Handle SPA page changes from the shell. smooth-navigation.js currently
-  // has no DOM-cache fast path — every navigation (including a revisit to a
-  // page seen before) re-runs executePageScripts() and dispatches this same
-  // event, so refreshAll() (which ends with reviveHomepageVisuals() — see
-  // its definition above) runs on every arrival at Home. That keeps the
-  // guru portrait slider / hero carousel from going stale on any revisit,
-  // without needing a separate cached-vs-fresh code path.
-  if (!_trendoraModuleListenersAlreadyBound) {
-  window.addEventListener('anhad_page_changed', () => {
-    console.log('[Trendora] Page change detected, refreshing UI data...');
-    // FIX: Don't re-init the entire app — only refresh data to prevent
-    // duplicate event listeners and memory leaks
-    Store.clearCache();
-    requestAnimationFrame(() => UIController.refreshAll());
-  });
-  }
+  // NOTE: the anhad_page_changed listener and the __anhadPageInit registration
+  // both live ABOVE boot() now — see the comment there for why the order
+  // matters.
 
 })();
 
