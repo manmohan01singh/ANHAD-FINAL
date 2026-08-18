@@ -59,6 +59,15 @@
         }
         doc.style.setProperty('background-color', bg, 'important');
 
+        const bgMap = {
+          morning: 'assets/HERO CARD IMAGES/new morning bg.avif',
+          day:     'assets/homepage-hero/darbar-sahib-day-1.png',
+          evening: 'assets/darbar-sahib-evening-bg.webp',
+          night:   'assets/HERO CARD IMAGES/new night bg.avif',
+        };
+        const bgUrl = bgMap[currentTimeOfDay] || bgMap.day;
+        doc.style.setProperty('--dynamic-bg-url', "url('" + bgUrl + "')");
+
         // INLINE CSS VARIABLES — prevent FOUC until theme-variables.css loads
         const cssVars = {
           dark: '--bg-primary:#1C1C1E;--bg-secondary:#2C2C2E;--bg-tertiary:#3A3A3C;--text-primary:#F5F5F7;--text-secondary:#8E8E93;--text-accent:#0A84FF;--border-color:rgba(255,255,255,0.15);--shadow-color:rgba(0,0,0,0.5);--highlight-color:#FFD60A;--btn-bg:#0A84FF;--btn-text:#FFFFFF;--card-green-gradient:linear-gradient(140deg,#1C3D2A 0%,#2D4A3E 100%);--card-gold-gradient:linear-gradient(140deg,#3D2D1C 0%,#4A3D2A 100%);--card-purple-gradient:linear-gradient(140deg,#2D1C3D 0%,#3A2D4A 100%);--card-blue-gradient:linear-gradient(140deg,#1C2D3D 0%,#2A3D4A 100%);--card-rose-gradient:linear-gradient(140deg,#3D1C2D 0%,#4A2A3D 100%);--card-event-gradient:linear-gradient(160deg,#2D2D1C 0%,#3D3D2A 25%,#4A4A2D 50%,#3D3D1C 75%,#2D2D2A 100%);--event-title-color:#F5F5F7;--event-title-shadow:0 2px 4px rgba(0,0,0,0.5)',
@@ -68,14 +77,12 @@
           evening: '--bg-primary:#FFF8E7;--bg-secondary:#FFF0D4;--bg-tertiary:#FFE4B5;--text-primary:#3B2A00;--text-secondary:#7A6A4F;--text-accent:#B8860B;--border-color:rgba(184,134,11,0.25);--shadow-color:rgba(0,0,0,0.15);--highlight-color:#FFD60A;--btn-bg:#B8860B;--btn-text:#FFFFFF;--card-green-gradient:linear-gradient(140deg,#F5F5DC 0%,#EEEEC0 100%);--card-gold-gradient:linear-gradient(140deg,#FFF8D8 0%,#FFE896 100%);--card-purple-gradient:linear-gradient(140deg,#FFF0E8 0%,#FFE0C8 100%);--card-blue-gradient:linear-gradient(140deg,#F8F0D8 0%,#EEE4B8 100%);--card-rose-gradient:linear-gradient(140deg,#FFF0D8 0%,#FFE0B0 100%);--card-event-gradient:linear-gradient(160deg,#FFF8E8 0%,#FFF0D0 25%,#FFE8B8 50%,#FFE0A0 75%,#FFD888 100%);--event-title-color:#4A3500;--event-title-shadow:0 1px 1px rgba(255,255,255,0.4)'
         };
         
-        let _v = cssVars[effectiveTheme] || cssVars.light;
-        if (theme === 'auto' && document.documentElement.hasAttribute('data-anhad-home')) {
-          _v = cssVars[currentTimeOfDay] || _v;
-        }
-        
-        // Use requestAnimationFrame for non-blocking style insertion
         const _s = document.createElement('style');
-        _s.textContent = ':root{' + _v + '}';
+        let styleContent = ':root{' + (cssVars[effectiveTheme] || cssVars.light) + '}';
+        if (theme === 'auto') {
+          styleContent += ' [data-anhad-home]{' + (cssVars[currentTimeOfDay] || cssVars.day) + '}';
+        }
+        _s.textContent = styleContent;
         document.head.insertBefore(_s, document.head.firstChild);
 
         doc.classList.add('theme-loaded');
@@ -346,8 +353,12 @@
         theme: window._anhadThemeCache
       };
       
-      // Save state before page unload
-      window.addEventListener('beforeunload', function() {
+      // Save state before page unload.
+      // NOTE: intentionally 'pagehide', not 'beforeunload' — a 'beforeunload'
+      // listener disables the browser's back-forward cache (bfcache), which is
+      // what makes Back navigation instant. 'pagehide' fires at the same moment
+      // for this purpose without blocking bfcache eligibility.
+      window.addEventListener('pagehide', function() {
         try {
           pageState.scrollPosition = window.scrollY || document.documentElement.scrollTop;
           sessionStorage.setItem('anhad_page_state', JSON.stringify(pageState));
@@ -428,8 +439,8 @@
   <link rel="stylesheet" href="css/mobile-accessibility.css" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="css/ios-override.css?v=8" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="css/hero-clean-desktop.css" media="print" onload="this.media='all'">
-  <!-- ANHAD: Animated Sky Background (Auto Mode) — async load -->
-  <link rel="stylesheet" href="css/anhad-sky-bg.css?v=2" media="print" onload="this.media='all'">
+  <!-- ANHAD: Animated Sky Background (Auto Mode) -->
+  <link rel="stylesheet" href="css/anhad-sky-bg.css?v=2">
   <link rel="stylesheet" href="css/scroll-engine.css">
 
   <!-- CRITICAL: ANHAD Adaptive Title - Changes with background -->
@@ -437,8 +448,16 @@
     /* Import Marcellus font from Google Fonts */
     @import url('https://fonts.googleapis.com/css2?family=Marcellus&display=swap');
     
-    /* HEADER WITH PERFECT CENTERING & FULL NOTCH CLEARANCE */
-    .header {
+    /* HEADER WITH PERFECT CENTERING & FULL NOTCH CLEARANCE
+       Scoped to .home-header (added to Home's own <header> tag) — this used
+       to be a bare .header rule, which persisted in <head> for the whole
+       session once loaded (smooth-navigation.js's syncHeadAssets() never
+       removes stylesheets/style blocks a later page doesn't need) and
+       overrode Favorites'/other pages' own unrelated .header rules via
+       !important, since theirs have none (found by running this: Favorites'
+       header rendered with Home's padding/justify-content after any SPA
+       visit to Home this session). */
+    .header.home-header {
       display: flex !important;
       align-items: center !important;
       justify-content: space-between !important;
@@ -632,9 +651,15 @@
         inset 0 1px 1px rgba(255, 255, 255, 0.08) !important;
     }
     
-    /* MARCELLUS FONT FOR ANHAD — Universal Across All Themes */
-    .anhad-title-pill h1.header__title,
-    h1.header__title {
+    /* MARCELLUS FONT FOR ANHAD — Universal Across All Themes
+       Scoped under .anhad-title-pill only — that wrapper is unique to
+       Home's own branding title, so this can never match another page's
+       <h1 class="header__title"> (e.g. Favorites' "Favorites" heading, or
+       Insights') the way the old unscoped fallback selector used to
+       (found by running this: Favorites' title rendered in this Marcellus
+       serif font after any SPA visit to Home this session, because the
+       fallback below had no ancestor requirement at all). */
+    .anhad-title-pill h1.header__title {
       color: #FFEB3B !important;
       text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5) !important;
       background: none !important;
@@ -646,52 +671,45 @@
       filter: none !important;
       text-transform: uppercase !important;
     }
-    
+
     /* DAY TIME OVERRIDE: Dark title on bright sky */
-    [data-theme-mode="auto"][data-time-of-day="day"] .anhad-title-pill h1.header__title,
-    [data-theme-mode="auto"][data-time-of-day="day"] h1.header__title {
+    [data-theme-mode="auto"][data-time-of-day="day"] .anhad-title-pill h1.header__title {
       color: #000814 !important;
       text-shadow: 0 1px 3px rgba(255, 255, 255, 0.6) !important;
       -webkit-text-fill-color: #000814 !important;
     }
-    
+
     /* MORNING TIME: Dark magenta/burgundy title on peach sky */
-    [data-theme-mode="auto"][data-time-of-day="morning"] .anhad-title-pill h1.header__title,
-    [data-theme-mode="auto"][data-time-of-day="morning"] h1.header__title {
+    [data-theme-mode="auto"][data-time-of-day="morning"] .anhad-title-pill h1.header__title {
       color: #5C0E3E !important;
       text-shadow: 0 1px 3px rgba(255, 230, 200, 0.6) !important;
       -webkit-text-fill-color: #5C0E3E !important;
     }
-    
+
     /* EVENING TIME: Dark orange/rust title on sunset sky */
-    [data-theme-mode="auto"][data-time-of-day="evening"] .anhad-title-pill h1.header__title,
-    [data-theme-mode="auto"][data-time-of-day="evening"] h1.header__title {
+    [data-theme-mode="auto"][data-time-of-day="evening"] .anhad-title-pill h1.header__title {
       color: #8B3A0E !important;
       text-shadow: 0 1px 3px rgba(255, 228, 198, 0.6) !important;
       -webkit-text-fill-color: #8B3A0E !important;
     }
-    
+
     /* NIGHT TIME: Bright golden title on dark bg — same as dark mode */
-    [data-theme-mode="auto"][data-time-of-day="night"] .anhad-title-pill h1.header__title,
-    [data-theme-mode="auto"][data-time-of-day="night"] h1.header__title {
+    [data-theme-mode="auto"][data-time-of-day="night"] .anhad-title-pill h1.header__title {
       color: #FFEB3B !important;
       text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6) !important;
       -webkit-text-fill-color: #FFEB3B !important;
     }
-    
+
     /* LIGHT MODE: Dark title for visibility */
     [data-theme-mode="light"] .anhad-title-pill h1.header__title,
-    [data-theme-mode="light"] h1.header__title,
-    html:not(.dark-mode):not([data-theme-mode="auto"]) .anhad-title-pill h1.header__title,
-    html:not(.dark-mode):not([data-theme-mode="auto"]) h1.header__title {
+    html:not(.dark-mode):not([data-theme-mode="auto"]) .anhad-title-pill h1.header__title {
       color: #000814 !important;
       text-shadow: 0 1px 3px rgba(255, 255, 255, 0.6) !important;
       -webkit-text-fill-color: #000814 !important;
     }
-    
+
     /* Simple Gurmukhi subtitle */
-    .anhad-title-pill span.header__title-gurmukhi,
-    span.header__title-gurmukhi {
+    .anhad-title-pill span.header__title-gurmukhi {
       color: #FFFACD !important;
       background: none !important;
       -webkit-text-fill-color: #FFFACD !important;
@@ -702,44 +720,38 @@
       text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
       filter: none !important;
     }
-    
+
     /* DAY TIME OVERRIDE: Dark Gurmukhi subtitle on bright sky */
-    [data-theme-mode="auto"][data-time-of-day="day"] .anhad-title-pill span.header__title-gurmukhi,
-    [data-theme-mode="auto"][data-time-of-day="day"] span.header__title-gurmukhi {
+    [data-theme-mode="auto"][data-time-of-day="day"] .anhad-title-pill span.header__title-gurmukhi {
       color: #02162E !important;
       -webkit-text-fill-color: #02162E !important;
       text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5) !important;
     }
-    
+
     /* MORNING TIME: Dark magenta Gurmukhi subtitle */
-    [data-theme-mode="auto"][data-time-of-day="morning"] .anhad-title-pill span.header__title-gurmukhi,
-    [data-theme-mode="auto"][data-time-of-day="morning"] span.header__title-gurmukhi {
+    [data-theme-mode="auto"][data-time-of-day="morning"] .anhad-title-pill span.header__title-gurmukhi {
       color: #3A0624 !important;
       -webkit-text-fill-color: #3A0624 !important;
       text-shadow: 0 1px 2px rgba(255, 230, 200, 0.5) !important;
     }
-    
+
     /* EVENING TIME: Dark orange Gurmukhi subtitle */
-    [data-theme-mode="auto"][data-time-of-day="evening"] .anhad-title-pill span.header__title-gurmukhi,
-    [data-theme-mode="auto"][data-time-of-day="evening"] span.header__title-gurmukhi {
+    [data-theme-mode="auto"][data-time-of-day="evening"] .anhad-title-pill span.header__title-gurmukhi {
       color: #5C2408 !important;
       -webkit-text-fill-color: #5C2408 !important;
       text-shadow: 0 1px 2px rgba(255, 228, 198, 0.5) !important;
     }
-    
+
     /* NIGHT TIME: Soft golden Gurmukhi subtitle */
-    [data-theme-mode="auto"][data-time-of-day="night"] .anhad-title-pill span.header__title-gurmukhi,
-    [data-theme-mode="auto"][data-time-of-day="night"] span.header__title-gurmukhi {
+    [data-theme-mode="auto"][data-time-of-day="night"] .anhad-title-pill span.header__title-gurmukhi {
       color: #C9A84C !important;
       -webkit-text-fill-color: #C9A84C !important;
       text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
     }
-    
+
     /* LIGHT MODE: Dark Gurmukhi subtitle for visibility */
     [data-theme-mode="light"] .anhad-title-pill span.header__title-gurmukhi,
-    [data-theme-mode="light"] span.header__title-gurmukhi,
-    html:not(.dark-mode):not([data-theme-mode="auto"]) .anhad-title-pill span.header__title-gurmukhi,
-    html:not(.dark-mode):not([data-theme-mode="auto"]) span.header__title-gurmukhi {
+    html:not(.dark-mode):not([data-theme-mode="auto"]) .anhad-title-pill span.header__title-gurmukhi {
       color: #02162E !important;
       -webkit-text-fill-color: #02162E !important;
       text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5) !important;
@@ -757,32 +769,35 @@
       z-index: 1;
     }
 
-    /* ─── AUTO MODE CONTRAST OVERRIDES (PREVENT FLASH ON LOAD) ─── */
-    [data-theme-mode="auto"] .header__title,
-    [data-theme-mode="auto"] .header-title {
+    /* ─── AUTO MODE CONTRAST OVERRIDES (PREVENT FLASH ON LOAD) ───
+       Scoped to .home-header — this duplicates anhad-sky-bg.css's rules
+       inline (to avoid a flash before that stylesheet parses) so it must
+       stay scoped identically or it re-opens the same cross-page bleed. */
+    [data-theme-mode="auto"] .home-header .header__title,
+    [data-theme-mode="auto"] .home-header .header-title {
       color: #FFFFFF !important;
       text-shadow: 0 2px 12px rgba(0, 0, 0, 0.75), 0 1px 4px rgba(0, 0, 0, 0.9) !important;
       font-weight: 700 !important;
     }
-    
+
     /* DAY TIME: Dark colored ANHAD title for contrast on bright sky */
-    [data-theme-mode="auto"][data-time-of-day="day"] .header__title,
-    [data-theme-mode="auto"][data-time-of-day="day"] .header-title {
+    [data-theme-mode="auto"][data-time-of-day="day"] .home-header .header__title,
+    [data-theme-mode="auto"][data-time-of-day="day"] .home-header .header-title {
       color: #000814 !important;
       text-shadow: 0 1px 3px rgba(255, 255, 255, 0.6) !important;
       font-weight: 700 !important;
     }
-    
-    [data-theme-mode="auto"] .header__title-gurmukhi,
-    [data-theme-mode="auto"] .gurmukhi-title {
+
+    [data-theme-mode="auto"] .home-header .header__title-gurmukhi,
+    [data-theme-mode="auto"] .home-header .gurmukhi-title {
       color: #FFFFFF !important;
       text-shadow: 0 2px 10px rgba(0, 0, 0, 0.75), 0 1px 3px rgba(0, 0, 0, 0.9) !important;
       font-weight: 600 !important;
     }
-    
+
     /* DAY TIME: Dark colored Gurmukhi title for contrast on bright sky */
-    [data-theme-mode="auto"][data-time-of-day="day"] .header__title-gurmukhi,
-    [data-theme-mode="auto"][data-time-of-day="day"] .gurmukhi-title {
+    [data-theme-mode="auto"][data-time-of-day="day"] .home-header .header__title-gurmukhi,
+    [data-theme-mode="auto"][data-time-of-day="day"] .home-header .gurmukhi-title {
       color: #02162E !important;
       text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5) !important;
       font-weight: 600 !important;
@@ -1308,8 +1323,12 @@
       display: none;
     }
 
-    /* ═══ HEADER — ANHAD Title — Light & Clear ═══ */
-    .header__title {
+    /* ═══ HEADER — ANHAD Title — Light & Clear ═══
+       Scoped to .home-header — unscoped, this was the strongest confirmed
+       collision: its !important font-family/size/weight/color overrode
+       Favorites'/Insights' own .header__title styling once Home's CSS
+       loaded and stayed in <head> (syncHeadAssets never removes it). */
+    .home-header .header__title {
       font-family: 'Inter', sans-serif !important;
       font-size: 20px !important;
       font-weight: 600 !important;
@@ -1319,7 +1338,7 @@
       text-shadow: none !important;
       filter: none !important;
     }
-    .header__title-gurmukhi {
+    .home-header .header__title-gurmukhi {
       font-family: 'Noto Sans Gurmukhi', sans-serif !important;
       font-size: 14px !important;
       font-weight: 500 !important;
@@ -1328,15 +1347,15 @@
       text-shadow: none !important;
       filter: none !important;
     }
-    
+
     /* Dark Mode */
-    .dark-mode .header__title {
+    .dark-mode .home-header .header__title {
       color: #F5DFA0 !important;
       /* Light cream gold for dark mode */
       text-shadow: none !important;
       filter: none !important;
     }
-    .dark-mode .header__title-gurmukhi {
+    .dark-mode .home-header .header__title-gurmukhi {
       color: #E8C87C !important;
       /* Light golden for Gurmukhi in dark */
       text-shadow: none !important;
@@ -1347,15 +1366,17 @@
        COMPACT VIEWPORT LAYOUT — Fit all content on single screen
        ═══════════════════════════════════════════════════════════════════════════ */
     @media screen and (max-width: 480px) {
-      /* Header - Compact */
-      .header {
+      /* Header - Compact (scoped to .home-header, see the main .header rule
+         above for why — same cross-page bleed risk applies to every bare
+         .header/.header__* rule in this file, not just the primary one) */
+      .header.home-header {
         padding: 8px 12px 4px !important;
         margin-bottom: 4px !important;
       }
-      .header__title {
+      .home-header .header__title {
         font-size: 18px !important;
       }
-      .header__title-gurmukhi {
+      .home-header .header__title-gurmukhi {
         font-size: 14px !important;
       }
       
@@ -1562,24 +1583,24 @@
       margin-right: -5px !important;
       overflow: hidden !important;
     }
-    .header {
+    .header.home-header {
       margin-bottom: 16px !important;
       background: transparent !important;
     }
-    body.dark-mode .header,
-    html.dark-mode .header,
-    [data-theme="dark"] .header,
-    .dark-mode .header {
+    body.dark-mode .home-header,
+    html.dark-mode .home-header,
+    [data-theme="dark"] .home-header,
+    .dark-mode .home-header {
       background: transparent !important;
     }
-    body:not(.dark-mode) .header,
-    html:not(.dark-mode) .header,
-    [data-theme="light"] .header,
-    :not(.dark-mode) .header {
+    body:not(.dark-mode) .home-header,
+    html:not(.dark-mode) .home-header,
+    [data-theme="light"] .home-header,
+    :not(.dark-mode) .home-header {
       background: transparent !important;
     }
-    header.header,
-    header.header[role="banner"] {
+    header.header.home-header,
+    header.header.home-header[role="banner"] {
       background: transparent !important;
     }
     .progress-inline {
@@ -2228,13 +2249,15 @@
         color: inherit !important;
       }
 
-      /* Header background fix for desktop */
-      html body.dark-mode .app .header,
-      body.dark-mode .app .header {
+      /* Header background fix for desktop (scoped to .home-header — .app
+         is the shared SPA container present on every page, so a bare
+         .app .header here would match any page's header, not just Home's) */
+      html body.dark-mode .app .home-header,
+      body.dark-mode .app .home-header {
         background: transparent !important;
       }
-      html body:not(.dark-mode) .app .header,
-      body:not(.dark-mode) .app .header {
+      html body:not(.dark-mode) .app .home-header,
+      body:not(.dark-mode) .app .home-header {
         background: transparent !important;
       }
       
@@ -2625,30 +2648,6 @@
 </head>
 
 <body>
-  <script>
-    /* PERF FIX: Background-image assignment deferred past LCP paint.
-       Previously ran synchronously in <body> open, forcing a layout
-       recalculation before the hero AVIF could be painted. The background
-       is decorative — delaying it by one rAF is invisible to the user
-       but frees the critical rendering path for the hero image. */
-    requestAnimationFrame(function() {
-      (function() {
-        let slot = localStorage.getItem('anhad_forced_time_of_day');
-        if (!slot || !['morning', 'day', 'evening', 'night'].includes(slot)) {
-          const h = new Date().getHours();
-          slot = (h >= 5 && h < 9) ? 'morning' : (h >= 9 && h < 16) ? 'day' : (h >= 16 && h < 20) ? 'evening' : 'night';
-        }
-        const bgMap = {
-          morning: 'assets/HERO CARD IMAGES/new morning bg.avif',
-          day:     'assets/homepage-hero/darbar-sahib-day-1.png',
-          evening: 'assets/darbar-sahib-evening-bg.webp',
-          night:   'assets/HERO CARD IMAGES/new night bg.avif',
-        };
-        const bgUrl = bgMap[slot] || bgMap.day;
-        document.documentElement.style.setProperty('--dynamic-bg-url', "url('" + bgUrl + "')");
-      })();
-    });
-  </script>
   <!-- ═══════════════════════════════════════════════════════════════════════════
        DESKTOP SIDEBAR NAVIGATION — Hidden on Mobile, Visible on Desktop
   ════════════════════════════════════════════════════════════════════════════ -->
@@ -2756,7 +2755,7 @@
     <!-- ════════════════════════════════════════════════════════════════════
          HEADER — Avatar | ANHAD | Emoji Actions
     ════════════════════════════════════════════════════════════════════ -->
-    <header class="header" role="banner" style="background: transparent !important; position: relative;">
+    <header class="header home-header" role="banner" style="background: transparent !important; position: relative;">
       <!-- Orb behind header -->
       <div class="time-orb time-orb-header" aria-hidden="true"></div>
       
@@ -2769,7 +2768,8 @@
            style="display: flex; align-items: center; justify-content: center; border: none; background: inherit; cursor: pointer;">
           <span class="ios-emoji" role="img" aria-label="settings" style="font-size: 20px;">⚙️</span>
         </button>
-        <button class="header__btn ios-haptic" id="tourGuideBtn" aria-label="Guide" title="App Guide">
+        <button class="header__btn ios-haptic" id="tourGuideBtn" aria-label="Guide" title="App Guide"
+           onclick="event.stopPropagation(); window.location.href='guide/index.html';">
           <span class="ios-emoji" role="img" aria-label="guide" style="font-size: 20px;">🧭</span>
         </button>
       </div>
@@ -2780,10 +2780,12 @@
         </div>
       </div>
       <div class="header__right">
-        <button class="header__btn ios-haptic" id="themeToggleBtn" aria-label="Toggle Theme">
+        <button class="header__btn ios-haptic" id="themeToggleBtn" aria-label="Toggle Theme"
+           onclick="if(window.AnhadTheme){window.AnhadTheme.toggle();}else if(window.toggleTheme){window.toggleTheme();}">
           <span class="ios-emoji" role="img" aria-label="theme" id="themeIcon">🌙</span>
         </button>
-        <button class="header__btn ios-haptic" id="notifBtn" aria-label="Notifications">
+        <button class="header__btn ios-haptic" id="notifBtn" aria-label="Notifications"
+           onclick="if(window.navigateTo){window.navigateTo('reminders/smart-reminders-v7.html');}else{window.location.href='reminders/smart-reminders-v7.html';}">
           <span class="ios-emoji" role="img" aria-label="notifications">🔔</span>
           <span class="header__badge" id="notifBadge" style="display:none" aria-live="polite">0</span>
         </button>
@@ -3369,6 +3371,7 @@
   <script src="lib/capacitor-notifications-global.js" defer></script>
   <script src="lib/audio-coordinator.js" defer></script>
   <script src="lib/overlay-player.js" defer></script>
+  <script src="lib/remote-config.js?v=4.0.5" defer></script>
   
   <!-- Core UI logic -->
   <script src="js/trendora-app.js?v=4.0.4" defer></script>
@@ -3507,17 +3510,37 @@
        here was wasting 70KB of idle bandwidth and parse time. -->
   <script>
     var loadLazyScripts = function() {
+      // Guard against re-running this idle-time load more than once per
+      // session. This inline script re-executes on every non-cached SPA
+      // arrival at Home (executePageScripts() only dedupes external scripts
+      // by filename via SHELL_SCRIPTS — it doesn't touch script tags an
+      // inline script injects itself), and several of the files below
+      // (widget-bridge.js, optimized-image-loader.js, ...) declare top-level
+      // classes — a second injection throws "Identifier has already been
+      // declared", which aborts that script's entire parse. Confirmed via
+      // real-browser testing across repeated Home revisits.
+      if (window.__anhadLazyScriptsLoaded) return;
+      window.__anhadLazyScriptsLoaded = true;
+
+      // Root-absolute (leading slash), not relative: requestIdleCallback's
+      // up-to-2000ms delay means the user can SPA-navigate away from Home
+      // before this fires — a relative src resolves against whatever page
+      // is CURRENT at that moment (e.g. /Favorites/favorites.html), producing
+      // a wrong-directory 404 like /Favorites/lib/global-alarm-system.js
+      // instead of /lib/global-alarm-system.js. Confirmed via real-browser
+      // verification (rapid Home->Favorites navigation within the timeout
+      // window), not assumed.
       var lazyScripts = [
         // smooth-navigation.js MOVED TO HEAD for early load
-        'widgets/widget-bridge.js',
-        'lib/optimized-image-loader.js',
-        'lib/audio-preload.js',
-        'lib/user-stats.js',
-        'js/anhad-onboarding.js',
-        'lib/alarm-coordinator.js',
-        'lib/guaranteed-alarm-system.js',
-        'lib/global-alarm-system.js',
-        'lib/ios-android-notifications.js'
+        '/widgets/widget-bridge.js',
+        '/lib/optimized-image-loader.js',
+        '/lib/audio-preload.js',
+        '/lib/user-stats.js',
+        '/js/anhad-onboarding.js',
+        '/lib/alarm-coordinator.js',
+        '/lib/guaranteed-alarm-system.js',
+        '/lib/global-alarm-system.js',
+        '/lib/ios-android-notifications.js'
       ];
       var i = 0;
       function loadNext() {
@@ -3538,21 +3561,14 @@
     }
   </script>
 
-  <!-- ═══════════════════════════════════════════════════════════════════════════
-       GUIDE BUTTON - opens the new Guide page with all features listed
-  ════════════════════════════════════════════════════════════════════════════ -->
-  <script>
-    (function() {
-      var guideBtn = document.getElementById('tourGuideBtn');
-      if (guideBtn) {
-        guideBtn.addEventListener('click', function(e) {
-          e.preventDefault();
-          e.stopPropagation();
-          window.location.href = 'guide/index.html';
-        });
-      }
-    })();
-  </script>
+  <!-- GUIDE BUTTON: bound via a plain onclick="" attribute on #tourGuideBtn
+       itself (see header markup above), not addEventListener here — content
+       attributes survive both of applyNewContent()'s SPA-swap paths
+       (innerHTML reparse and DOM_CACHE cloneNode()), while a JS-attached
+       listener here would not (found by running this: this was the confirmed
+       mechanism behind Guide going dead after one SPA round trip through
+       Insights/Favorites — see also themeToggleBtn/notifBtn below and
+       settingsBtn above, all now on the same pattern). -->
 
   <!-- ═══════════════════════════════════════════════════════════════════════════
        NISHAN SAHIB CLICK - Creative Message
@@ -3656,19 +3672,9 @@
       }
     })();
 
-    // Theme Toggle Button - Unified with AnhadTheme System
-    (function initThemeToggle() {
-      const themeToggleBtn = document.getElementById('themeToggleBtn');
-      if (themeToggleBtn) {
-        themeToggleBtn.addEventListener('click', function() {
-          if (window.AnhadTheme) {
-            window.AnhadTheme.toggle();
-          } else if (window.toggleTheme) {
-            window.toggleTheme();
-          }
-        });
-      }
-    })();
+    // Theme Toggle Button: bound via a plain onclick="" attribute on
+    // #themeToggleBtn itself (see header markup above) — see the Guide
+    // button comment nearby for why this replaced an addEventListener here.
   </script>
 
   <!-- ═══════════════════════════════════════
@@ -3762,9 +3768,54 @@
   <!-- Hero Card Badge Interactions — Direct Jump to Live -->
     <script>
     (function() {
+      // Brief confirmation toast for hero-card quick-play (LIVE badge / play
+      // button) — these intentionally stopPropagation() instead of navigating
+      // to the full radio page, which otherwise gives no feedback that the
+      // tap did anything. Reuses the exact toast-creation pattern already
+      // established below for the Nishan Sahib click handler (fixed
+      // position, cssText styling, requestAnimationFrame fade-in, setTimeout
+      // fade-out + removal) rather than inventing a second mechanism.
+      const HERO_QUICK_PLAY_STREAM_NAMES = { darbar: 'Darbar Sahib Live', amritvela: 'Amritvela Kirtan', simran: 'Waheguru Simran' };
+      function showHeroQuickPlayToast(text) {
+        const toast = document.createElement('div');
+        toast.style.cssText = `
+          position: fixed;
+          bottom: 100px;
+          left: 50%;
+          transform: translateX(-50%) scale(0.9);
+          background: rgba(28, 28, 30, 0.88);
+          color: #FFFFFF;
+          padding: 12px 22px;
+          border-radius: 24px;
+          font-family: 'Inter', -apple-system, sans-serif;
+          font-size: 14px;
+          font-weight: 600;
+          text-align: center;
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+          z-index: 9999;
+          opacity: 0;
+          transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+          max-width: 300px;
+          pointer-events: none;
+          backdrop-filter: blur(16px) saturate(180%);
+          -webkit-backdrop-filter: blur(16px) saturate(180%);
+        `;
+        toast.textContent = text;
+        document.body.appendChild(toast);
+        requestAnimationFrame(() => {
+          toast.style.opacity = '1';
+          toast.style.transform = 'translateX(-50%) scale(1)';
+        });
+        setTimeout(() => {
+          toast.style.opacity = '0';
+          toast.style.transform = 'translateX(-50%) scale(0.9)';
+          setTimeout(() => toast.remove(), 350);
+        }, 1800);
+      }
+
       function initHeroInteractions() {
         console.log('[Homepage] Initializing hero interactions...');
-        
+
         // Clean up previous interval if it exists to prevent memory leaks
         if (window.anhadHeroBadgeInterval) {
           clearInterval(window.anhadHeroBadgeInterval);
@@ -3792,7 +3843,8 @@
               if (state.isPlaying && state.currentStream === stream) {
                 console.log('[Homepage] Jumping to live for:', stream);
                 window.AnhadAudio.jumpToLive();
-                
+                showHeroQuickPlayToast('⏩ Jumped to Live');
+
                 // Visual feedback
                 this.style.transform = 'scale(0.9) translateY(0)';
                 setTimeout(() => this.style.transform = '', 200);
@@ -3800,8 +3852,13 @@
                 // If not playing, or playing something else, start playing this stream (which defaults to live)
                 console.log('[Homepage] Starting live stream for:', stream);
                 window.AnhadAudio.play(stream);
+                showHeroQuickPlayToast('▶ Playing ' + (HERO_QUICK_PLAY_STREAM_NAMES[stream] || 'Live'));
               }
             } else {
+              // First-ever tap of a session commonly lands here (audio engine
+              // is lazy-loaded to keep initial page weight down) — still show
+              // the toast, since this is exactly the tap a user is most
+              // likely to otherwise think did nothing.
               console.log('[Homepage] Audio engine not loaded yet, queuing play for badge:', stream);
               if (window.AnhadAudioUnlockElement) {
                 window.AnhadAudioUnlockElement(stream);
@@ -3812,6 +3869,7 @@
               if (window.AnhadAudioLoadEngine) {
                 window.AnhadAudioLoadEngine();
               }
+              showHeroQuickPlayToast('▶ Playing ' + (HERO_QUICK_PLAY_STREAM_NAMES[stream] || 'Live'));
             }
             if (navigator.vibrate) navigator.vibrate(10);
           });
@@ -3838,13 +3896,17 @@
             if (window.AnhadAudio) {
               console.log('[Homepage] Hero play button clicked for:', stream);
               window.AnhadAudio.play(stream);
-              
+              showHeroQuickPlayToast('▶ Playing ' + (HERO_QUICK_PLAY_STREAM_NAMES[stream] || 'Live'));
+
               if (window.CapacitorHaptics) {
                 window.CapacitorHaptics.impact({ style: 'medium' });
               } else if (navigator.vibrate) {
                 navigator.vibrate(10);
               }
             } else {
+              // Same as the LIVE-badge handler above: this is commonly the
+              // FIRST tap of a session (audio engine still lazy-loading), so
+              // it needs the toast most.
               console.log('[Homepage] Audio engine not loaded yet, queuing play for button:', stream);
               if (window.AnhadAudioUnlockElement) {
                 window.AnhadAudioUnlockElement(stream);
@@ -3855,6 +3917,7 @@
               if (window.AnhadAudioLoadEngine) {
                 window.AnhadAudioLoadEngine();
               }
+              showHeroQuickPlayToast('▶ Playing ' + (HERO_QUICK_PLAY_STREAM_NAMES[stream] || 'Live'));
             }
           });
         });
@@ -3924,13 +3987,20 @@
   </script>
 
   <script>
-    window.addEventListener('pageshow', function() {
-      document.documentElement.classList.add('theme-loaded');
-      if (document.body) {
-        document.body.classList.add('theme-loaded');
-        document.body.classList.remove('app--exiting');
-      }
-    });
+    // Guarded: this inline script re-executes on every non-cached SPA
+    // arrival at Home (executePageScripts() re-runs inline scripts on every
+    // revisit, no cache fast path to skip that), and window/document
+    // listeners registered here would otherwise stack a duplicate per visit.
+    if (!window.__anhadThemeLoadedPageshowBound) {
+      window.__anhadThemeLoadedPageshowBound = true;
+      window.addEventListener('pageshow', function() {
+        document.documentElement.classList.add('theme-loaded');
+        if (document.body) {
+          document.body.classList.add('theme-loaded');
+          document.body.classList.remove('app--exiting');
+        }
+      });
+    }
   </script>
 
   <!-- Service Worker — Silent Auto-Update (via pwa-register.js) -->

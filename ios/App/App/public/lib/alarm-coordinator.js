@@ -61,9 +61,9 @@
                 timestamp: Date.now()
             });
 
-            // Cleanup on pagehide
+            // Cleanup on pagehide. NOTE: deliberately no 'beforeunload' listener here —
+            // it would disable bfcache app-wide; 'pagehide' covers the same cleanup need.
             window.addEventListener('pagehide', () => this._cleanup());
-            window.addEventListener('beforeunload', () => this._cleanup());
 
             // Initial election delay
             setTimeout(() => this._attemptElection(), 500);

@@ -8,8 +8,8 @@
    §1  TEXT CONTRAST SYSTEM
    ─────────────────────────────────────────────────────────────────────────── */
 
-/* MORNING — warm dark espresso/mahogany on a peach-orange sky */
-[data-theme-mode="auto"][data-time-of-day="morning"] {
+/* MORNING — warm dark espresso/mahogany on a peach-orange sky (HOME ONLY) */
+[data-anhad-home][data-theme-mode="auto"][data-time-of-day="morning"] {
   --sky-txt-primary:   #1A0402;
   --sky-txt-secondary: #3A0F05;
   --sky-txt-label:     #5C1E0A;
@@ -22,8 +22,8 @@
   --sky-bg-glass-border: rgba(220, 110, 50, 0.22);
 }
 
-/* DAY — deep midnight navy on a bright azure sky */
-[data-theme-mode="auto"][data-time-of-day="day"] {
+/* DAY — deep midnight navy on a bright azure sky (HOME ONLY) */
+[data-anhad-home][data-theme-mode="auto"][data-time-of-day="day"] {
   --sky-txt-primary:   #000814;
   --sky-txt-secondary: #02162E;
   --sky-txt-label:     #05284D;
@@ -36,8 +36,8 @@
   --sky-bg-glass-border: rgba(80, 160, 230, 0.22);
 }
 
-/* EVENING — deep burgundy-wine on a crimson-gold sunset sky */
-[data-theme-mode="auto"][data-time-of-day="evening"] {
+/* EVENING — deep burgundy-wine on a crimson-gold sunset sky (HOME ONLY) */
+[data-anhad-home][data-theme-mode="auto"][data-time-of-day="evening"] {
   --sky-txt-primary:   #140205;
   --sky-txt-secondary: #38050C;
   --sky-txt-label:     #5C0A15;
@@ -50,8 +50,8 @@
   --sky-bg-glass-border: rgba(190, 80, 20, 0.22);
 }
 
-/* NIGHT — glowing warm ivory / antique gold on deep dark */
-[data-theme-mode="auto"][data-time-of-day="night"] {
+/* NIGHT — glowing warm ivory / antique gold on deep dark (HOME ONLY) */
+[data-anhad-home][data-theme-mode="auto"][data-time-of-day="night"] {
   --sky-txt-primary:   #FFFFFF;
   --sky-txt-secondary: #FFF2D1;
   --sky-txt-label:     #FFE399;
@@ -64,116 +64,116 @@
   --sky-bg-glass-border: rgba(170, 140, 60, 0.22);
 }
 
-/* Apply contrast to key page elements */
-[data-theme-mode="auto"] .header__title,
-[data-theme-mode="auto"] .header-title {
+/* Apply contrast to key page elements (HOME ONLY) */
+[data-anhad-home][data-theme-mode="auto"] .home-header .header__title,
+[data-anhad-home][data-theme-mode="auto"] .home-header .header-title {
   color: #FFFFFF !important;
   text-shadow: 0 2px 12px rgba(0, 0, 0, 0.75), 0 1px 4px rgba(0, 0, 0, 0.9) !important;
   font-weight: 700 !important;
 }
 
 /* DAY TIME: Dark colored ANHAD title for contrast on bright sky */
-[data-theme-mode="auto"][data-time-of-day="day"] .header__title,
-[data-theme-mode="auto"][data-time-of-day="day"] .header-title {
+[data-anhad-home][data-theme-mode="auto"][data-time-of-day="day"] .home-header .header__title,
+[data-anhad-home][data-theme-mode="auto"][data-time-of-day="day"] .home-header .header-title {
   color: #000814 !important;
   text-shadow: 0 1px 3px rgba(255, 255, 255, 0.6) !important;
   font-weight: 700 !important;
 }
 
-[data-theme-mode="auto"] .header__title-gurmukhi,
-[data-theme-mode="auto"] .gurmukhi-title {
+[data-anhad-home][data-theme-mode="auto"] .home-header .header__title-gurmukhi,
+[data-anhad-home][data-theme-mode="auto"] .home-header .gurmukhi-title {
   color: #FFFFFF !important;
   text-shadow: 0 2px 10px rgba(0, 0, 0, 0.75), 0 1px 3px rgba(0, 0, 0, 0.9) !important;
   font-weight: 600 !important;
 }
 
 /* DAY TIME: Dark colored Gurmukhi title for contrast on bright sky */
-[data-theme-mode="auto"][data-time-of-day="day"] .header__title-gurmukhi,
-[data-theme-mode="auto"][data-time-of-day="day"] .gurmukhi-title {
+[data-anhad-home][data-theme-mode="auto"][data-time-of-day="day"] .home-header .header__title-gurmukhi,
+[data-anhad-home][data-theme-mode="auto"][data-time-of-day="day"] .home-header .gurmukhi-title {
   color: #02162E !important;
   text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5) !important;
   font-weight: 600 !important;
 }
-[data-theme-mode="auto"] .english-title {
+[data-anhad-home][data-theme-mode="auto"] .english-title {
   color: var(--sky-txt-gold, #D4943A) !important;
   text-shadow: var(--sky-text-shadow-light, 0 1px 8px rgba(0,0,0,0.18)) !important;
 }
-[data-theme-mode="auto"] .header-subtitle {
+[data-anhad-home][data-theme-mode="auto"] .header-subtitle {
   color: var(--sky-txt-secondary, #4A1508) !important;
   text-shadow: var(--sky-text-shadow-dark, 0 1px 4px rgba(0,0,0,0.12)) !important;
 }
-[data-theme-mode="auto"] #greetingSalutation,
-[data-theme-mode="auto"] .greeting__salutation {
+[data-anhad-home][data-theme-mode="auto"] #greetingSalutation,
+[data-anhad-home][data-theme-mode="auto"] .greeting__salutation {
   color: var(--sky-txt-accent, #9C3610) !important;
   text-shadow: var(--sky-text-shadow-dark, 0 1px 6px rgba(0,0,0,0.16)) !important;
   font-weight: 700 !important;
 }
-[data-theme-mode="auto"] #greetingGurbani,
-[data-theme-mode="auto"] .greeting__gurbani {
+[data-anhad-home][data-theme-mode="auto"] #greetingGurbani,
+[data-anhad-home][data-theme-mode="auto"] .greeting__gurbani {
   color: var(--sky-txt-primary, #260804) !important;
   text-shadow: var(--sky-text-shadow-dark, 0 1px 8px rgba(0,0,0,0.12)) !important;
   font-weight: 600 !important;
 }
-[data-theme-mode="auto"] #greetingTranslation,
-[data-theme-mode="auto"] .greeting__translation {
+[data-anhad-home][data-theme-mode="auto"] #greetingTranslation,
+[data-anhad-home][data-theme-mode="auto"] .greeting__translation {
   color: var(--sky-txt-secondary, #4A1508) !important;
   text-shadow: var(--sky-text-shadow-dark, none) !important;
   font-weight: 600 !important;
 }
-[data-theme-mode="auto"] .progress-inline__label {
+[data-anhad-home][data-theme-mode="auto"] .progress-inline__label {
   color: var(--sky-txt-label, #6B2810) !important;
   text-shadow: var(--sky-text-shadow-dark, none) !important;
 }
-[data-theme-mode="auto"] .progress-inline__text {
+[data-anhad-home][data-theme-mode="auto"] .progress-inline__text {
   color: var(--sky-txt-secondary, #4A1508) !important;
   text-shadow: var(--sky-text-shadow-dark, none) !important;
 }
-[data-theme-mode="auto"] .greeting__text {
+[data-anhad-home][data-theme-mode="auto"] .greeting__text {
   background: var(--sky-greeting-bg, transparent);
   border-radius: 50%;
   padding: 15px 0 !important;
   margin-top: -10px;
 }
 
-/* Nitnem Tracker specific text visibility */
-[data-theme-mode="auto"] .card-title,
-[data-theme-mode="auto"] .card-subtitle {
+/* Nitnem Tracker specific text visibility (HOME ONLY) */
+[data-anhad-home][data-theme-mode="auto"] .card-title,
+[data-anhad-home][data-theme-mode="auto"] .card-subtitle {
   color: var(--sky-txt-primary, #1A0402) !important;
   text-shadow: 0 1px 4px rgba(0,0,0,0.15) !important;
 }
-[data-theme-mode="auto"] .app-header {
+[data-anhad-home][data-theme-mode="auto"] .app-header {
   background: rgba(0, 0, 0, 0.3) !important;
   backdrop-filter: blur(10px) !important;
   -webkit-backdrop-filter: blur(10px) !important;
 }
-[data-theme-mode="auto"] .header-blur-bg {
+[data-anhad-home][data-theme-mode="auto"] .header-blur-bg {
   background: rgba(0, 0, 0, 0.4) !important;
 }
 
-/* Auto Mode: Hide greeting text, enlarge Guru portraits */
-[data-theme-mode="auto"] .greeting__text {
+/* Auto Mode: Hide greeting text, enlarge Guru portraits (HOME ONLY) */
+[data-anhad-home][data-theme-mode="auto"] .greeting__text {
   display: none !important;
 }
-[data-theme-mode="auto"] .greeting__portrait-slider {
+[data-anhad-home][data-theme-mode="auto"] .greeting__portrait-slider {
   height: 185px !important;
   margin-bottom: 10px !important;
 }
-[data-theme-mode="auto"] .greeting__guru-portrait {
+[data-anhad-home][data-theme-mode="auto"] .greeting__guru-portrait {
   width: 170px !important;
   height: 170px !important;
   min-width: 170px !important;
   min-height: 170px !important;
 }
-[data-theme-mode="auto"] .greeting__slide {
+[data-anhad-home][data-theme-mode="auto"] .greeting__slide {
   width: 170px !important;
   height: 170px !important;
 }
-[data-theme-mode="auto"] .greeting {
+[data-anhad-home][data-theme-mode="auto"] .greeting {
   margin-top: -12px !important;
   margin-bottom: 2px !important;
   padding: 0 !important;
 }
-[data-theme-mode="auto"] .progress-inline {
+[data-anhad-home][data-theme-mode="auto"] .progress-inline {
   margin-top: 4px !important;
 }
 

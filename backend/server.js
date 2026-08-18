@@ -50,7 +50,10 @@ const CONFIG = {
     // Groq AI API Configuration
     GROQ_API_KEY: process.env.GROQ_API_KEY || '',
     GROQ_API_URL: 'https://api.groq.com/openai/v1/chat/completions',
-    CHANNEL_VALIDATION_CACHE_TTL: 86400000 // 24 hours cache for channel validation
+    CHANNEL_VALIDATION_CACHE_TTL: 86400000, // 24 hours cache for channel validation
+    // Shared secret for the Sadhsangat admin channel-management routes.
+    // Required — those routes fail closed (503) if this is not set.
+    ADMIN_API_TOKEN: process.env.ADMIN_API_TOKEN || ''
 };
 
 const PLAYLIST = [
@@ -457,6 +460,66 @@ app.use((req, res, next) => {
         console.log(`[${new Date().toLocaleTimeString()}] ${req.method} ${req.path}`);
     }
     next();
+});
+
+// ═══════════════════════════════════════════════════════════════════
+// 🌐 REMOTE CONFIGURATION & CAMPAIGN ENGINE API
+// ═══════════════════════════════════════════════════════════════════
+
+const DEFAULT_CAMPAIGNS = {
+  version: '1.0.0',
+  updatedAt: '2026-08-17T00:00:00.000Z',
+  featureFlags: {
+    enableVirtualLive: true,
+    enableSadhsangatAutoRefresh: true,
+    enableDynamicSky: true,
+    enableCampaignHeroTakeover: true
+  },
+  campaigns: [
+    {
+      id: 'chaliya-amritvela-2026',
+      title: 'Chaliya Amritvela Trust 2026',
+      subtitle: '40 Days of Divine Naam Simran & Nitnem Practice',
+      type: 'spiritual_event',
+      priority: 100,
+      platforms: ['web', 'android', 'ios'],
+      startDate: '2026-01-01T00:00:00.000Z',
+      endDate: '2026-12-31T23:59:59.000Z',
+      active: true,
+      content: {
+        badgeText: 'CHALIYA 2026',
+        heroTitle: 'Chaliya Amritvela 2026',
+        heroSubtitle: 'Join thousands in the annual 40-day Amritvela Simran Abhyaas',
+        ctaText: 'Join Amritvela',
+        ctaAction: 'STREAM:amritvela',
+        announcement: {
+          icon: '✨',
+          title: 'Amritvela Chaliya 2026 In Progress',
+          message: 'Awaken during Amritvela (3:00 AM – 6:00 AM) for collective Nitnem & Waheguru Simran.',
+          actionLabel: 'Open Nitnem Tracker',
+          actionUrl: 'NitnemTracker/nitnem-tracker.html'
+        },
+        banner: {
+          enabled: true,
+          text: 'ੴ Annual Chaliya 2026 — Amritvela Trust',
+          link: 'GurbaniRadio/gurbani-radio.html?stream=amritvela',
+          accentColor: '#D4AF37'
+        },
+        themeTokens: {
+          accentGlow: 'rgba(212, 175, 55, 0.3)',
+          badgeBackground: 'linear-gradient(135deg, #8A6D3B 0%, #D4AF37 100%)'
+        }
+      }
+    }
+  ]
+};
+
+app.get('/api/config/campaigns', (req, res) => {
+  res.set({
+    'Cache-Control': 'public, max-age=300, stale-while-revalidate=600',
+    'Access-Control-Allow-Origin': '*'
+  });
+  res.json(DEFAULT_CAMPAIGNS);
 });
 
 // ═══════════════════════════════════════════════════════════════════
@@ -3088,8 +3151,26 @@ app.put('/api/sadhsangat/my-channels/reorder', async (req, res) => {
     }
 });
 
+// Admin auth — protects the Sadhsangat admin channel-management routes below.
+// Requires an X-Admin-Token header matching ADMIN_API_TOKEN. Fails closed: if
+// ADMIN_API_TOKEN isn't configured, these routes are unavailable (503) rather
+// than silently open to anyone who finds the URL.
+function requireAdminToken(req, res, next) {
+    const configured = CONFIG.ADMIN_API_TOKEN;
+    if (!configured) {
+        return res.status(503).json({ error: 'Admin API is not configured on this server.' });
+    }
+    const provided = Buffer.from(String(req.headers['x-admin-token'] || ''));
+    const expected = Buffer.from(String(configured));
+    const match = provided.length === expected.length && crypto.timingSafeEqual(provided, expected);
+    if (!match) {
+        return res.status(401).json({ error: 'Unauthorized' });
+    }
+    next();
+}
+
 // Admin channels endpoints
-app.get('/api/sadhsangat/admin/channels', async (req, res) => {
+app.get('/api/sadhsangat/admin/channels', requireAdminToken, async (req, res) => {
     try {
         const channels = await SadhsangatDb.getAllChannels();
         res.json({ channels });
@@ -3098,7 +3179,7 @@ app.get('/api/sadhsangat/admin/channels', async (req, res) => {
     }
 });
 
-app.post('/api/sadhsangat/admin/channels', async (req, res) => {
+app.post('/api/sadhsangat/admin/channels', requireAdminToken, async (req, res) => {
     const { handle, isFeatured, displayOrder, isEnabled, notifyOnLive } = req.body;
     if (!handle) {
         return res.status(400).json({ error: 'YouTube handle or URL is required' });
@@ -3130,7 +3211,7 @@ app.post('/api/sadhsangat/admin/channels', async (req, res) => {
     }
 });
 
-app.put('/api/sadhsangat/admin/channels/:channelId', async (req, res) => {
+app.put('/api/sadhsangat/admin/channels/:channelId', requireAdminToken, async (req, res) => {
     const { channelId } = req.params;
     const { isFeatured, displayOrder, isEnabled, notifyOnLive, channelName } = req.body;
     try {
@@ -3154,7 +3235,7 @@ app.put('/api/sadhsangat/admin/channels/:channelId', async (req, res) => {
     }
 });
 
-app.delete('/api/sadhsangat/admin/channels/:channelId', async (req, res) => {
+app.delete('/api/sadhsangat/admin/channels/:channelId', requireAdminToken, async (req, res) => {
     const { channelId } = req.params;
     try {
         await SadhsangatDb.deleteChannel(channelId);

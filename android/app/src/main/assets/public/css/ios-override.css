@@ -310,32 +310,37 @@ body {
   z-index: auto;
 }
 
-/* ── Header ── */
-.header {
+/* ── Header ──
+   Scoped to .home-header — this file is Home-exclusive (only linked by
+   index.html) but, like trendora-premium.css/desktop-responsive.css, was
+   never removed from <head> once loaded, so its bare .header/.header__btn
+   rules used to bleed onto other pages' own same-named elements. See
+   trendora-premium.css's header section for the full explanation. */
+.header.home-header {
   position: sticky;
   top: 0;
   z-index: 100;
   background: transparent !important;
 }
 
-.dark-mode .header {
+.dark-mode .home-header {
   background: transparent !important;
 }
 
-.header--compact {
+.home-header.header--compact {
   background: transparent !important;
   backdrop-filter: saturate(180%) blur(20px);
   -webkit-backdrop-filter: saturate(180%) blur(20px);
   border-bottom: none;
 }
 
-.dark-mode .header--compact {
+.dark-mode .home-header.header--compact {
   background: transparent !important;
   border-bottom-color: rgba(255, 255, 255, 0.08);
 }
 
 /* ── Header Emoji Buttons ── */
-.header__btn .ios-emoji {
+.home-header .header__btn .ios-emoji {
   font-size: 1.2rem;
   width: auto;
   height: auto;
@@ -596,8 +601,8 @@ body {
 }
 
 /* Header Buttons Completely Flat (No Shadow) */
-.header__btn,
-.header-btn--glass {
+.home-header .header__btn,
+.home-header .header-btn--glass {
   border-radius: 50% !important;
   background: #f0f0f3 !important;
   backdrop-filter: none !important;
@@ -1242,8 +1247,8 @@ body {
 }
 
 /* Flat styling for Header Buttons */
-[data-theme="dark"] .header__btn,
-[data-theme="dark"] .header-btn--glass {
+[data-theme="dark"] .home-header .header__btn,
+[data-theme="dark"] .home-header .header-btn--glass {
   background: #2a2a2d !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
@@ -1505,8 +1510,14 @@ a,
 }
 
 /* Header Buttons Overrides for Auto Mode */
-[data-theme-mode="auto"] .header__btn,
-[data-theme-mode="auto"] .header-btn--glass,
+/* .header__back/.glass-nav__back deliberately NOT scoped to .home-header
+   here — both are shared component classes used by 13+ other pages'
+   (Settings, Profile, Journey, legal pages, etc.) own back buttons, not
+   Home-exclusive, so this glassmorphism treatment is plausibly an
+   intentional shared style rather than a Home-specific leak. Only
+   .header__btn/.header-btn--glass are confirmed Home-exclusive. */
+[data-theme-mode="auto"] .home-header .header__btn,
+[data-theme-mode="auto"] .home-header .header-btn--glass,
 [data-theme-mode="auto"] .header__back,
 [data-theme-mode="auto"] .glass-nav__back {
   background: var(--sky-card-bg-glass) !important;
@@ -1517,21 +1528,21 @@ a,
   -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
 }
 
-[data-theme-mode="auto"] .header__btn svg,
-[data-theme-mode="auto"] .header-btn--glass svg,
+[data-theme-mode="auto"] .home-header .header__btn svg,
+[data-theme-mode="auto"] .home-header .header-btn--glass svg,
 [data-theme-mode="auto"] .header__back svg,
 [data-theme-mode="auto"] .glass-nav__back svg {
   color: var(--sky-card-text) !important;
 }
 
-[data-theme-mode="auto"] .header__btn img,
-[data-theme-mode="auto"] .header-btn--glass img,
+[data-theme-mode="auto"] .home-header .header__btn img,
+[data-theme-mode="auto"] .home-header .header-btn--glass img,
 [data-theme-mode="auto"] .header__back img {
   filter: brightness(0) invert(1) !important;
 }
 
-[data-theme-mode="auto"] .header__btn:active,
-[data-theme-mode="auto"] .header-btn--glass:active,
+[data-theme-mode="auto"] .home-header .header__btn:active,
+[data-theme-mode="auto"] .home-header .header-btn--glass:active,
 [data-theme-mode="auto"] .header__back:active,
 [data-theme-mode="auto"] .glass-nav__back:active {
   background: var(--sky-card-bg) !important;
@@ -1636,88 +1647,7 @@ a,
   color: var(--sky-card-accent) !important;
 }
 
-/* =========================================================================
-   § 18. LEARNING & FAVORITES GLASSMORPHIC OVERRIDES (AUTO THEME)
-   ========================================================================= */
-[data-theme-mode="auto"] .inspiration-section,
-[data-theme-mode="auto"] .wisdom-card,
-[data-theme-mode="auto"] .category-card,
-[data-theme-mode="auto"] .topic-card,
-[data-theme-mode="auto"] .shabad-card,
-[data-theme-mode="auto"] .quick-stats-section,
-[data-theme-mode="auto"] .insight-modal__content,
-[data-theme-mode="auto"] .tabs,
-[data-theme-mode="auto"] .fav-card,
-[data-theme-mode="auto"] .fav-card__read-btn,
-[data-theme-mode="auto"] .fav-card__action,
-[data-theme-mode="auto"] .add-note-btn,
-[data-theme-mode="auto"] .empty-state,
-[data-theme-mode="auto"] .empty-state__icon {
-  background: var(--sky-card-bg-glass) !important;
-  border: 1.5px solid var(--sky-card-border) !important;
-  box-shadow: 0 8px 32px var(--sky-card-shadow),
-    inset 0 2px 0 rgba(255, 255, 255, 0.4) !important;
-  color: var(--sky-card-text) !important;
-  backdrop-filter: blur(24px) saturate(180%) !important;
-  -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
-}
-
-[data-theme-mode="auto"] .category-name,
-[data-theme-mode="auto"] .topic-name,
-[data-theme-mode="auto"] .shabad-title,
-[data-theme-mode="auto"] .fav-card__gurmukhi,
-[data-theme-mode="auto"] .wisdom-title,
-[data-theme-mode="auto"] .inspiration-quote__text {
-  color: var(--sky-card-text) !important;
-}
-
-[data-theme-mode="auto"] .category-desc,
-[data-theme-mode="auto"] .topic-desc,
-[data-theme-mode="auto"] .shabad-meta,
-[data-theme-mode="auto"] .fav-card__translation,
-[data-theme-mode="auto"] .fav-card__meta,
-[data-theme-mode="auto"] .wisdom-desc,
-[data-theme-mode="auto"] .wisdom-pankti,
-[data-theme-mode="auto"] .wisdom-source,
-[data-theme-mode="auto"] .inspiration-quote__translation,
-[data-theme-mode="auto"] .inspiration-meta,
-[data-theme-mode="auto"] .quick-stat__label,
-[data-theme-mode="auto"] .empty-state__title,
-[data-theme-mode="auto"] .empty-state__desc,
-[data-theme-mode="auto"] .tab {
-  color: var(--sky-card-text2) !important;
-}
-
-[data-theme-mode="auto"] .tab--active {
-  background: var(--sky-card-icon-bg) !important;
-  color: var(--sky-card-accent) !important;
-  border: 1px solid var(--sky-card-border) !important;
-}
-
-[data-theme-mode="auto"] .tab__count {
-  background: rgba(255, 255, 255, 0.2) !important;
-  color: var(--sky-card-text) !important;
-}
-
-[data-theme-mode="auto"] .tab--active .tab__count {
-  background: var(--sky-card-icon-bg) !important;
-  color: var(--sky-card-accent) !important;
-}
-
-[data-theme-mode="auto"] .quick-stat__value {
-  color: var(--sky-card-accent) !important;
-}
-
-[data-theme-mode="auto"] .fav-card__type {
-  background: var(--sky-card-icon-bg) !important;
-  color: var(--sky-card-accent) !important;
-  border: 1px solid var(--sky-card-border) !important;
-}
-
-[data-theme-mode="auto"] .wisdom-glow,
-[data-theme-mode="auto"] .wisdom-rays {
-  opacity: 0.15 !important;
-}
+/* Section 18 removed: Insights and Favorites cards preserve their authentic design and styles */
 
 
 /* =========================================================================
@@ -1775,23 +1705,19 @@ a,
   -webkit-backdrop-filter: none !important;
 }
 
-/* ── Auto theme MORNING + EVENING only — sky glass palette (NOT day/night) ── */
-[data-theme-mode="auto"][data-time-of-day="morning"] .quick-card,
-[data-theme-mode="auto"][data-time-of-day="morning"] .event-card,
-[data-theme-mode="auto"][data-time-of-day="morning"] .practice-card,
-[data-theme-mode="auto"][data-time-of-day="morning"] .fav-card,
-[data-theme-mode="auto"][data-time-of-day="morning"] .insight-card,
-[data-theme-mode="auto"][data-time-of-day="morning"] .card,
-[data-theme-mode="auto"][data-time-of-day="morning"] .glass-card,
-[data-theme-mode="auto"][data-time-of-day="morning"] .nitnem-card,
-[data-theme-mode="auto"][data-time-of-day="evening"] .quick-card,
-[data-theme-mode="auto"][data-time-of-day="evening"] .event-card,
-[data-theme-mode="auto"][data-time-of-day="evening"] .practice-card,
-[data-theme-mode="auto"][data-time-of-day="evening"] .fav-card,
-[data-theme-mode="auto"][data-time-of-day="evening"] .insight-card,
-[data-theme-mode="auto"][data-time-of-day="evening"] .card,
-[data-theme-mode="auto"][data-time-of-day="evening"] .glass-card,
-[data-theme-mode="auto"][data-time-of-day="evening"] .nitnem-card {
+/* ── Auto theme MORNING + EVENING only — sky glass palette (HOME ONLY) ── */
+[data-anhad-home][data-theme-mode="auto"][data-time-of-day="morning"] .quick-card,
+[data-anhad-home][data-theme-mode="auto"][data-time-of-day="morning"] .event-card,
+[data-anhad-home][data-theme-mode="auto"][data-time-of-day="morning"] .practice-card,
+[data-anhad-home][data-theme-mode="auto"][data-time-of-day="morning"] .card,
+[data-anhad-home][data-theme-mode="auto"][data-time-of-day="morning"] .glass-card,
+[data-anhad-home][data-theme-mode="auto"][data-time-of-day="morning"] .nitnem-card,
+[data-anhad-home][data-theme-mode="auto"][data-time-of-day="evening"] .quick-card,
+[data-anhad-home][data-theme-mode="auto"][data-time-of-day="evening"] .event-card,
+[data-anhad-home][data-theme-mode="auto"][data-time-of-day="evening"] .practice-card,
+[data-anhad-home][data-theme-mode="auto"][data-time-of-day="evening"] .card,
+[data-anhad-home][data-theme-mode="auto"][data-time-of-day="evening"] .glass-card,
+[data-anhad-home][data-theme-mode="auto"][data-time-of-day="evening"] .nitnem-card {
   background: var(--sky-card-bg-glass) !important;
   border: 1px solid var(--sky-card-border) !important;
   color: var(--sky-card-text) !important;
@@ -2013,8 +1939,8 @@ a,
 }
 
 /* Morning Buttons & Controls */
-[data-theme-mode="auto"][data-time-of-day="morning"] .header__btn,
-[data-theme-mode="auto"][data-time-of-day="morning"] .header-btn--glass,
+[data-theme-mode="auto"][data-time-of-day="morning"] .home-header .header__btn,
+[data-theme-mode="auto"][data-time-of-day="morning"] .home-header .header-btn--glass,
 [data-theme-mode="auto"][data-time-of-day="morning"] .header__back,
 [data-theme-mode="auto"][data-time-of-day="morning"] .glass-nav__back,
 [data-theme-mode="auto"][data-time-of-day="morning"] .event-card__learn-more,
@@ -2088,8 +2014,8 @@ a,
   -webkit-backdrop-filter: none !important;
 }
 
-[data-theme-mode="auto"][data-time-of-day="evening"] .header__btn,
-[data-theme-mode="auto"][data-time-of-day="evening"] .header-btn--glass,
+[data-theme-mode="auto"][data-time-of-day="evening"] .home-header .header__btn,
+[data-theme-mode="auto"][data-time-of-day="evening"] .home-header .header-btn--glass,
 [data-theme-mode="auto"][data-time-of-day="evening"] .header__back,
 [data-theme-mode="auto"][data-time-of-day="evening"] .glass-nav__back,
 [data-theme-mode="auto"][data-time-of-day="evening"] .event-card__learn-more,
@@ -2355,61 +2281,53 @@ html {
    ► Claymorphism depth comes purely from box-shadow, not blur or border.
 ═══════════════════════════════════════════════════════════════════════════════ */
 
-/* Auto-theme morning — remove blur + border on all cards (specificity [0,3,0]) */
-[data-theme-mode="auto"][data-time-of-day="morning"] .quick-card,
-[data-theme-mode="auto"][data-time-of-day="morning"] .practice-card,
-[data-theme-mode="auto"][data-time-of-day="morning"] .event-card,
-[data-theme-mode="auto"][data-time-of-day="morning"] .progress-inline,
-[data-theme-mode="auto"][data-time-of-day="morning"] .nitnem-card,
-[data-theme-mode="auto"][data-time-of-day="morning"] .fav-card,
-[data-theme-mode="auto"][data-time-of-day="morning"] .insight-card,
-[data-theme-mode="auto"][data-time-of-day="morning"] .glass-card,
-[data-theme-mode="auto"][data-time-of-day="morning"] .card {
+/* Auto-theme morning — remove blur + border on all cards (HOME ONLY) */
+[data-anhad-home][data-theme-mode="auto"][data-time-of-day="morning"] .quick-card,
+[data-anhad-home][data-theme-mode="auto"][data-time-of-day="morning"] .practice-card,
+[data-anhad-home][data-theme-mode="auto"][data-time-of-day="morning"] .event-card,
+[data-anhad-home][data-theme-mode="auto"][data-time-of-day="morning"] .progress-inline,
+[data-anhad-home][data-theme-mode="auto"][data-time-of-day="morning"] .nitnem-card,
+[data-anhad-home][data-theme-mode="auto"][data-time-of-day="morning"] .glass-card,
+[data-anhad-home][data-theme-mode="auto"][data-time-of-day="morning"] .card {
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
   border: none !important;
 }
 
-/* Auto-theme day — remove blur + border on all cards */
-[data-theme-mode="auto"][data-time-of-day="day"] .quick-card,
-[data-theme-mode="auto"][data-time-of-day="day"] .practice-card,
-[data-theme-mode="auto"][data-time-of-day="day"] .event-card,
-[data-theme-mode="auto"][data-time-of-day="day"] .progress-inline,
-[data-theme-mode="auto"][data-time-of-day="day"] .nitnem-card,
-[data-theme-mode="auto"][data-time-of-day="day"] .fav-card,
-[data-theme-mode="auto"][data-time-of-day="day"] .insight-card,
-[data-theme-mode="auto"][data-time-of-day="day"] .glass-card,
-[data-theme-mode="auto"][data-time-of-day="day"] .card {
+/* Auto-theme day — remove blur + border on all cards (HOME ONLY) */
+[data-anhad-home][data-theme-mode="auto"][data-time-of-day="day"] .quick-card,
+[data-anhad-home][data-theme-mode="auto"][data-time-of-day="day"] .practice-card,
+[data-anhad-home][data-theme-mode="auto"][data-time-of-day="day"] .event-card,
+[data-anhad-home][data-theme-mode="auto"][data-time-of-day="day"] .progress-inline,
+[data-anhad-home][data-theme-mode="auto"][data-time-of-day="day"] .nitnem-card,
+[data-anhad-home][data-theme-mode="auto"][data-time-of-day="day"] .glass-card,
+[data-anhad-home][data-theme-mode="auto"][data-time-of-day="day"] .card {
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
   border: none !important;
 }
 
-/* Auto-theme evening — remove blur + border on all cards */
-[data-theme-mode="auto"][data-time-of-day="evening"] .quick-card,
-[data-theme-mode="auto"][data-time-of-day="evening"] .practice-card,
-[data-theme-mode="auto"][data-time-of-day="evening"] .event-card,
-[data-theme-mode="auto"][data-time-of-day="evening"] .progress-inline,
-[data-theme-mode="auto"][data-time-of-day="evening"] .nitnem-card,
-[data-theme-mode="auto"][data-time-of-day="evening"] .fav-card,
-[data-theme-mode="auto"][data-time-of-day="evening"] .insight-card,
-[data-theme-mode="auto"][data-time-of-day="evening"] .glass-card,
-[data-theme-mode="auto"][data-time-of-day="evening"] .card {
+/* Auto-theme evening — remove blur + border on all cards (HOME ONLY) */
+[data-anhad-home][data-theme-mode="auto"][data-time-of-day="evening"] .quick-card,
+[data-anhad-home][data-theme-mode="auto"][data-time-of-day="evening"] .practice-card,
+[data-anhad-home][data-theme-mode="auto"][data-time-of-day="evening"] .event-card,
+[data-anhad-home][data-theme-mode="auto"][data-time-of-day="evening"] .progress-inline,
+[data-anhad-home][data-theme-mode="auto"][data-time-of-day="evening"] .nitnem-card,
+[data-anhad-home][data-theme-mode="auto"][data-time-of-day="evening"] .glass-card,
+[data-anhad-home][data-theme-mode="auto"][data-time-of-day="evening"] .card {
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
   border: none !important;
 }
 
-/* Auto-theme night — remove blur + border on all cards */
-[data-theme-mode="auto"][data-time-of-day="night"] .quick-card,
-[data-theme-mode="auto"][data-time-of-day="night"] .practice-card,
-[data-theme-mode="auto"][data-time-of-day="night"] .event-card,
-[data-theme-mode="auto"][data-time-of-day="night"] .progress-inline,
-[data-theme-mode="auto"][data-time-of-day="night"] .nitnem-card,
-[data-theme-mode="auto"][data-time-of-day="night"] .fav-card,
-[data-theme-mode="auto"][data-time-of-day="night"] .insight-card,
-[data-theme-mode="auto"][data-time-of-day="night"] .glass-card,
-[data-theme-mode="auto"][data-time-of-day="night"] .card {
+/* Auto-theme night — remove blur + border on all cards (HOME ONLY) */
+[data-anhad-home][data-theme-mode="auto"][data-time-of-day="night"] .quick-card,
+[data-anhad-home][data-theme-mode="auto"][data-time-of-day="night"] .practice-card,
+[data-anhad-home][data-theme-mode="auto"][data-time-of-day="night"] .event-card,
+[data-anhad-home][data-theme-mode="auto"][data-time-of-day="night"] .progress-inline,
+[data-anhad-home][data-theme-mode="auto"][data-time-of-day="night"] .nitnem-card,
+[data-anhad-home][data-theme-mode="auto"][data-time-of-day="night"] .glass-card,
+[data-anhad-home][data-theme-mode="auto"][data-time-of-day="night"] .card {
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
   border: none !important;

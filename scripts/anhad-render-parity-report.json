@@ -1,0 +1,98 @@
+{
+  "steps": [
+    {
+      "name": "1_learningHeadingPresentAfterSpaNav",
+      "ok": true,
+      "details": "{\"spa\":{\"appClass\":\"\",\"pageHeaderPresent\":true,\"pageHeaderVisible\":true,\"insightsTitleText\":\"ੴ Learning & Library\",\"insightsTitleWeight\":\"800\",\"favTitleSize\":null,\"favTitleWeight\":null,\"gmpPosition\":\"fixed\",\"gmpZIndex\":\"9000\",\"activeTabCount\":1,\"activeTabs\":[\"/Insights/insights.html|📚 Learning\"]},\"direct\":{\"appClass\":\"\",\"pageHeaderPresent\":true,\"pageHeaderVisible\":true,\"insightsTitleText\":\"ੴ Learning & Library\",\"insightsTitleWeight\":\"800\",\"favTitleSize\":null,\"favTitleWeight\":null,\"gmpPosition\":null,\"gmpZIndex\":null,\"activeTabCount\":0,\"activeTabs\":[]}}"
+    },
+    {
+      "name": "2_insightsCssActuallyApplied",
+      "ok": true,
+      "details": "spa=800 direct=800"
+    },
+    {
+      "name": "3_insightsAppClassMatchesHardLoad",
+      "ok": true,
+      "details": "spa=\"\" direct=\"\""
+    },
+    {
+      "name": "3b_miniPlayerStaysFixedOnInsights",
+      "ok": true,
+      "details": "gmpPosition=fixed gmpZIndex=9000"
+    },
+    {
+      "name": "3c_exactlyOneActiveTabOnInsights",
+      "ok": true,
+      "details": "[\"/Insights/insights.html|📚 Learning\"]"
+    },
+    {
+      "name": "4_favoritesCssActuallyApplied",
+      "ok": false,
+      "details": "spa=null/null direct=null/null"
+    },
+    {
+      "name": "5_favoritesAppClassMatchesHardLoad",
+      "ok": true,
+      "details": "spa=\"app\" direct=\"app app--instant\""
+    },
+    {
+      "name": "5b_miniPlayerStaysFixedOnFavorites",
+      "ok": true,
+      "details": "gmpPosition=fixed gmpZIndex=9000"
+    },
+    {
+      "name": "5c_exactlyOneActiveTabOnFavorites",
+      "ok": true,
+      "details": "[\"/Favorites/favorites.html|❤️ Favorites\"]"
+    },
+    {
+      "name": "6_homeAppClassMatchesHardLoad",
+      "ok": true,
+      "details": "spa=\"app\" direct=\"app app--instant\""
+    },
+    {
+      "name": "6b_miniPlayerFixedAfterReturnToHome",
+      "ok": true,
+      "details": "gmpPosition=fixed gmpZIndex=9000"
+    },
+    {
+      "name": "6c_exactlyOneActiveTabAfterReturnToHome",
+      "ok": true,
+      "details": "[\"/index.html|🏠 Home\"]"
+    },
+    {
+      "name": "7_learningHeaderRemovedOnReturnToHome",
+      "ok": true,
+      "details": "{\"present\":false,\"visible\":false}"
+    },
+    {
+      "name": "0_exactlyOneActiveTabOnDirectHomeLoad",
+      "ok": true,
+      "details": "[\"/index.html|🏠 Home\"]"
+    },
+    {
+      "name": "8_noComingSoonPopupFlash",
+      "ok": true,
+      "details": "{\"overlayVisibleFrames\":0,\"maxOverlayOpacity\":0,\"oversizedGuruFrames\":0,\"maxGuruWidth\":195.5,\"samples\":238}"
+    },
+    {
+      "name": "9_noGiantUnstyledGuruImageFlash",
+      "ok": true,
+      "details": "oversizedFrames=0 maxGuruWidth=196px samples=238"
+    },
+    {
+      "name": "10_gurpurabCardPopulatedAfterSpaReturn",
+      "ok": true,
+      "details": "{\"titleText\":\"Sampuranta Diwas Sri Guru Granth Sahib Ji\",\"titleHasSkeleton\":false,\"dateText\":\"Aug 30\",\"imgSrc\":\"guruimages/gurugranthsahebji.jpeg\",\"imgNaturalWidth\":1360}"
+    }
+  ],
+  "consoleErrors": [],
+  "failedRequests": [],
+  "uncaughtExceptions": [],
+  "summary": {
+    "totalConsoleErrors": 0,
+    "totalFailedRequests": 0,
+    "totalUncaughtExceptions": 0,
+    "allStepsOk": false
+  }
+}

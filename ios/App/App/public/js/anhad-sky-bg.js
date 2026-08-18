@@ -110,13 +110,8 @@
       layer1.classList.add('active');
       layer2.classList.remove('active');
       activeLayerIndex = 1;
+      // Set dynamic bg URL and maintain background transparency synchronously
       document.documentElement.style.setProperty('--dynamic-bg-url', `url('${bgUrl}')`);
-      
-      // CRITICAL FIX: Remove solid background color once image layer is active
-      // This allows the background image to show through
-      requestAnimationFrame(() => {
-        document.documentElement.style.backgroundColor = 'transparent';
-      });
       
       // Save image state
       if (window.HomeStateManager) {
@@ -309,6 +304,14 @@
   }
 
   // ── Init ─────────────────────────────────────────────────────────────────
+  // This script is not in smooth-navigation.js's SHELL_SCRIPTS, so its tag
+  // re-executes fresh on every non-cached SPA arrival at Home. The DOM-facing
+  // calls below (applyTimeOfDay/updateHeroCardImages/etc.) are meant to
+  // re-run each time — they refresh visuals against whatever DOM currently
+  // exists. But window/document listeners and the interval attach to targets
+  // that persist for the whole SPA session, so re-registering them on every
+  // revisit would stack duplicates (each stacking revisit then runs the same
+  // handler N times per event). Gate those via _skyBgFirstBoot instead.
   function init() {
     injectInstantBgCSS();
     preloadBgImages();
@@ -317,6 +320,8 @@
     applyTimeOfDay();
     updateHeroCardImages();
     applyTimeAdaptiveCardColors(_lastSlot);
+
+    if (!_skyBgFirstBoot) return;
 
     window.addEventListener('anhadTimeForced', instantRefresh);
     window.addEventListener('storage', (e) => {
@@ -347,8 +352,15 @@
     else clearTimeAdaptiveCardColors();
   }
 
-  document.addEventListener('anhadThemeChanged', onThemeChange);
-  document.addEventListener('themechange', onThemeChange);
+  // See the comment above init() — captured once per script execution so
+  // both this block and init() agree on whether listeners already exist.
+  const _skyBgFirstBoot = !window.__anhadSkyBgListenersBound;
+  window.__anhadSkyBgListenersBound = true;
+
+  if (_skyBgFirstBoot) {
+    document.addEventListener('anhadThemeChanged', onThemeChange);
+    document.addEventListener('themechange', onThemeChange);
+  }
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);

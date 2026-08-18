@@ -19,15 +19,22 @@
     let SAKHIS = [];
     let SIKH_HISTORY = {};
 
+    function getJsonDataUrl(filename) {
+        const path = window.location.pathname.toLowerCase();
+        const inInsightsDir = path.includes('/insights');
+        return inInsightsDir ? `./data/${filename}` : `Insights/data/${filename}`;
+    }
+
     async function loadJsonData() {
+        if (RAAGS.length > 0) return; // Already cached
         try {
             const [raagsRes, composersRes, themesRes, guruSahibaanRes, sakhisRes, historyRes] = await Promise.all([
-                fetch('./data/raags.json'),
-                fetch('./data/composers.json'),
-                fetch('./data/spiritual-themes.json'),
-                fetch('./data/guru-sahibaan.json'),
-                fetch('./data/sakhis.json'),
-                fetch('./data/sikh-history.json')
+                fetch(getJsonDataUrl('raags.json')),
+                fetch(getJsonDataUrl('composers.json')),
+                fetch(getJsonDataUrl('spiritual-themes.json')),
+                fetch(getJsonDataUrl('guru-sahibaan.json')),
+                fetch(getJsonDataUrl('sakhis.json')),
+                fetch(getJsonDataUrl('sikh-history.json'))
             ]);
 
             const raagsData = await raagsRes.json();
@@ -369,102 +376,148 @@
         document.body.style.overflow = '';
     };
 
-    function renderRaags(lang) {
+    function renderRaags(lang, filter = '') {
         const nameField = lang === 'pa' ? 'namePa' : lang === 'hi' ? 'nameHi' : 'name';
         const timeField = lang === 'pa' ? 'timeOfDayPa' : lang === 'hi' ? 'timeOfDayHi' : 'timeOfDay';
         const descField = lang === 'pa' ? 'descriptionPa' : lang === 'hi' ? 'descriptionHi' : 'description';
         
-        return `<div class="modal-list">${RAAGS.map(r => `
+        let list = RAAGS;
+        if (filter) {
+            list = list.filter(r => 
+                (r[nameField] && r[nameField].toLowerCase().includes(filter)) ||
+                (r.name && r.name.toLowerCase().includes(filter)) ||
+                (r[timeField] && r[timeField].toLowerCase().includes(filter))
+            );
+        }
+        
+        if (list.length === 0) {
+            return `<p style="text-align:center; padding: 24px; color: var(--text-tertiary);">No matching Raags found.</p>`;
+        }
+        
+        return `<div class="modal-list">${list.map(r => `
             <div class="modal-list-item">
                 <div>
                     <div class="modal-list-item__name">🎵 ${r[nameField] || r.name}</div>
-                    <div class="modal-list-item__info">${r[timeField] || r.timeOfDay}</div>
+                    <div class="modal-list-item__info">${r[timeField] || r.timeOfDay || ''}</div>
                 </div>
-                <span class="modal-list-item__count">${r.shabads} shabads</span>
+                <span class="modal-list-item__count">${r.shabads || 0} shabads</span>
             </div>`).join('')}</div>`;
     }
 
-    function renderContributors(lang) {
+    function renderContributors(lang, filter = '') {
         const nameField = lang === 'pa' ? 'namePa' : lang === 'hi' ? 'nameHi' : 'name';
         const bioField = lang === 'pa' ? 'biographyPa' : lang === 'hi' ? 'biographyHi' : 'biography';
         
+        let list = CONTRIBUTORS;
+        if (filter) {
+            list = list.filter(c => 
+                (c[nameField] && c[nameField].toLowerCase().includes(filter)) ||
+                (c.name && c.name.toLowerCase().includes(filter)) ||
+                (c.type && c.type.toLowerCase().includes(filter))
+            );
+        }
+        
+        if (list.length === 0) {
+            return `<p style="text-align:center; padding: 24px; color: var(--text-tertiary);">No matching contributors found.</p>`;
+        }
+        
         const groups = { Guru: [], Bhagat: [], Bhatt: [], Sikh: [] };
-        CONTRIBUTORS.forEach(c => (groups[c.type] || []).push(c));
-        return Object.entries(groups).map(([type, items]) => `
-            <h4 style="margin: 16px 0 8px; color: var(--gold-400);">${type === 'Guru' ? '🙏 Gurus' : type === 'Bhagat' ? '📿 Bhagats' : type === 'Bhatt' ? '✨ Bhatts' : '🎵 Sikhs'}</h4>
+        list.forEach(c => (groups[c.type] || (groups[c.type] = [])).push(c));
+        
+        return Object.entries(groups).filter(([_, items]) => items.length > 0).map(([type, items]) => `
+            <h4 style="margin: 16px 0 8px; color: #D4A03A;">${type === 'Guru' ? '🙏 Gurus' : type === 'Bhagat' ? '📿 Bhagats' : type === 'Bhatt' ? '✨ Bhatts' : '🎵 Sikhs'}</h4>
             <div class="modal-list">${items.map(c => `
                 <div class="modal-list-item">
                     <div>
-                        <div class="modal-list-item__name">${c.emoji} ${c[nameField] || c.name}</div>
+                        <div class="modal-list-item__name">${c.emoji || '🙏'} ${c[nameField] || c.name}</div>
                         <div class="modal-list-item__info">${c.type}</div>
                     </div>
-                    <span class="modal-list-item__count">${c.shabads}</span>
+                    <span class="modal-list-item__count">${c.shabads || ''} shabads</span>
                 </div>`).join('')}</div>`).join('');
     }
 
-    function renderThemes(lang) {
+    function renderThemes(lang, filter = '') {
         const titleField = lang === 'pa' ? 'titlePa' : lang === 'hi' ? 'titleHi' : 'title';
         const descField = lang === 'pa' ? 'descriptionPa' : lang === 'hi' ? 'descriptionHi' : 'description';
         
-        return THEMES.map(t => {
+        let list = THEMES;
+        if (filter) {
+            list = list.filter(t => 
+                (t[titleField] && t[titleField].toLowerCase().includes(filter)) ||
+                (t.title && t.title.toLowerCase().includes(filter))
+            );
+        }
+        
+        if (list.length === 0) {
+            return `<p style="text-align:center; padding: 24px; color: var(--text-tertiary);">No matching themes found.</p>`;
+        }
+        
+        return list.map(t => {
             const title = t[titleField] || t.title;
             let desc = t[descField] || t.desc || '';
-            
-            // Fix for [object Object] issue
             if (typeof desc === 'object' && desc !== null) {
                 desc = desc[lang] || desc['en'] || '';
             }
             
             return `
-            <div class="theme-card">
-                <div class="theme-card__title">${t.emoji} ${title}</div>
-                <div class="theme-card__desc">${desc}</div>
+            <div class="theme-card" style="margin-bottom: 12px; padding: 16px; border-radius: 18px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);">
+                <div class="theme-card__title" style="font-size: 16px; font-weight: 700; color: #D4A03A; margin-bottom: 6px;">${t.emoji || '✨'} ${title}</div>
+                <div class="theme-card__desc" style="font-size: 13.5px; line-height: 1.5; color: var(--text-secondary);">${desc}</div>
             </div>`;
         }).join('');
     }
 
-    function renderHistory(lang) {
+    function renderHistory(lang, filter = '') {
         if (SIKH_HISTORY.guruSahibaan) {
             const data = SIKH_HISTORY.guruSahibaan[lang] || SIKH_HISTORY.guruSahibaan['en'];
-            const gurusSource = SIKH_HISTORY.guruSahibaan['en'].gurus || [];
-            let html = `<div class="history-content">`;
+            let gurusSource = SIKH_HISTORY.guruSahibaan['en'].gurus || [];
             
-            // Add intro
-            if (data.intro) {
-                html += `<p style="margin-bottom: 20px; line-height: 1.6;">${data.intro}</p>`;
+            if (filter) {
+                gurusSource = gurusSource.filter(g => 
+                    (g.name && g.name.toLowerCase().includes(filter)) ||
+                    (g.namePunjabi && g.namePunjabi.toLowerCase().includes(filter)) ||
+                    (g.contributions && g.contributions.toLowerCase().includes(filter))
+                );
             }
             
-            // Add Guru Sahibaan section
+            let html = `<div class="history-content">`;
+            if (data.intro && !filter) {
+                html += `<p style="margin-bottom: 20px; line-height: 1.6; color: var(--text-secondary);">${data.intro}</p>`;
+            }
+            
             if (gurusSource.length > 0) {
-                html += `<h3 style="margin: 20px 0 12px; color: var(--gold-400);">${data.title || 'Guru Sahibaan'}</h3>`;
+                html += `<h3 style="margin: 20px 0 12px; color: #D4A03A;">${data.title || 'Guru Sahibaan'}</h3>`;
                 gurusSource.forEach(g => {
                     const nameDisp = lang === 'pa' ? (g.namePunjabi || g.name) : lang === 'hi' ? (g.nameHindi || g.name) : g.name;
                     const contribDisp = lang === 'pa' ? (g.contributionsPa || g.contributions) : lang === 'hi' ? (g.contributionsHi || g.contributions) : g.contributions;
                     const teachingsDisp = lang === 'pa' ? (g.teachingsPa || g.teachings) : lang === 'hi' ? (g.teachingsHi || g.teachings) : g.teachings;
                     
                     html += `
-                    <div class="theme-card" style="margin-bottom: 14px; padding: 18px; border-radius: 20px; background: var(--glass-bg); border: 1px solid var(--border-color);">
-                        <div class="theme-card__title" style="font-size: 16px; font-weight: 800; color: #D4943A;">🙏 ${nameDisp}</div>
+                    <div class="theme-card" style="margin-bottom: 14px; padding: 18px; border-radius: 20px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);">
+                        <div class="theme-card__title" style="font-size: 16px; font-weight: 800; color: #D4A03A;">🙏 ${nameDisp}</div>
                         <div style="font-size: 11px; color: var(--text-tertiary); margin: 4px 0 8px;">${lang === 'pa' ? 'ਜੀਵਨ ਕਾਲ' : lang === 'hi' ? 'जीवन काल' : 'Lifetime'}: ${g.years}</div>
-                        <div class="theme-card__desc" style="font-size: 13.5px; line-height: 1.55;">${contribDisp}</div>
+                        <div class="theme-card__desc" style="font-size: 13.5px; line-height: 1.55; color: var(--text-secondary);">${contribDisp}</div>
                         ${teachingsDisp ? `
-                        <div style="font-size: 12px; color: var(--text-secondary); margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border-color);">
+                        <div style="font-size: 12px; color: var(--text-secondary); margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.08);">
                             <strong>${lang === 'pa' ? 'ਮੁੱਖ ਸਿੱਖਿਆਵਾਂ' : lang === 'hi' ? 'मुख्य शिक्षाएं' : 'Key Teachings'}:</strong> ${teachingsDisp}
                         </div>` : ''}
                     </div>`;
                 });
             }
             
-            // Add major events section
             if (SIKH_HISTORY.majorEvents) {
                 const eventsData = SIKH_HISTORY.majorEvents[lang] || SIKH_HISTORY.majorEvents['en'];
-                if (eventsData) {
-                    html += `<h3 style="margin: 24px 0 12px; color: var(--gold-400);">${eventsData.title || 'Major Events'}</h3>`;
-                    if (eventsData.events) {
-                        eventsData.events.forEach(e => {
+                if (eventsData && eventsData.events) {
+                    let evList = eventsData.events;
+                    if (filter) {
+                        evList = evList.filter(e => (e.event && e.event.toLowerCase().includes(filter)) || (e.description && e.description.toLowerCase().includes(filter)));
+                    }
+                    if (evList.length > 0) {
+                        html += `<h3 style="margin: 24px 0 12px; color: #D4A03A;">${eventsData.title || 'Major Events'}</h3>`;
+                        evList.forEach(e => {
                             html += `
-                            <div style="margin-bottom: 12px; padding: 14px; background: var(--glass-bg); border-radius: 16px; border: 1px solid var(--border-color);">
-                                <div style="font-weight: 800; color: #D4943A; font-size: 14px;">📅 ${e.year}</div>
+                            <div style="margin-bottom: 12px; padding: 14px; background: rgba(255,255,255,0.04); border-radius: 16px; border: 1px solid rgba(255,255,255,0.08);">
+                                <div style="font-weight: 800; color: #D4A03A; font-size: 14px;">📅 ${e.year}</div>
                                 <div style="font-weight: 600; margin: 4px 0; font-size: 13.5px;">${e.event}</div>
                                 <div style="font-size: 12.5px; color: var(--text-secondary); line-height: 1.5;">${e.description}</div>
                             </div>`;
@@ -477,46 +530,204 @@
             return html;
         }
         
-        // Fallback to old HISTORY structure
-        return `<div class="history-content">${SIKH_HISTORY[lang] || HISTORY[lang] || ''}</div>`;
+        return `<div class="history-content">${SIKH_HISTORY[lang] || ''}</div>`;
     }
 
-    function renderSakhis(lang) {
+    function renderSakhis(lang, filter = '') {
         const descField = lang === 'pa' ? 'descPa' : lang === 'hi' ? 'descHi' : 'desc';
         const lessonField = lang === 'pa' ? 'lessonPa' : lang === 'hi' ? 'lessonHi' : 'lesson';
         
-        return SAKHIS.map(s => {
-            const desc = s.desc ? s.desc[lang] : (s[descField] || s.desc);
-            const lesson = s.lesson ? s.lesson[lang] : (s[lessonField] || '');
+        let list = SAKHIS;
+        if (filter) {
+            list = list.filter(s => 
+                (s.title && s.title.toLowerCase().includes(filter)) ||
+                (s.guru && s.guru.toLowerCase().includes(filter)) ||
+                (s.desc && typeof s.desc === 'string' && s.desc.toLowerCase().includes(filter))
+            );
+        }
+        
+        if (list.length === 0) {
+            return `<p style="text-align:center; padding: 24px; color: var(--text-tertiary);">No matching Sakhis found.</p>`;
+        }
+        
+        return list.map(s => {
+            const desc = s.desc ? (typeof s.desc === 'object' ? (s.desc[lang] || s.desc['en']) : s.desc) : (s[descField] || '');
+            const lesson = s.lesson ? (typeof s.lesson === 'object' ? (s.lesson[lang] || s.lesson['en']) : s.lesson) : (s[lessonField] || '');
             
             return `
-            <div class="theme-card" style="margin-bottom: 12px;">
-                <div class="theme-card__title">${s.title}</div>
-                <div style="font-size: 12px; color: var(--gold-400); margin: 4px 0 8px;">${s.guru}</div>
-                <div class="theme-card__desc">${desc}</div>
-                ${lesson ? `<div style="font-size: 11px; color: var(--text-secondary); margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border-color);"><strong>Lesson:</strong> ${lesson}</div>` : ''}
+            <div class="theme-card" style="margin-bottom: 14px; padding: 18px; border-radius: 20px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);">
+                <div class="theme-card__title" style="font-size: 16px; font-weight: 700; color: #D4A03A;">📖 ${s.title}</div>
+                <div style="font-size: 12px; color: var(--text-tertiary); margin: 4px 0 8px;">${s.guru}</div>
+                <div class="theme-card__desc" style="font-size: 13.5px; line-height: 1.55; color: var(--text-secondary);">${desc}</div>
+                ${lesson ? `<div style="font-size: 12px; color: var(--text-secondary); margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.08);"><strong>Lesson:</strong> ${lesson}</div>` : ''}
             </div>`;
         }).join('');
     }
 
-    function renderGuruSahibaan(lang) {
+    function renderGuruSahibaan(lang, filter = '') {
         const contribField = lang === 'pa' ? 'majorContributionsPa' : lang === 'hi' ? 'majorContributionsHi' : 'majorContributions';
         const teachingField = lang === 'pa' ? 'keyTeachingsPa' : lang === 'hi' ? 'keyTeachingsHi' : 'keyTeachings';
         
-        return GURU_SAHIBAAN.map((g, i) => {
+        let list = GURU_SAHIBAAN;
+        if (filter) {
+            list = list.filter(g => 
+                (g.name && g.name.toLowerCase().includes(filter)) ||
+                (g.namePunjabi && g.namePunjabi.toLowerCase().includes(filter)) ||
+                (g.english && g.english.toLowerCase().includes(filter))
+            );
+        }
+        
+        if (list.length === 0) {
+            return `<p style="text-align:center; padding: 24px; color: var(--text-tertiary);">No matching Guru Sahibaan found.</p>`;
+        }
+        
+        return list.map((g, i) => {
             const contrib = g[contribField] || g.majorContributions || g.desc || g.description || 'Contributions details coming soon.';
             const teachings = g[teachingField] || g.keyTeachings || 'Teachings details coming soon.';
-            const nameDisp = lang === 'pa' ? (g.namePunjabi || g.name) : lang === 'hi' ? (g.nameHindi || g.name) : g.name;
+            const nameDisp = lang === 'pa' ? (g.namePunjabi || g.name) : lang === 'hi' ? (g.nameHindi || g.name) : (g.english || g.name);
             const subtitleDisp = lang === 'pa' ? 'ਇਤਿਹਾਸਕ ਜੀਵਨ ਕਾਲ' : lang === 'hi' ? 'ऐतिहासिक जीवन काल' : 'Historical Lifetime';
             
             return `
-            <div class="theme-card" style="margin-bottom: 14px; padding: 18px; border-radius: 20px; background: var(--glass-bg); border: 1px solid var(--border-color);">
-                <div class="theme-card__title" style="font-size: 16px; font-weight: 800; color: #D4943A;">🙏 ${nameDisp}</div>
+            <div class="theme-card" style="margin-bottom: 14px; padding: 18px; border-radius: 20px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);">
+                <div class="theme-card__title" style="font-size: 16px; font-weight: 800; color: #D4A03A;">🙏 ${nameDisp}</div>
                 <div style="font-size: 12px; color: var(--text-tertiary); margin: 4px 0 8px;">${subtitleDisp}: ${g.years || ''}</div>
-                <div class="theme-card__desc" style="font-size: 13.5px; line-height: 1.55;">${contrib}</div>
-                <div style="font-size: 12px; color: var(--text-secondary); margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border-color);"><strong>${lang === 'pa' ? 'ਮੁੱਖ ਸਿੱਖਿਆਵਾਂ' : lang === 'hi' ? 'मुख्य शिक्षाएं' : 'Key Teachings'}:</strong> ${teachings}</div>
+                <div class="theme-card__desc" style="font-size: 13.5px; line-height: 1.55; color: var(--text-secondary);">${contrib}</div>
+                <div style="font-size: 12px; color: var(--text-secondary); margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.08);"><strong>${lang === 'pa' ? 'ਮੁੱਖ ਸਿੱਖਿਆਵਾਂ' : lang === 'hi' ? 'मुख्य शिक्षाएं' : 'Key Teachings'}:</strong> ${teachings}</div>
             </div>`;
         }).join('');
+    }
+
+    let currentModalFilter = '';
+    let currentWisdomIndex = 0;
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // QUIZ DATA & ENGINE
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    const QUIZ_QUESTIONS = [
+        {
+            question: "Who compiled the first version of Adi Granth in 1604 at Sri Amritsar Sahib?",
+            options: ["Sri Guru Ram Das Ji", "Sri Guru Arjan Dev Ji", "Sri Guru Gobind Singh Ji"],
+            correct: 1,
+            explanation: "Sri Guru Arjan Dev Ji compiled the Adi Granth in 1604 with Bhai Gurdas Ji as the primary scribe, and installed it at Sri Harmandir Sahib."
+        },
+        {
+            question: "How many classical Raags are present in Sri Guru Granth Sahib Ji?",
+            options: ["10 Raags", "22 Raags", "31 Raags"],
+            correct: 2,
+            explanation: "There are 31 classical Raags utilized throughout Sri Guru Granth Sahib Ji, starting from Sri Raag to Jaijawanti."
+        },
+        {
+            question: "Which Guru Sahib standardized and formalized the Gurmukhi script?",
+            options: ["Sri Guru Angad Dev Ji", "Sri Guru Nanak Dev Ji", "Sri Guru Amar Das Ji"],
+            correct: 0,
+            explanation: "Sri Guru Angad Dev Ji (the 2nd Guru) standardized Gurmukhi script to make the Guru's words universally accessible to all."
+        },
+        {
+            question: "What are the Three Pillars (mool sidhants) established by Sri Guru Nanak Dev Ji?",
+            options: ["Naam Japna, Kirat Karo, Vand Chhako", "Seva, Simran, Sangat", "Daya, Santokh, Sach"],
+            correct: 0,
+            explanation: "Kirat Karo (honest living), Naam Japna (remembering the Divine), and Vand Chhako (sharing with the needy) form the foundational pillars."
+        },
+        {
+            question: "Which Bhagat has the highest number of Shabads in Sri Guru Granth Sahib Ji?",
+            options: ["Bhagat Ravidas Ji", "Bhagat Farid Ji", "Bhagat Kabir Ji"],
+            correct: 2,
+            explanation: "Bhagat Kabir Ji's bani spans 541 sacred Shabads and Saloks across 17 different Raags in Sri Guru Granth Sahib Ji."
+        }
+    ];
+
+    function setupDailyQuiz() {
+        const questionEl = document.getElementById('quizQuestion');
+        const optionsEl = document.getElementById('quizOptions');
+        const feedbackEl = document.getElementById('quizFeedback');
+        if (!questionEl || !optionsEl) return;
+
+        const qIdx = new Date().getDate() % QUIZ_QUESTIONS.length;
+        const currentQ = QUIZ_QUESTIONS[qIdx];
+
+        questionEl.textContent = currentQ.question;
+        optionsEl.innerHTML = currentQ.options.map((opt, i) => `
+            <button class="quiz-option-btn" data-idx="${i}">${opt}</button>
+        `).join('');
+
+        const buttons = optionsEl.querySelectorAll('.quiz-option-btn');
+        buttons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const selectedIdx = parseInt(btn.dataset.idx, 10);
+                buttons.forEach(b => b.disabled = true);
+
+                if (selectedIdx === currentQ.correct) {
+                    btn.classList.add('correct');
+                    feedbackEl.style.display = 'block';
+                    feedbackEl.innerHTML = `<strong>✨ Correct!</strong> ${currentQ.explanation}`;
+                    feedbackEl.style.borderColor = 'rgba(16, 185, 129, 0.4)';
+                } else {
+                    btn.classList.add('wrong');
+                    buttons[currentQ.correct].classList.add('correct');
+                    feedbackEl.style.display = 'block';
+                    feedbackEl.innerHTML = `<strong>🙏 Good try!</strong> ${currentQ.explanation}`;
+                    feedbackEl.style.borderColor = 'rgba(239, 68, 68, 0.4)';
+                }
+            });
+        });
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // IN-MODAL SEARCH & GLOBAL SEARCH
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    function setupSearch() {
+        const modalSearchInput = document.getElementById('modalSearchInput');
+        const librarySearchInput = document.getElementById('librarySearchInput');
+
+        if (modalSearchInput) {
+            modalSearchInput.addEventListener('input', (e) => {
+                currentModalFilter = e.target.value.toLowerCase().trim();
+                renderCurrentModalBody();
+            });
+        }
+
+        if (librarySearchInput) {
+            librarySearchInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && librarySearchInput.value.trim()) {
+                    window.openModal('history');
+                    setTimeout(() => {
+                        if (modalSearchInput) {
+                            modalSearchInput.value = librarySearchInput.value.trim();
+                            currentModalFilter = librarySearchInput.value.toLowerCase().trim();
+                            renderCurrentModalBody();
+                        }
+                    }, 100);
+                }
+            });
+        }
+    }
+
+    function renderCurrentModalBody() {
+        const body = document.getElementById('modalBody');
+        if (!body) return;
+
+        switch (currentModalType) {
+            case 'raags':
+                body.innerHTML = renderRaags(currentLang, currentModalFilter);
+                break;
+            case 'composers':
+                body.innerHTML = renderContributors(currentLang, currentModalFilter);
+                break;
+            case 'themes':
+                body.innerHTML = renderThemes(currentLang, currentModalFilter);
+                break;
+            case 'history':
+                body.innerHTML = renderHistory(currentLang, currentModalFilter);
+                break;
+            case 'sakhis':
+                body.innerHTML = renderSakhis(currentLang, currentModalFilter);
+                break;
+            case 'guruSahibs':
+                body.innerHTML = renderGuruSahibaan(currentLang, currentModalFilter);
+                break;
+        }
     }
 
     function setupLangSwitch() {
@@ -525,29 +736,7 @@
                 document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('lang-btn--active'));
                 btn.classList.add('lang-btn--active');
                 currentLang = btn.dataset.lang;
-                
-                // Re-render based on current modal type
-                const body = document.getElementById('modalBody');
-                switch (currentModalType) {
-                    case 'raags':
-                        body.innerHTML = renderRaags(currentLang);
-                        break;
-                    case 'composers':
-                        body.innerHTML = renderContributors(currentLang);
-                        break;
-                    case 'themes':
-                        body.innerHTML = renderThemes(currentLang);
-                        break;
-                    case 'history':
-                        body.innerHTML = renderHistory(currentLang);
-                        break;
-                    case 'sakhis':
-                        body.innerHTML = renderSakhis(currentLang);
-                        break;
-                    case 'guruSahibs':
-                        body.innerHTML = renderGuruSahibaan(currentLang);
-                        break;
-                }
+                renderCurrentModalBody();
             });
         });
     }
@@ -563,13 +752,27 @@
         const m = document.getElementById('quoteMeta');
         if (t) t.textContent = q.gurmukhi;
         if (tr) tr.textContent = q.translation;
-        if (m) m.textContent = `📖 Ang ${q.ang}`;
+        if (m) m.innerHTML = `<i class="fas fa-book-open"></i> Ang ${q.ang}`;
+    }
+
+    function setupQuoteRefresh() {
+        const btn = document.getElementById('refreshQuoteBtn');
+        if (!btn) return;
+        btn.addEventListener('click', () => {
+            btn.style.transform = 'rotate(180deg)';
+            loadRandomQuote();
+            setTimeout(() => { btn.style.transform = ''; }, 300);
+        });
     }
 
     function loadDailyWisdom() {
-        const dayIndex = new Date().getDate() % DAILY_WISDOM.length;
-        const w = DAILY_WISDOM[dayIndex];
-        const icon = document.querySelector('.wisdom-icon');
+        currentWisdomIndex = new Date().getDate() % DAILY_WISDOM.length;
+        renderWisdomCard();
+    }
+
+    function renderWisdomCard() {
+        const w = DAILY_WISDOM[currentWisdomIndex % DAILY_WISDOM.length];
+        const icon = document.getElementById('wisdomIcon');
         const title = document.getElementById('wisdomTitle');
         const desc = document.getElementById('wisdomDesc');
         const pankti = document.getElementById('wisdomPankti');
@@ -579,6 +782,15 @@
         if (desc) desc.textContent = w.desc;
         if (pankti) pankti.textContent = w.pankti;
         if (source) source.textContent = `— ${w.source}`;
+    }
+
+    function setupWisdomCycler() {
+        const btn = document.getElementById('nextWisdomBtn');
+        if (!btn) return;
+        btn.addEventListener('click', () => {
+            currentWisdomIndex = (currentWisdomIndex + 1) % DAILY_WISDOM.length;
+            renderWisdomCard();
+        });
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -603,22 +815,16 @@
             const isDark = document.documentElement.classList.contains('dark-mode');
             const newTheme = isDark ? 'light' : 'dark';
             
-            // Toggle the class
             if (newTheme === 'dark') {
                 document.documentElement.classList.add('dark-mode');
             } else {
                 document.documentElement.classList.remove('dark-mode');
             }
             
-            // Save to localStorage
             localStorage.setItem('anhad_theme', newTheme);
-            
-            // Dispatch theme change event
             window.dispatchEvent(new CustomEvent('themechange'));
-            
             updateIcon();
             
-            // Also try global theme if available
             if (window.AnhadTheme && typeof AnhadTheme.setTheme === 'function') {
                 AnhadTheme.setTheme(newTheme);
             }
@@ -643,23 +849,22 @@
         const totalDays = stats.totalDaysActive || 1;
         const weeklyHours = Math.round((totalMin / Math.max(totalDays, 7)) * 7 / 60 * 10) / 10;
 
-        // Merge Sehaj Paath angs from both sources
         const sehajAngs = sehajStats.totalAngsRead || (stats.sehajPaath?.totalAngsRead) || 0;
         const weeklyAngs = sehajStats.todayAngsRead || Math.round((sehajAngs / Math.max(totalDays, 7)) * 7);
         
-        // Best streak from Sehaj Paath or general streak
         const bestStreak = Math.max(
             sehajStats.currentStreak || 0,
             streak.currentStreak || 0,
-            stats.sehajPaath?.currentStreak || 0
+            stats.sehajPaath?.currentStreak || 0,
+            1
         );
 
         const wl = document.getElementById('weeklyListening');
         const wa = document.getElementById('weeklyAngs');
         const cs = document.getElementById('currentStreak');
-        if (wl) wl.textContent = weeklyHours;
+        if (wl) wl.textContent = `${weeklyHours}h`;
         if (wa) wa.textContent = weeklyAngs;
-        if (cs) cs.textContent = bestStreak;
+        if (cs) cs.textContent = `${bestStreak} 🔥`;
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -670,7 +875,11 @@
         document.querySelectorAll('.shabad-card').forEach(card => {
             card.addEventListener('click', () => {
                 const ang = card.dataset.ang;
-                if (ang) window.location.href = `../SehajPaath/reader.html?ang=${ang}&source=learning`;
+                if (ang) {
+                    const target = `../SehajPaath/reader.html?ang=${ang}&source=learning`;
+                    if (window.navigateTo) window.navigateTo(target);
+                    else window.location.href = target;
+                }
             });
         });
     }
@@ -685,12 +894,23 @@
         btn.addEventListener('click', async () => {
             const text = document.getElementById('quoteText')?.textContent || '';
             const trans = document.getElementById('quoteTranslation')?.textContent || '';
-            const shareText = `"${text}"\n\n${trans}\n\n— Sri Guru Granth Sahib Ji | ANHAD`;
+            const meta = document.getElementById('quoteMeta')?.textContent || 'Sri Guru Granth Sahib Ji';
 
+            if (window.AnhadShare && typeof AnhadShare.showPreview === 'function') {
+                AnhadShare.showPreview({
+                    gurmukhi: text,
+                    english: trans,
+                    source: 'Sri Guru Granth Sahib Ji',
+                    ang: meta.replace(/[^0-9]/g, '') || '441'
+                });
+                return;
+            }
+
+            const shareText = `"${text}"\n\n${trans}\n\n— ${meta} | ANHAD App`;
             if (navigator.share) {
-                try { await navigator.share({ title: 'Gurbani', text: shareText }); } catch (e) {}
+                try { await navigator.share({ title: 'ANHAD Gurbani Inspiration', text: shareText }); } catch (e) {}
             } else {
-                try { await navigator.clipboard.writeText(shareText); alert('Copied to clipboard!'); } catch (e) {}
+                try { await navigator.clipboard.writeText(shareText); alert('Copied inspirational Shabad to clipboard!'); } catch (e) {}
             }
         });
     }
@@ -718,12 +938,10 @@
         const header = document.getElementById('pageHeader');
         if (!header) return;
 
-        // Check scroll position on load
         if (window.scrollY > 20) {
             header.classList.add('scrolled');
         }
 
-        // Add scroll listener with throttling
         let ticking = false;
         window.addEventListener('scroll', () => {
             if (!ticking) {
@@ -747,17 +965,35 @@
     function init() {
         console.log('📚 ANHAD Learning & Library initializing...');
 
+        loadJsonData();
         setupNavigation();
         setupThemeToggle();
         setupHeaderScroll();
         loadRandomQuote();
+        setupQuoteRefresh();
         loadDailyWisdom();
+        setupWisdomCycler();
+        setupDailyQuiz();
+        setupSearch();
         loadQuickStats();
         setupShabadCards();
         setupShareQuote();
+        setupLangSwitch();
 
         console.log('✅ Learning & Library loaded');
     }
+
+    // Register with smooth-navigation Page Init Lifecycle for 100% reliable SPA entry
+    window.__anhadPageInit = window.__anhadPageInit || {};
+    window.__anhadPageInit['/Insights/insights.html'] = init;
+    window.__anhadPageInit['/Insights/insights'] = init;
+    window.__anhadPageInit['/frontend/Insights/insights.html'] = init;
+    window.__anhadPageInit['/frontend/Insights/insights'] = init;
+
+    // Window globals for inline HTML event handlers
+    window.openModal = openModal;
+    window.closeModal = closeModal;
+    window.initInsights = init;
 
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', init);

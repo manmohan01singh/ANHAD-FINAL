@@ -39,7 +39,7 @@ describe('Audio Autoplay Fixes', () => {
       removeEventListener: vi.fn(),
     };
     
-    global.Audio = vi.fn(() => audio);
+    global.Audio = vi.fn(function() { return audio; });
     global.document = document;
     global.window = window;
   });

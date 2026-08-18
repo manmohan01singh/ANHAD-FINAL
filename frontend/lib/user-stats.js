@@ -491,6 +491,13 @@
         }
     }
 
+    // Defense in depth: this file is now in smooth-navigation.js's
+    // SHELL_SCRIPTS (so its <script> tag should only ever load once), but
+    // guard the registration anyway in case some other future load path
+    // re-includes it — these listeners are declared at this IIFE's own top
+    // level, so a second execution would otherwise stack a duplicate.
+    if (!window.__anhadUserStatsListenersBound) {
+    window.__anhadUserStatsListenersBound = true;
     document.addEventListener('visibilitychange', () => {
         if (document.visibilityState === 'hidden') {
             flushPartialListeningTime();
@@ -498,6 +505,7 @@
     });
 
     window.addEventListener('pagehide', flushPartialListeningTime);
+    }
 
     // ═══════════════════════════════════════════════════════════════════════════
     // INITIALIZATION - DEFERRED FOR PERFORMANCE

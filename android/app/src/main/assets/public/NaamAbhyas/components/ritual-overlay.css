@@ -411,3 +411,89 @@
   .waheguru-text { font-size: 1.5rem; }
   .completion-stats { gap: var(--space-md); }
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   RITUAL OVERLAY — ALWAYS DARK IMMERSIVE MODE
+   The meditation popup must ALWAYS be dark (deep space backdrop),
+   regardless of the current theme / time-of-day. Override everything.
+   ═══════════════════════════════════════════════════════════════════ */
+.ritual-overlay {
+  background: rgba(8, 6, 18, 0.95) !important;
+}
+
+.ritual-backdrop {
+  background: rgba(0, 0, 0, 0.82) !important;
+  backdrop-filter: blur(28px) !important;
+  -webkit-backdrop-filter: blur(28px) !important;
+}
+
+.ritual-container {
+  background: transparent !important;
+}
+
+.ritual-status-badge {
+  background: rgba(212, 148, 58, 0.12) !important;
+  border-color: rgba(212, 148, 58, 0.25) !important;
+}
+
+.status-text,
+.ritual-time-range {
+  color: rgba(212, 148, 58, 0.9) !important;
+}
+
+.timer-value {
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+}
+
+.timer-label {
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+.waheguru-text {
+  color: #FFD080 !important;
+  -webkit-text-fill-color: #FFD080 !important;
+}
+
+.breathing-guide {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
+/* Secondary action buttons - keep dark glass style */
+.secondary-actions .ritual-btn {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* Completion state text */
+.completion-title {
+  color: #FFD080 !important;
+  -webkit-text-fill-color: #FFD080 !important;
+}
+.completion-subtitle {
+  color: rgba(255, 255, 255, 0.65) !important;
+}
+.comp-stat .stat-value {
+  color: #FFFFFF !important;
+}
+.comp-stat .stat-label {
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+.completion-affirmation {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+.affirmation-gurmukhi {
+  color: #D4943A !important;
+  -webkit-text-fill-color: #D4943A !important;
+}
+.affirmation-english {
+  color: rgba(255, 255, 255, 0.55) !important;
+}
+
+/* Progress ring background track */
+.progress-ring-bg {
+  stroke: rgba(255, 255, 255, 0.06) !important;
+}
+

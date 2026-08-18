@@ -388,9 +388,9 @@ img[src*="gurugranthsahebji.jpeg"] {
 
 /* ─── MORNING AND EVENING SOFT CUSHION CLAYMORPHISM FOR CARDS ─── */
 
-/* Morning Soft Cushion Claymorphism Override (5:00 AM to 9:00 AM) */
-[data-theme-mode="auto"][data-time-of-day="morning"] .practice-card,
-[data-theme-mode="auto"][data-time-of-day="morning"] .quick-card {
+/* Morning Soft Cushion Claymorphism Override (5:00 AM to 9:00 AM) — Light Theme Only */
+[data-theme="light"][data-theme-mode="auto"][data-time-of-day="morning"] .practice-card,
+[data-theme="light"][data-theme-mode="auto"][data-time-of-day="morning"] .quick-card {
     background: linear-gradient(145deg, #FFFDF9, #FFE5D0) !important;
     border: 1px solid rgba(255, 255, 255, 0.85) !important;
     border-radius: 28px !important;
@@ -399,27 +399,27 @@ img[src*="gurugranthsahebji.jpeg"] {
                 inset 2px 2px 4px rgba(255, 255, 255, 0.9), 
                 inset -2px -2px 4px rgba(232, 148, 100, 0.08) !important;
 }
-/* Morning - Gold Card (e.g. Nitnem, Gold custom slot) */
-[data-theme-mode="auto"][data-time-of-day="morning"] .practice-card--nitnem,
-[data-theme-mode="auto"][data-time-of-day="morning"] .quick-card--gold {
+/* Morning - Gold Card */
+[data-theme="light"][data-theme-mode="auto"][data-time-of-day="morning"] .practice-card--nitnem,
+[data-theme="light"][data-theme-mode="auto"][data-time-of-day="morning"] .quick-card--gold {
     background: linear-gradient(145deg, #FFFDF6, #FFEAB8) !important;
     box-shadow: 4px 4px 10px rgba(212, 148, 58, 0.12), 
                 -4px -4px 10px rgba(255, 255, 255, 0.9), 
                 inset 2px 2px 4px rgba(255, 255, 255, 0.95), 
                 inset -2px -2px 4px rgba(212, 148, 58, 0.08) !important;
 }
-/* Morning - Purple Card (e.g. Sehaj Paath, Purple custom slot) */
-[data-theme-mode="auto"][data-time-of-day="morning"] .practice-card--sehaj,
-[data-theme-mode="auto"][data-time-of-day="morning"] .quick-card--purple {
+/* Morning - Purple Card */
+[data-theme="light"][data-theme-mode="auto"][data-time-of-day="morning"] .practice-card--sehaj,
+[data-theme="light"][data-theme-mode="auto"][data-time-of-day="morning"] .quick-card--purple {
     background: linear-gradient(145deg, #FFFAFA, #FFE0DB) !important;
     box-shadow: 4px 4px 10px rgba(180, 100, 100, 0.08), 
                 -4px -4px 10px rgba(255, 255, 255, 0.9), 
                 inset 2px 2px 4px rgba(255, 255, 255, 0.95), 
                 inset -2px -2px 4px rgba(180, 100, 100, 0.06) !important;
 }
-/* Morning - Hukam/Green Card (e.g. Hukamnama, Green custom slot) */
-[data-theme-mode="auto"][data-time-of-day="morning"] .practice-card--hukam,
-[data-theme-mode="auto"][data-time-of-day="morning"] .quick-card--green {
+/* Morning - Hukam/Green Card */
+[data-theme="light"][data-theme-mode="auto"][data-time-of-day="morning"] .practice-card--hukam,
+[data-theme="light"][data-theme-mode="auto"][data-time-of-day="morning"] .quick-card--green {
     background: linear-gradient(145deg, #FFFDF9, #FFE4C8) !important;
     box-shadow: 4px 4px 10px rgba(232, 110, 60, 0.10), 
                 -4px -4px 10px rgba(255, 255, 255, 0.9), 
@@ -427,9 +427,9 @@ img[src*="gurugranthsahebji.jpeg"] {
                 inset -2px -2px 4px rgba(232, 110, 60, 0.06) !important;
 }
 
-/* Evening Soft Cushion Claymorphism Override (4:00 PM to 8:00 PM) */
-[data-theme-mode="auto"][data-time-of-day="evening"] .practice-card,
-[data-theme-mode="auto"][data-time-of-day="evening"] .quick-card {
+/* Evening Soft Cushion Claymorphism Override (4:00 PM to 8:00 PM) — Light Theme Only */
+[data-theme="light"][data-theme-mode="auto"][data-time-of-day="evening"] .practice-card,
+[data-theme="light"][data-theme-mode="auto"][data-time-of-day="evening"] .quick-card {
     background: linear-gradient(145deg, #FFFDF8, #FFECB8) !important;
     border: 1px solid rgba(255, 255, 255, 0.8) !important;
     border-radius: 28px !important;
@@ -439,8 +439,8 @@ img[src*="gurugranthsahebji.jpeg"] {
                 inset -2px -2px 4px rgba(184, 134, 11, 0.08) !important;
 }
 /* Evening - Gold Card */
-[data-theme-mode="auto"][data-time-of-day="evening"] .practice-card--nitnem,
-[data-theme-mode="auto"][data-time-of-day="evening"] .quick-card--gold {
+[data-theme="light"][data-theme-mode="auto"][data-time-of-day="evening"] .practice-card--nitnem,
+[data-theme="light"][data-theme-mode="auto"][data-time-of-day="evening"] .quick-card--gold {
     background: linear-gradient(145deg, #FFFFFA, #FFE498) !important;
     box-shadow: 4px 4px 10px rgba(184, 134, 11, 0.14), 
                 -4px -4px 10px rgba(255, 255, 255, 0.9), 
@@ -448,8 +448,8 @@ img[src*="gurugranthsahebji.jpeg"] {
                 inset -2px -2px 4px rgba(184, 134, 11, 0.09) !important;
 }
 /* Evening - Purple Card */
-[data-theme-mode="auto"][data-time-of-day="evening"] .practice-card--sehaj,
-[data-theme-mode="auto"][data-time-of-day="evening"] .quick-card--purple {
+[data-theme="light"][data-theme-mode="auto"][data-time-of-day="evening"] .practice-card--sehaj,
+[data-theme="light"][data-theme-mode="auto"][data-time-of-day="evening"] .quick-card--purple {
     background: linear-gradient(145deg, #FFF8FA, #FFE0C8) !important;
     box-shadow: 4px 4px 10px rgba(180, 110, 80, 0.10), 
                 -4px -4px 10px rgba(255, 255, 255, 0.9), 
@@ -457,8 +457,8 @@ img[src*="gurugranthsahebji.jpeg"] {
                 inset -2px -2px 4px rgba(180, 110, 80, 0.07) !important;
 }
 /* Evening - Hukam/Green Card */
-[data-theme-mode="auto"][data-time-of-day="evening"] .practice-card--hukam,
-[data-theme-mode="auto"][data-time-of-day="evening"] .quick-card--green {
+[data-theme="light"][data-theme-mode="auto"][data-time-of-day="evening"] .practice-card--hukam,
+[data-theme="light"][data-theme-mode="auto"][data-time-of-day="evening"] .quick-card--green {
     background: linear-gradient(145deg, #FFFDF8, #FFEAB0) !important;
     box-shadow: 4px 4px 10px rgba(184, 134, 11, 0.12), 
                 -4px -4px 10px rgba(255, 255, 255, 0.9), 

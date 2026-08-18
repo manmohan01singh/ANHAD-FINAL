@@ -3,6 +3,18 @@
    Real-time data, navigation, audio sync, install, filters
    Extracted from inline scripts for clean architecture
    ═══════════════════════════════════════════════════════════════════ */
+// Whole-file IIFE: this script is no longer in smooth-navigation.js's
+// SHELL_SCRIPTS, so its <script> tag gets removed and freshly re-added
+// (executePageScripts()) on every non-cached SPA arrival at Home — as a
+// plain external script (not the inline-script path, which already gets an
+// IIFE wrapper from executePageScripts() itself), each re-execution runs in
+// global scope. Every top-level const/let/class here would otherwise throw
+// "Identifier has already been declared" on the second execution onward —
+// confirmed via real-browser testing: this GURU_IMAGE_MAP declaration threw
+// exactly that, aborting the entire file's parse (and therefore every guard
+// and listener defined below, including the ones added specifically to
+// survive repeated execution) on every SPA revisit to Home after the first.
+(function () {
 'use strict';
 
 // ═══════════════════════════════════════════════════════════════════
@@ -10,19 +22,19 @@
 // ═══════════════════════════════════════════════════════════════════
 const GURU_IMAGE_MAP = {
   // Guru numbers 1-10 for the ten Gurus
-  1: 'assets/icons/guru-nanak-dev-ji.png',
-  2: 'assets/icons/guru-angad-dev-ji.png',
-  3: 'assets/icons/guru-amar-das-ji.png',
-  4: 'assets/icons/guru-ramdas-ji.png',
-  5: 'assets/icons/guru-arjan-dev-ji.png',
-  6: 'assets/icons/guru-hargobind-ji.png',
-  7: 'assets/icons/guru-har-rai-ji.png',
-  8: 'assets/icons/guru-har-krishan-ji.png',
-  9: 'assets/icons/guru-tegh-bahadur-ji.png',
-  10: 'assets/icons/guru-gobind-singh-ji.png',
+  1: '/assets/icons/guru-nanak-dev-ji.png',
+  2: '/assets/icons/guru-angad-dev-ji.png',
+  3: '/assets/icons/guru-amar-das-ji.png',
+  4: '/assets/icons/guru-ramdas-ji.png',
+  5: '/assets/icons/guru-arjan-dev-ji.png',
+  6: '/assets/icons/guru-hargobind-ji.png',
+  7: '/assets/icons/guru-har-rai-ji.png',
+  8: '/assets/icons/guru-har-krishan-ji.png',
+  9: '/assets/icons/guru-tegh-bahadur-ji.png',
+  10: '/assets/icons/guru-gobind-singh-ji.png',
   // Special mappings for Guru Granth Sahib and Sahibzade
-  'guru-granth-sahib': 'assets/icons/guru-granth-sahib-ji.png',
-  'sahibzade': 'assets/icons/sahibzade.png'
+  'guru-granth-sahib': '/assets/icons/guru-granth-sahib-ji.png',
+  'sahibzade': '/assets/icons/sahibzade.png'
 };
 
 // Maps event names/patterns to their corresponding guru
@@ -120,47 +132,13 @@ function getGuruNameForEvent(eventName, guruNumber) {
   return 'Sri Guru Granth Sahib Ji';
 }
 
-document.addEventListener('DOMContentLoaded', function () {
-
-  // NUCLEAR FIX: If this is a cached SPA return, block ALL initialization
-  // IMPORTANT: The _ANHAD_CACHED_RETURN and _ANHAD_SKIP_AUDIO_INIT flags are 
-  // cleared by smooth-navigation.js when user navigates AWAY from home.
-  // Do NOT clear them here — they must persist for the entire cached page lifetime.
-  if (window._ANHAD_CACHED_RETURN || window._ANHAD_SKIP_AUDIO_INIT) {
-    console.log('[HomepageData] 🚫🚫🚫 CACHED RETURN DETECTED - BLOCKING ALL INIT 🚫🚫🚫');
-    // Only start the clock
-    let lastTimeStr = '';
-    function updateClock() {
-      const now = new Date();
-      const timeStr = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
-      if (timeStr !== lastTimeStr) {
-        const el = document.getElementById('currentTime');
-        if (el) el.textContent = timeStr;
-        lastTimeStr = timeStr;
-      }
-    }
-    function updateGreeting() {
-      const hour = new Date().getHours();
-      let greeting = 'Good Evening';
-      if (hour >= 4 && hour < 12) greeting = 'Good Morning ☀️';
-      else if (hour >= 12 && hour < 17) greeting = 'Good Afternoon 🌤️';
-      else if (hour >= 17 && hour < 21) greeting = 'Good Evening 🌅';
-      else greeting = 'Waheguru Ji 🌙';
-      const el = document.getElementById('greeting');
-      if (el) el.textContent = greeting;
-    }
-    updateClock();
-    updateGreeting();
-    setInterval(updateClock, 10000);
-    setInterval(updateGreeting, 60000);
-    
-    // IMPORTANT: Do NOT clear these flags here! They're managed by smooth-navigation.js
-    // Clearing them here would re-enable audio init on every cached return.
-    // window._ANHAD_CACHED_RETURN = false;
-    // window._ANHAD_SKIP_AUDIO_INIT = false;
-    
-    return; // COMPLETE BLOCK - nothing else runs
-  }
+// Named + readyState-guarded (not a bare DOMContentLoaded listener) so this
+// still runs when smooth-navigation.js re-injects this script on SPA
+// navigation, well after the document's own DOMContentLoaded already fired.
+// Mirrors the pattern already used below at the DYNAMIC ISLAND & AUDIO ENGINE
+// IIFE's own boot check. The cache/return detection inside (HomeStateManager,
+// _homepageDataInitialized, etc.) already correctly no-ops repeat calls.
+function _anhadHomepageDataInit() {
 
   // ━━━ REAL-TIME CLOCK — hoisted to top to prevent TDZ error in fast-return path ━━━
   let lastTimeStr = '';
@@ -201,46 +179,7 @@ document.addEventListener('DOMContentLoaded', function () {
     notesCard: 'Notes/notes.html'
   };
 
-  // CAPACITOR ULTRA-FAST PATH: Check DOM cache FIRST (highest priority)
-  // IMPORTANT: Only check cache on SPA navigation, NOT on initial page load
-  // On initial load, window.performance.navigation.type === 0 and there's no cache yet
-  const isSPANavigation = window.history.state?.spa === true;
-  
-  console.log('[HomepageData] 🔍 Checking cache status...');
-  console.log('[HomepageData] isSPANavigation:', isSPANavigation);
-  console.log('[HomepageData] window._homepageDataCached:', window._homepageDataCached);
-  console.log('[HomepageData] #app.dataset.cached:', document.querySelector('#app')?.dataset.cached);
-  
-  // NUCLEAR FIX: Check BOTH conditions - SPA navigation OR if cached flag is already set
-  const isCachedReturn = (isSPANavigation && window._homepageDataCached) || 
-                         document.querySelector('#app')?.dataset.cached === 'true';
-  
-  if (isCachedReturn) {
-    console.log('[HomepageData] ⚡⚡⚡ INSTANT CACHED RETURN - BLOCKING ALL INIT ⚡⚡⚡');
-    
-    // VISUAL DEBUG: Show cache hit indicator
-    if (window.Capacitor) {
-      const indicator = document.createElement('div');
-      indicator.style.cssText = 'position:fixed;top:10px;left:50%;transform:translateX(-50%);background:#00ff00;color:#000;padding:8px 16px;border-radius:20px;z-index:999999;font-weight:bold;font-size:14px;box-shadow:0 4px 12px rgba(0,255,0,0.3);';
-      indicator.textContent = '⚡ INSTANT CACHE HIT - ZERO LAG';
-      document.body.appendChild(indicator);
-      setTimeout(() => indicator.remove(), 1500);
-    }
-    
-    // Only update live data (clock, greeting) - NOTHING ELSE
-    updateClock();
-    updateGreeting();
-    setInterval(updateClock, 10000);
-    setInterval(updateGreeting(), 60000);
-    
-    // CRITICAL: Mark as initialized to prevent duplicate init on next SPA swap
-    window._homepageDataInitialized = true;
-    
-    console.log('[HomepageData] ✓ Cached return complete - blocked all heavy init');
-    return; // EXIT IMMEDIATELY - Zero lag
-  }
-
-  // NATIVE APP FIX: Fallback to HomeStateManager (slower than DOM cache)
+  // NATIVE APP FIX: HomeStateManager-backed fast return path
   const isReturning = window.HomeStateManager?.isReturningFromNavigation();
   const hasRecentState = window.HomeStateManager?.isRecentlyInitialized();
   
@@ -623,17 +562,11 @@ document.addEventListener('DOMContentLoaded', function () {
     if (badge) { if (count > 0) { badge.textContent = count > 9 ? '9+' : count; badge.style.display = 'flex'; } else { badge.style.display = 'none'; } }
   }
 
-  // ━━━ NOTIFICATION CLICK ━━━
-  const notifBtn = document.getElementById('notifBtn');
-  if (notifBtn) {
-    notifBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      // FIX: Use SPA navigation instead of direct href
-      if (window.navigateTo) window.navigateTo('reminders/smart-reminders-v7.html');
-      else window.location.href = 'reminders/smart-reminders-v7.html';
-    });
-  }
+  // NOTIFICATION CLICK: bound via a plain onclick="" attribute on #notifBtn
+  // itself (frontend/index.html header markup) — this was a duplicate of
+  // that same binding (this file is also a SHELL_SCRIPTS entry, so it never
+  // re-runs after an SPA swap either, meaning this copy was equally unable
+  // to survive/rebind after Home is restored from DOM_CACHE).
 
   // ━━━ BACK BUTTON CLICK ━━━
   const backBtn = document.querySelector('.header__btn[href*="ios-homepage"]') || document.querySelector('.header__btn');
@@ -690,20 +623,22 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function updateThemeUI() {
     if (!window.AnhadTheme) return;
-    const isDark = window.AnhadTheme.isDark();
+    const mode = window.AnhadTheme.get ? window.AnhadTheme.get() : 'auto';
+    const isDark = window.AnhadTheme.isDark ? window.AnhadTheme.isDark() : false;
     if (isDark) {
       themeToggleTrack?.classList.add('active');
-      if (themeIcon) themeIcon.className = 'fas fa-sun';
       if (themeLabel) themeLabel.textContent = 'Light Mode';
     } else {
       themeToggleTrack?.classList.remove('active');
-      if (themeIcon) themeIcon.className = 'fas fa-moon';
       if (themeLabel) themeLabel.textContent = 'Dark Mode';
+    }
+    if (themeIcon) {
+      themeIcon.textContent = mode === 'auto' ? '✨' : (isDark ? '☀️' : '🌙');
     }
   }
 
-  // Initialize theme UI
-  setTimeout(updateThemeUI, 100);
+  // Initialize theme UI synchronously without delay
+  updateThemeUI();
 
   // ━━━ FILTER PANEL ━━━
   const filterPanel = document.getElementById('filterPanel'), filterClose = document.getElementById('filterClose'), filterOptions = document.querySelectorAll('.filter-panel__option');
@@ -903,15 +838,28 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function startLightweightTimers() {
-    // Only start minimal timers for time-sensitive UI
+    // Guarded on window: this function (called from the "fast return" branch
+    // above) can run again on a later re-execution of this file, and neither
+    // the intervals nor the pagehide cleanup listener were previously
+    // deduplicated — each call leaked 2 more permanently-running intervals
+    // plus another pagehide registration (pagehide doesn't fire on SPA
+    // navigation, only on genuine tab close, so { once: true } never got a
+    // chance to clean these up in between).
+    if (window.__anhadHomeLightweightIntervals) {
+      window.__anhadHomeLightweightIntervals.forEach(id => clearInterval(id));
+    }
     const lightweightIntervals = [
       setInterval(() => { if (!document.hidden) updateClock(); }, 15000),
       setInterval(() => { if (!document.hidden) updateGreeting(); }, 300000)
     ];
-    
-    window.addEventListener('pagehide', () => {
-      lightweightIntervals.forEach(id => clearInterval(id));
-    }, { once: true });
+    window.__anhadHomeLightweightIntervals = lightweightIntervals;
+
+    if (!window.__anhadHomeLightweightPagehideBound) {
+      window.__anhadHomeLightweightPagehideBound = true;
+      window.addEventListener('pagehide', () => {
+        (window.__anhadHomeLightweightIntervals || []).forEach(id => clearInterval(id));
+      }, { once: true });
+    }
   }
 
   // Save state after full initialization
@@ -934,7 +882,19 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   console.log('✨ ANHAD Premium Homepage Data Initialized');
-});
+}
+
+window.__anhadPageInit = window.__anhadPageInit || {};
+window.__anhadPageInit['/index.html'] = _anhadHomepageDataInit;
+window.__anhadPageInit['/'] = _anhadHomepageDataInit;
+window.__anhadPageInit['/frontend/index.html'] = _anhadHomepageDataInit;
+window.__anhadPageInit['/frontend/'] = _anhadHomepageDataInit;
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', _anhadHomepageDataInit);
+} else {
+  _anhadHomepageDataInit();
+}
 
 // ━━━ DYNAMIC ISLAND & AUDIO ENGINE ━━━
 (function () {
@@ -962,18 +922,12 @@ document.addEventListener('DOMContentLoaded', function () {
       islandStreamName.textContent = streamName === 'amritvela' ? 'Amritvela Radio' : 'Live Kirtan';
       islandActionBtn.innerHTML = '<i class="fas fa-pause"></i>';
 
-      if (!window.Capacitor && navigator.mediaSession) {
-        navigator.mediaSession.metadata = new MediaMetadata({
-          title: streamName === 'amritvela' ? 'Amritvela Radio' : 'Live Kirtan',
-          artist: 'Sri Harmandir Sahib Ji',
-          album: 'ANHAD Audio Engine',
-          artwork: [
-            { src: 'assets/icon-96x96.png', sizes: '96x96', type: 'image/png' },
-            { src: 'assets/icon-192x192.png', sizes: '192x192', type: 'image/png' },
-            { src: 'assets/icon-512x512.png', sizes: '512x512', type: 'image/png' }
-          ]
-        });
-      }
+      // NOTE: deliberately not setting navigator.mediaSession.metadata here.
+      // AnhadAudio's updateMediaSession() (lib/anhad-audio-singleton.js) is the
+      // single writer of that shared browser API — it has the real track title
+      // and time-of-day artwork. This widget used to write its own generic
+      // metadata here too, racing with the singleton's with no coordination
+      // (whichever ran last silently won).
     } else {
       islandWaveform.classList.add('paused');
       islandActionBtn.innerHTML = '<i class="fas fa-play"></i>';
@@ -993,25 +947,35 @@ document.addEventListener('DOMContentLoaded', function () {
     const playIcon1 = document.getElementById('heroPlayIcon1'), card1 = document.getElementById('gurbaniRadioCard');
     const playIcon2 = document.getElementById('heroPlayIcon2'), card2 = document.getElementById('amritvelaCard');
 
-    window.addEventListener('anhadAudioStateChange', function (e) {
-      const isPlaying = e.detail.isPlaying;
-      const stream = e.detail.stream || 'darbar';
+    // This file is no longer in smooth-navigation.js's SHELL_SCRIPTS, so init()
+    // now re-runs on every non-cached SPA arrival at Home. The click/element
+    // listeners below re-bind safely each time (#app's innerHTML swap destroys
+    // the old elements they were bound to, so old closures just go inert with
+    // them) — but window is never destroyed, so guard this one to avoid N
+    // stacked listeners each replaying the same (harmless but wasted) DOM
+    // writes on every future anhadAudioStateChange event.
+    if (!window.__anhadIslandAudioListenerBound) {
+      window.__anhadIslandAudioListenerBound = true;
+      window.addEventListener('anhadAudioStateChange', function (e) {
+        const isPlaying = e.detail.isPlaying;
+        const stream = e.detail.stream || 'darbar';
 
-      // Update Hero Cards visually
-      if (stream === 'darbar') {
-        if (playIcon1) playIcon1.setAttribute('class', isPlaying ? 'fas fa-pause' : 'fas fa-play');
-        if (card1) card1.classList.toggle('playing', isPlaying);
-        if (playIcon2) playIcon2.setAttribute('class', 'fas fa-play');
-        if (card2) card2.classList.remove('playing');
-      } else if (stream === 'amritvela') {
-        if (playIcon2) playIcon2.setAttribute('class', isPlaying ? 'fas fa-pause' : 'fas fa-play');
-        if (card2) card2.classList.toggle('playing', isPlaying);
-        if (playIcon1) playIcon1.setAttribute('class', 'fas fa-play');
-        if (card1) card1.classList.remove('playing');
-      }
+        // Update Hero Cards visually
+        if (stream === 'darbar') {
+          if (playIcon1) playIcon1.setAttribute('class', isPlaying ? 'fas fa-pause' : 'fas fa-play');
+          if (card1) card1.classList.toggle('playing', isPlaying);
+          if (playIcon2) playIcon2.setAttribute('class', 'fas fa-play');
+          if (card2) card2.classList.remove('playing');
+        } else if (stream === 'amritvela') {
+          if (playIcon2) playIcon2.setAttribute('class', isPlaying ? 'fas fa-pause' : 'fas fa-play');
+          if (card2) card2.classList.toggle('playing', isPlaying);
+          if (playIcon1) playIcon1.setAttribute('class', 'fas fa-play');
+          if (card1) card1.classList.remove('playing');
+        }
 
-      setIslandState(isPlaying, stream);
-    });
+        setIslandState(isPlaying, stream);
+      });
+    }
 
     // Check Initial State on Load
     setTimeout(function () {
@@ -1054,4 +1018,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => setTimeout(init, 50));
   else setTimeout(init, 50);
+})();
+
 })();

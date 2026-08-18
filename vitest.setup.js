@@ -1,5 +1,20 @@
 // Vitest setup file
 // Runs before each test file
+import fs from 'node:fs';
+import path from 'node:path';
+import { vi } from 'vitest';
+
+// Compatibility alias for existing suites using Jest globals
+global.jest = vi;
+
+// Load AnhadAudio singleton code once
+const singletonPath = path.resolve(process.cwd(), 'frontend/lib/anhad-audio-singleton.js');
+let singletonCode = '';
+try {
+  if (fs.existsSync(singletonPath)) {
+    singletonCode = fs.readFileSync(singletonPath, 'utf8');
+  }
+} catch (e) {}
 
 // Mock global browser APIs that might not exist in jsdom
 global.ResizeObserver = class ResizeObserver {
@@ -137,6 +152,18 @@ global.Audio = class Audio {
     this._trigger('canplaythrough');
   }
 
+  setAttribute(name, value) {
+    this[name] = value;
+  }
+
+  getAttribute(name) {
+    return this[name] ?? null;
+  }
+
+  removeAttribute(name) {
+    delete this[name];
+  }
+
   addEventListener(event, handler, options) {
     if (!this._eventListeners[event]) {
       this._eventListeners[event] = [];
@@ -251,4 +278,45 @@ global.console = {
 
 // Export original console for tests that need it
 global.originalConsole = originalConsole;
+
+// Mock MediaMetadata
+global.MediaMetadata = class MediaMetadata {
+  constructor(data = {}) {
+    Object.assign(this, data);
+  }
+};
+window.MediaMetadata = global.MediaMetadata;
+window.Audio = global.Audio;
+
+function initAnhadAudioSingleton() {
+  if (singletonCode) {
+    try {
+      if (window.AnhadAudio) delete window.AnhadAudio;
+      const fn = new Function('window', 'document', 'navigator', 'localStorage', 'sessionStorage', 'location', 'Audio', 'MediaMetadata', singletonCode);
+      fn(window, document, navigator, global.localStorage, global.sessionStorage, window.location, global.Audio, global.MediaMetadata);
+      if (window.AnhadAudio) {
+        global.AnhadAudio = window.AnhadAudio;
+      }
+      if (window.AnhadOverlayPlayer) {
+        global.AnhadOverlayPlayer = window.AnhadOverlayPlayer;
+      }
+      if (window.AnhadMiniPlayer) {
+        global.AnhadMiniPlayer = window.AnhadMiniPlayer;
+      }
+    } catch (e) {
+      if (typeof originalConsole !== 'undefined' && originalConsole.error) {
+        originalConsole.error('[Vitest Setup] AnhadAudio error:', e);
+      }
+    }
+  }
+}
+
+// Initialize immediately
+initAnhadAudioSingleton();
+
+// Ensure it's re-attached in beforeEach for every test
+beforeEach(() => {
+  initAnhadAudioSingleton();
+});
+
 

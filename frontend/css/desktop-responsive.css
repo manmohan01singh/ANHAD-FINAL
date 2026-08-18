@@ -409,8 +409,11 @@
   
   /* ═════════════════════════════════════════════════════════════════════════════
      HEADER — LIGHT MODE (Default)
+     Scoped to .home-header (see trendora-premium.css's header section for
+     why — same file-never-removed-from-<head> mechanism, same bare
+     .header/.header__title/.header__btn collision with other pages).
      ═════════════════════════════════════════════════════════════════════════════ */
-  .header {
+  .header.home-header {
     position: sticky;
     top: 0;
     background: transparent !important;
@@ -428,13 +431,13 @@
     opacity: 1 !important;
   }
 
-  html.dark-mode .header,
-  [data-theme="dark"] .header {
+  html.dark-mode .home-header,
+  [data-theme="dark"] .home-header {
     background: transparent !important;
     opacity: 1 !important;
   }
-  
-  .header__title {
+
+  .home-header .header__title {
     color: rgba(0, 0, 0, 0.5) !important;
     font-size: 0.875rem !important;
     font-weight: 600 !important;
@@ -442,8 +445,8 @@
     letter-spacing: 2px;
     text-shadow: none;
   }
-  
-  .header__btn {
+
+  .home-header .header__btn {
     width: 44px;
     height: 44px;
     border-radius: 12px;
@@ -455,13 +458,13 @@
     justify-content: center;
     transition: background-color 0.2s ease, color 0.2s ease;
   }
-  
-  .header__btn:hover {
+
+  .home-header .header__btn:hover {
     background: rgba(0, 0, 0, 0.08);
     transform: translateY(-2px);
   }
-  
-  .header--compact {
+
+  .home-header.header--compact {
     background: rgba(255, 255, 255, 0.9) !important;
     backdrop-filter: blur(20px) saturate(150%) !important;
     -webkit-backdrop-filter: blur(20px) saturate(150%) !important;
@@ -470,43 +473,43 @@
     margin: 16px;
     border-radius: 16px;
   }
-  
-  .header--compact .header__title {
+
+  .home-header.header--compact .header__title {
     color: rgba(0, 0, 0, 0.7) !important;
   }
-  
+
   /* ═════════════════════════════════════════════════════════════════════════════
      HEADER — DARK MODE
      ═════════════════════════════════════════════════════════════════════════════ */
-  html.dark-mode .header__title,
-  [data-theme="dark"] .header__title {
+  html.dark-mode .home-header .header__title,
+  [data-theme="dark"] .home-header .header__title {
     color: rgba(255, 255, 255, 0.5) !important;
   }
-  
-  html.dark-mode .header__btn,
-  [data-theme="dark"] .header__btn {
+
+  html.dark-mode .home-header .header__btn,
+  [data-theme="dark"] .home-header .header__btn {
     background: rgba(255, 255, 255, 0.08);
     border: 1px solid rgba(255, 255, 255, 0.1);
   }
-  
-  html.dark-mode .header__btn:hover,
-  [data-theme="dark"] .header__btn:hover {
+
+  html.dark-mode .home-header .header__btn:hover,
+  [data-theme="dark"] .home-header .header__btn:hover {
     background: rgba(255, 255, 255, 0.15);
   }
-  
-  html.dark-mode .header--compact,
-  [data-theme="dark"] .header--compact {
+
+  html.dark-mode .home-header.header--compact,
+  [data-theme="dark"] .home-header.header--compact {
     background: rgba(25, 28, 35, 0.9) !important;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
   }
-  
-  html.dark-mode .header--compact .header__title,
-  [data-theme="dark"] .header--compact .header__title {
+
+  html.dark-mode .home-header.header--compact .header__title,
+  [data-theme="dark"] .home-header.header--compact .header__title {
     color: rgba(255, 255, 255, 0.8) !important;
   }
-  
+
   /* Hide mobile back button on desktop */
-  .header__btn[href*="ios-homepage"] {
+  .home-header .header__btn[href*="ios-homepage"] {
     display: none !important;
   }
   
@@ -1123,8 +1126,8 @@
     border-right-color: rgba(255,255,255,0.08);
   }
   
-  html.dark-mode .header,
-  [data-theme="dark"] .header {
+  html.dark-mode .home-header,
+  [data-theme="dark"] .home-header {
     background: transparent;
     border-color: rgba(255,255,255,0.08);
   }

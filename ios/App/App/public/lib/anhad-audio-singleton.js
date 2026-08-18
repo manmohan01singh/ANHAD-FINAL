@@ -253,6 +253,8 @@
   let manualOffset = 0; // seconds behind live edge
   let pauseAnchor = null; // { timestamp, offset }
   let isTransitioning = false; // CRITICAL FIX: Prevent concurrent track transitions
+  let connectionState = 'idle'; // 'idle' | 'connected' | 'reconnecting' | 'failed'
+  let liveReconnectAttempts = 0; // reset on any successful play; bounds the retry loop below
 
   const listeners = {
     statechange: [],
@@ -264,6 +266,23 @@
   function emit(event, data) {
     const list = listeners[event] || [];
     list.forEach(fn => { try { fn(data); } catch(e) {} });
+
+    // Bridge 'statechange' to a DOM CustomEvent so page-level listeners that
+    // can't reach the singleton's internal .on() bus (Home's hero cards and
+    // Dynamic Island widget, the widget bridge, virtual-live-indicator) stay
+    // in sync even when playback state changes elsewhere — lock screen,
+    // another page's mini-player, a native/Android command. 'stream' is an
+    // alias for 'currentStream': these listeners were written against an
+    // older, now-orphaned dispatcher (lib/persistent-audio.js) that used
+    // that field name; kept for compatibility rather than editing every
+    // listener.
+    if (event === 'statechange') {
+      try {
+        window.dispatchEvent(new CustomEvent('anhadAudioStateChange', {
+          detail: Object.assign({}, data, { stream: data.currentStream })
+        }));
+      } catch (e) {}
+    }
   }
 
   function on(event, callback) {
@@ -419,6 +438,11 @@
       const notifyStateChange = (playingState) => {
         isPlaying = playingState;
         isLoading = false;
+        if (playingState) {
+          // Confirmed playback flowing — any prior reconnect struggle is over.
+          connectionState = 'connected';
+          liveReconnectAttempts = 0;
+        }
         emit('loading', { isLoading: false });
         emit('statechange', getPublicState());
         persistState();
@@ -518,21 +542,78 @@
               handleTrackEnded();
             }
           }, 3000);
+        } else if (currentStream && STREAMS[currentStream]?.type === 'live') {
+          // Bounded-retry reconnect for true-live streams (Darbar Sahib,
+          // SikhNet channels) — previously these had NO auto-recovery at all,
+          // unlike playlist streams above. Exponential backoff, capped
+          // attempts, so a genuinely-down upstream doesn't retry forever.
+          const MAX_LIVE_RECONNECT_ATTEMPTS = 5;
+          if (liveReconnectAttempts < MAX_LIVE_RECONNECT_ATTEMPTS) {
+            liveReconnectAttempts++;
+            connectionState = 'reconnecting';
+            emit('statechange', getPublicState());
+            const backoffMs = Math.min(2000 * Math.pow(2, liveReconnectAttempts - 1), 30000); // 2s,4s,8s,16s,30s(cap)
+            console.log(`[PlaybackQueueController] 🔄 Live stream error, reconnect attempt ${liveReconnectAttempts}/${MAX_LIVE_RECONNECT_ATTEMPTS} in ${backoffMs}ms...`);
+            setTimeout(() => {
+              if (currentStream && STREAMS[currentStream]?.type === 'live' && !isPlaying) {
+                playStream(currentStream);
+              }
+            }, backoffMs);
+          } else {
+            connectionState = 'failed';
+            emit('statechange', getPublicState());
+            console.warn('[PlaybackQueueController] ❌ Live stream reconnect attempts exhausted, giving up');
+          }
         }
       });
 
+      // STALL WATCHDOG: 'waiting'/'stalled' fire when playback has already
+      // started successfully but then hangs mid-stream (rebuffering, network
+      // hiccup) — a different failure window than loadAndPlay()'s own 15s
+      // initial-load timeout above, and not something the 'error' handler
+      // above sees (no MediaError is raised while merely buffering). If a
+      // 'playing' event doesn't follow within 15s, treat it as hung and
+      // reload the current source via the normal playStream() resolution
+      // path (live vs. playlist is handled correctly by that function).
+      let stallRecoveryTimer = null;
+      const clearStallTimer = () => {
+        if (stallRecoveryTimer) {
+          clearTimeout(stallRecoveryTimer);
+          stallRecoveryTimer = null;
+        }
+      };
+      const armStallTimer = () => {
+        clearStallTimer();
+        stallRecoveryTimer = setTimeout(() => {
+          stallRecoveryTimer = null;
+          if (!currentStream || !STREAMS[currentStream]) return;
+          console.warn('[PlaybackQueueController] ⚠️ Stall watchdog: no recovery within 15s, reloading current source');
+          playStream(currentStream);
+        }, 15000);
+      };
+      this.audio.addEventListener('waiting', armStallTimer);
+      this.audio.addEventListener('stalled', armStallTimer);
+      this.audio.addEventListener('playing', clearStallTimer);
+      this.audio.addEventListener('pause', clearStallTimer);
+
       // Background capabilities
-      if (window.Capacitor) {
+      if (window.Capacitor && typeof this.audio.setAttribute === 'function') {
         this.audio.setAttribute('playsinline', '');
         this.audio.setAttribute('webkit-playsinline', '');
       }
 
+      const attachToDom = () => {
+        try {
+          if (document.body && this.audio && (this.audio.nodeType === 1 || (typeof Node !== 'undefined' && this.audio instanceof Node))) {
+            document.body.appendChild(this.audio);
+          }
+        } catch (e) {}
+      };
+
       if (document.body) {
-        document.body.appendChild(this.audio);
-      } else {
-        document.addEventListener('DOMContentLoaded', () => {
-          document.body.appendChild(this.audio);
-        });
+        attachToDom();
+      } else if (typeof document.addEventListener === 'function') {
+        document.addEventListener('DOMContentLoaded', attachToDom, { once: true });
       }
     },
 
@@ -608,8 +689,16 @@
           } catch (e) {
             const isTimeout = e.message && e.message.includes('TIMEOUT');
             console.warn('[PlaybackQueueController] ❌ Play failed:', isTimeout ? 'TIMEOUT' : e.message);
-            
+
             isPlaying = false;
+            // updateMediaSession() optimistically sets playbackState = 'playing'
+            // before this promise settles (needed so the OS shows controls
+            // immediately on user tap). Revert it here on actual failure so the
+            // lock screen/notification doesn't keep claiming "Playing" while
+            // nothing is playing.
+            if ('mediaSession' in navigator) {
+              navigator.mediaSession.playbackState = 'paused';
+            }
             emit('statechange', getPublicState());
             
             // Emit error for UI handling
@@ -848,6 +937,10 @@
     // Set pause anchor to compute correct manual offset upon resumption
     pauseAnchor = {
       timestamp: Date.now(),
+      trackIndex: typeof currentTrackIndex === 'number' ? currentTrackIndex : 0,
+      position: (PlaybackQueueController.audio && Number.isFinite(PlaybackQueueController.audio.currentTime)) 
+        ? PlaybackQueueController.audio.currentTime 
+        : 0,
       offset: manualOffset
     };
     persistState();
@@ -865,6 +958,10 @@
     PlaybackQueueController.pause();
     pauseAnchor = {
       timestamp: Date.now(),
+      trackIndex: typeof currentTrackIndex === 'number' ? currentTrackIndex : 0,
+      position: (PlaybackQueueController.audio && Number.isFinite(PlaybackQueueController.audio.currentTime)) 
+        ? PlaybackQueueController.audio.currentTime 
+        : 0,
       offset: manualOffset
     };
     persistState();
@@ -1121,26 +1218,110 @@
   // ─── UTILITIES & ACCESSORS ───
   function getLiveOffset() {
     if (!currentStream || STREAMS[currentStream].type !== 'playlist') return 0;
-    return manualOffset;
+    return manualOffset || 0;
   }
 
+  // Returns what track/position SHOULD be broadcasting right now per the
+  // timeline model, or null if there's nothing to compare (no current
+  // stream, or a raw 'live' stream with no timeline model at all).
+  function getExpectedBroadcastPosition() {
+    if (!currentStream) return null;
+    const stream = STREAMS[currentStream];
+    if (!stream || stream.type !== 'playlist') return null;
+    const liveTime = VirtualLiveEngine.getCurrentTimelineValue();
+    const expectedUserTime = liveTime - manualOffset;
+    return VirtualLiveEngine.resolveBroadcastPosition(currentStream, expectedUserTime);
+  }
+
+  // Seconds of drift between actual playhead and where the timeline model
+  // says it should be. Positive = ahead, negative = behind. Only meaningful
+  // for playlist-type streams (Amritvela/Simran); raw 'live' streams (Darbar
+  // Sahib, SikhNet) have no timeline model to drift from, so this is 0 there.
   function getLiveDrift() {
-    return 0;
+    const expected = getExpectedBroadcastPosition();
+    if (!expected) return 0;
+    const audio = PlaybackQueueController.audio;
+    if (!audio || !Number.isFinite(audio.currentTime)) return 0;
+
+    if (expected.trackIndex === currentTrackIndex) {
+      return audio.currentTime - expected.position;
+    }
+
+    // Drifted onto a different track than expected — comparing raw "position"
+    // across two different tracks is meaningless, so compare via absolute
+    // timeline coordinates instead.
+    const liveTime = VirtualLiveEngine.getCurrentTimelineValue();
+    const expectedUserTime = liveTime - manualOffset;
+    const actualUserTime = VirtualLiveEngine.convertToTimelineCoordinate(
+      currentStream, currentTrackIndex, audio.currentTime, expected.cycle
+    );
+    return actualUserTime - expectedUserTime;
   }
 
   function getPublicState() {
+    const audio = PlaybackQueueController.audio;
+    const streamObj = currentStream ? STREAMS[currentStream] : null;
+    const defaultDur = (streamObj && streamObj.defaultTrackDuration) ? streamObj.defaultTrackDuration : 3600;
+    const fallbackTitle = streamObj ? streamObj.name : '';
+    const fallbackArtist = streamObj ? (streamObj.subtitle || '') : '';
+
     return {
       currentStream,
-      isPlaying,
-      isLoading,
-      currentTrackTitle,
-      currentTrackArtist,
-      currentTime: PlaybackQueueController.audio ? PlaybackQueueController.audio.currentTime : 0,
-      duration: PlaybackQueueController.audio ? PlaybackQueueController.audio.duration : 3600,
-      manualOffset,
-      streamType: currentStream ? STREAMS[currentStream].type : null,
+      currentTrackIndex: typeof currentTrackIndex === 'number' ? currentTrackIndex : 0,
+      currentTrackTitle: currentTrackTitle || fallbackTitle,
+      currentTrackArtist: currentTrackArtist || fallbackArtist,
+      isPlaying: !!isPlaying,
+      isLoading: !!isLoading,
+      connectionState,
+      currentTime: (audio && Number.isFinite(audio.currentTime)) ? audio.currentTime : 0,
+      duration: (audio && Number.isFinite(audio.duration) && audio.duration > 0) ? audio.duration : defaultDur,
+      volume: (audio && Number.isFinite(audio.volume)) ? audio.volume : 0.7,
+      pauseAnchor: pauseAnchor ? { ...pauseAnchor } : null,
+      manualOffset: manualOffset || 0,
+      liveOffset: manualOffset || 0,
+      isBehind: (manualOffset || 0) > 5,
+      streamName: streamObj ? streamObj.name : '',
+      streamSubtitle: streamObj ? (streamObj.subtitle || '') : '',
+      streamType: streamObj ? streamObj.type : null,
+      playerPage: (streamObj && streamObj.playerPage) ? streamObj.playerPage : 'GurbaniRadio/gurbani-radio.html',
       artwork: currentStream ? getDynamicCoverAsset(currentStream) : ''
     };
+  }
+
+  // ─── NATIVE MEDIA COMMAND LISTENER ───
+  let _nativeListenerInitialized = false;
+  function initNativeMediaListener() {
+    if (_nativeListenerInitialized) return;
+    if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.AudioService) {
+      try {
+        const service = window.Capacitor.Plugins.AudioService;
+        if (typeof service.addListener === 'function') {
+          _nativeListenerInitialized = true;
+          service.addListener('mediaCommand', (data) => {
+            const command = data && data.command;
+            console.log('[AnhadAudio] 📱 Native mediaCommand received:', command);
+            if (!command) return;
+            const cmd = String(command).toUpperCase();
+            if (cmd === 'PLAY' || cmd === 'RESUME') {
+              resume();
+            } else if (cmd === 'PAUSE') {
+              pause();
+            } else if (cmd === 'NEXT') {
+              playNextTrack(true);
+            } else if (cmd === 'PREV') {
+              playNextTrack(false);
+            } else if (cmd === 'STOP') {
+              stop();
+            } else if (cmd === 'RECONNECT') {
+              if (currentStream) playStream(currentStream);
+            }
+          });
+          console.log('[AnhadAudio] ✅ Bound native mediaCommand listener to AudioServicePlugin');
+        }
+      } catch (e) {
+        console.warn('[AnhadAudio] Failed to bind native media listener:', e);
+      }
+    }
   }
 
   // ─── CO-ORDINATOR REGISTER ───
@@ -1158,12 +1339,81 @@
   loadState();
   PlaybackQueueController.init();
   registerWithCoordinator();
+  initNativeMediaListener();
 
   // Listen for global custom play triggers
   window.addEventListener('anhadPlayStream', (e) => {
     const stream = e.detail && e.detail.stream;
     if (stream) play(stream);
   });
+
+  // ─── DEFENSIVE BACKGROUND-KILL PROTECTION ───
+  // pause()/pauseFromNative() are normally the only things that create a
+  // pauseAnchor, which is what lets resume() reconstruct the exact pre-pause
+  // timeline position no matter how long the pause lasted. But if the OS
+  // kills the process while backgrounded WITHOUT ever calling pause() first
+  // (routine under Android memory pressure), resume() finds no pauseAnchor
+  // and falls back to the stale pre-kill manualOffset against the new, much
+  // later live time — which can overshoot into a future playlist cycle.
+  // Close that gap by snapshotting an equivalent anchor whenever the page is
+  // about to hide, WITHOUT actually pausing playback — the common case is
+  // the process survives and audio should keep playing straight through the
+  // background, uninterrupted.
+  function snapshotBackgroundAnchor() {
+    if (!isPlaying || !currentStream) return;
+    pauseAnchor = {
+      timestamp: Date.now(),
+      trackIndex: typeof currentTrackIndex === 'number' ? currentTrackIndex : 0,
+      position: (PlaybackQueueController.audio && Number.isFinite(PlaybackQueueController.audio.currentTime))
+        ? PlaybackQueueController.audio.currentTime
+        : 0,
+      offset: manualOffset
+    };
+    persistState();
+  }
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      snapshotBackgroundAnchor();
+    } else if (isPlaying) {
+      // Process survived the background with playback intact — nothing to
+      // recover. Discard the defensive anchor so it can't be misread later;
+      // a real pause() always sets a fresh one anyway when it actually runs.
+      pauseAnchor = null;
+      persistState();
+    }
+  });
+  window.addEventListener('pagehide', snapshotBackgroundAnchor);
+
+  // ─── PERIODIC LIVE-DRIFT CORRECTION ───
+  // The timeline model assumes real playback runs at exactly 1x wall-clock
+  // speed forever once started, with no periodic re-check — so a stall/
+  // rebuffer that doesn't trip the stall watchdog or an 'error' event can
+  // silently grow a gap between what's playing and what the timeline says
+  // should be playing. Check every 30s and self-correct past a small
+  // threshold (deliberately above normal HTML5 buffering jitter, which is
+  // sub-second to low-single-digit seconds).
+  const DRIFT_CHECK_INTERVAL_MS = 30000;
+  const DRIFT_CORRECTION_THRESHOLD_SEC = 8;
+  setInterval(() => {
+    if (!isPlaying || !currentStream || isTransitioning) return;
+    if (!STREAMS[currentStream] || STREAMS[currentStream].type !== 'playlist') return;
+
+    const expected = getExpectedBroadcastPosition();
+    if (!expected) return;
+    const drift = getLiveDrift();
+    if (Math.abs(drift) <= DRIFT_CORRECTION_THRESHOLD_SEC) return;
+
+    console.warn('[AnhadAudio] Live drift correction: ' + drift.toFixed(1) + 's, resyncing');
+    if (expected.trackIndex === currentTrackIndex) {
+      // Same track, just off by a few seconds — a plain seek is enough.
+      PlaybackQueueController.seek(expected.position);
+    } else {
+      // Drifted onto the wrong track entirely — reload cleanly via the same
+      // resolution path playStream() already uses.
+      playStream(currentStream);
+    }
+  }, DRIFT_CHECK_INTERVAL_MS);
 
   function registerStream(id, streamObj) {
     if (!id || !streamObj) return;

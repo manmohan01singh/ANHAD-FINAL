@@ -1,0 +1,213 @@
+/**
+ * ═══════════════════════════════════════════════════════════════════════════════
+ * ANHAD REMOTE CONFIGURATION & CAMPAIGN ENGINE
+ * 
+ * Multi-Tiered Architecture:
+ *   1. Fresh Remote Config (GET /api/config/campaigns)
+ *   2. Cached Valid Configuration (localStorage with TTL)
+ *   3. Built-in Safe Defaults (Zero single point of failure)
+ * 
+ * Supports:
+ *   - Automatic schedule activation/deactivation (Start/End dates)
+ *   - Chaliya Amritvela Trust 2026 & future Gurpurabs/Samagams
+ *   - Feature flags & platform targeting (Web/Android)
+ *   - Dynamic Hero Takeover, Banners, and Announcements
+ * ═══════════════════════════════════════════════════════════════════════════════
+ */
+
+(function(window) {
+  'use strict';
+
+  const CONFIG_CACHE_KEY = 'anhad_remote_config_cache_v1';
+  const CONFIG_CACHE_TTL = 3600000; // 1 Hour
+
+  const SAFE_BUILTIN_CONFIG = {
+    version: '1.0.0',
+    featureFlags: {
+      enableVirtualLive: true,
+      enableSadhsangatAutoRefresh: true,
+      enableDynamicSky: true,
+      enableCampaignHeroTakeover: true
+    },
+    campaigns: [
+      {
+        id: 'chaliya-amritvela-2026',
+        title: 'Chaliya Amritvela Trust 2026',
+        subtitle: '40 Days of Divine Naam Simran & Nitnem Practice',
+        type: 'spiritual_event',
+        priority: 100,
+        platforms: ['web', 'android', 'ios'],
+        startDate: '2026-01-01T00:00:00.000Z',
+        endDate: '2026-12-31T23:59:59.000Z',
+        active: true,
+        content: {
+          badgeText: 'CHALIYA 2026',
+          heroTitle: 'Chaliya Amritvela 2026',
+          heroSubtitle: 'Join thousands in the annual 40-day Amritvela Simran Abhyaas',
+          ctaText: 'Join Amritvela',
+          ctaAction: 'STREAM:amritvela',
+          announcement: {
+            icon: '✨',
+            title: 'Amritvela Chaliya 2026 In Progress',
+            message: 'Awaken during Amritvela (3:00 AM – 6:00 AM) for collective Nitnem & Waheguru Simran.',
+            actionLabel: 'Open Nitnem Tracker',
+            actionUrl: 'NitnemTracker/nitnem-tracker.html'
+          },
+          banner: {
+            enabled: true,
+            text: 'ੴ Annual Chaliya 2026 — Amritvela Trust',
+            link: 'GurbaniRadio/gurbani-radio.html?stream=amritvela',
+            accentColor: '#D4AF37'
+          },
+          themeTokens: {
+            accentGlow: 'rgba(212, 175, 55, 0.3)',
+            badgeBackground: 'linear-gradient(135deg, #8A6D3B 0%, #D4AF37 100%)'
+          }
+        }
+      }
+    ]
+  };
+
+  const API_BASE = (() => {
+    try {
+      if (window.Capacitor && window.Capacitor.isNative) return 'https://anhad-final.onrender.com';
+      const port = window.location.port;
+      const host = window.location.hostname;
+      if (port === '3000' || port === '3001' || host === 'localhost' || host === '127.0.0.1') {
+        return `${window.location.protocol}//${host}${port ? `:${port}` : ''}`;
+      }
+    } catch(e) {}
+    return 'https://anhad-final.onrender.com';
+  })();
+
+  class RemoteConfigManager {
+    constructor() {
+      this.config = this.loadCachedConfig() || SAFE_BUILTIN_CONFIG;
+      this.isOnline = navigator.onLine !== false;
+      this.init();
+    }
+
+    init() {
+      // PERF: cached/built-in config is already available synchronously via
+      // loadCachedConfig() above, so the network refresh is not on the critical
+      // path for first paint/interaction — defer it to idle time (same pattern
+      // as trendora-app.js's Hukamnama hero-card fetch).
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(() => this.fetchRemoteConfig(), { timeout: 2000 });
+      } else {
+        setTimeout(() => this.fetchRemoteConfig(), 1000);
+      }
+
+      // Listen for network recovery
+      window.addEventListener('online', () => {
+        this.isOnline = true;
+        this.fetchRemoteConfig();
+      });
+    }
+
+    loadCachedConfig() {
+      try {
+        const raw = localStorage.getItem(CONFIG_CACHE_KEY);
+        if (!raw) return null;
+        const parsed = JSON.parse(raw);
+        if (parsed && parsed.data && parsed.timestamp) {
+          // Check TTL (soft expiration: return cached data while background revalidating)
+          return parsed.data;
+        }
+      } catch (e) {
+        console.warn('[RemoteConfig] Cache read error:', e);
+      }
+      return null;
+    }
+
+    saveCachedConfig(data) {
+      try {
+        localStorage.setItem(CONFIG_CACHE_KEY, JSON.stringify({
+          data,
+          timestamp: Date.now()
+        }));
+      } catch (e) {
+        console.warn('[RemoteConfig] Cache write error:', e);
+      }
+    }
+
+    async fetchRemoteConfig() {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 4000);
+
+        const resp = await fetch(`${API_BASE}/api/config/campaigns?t=${Date.now()}`, {
+          signal: controller.signal,
+          headers: { 'Accept': 'application/json' }
+        });
+        clearTimeout(timeoutId);
+
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const data = await resp.json();
+
+        if (data && Array.isArray(data.campaigns)) {
+          this.config = data;
+          this.saveCachedConfig(data);
+          this.notifyCampaignChange();
+        }
+      } catch (e) {
+        // Fallback gracefully to cache or built-in default
+        console.log('[RemoteConfig] Using local/fallback config:', e.message);
+      }
+    }
+
+    notifyCampaignChange() {
+      try {
+        const active = this.getActiveCampaign();
+        window.dispatchEvent(new CustomEvent('anhadCampaignUpdated', {
+          detail: { activeCampaign: active, config: this.config }
+        }));
+      } catch (e) {}
+    }
+
+    getCurrentPlatform() {
+      if (window.Capacitor && window.Capacitor.isNative) {
+        return window.Capacitor.getPlatform() || 'android';
+      }
+      return 'web';
+    }
+
+    getActiveCampaign() {
+      if (!this.config || !Array.isArray(this.config.campaigns)) return null;
+
+      const now = new Date();
+      const platform = this.getCurrentPlatform();
+
+      const validCampaigns = this.config.campaigns.filter(c => {
+        if (!c.active) return false;
+        if (c.startDate && new Date(c.startDate) > now) return false;
+        if (c.endDate && new Date(c.endDate) < now) return false;
+        if (Array.isArray(c.platforms) && !c.platforms.includes(platform) && !c.platforms.includes('all')) {
+          return false;
+        }
+        return true;
+      });
+
+      if (!validCampaigns.length) return null;
+
+      // Sort by highest priority
+      validCampaigns.sort((a, b) => (b.priority || 0) - (a.priority || 0));
+      return validCampaigns[0];
+    }
+
+    isFeatureEnabled(flagName, defaultValue = false) {
+      if (this.config && this.config.featureFlags && flagName in this.config.featureFlags) {
+        return !!this.config.featureFlags[flagName];
+      }
+      return defaultValue;
+    }
+
+    getConfig() {
+      return this.config;
+    }
+  }
+
+  const manager = new RemoteConfigManager();
+  window.AnhadCampaigns = manager;
+
+})(typeof window !== 'undefined' ? window : globalThis);

@@ -12,7 +12,27 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
-const CACHE_VERSION = 'anhad-v10.12.0'; // v10.12.0: Fixed SW navigation preload warning, font changes not applying, reduced web padding
+const CACHE_VERSION = 'anhad-v10.20.0'; // v10.20.0: Fully stabilized SPA lifecycle with zero two-time flash on Home return, instant Insights/Quiz button responsiveness without hard refresh, and 100% authentic card themes.
+// v10.16.0: Zero-lag flicker-free SPA return to home screen — SHARED_STYLESHEET_ALLOWLIST expanded, background color flash eliminated, layout reflow thrashing removed, theme icon stability fix.
+// v10.14.0: same reason as the v10.13.0 bump
+// below — bumped again because this pass fixed a whole second round of bugs
+// (CSS cross-page bleed, guru-slider going blank, and — the big one this
+// time — trendora-app.js/homepage-data.js/user-stats.js stacking duplicate
+// intervals/listeners on every Home revisit) in files that don't touch
+// sw.js, so without this the browser never detects an update and existing
+// installs keep running the exact code that was just proven broken.
+// v10.13.0: bumped to force existing installs to detect this file as
+// byte-different and pick up today's fixes (header controls, Insights/
+// Favorites navigation 404s/asset paths, insights.js modal). The browser's
+// own SW-update check is a byte-diff of this file — none of the other
+// files that actually changed touch sw.js, so without this bump the
+// browser would never detect an update at all, and existing users would
+// stay on cacheFirst()-cached (never-auto-revalidated) old JS/HTML
+// indefinitely — confirmed by real user testing: SPA-navigated pages
+// still showed pre-fix 404s/crashes while a hard refresh (a real
+// navigation, at least eventually self-healing via staleWhileRevalidate)
+// showed different behavior. This bump, paired with a version.json bump
+// (see scripts/generate-version.js), is what actually pushes the fix.
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 const DATA_CACHE = `${CACHE_VERSION}-data`;
@@ -138,8 +158,6 @@ const STATIC_FILES = [
   'NitnemTracker/nitnem-tracker.css',
   'NitnemTracker/nitnem-tracker.js',
   'NitnemTracker/components/mala-counter.js',
-  'NitnemTracker/components/statistics-engine.js',
-  'NitnemTracker/components/streak-engine.js',
   'NitnemTracker/components/report-generator.js',
   'NitnemTracker/data/banis.json',
   'NitnemTracker/data/achievements.json',
@@ -196,9 +214,9 @@ const STATIC_FILES = [
   'lib/useVirtualLive.js',
   'components/LiveDriftBanner.js',
 
-  // Gurbani Radio player files (Correct production player assets)
-  'GurbaniRadio/gurbani-radio-amritvela.html',
-  'GurbaniRadio/gurbani-radio-darbar.html',
+  // Gurbani Radio player (the only reachable player page — darbar/amritvela
+  // variants and the empty gurbani-radio-new.html were removed as dead code,
+  // never linked from any nav/button/widget)
   'GurbaniRadio/gurbani-radio.html',
   'GurbaniRadio/gurbani-radio.js',
   'GurbaniRadio/gurbani-radio-ios.css',
@@ -516,6 +534,28 @@ self.addEventListener('fetch', (event) => {
   // Navigation Preload: if the browser already started fetching, use that response.
   if (event.request.mode === 'navigate') {
     event.respondWith(navigateWithPreload(event).catch(async () => {
+      const cached = await caches.match(event.request);
+      if (cached) return cached;
+      return new Response('Offline', { status: 503, headers: { 'Content-Type': 'text/plain' } });
+    }));
+    return;
+  }
+
+  // 3b. HTML FETCHED BY THE APP'S OWN SPA SWAP (frontend/lib/smooth-
+  // navigation.js's performSwap() calls plain fetch(), which never sets
+  // mode:'navigate' — that's reserved for real top-level browser
+  // navigations) -> ALSO stale-while-revalidate, same as #3. Without this,
+  // these requests fell through to cacheFirst() below, which never
+  // revalidates in the background at all — once a shell page's HTML was
+  // cached, a real user's SPA navigation would keep serving that exact
+  // snapshot indefinitely, even after a new deploy, while only a genuine
+  // full-page navigation would ever self-heal (confirmed by real user
+  // report: SPA-navigated Favorites/Insights kept showing pre-fix 404s and
+  // the insights.js modal crash after a deploy, while a hard refresh
+  // eventually showed the fix — exactly the cacheFirst-vs-
+  // staleWhileRevalidate split below).
+  if (url.pathname.endsWith('.html')) {
+    event.respondWith(staleWhileRevalidate(event.request).catch(async () => {
       const cached = await caches.match(event.request);
       if (cached) return cached;
       return new Response('Offline', { status: 503, headers: { 'Content-Type': 'text/plain' } });

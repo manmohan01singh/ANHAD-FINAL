@@ -2781,24 +2781,30 @@ const HeaderManager = {
      * Update streak display in header
      */
     updateStreakDisplay() {
-        // SYNC: Use global UnifiedStats if available for the most accurate streak
+        // BUG FIX: this used to check UnifiedStats/AnhadStats first and
+        // StreakManager only as a last resort — backwards. StreakManager.state
+        // is recalculated fresh from the actual completion logs
+        // (recalculateStreak()) every time; UnifiedStats/AnhadStats trust
+        // whatever they were last told rather than re-deriving from the logs.
+        // That let this page show two different streak numbers on itself at
+        // once (this header pill vs. the page's own hero stat, which already
+        // read StreakManager directly) whenever the two hadn't been synced
+        // yet. StreakManager is checked first now — it's the more
+        // authoritative source, not the fallback.
         let currentStreak = 0;
 
-        if (typeof UnifiedStats !== 'undefined' && typeof UnifiedStats.getStreaks === 'function') {
+        if (typeof StreakManager !== 'undefined' && StreakManager.state) {
+            currentStreak = StreakManager.state.currentStreak || 0;
+        } else if (typeof UnifiedStats !== 'undefined' && typeof UnifiedStats.getStreaks === 'function') {
             const streaks = UnifiedStats.getStreaks();
             currentStreak = streaks.nitnem || 0;
         } else if (typeof AnhadStats !== 'undefined' && typeof AnhadStats.getStreak === 'function') {
             const streakData = AnhadStats.getStreak();
             currentStreak = streakData.currentStreak || 0;
         } else {
-            // Fallback to local StreakManager state if globals are missing
-            currentStreak = (typeof StreakManager !== 'undefined') ? (StreakManager.state.currentStreak || 0) : 0;
-
             // Last resort: raw storage
-            if (currentStreak === 0) {
-                const streakData = StorageManager.load(CONFIG.STORAGE_KEYS.STREAK_DATA, { currentStreak: 0 });
-                currentStreak = streakData.currentStreak || streakData.current || 0;
-            }
+            const streakData = StorageManager.load(CONFIG.STORAGE_KEYS.STREAK_DATA, { currentStreak: 0 });
+            currentStreak = streakData.currentStreak || streakData.current || 0;
         }
 
         if (this.elements.headerStreakCount) {
@@ -8961,6 +8967,24 @@ const ReportsManager = {
     currentMonth: new Date(),
 
     /**
+     * Whether a NITNEM_LOG day entry counts as complete. Same rule
+     * StreakManager already uses in 3 other places (recalculateStreak,
+     * checkAndUpdate) — kept consistent rather than reintroducing a second
+     * definition of "complete."
+     * BUG FIX: this method did not previously exist on ReportsManager at
+     * all (confirmed: grepping the whole file finds only call sites, no
+     * definition) — every call to finalizeDay()/checkReset() at a real day
+     * boundary threw "ReportsManager.isNitnemComplete is not a function",
+     * silently aborting the rest of that day's reset logic (streak-break
+     * check, temp-state clear, seeding today's entry) for every user, every
+     * day. Found by writing a real test against the real function instead
+     * of a mock.
+     */
+    isNitnemComplete(dayData) {
+        return !!(dayData && (dayData.completed === true || dayData.percentage === 100));
+    },
+
+    /**
      * Initialize Reports Manager
      */
     init() {
@@ -11438,6 +11462,28 @@ const DailyResetManager = {
     },
 
     /**
+     * checkReset() was previously only ever called once, at app startup.
+     * If the app/tab stays continuously foregrounded across local midnight
+     * with no visibility change (screen stays on, app stays in front), the
+     * day never rolled over until some later reload. Schedule a one-shot
+     * timer for the next local midnight and have it reschedule itself, so
+     * the rollover fires on its own regardless of visibility events.
+     * checkReset() is idempotent (it only acts when the date actually
+     * differs), so this is safe to layer on top of the existing
+     * startup + visibilitychange checks without risk of double-firing.
+     */
+    scheduleMidnightCheck() {
+        if (this._midnightTimer) clearTimeout(this._midnightTimer);
+        const now = new Date();
+        const nextMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 5);
+        const msUntilMidnight = nextMidnight.getTime() - now.getTime();
+        this._midnightTimer = setTimeout(() => {
+            this.checkReset();
+            this.scheduleMidnightCheck();
+        }, msUntilMidnight);
+    },
+
+    /**
      * Handle new day logic - streak check and reset
      */
     handleNewDay(lastProcessed, today) {
@@ -11545,6 +11591,7 @@ const initializeFullApp = async () => {
 
         // Perform Mid-night Check after all systems (including Toast and StreakSaverManager) are initialized
         DailyResetManager.checkReset();
+        DailyResetManager.scheduleMidnightCheck();
 
         // Hide loading screen
         const loadingScreen = document.getElementById('appLoading');
@@ -11765,7 +11812,22 @@ const KeyboardShortcuts = {
    SECTION 29: FINAL EVENT LISTENERS & STARTUP
    ───────────────────────────────────────────────────────────────────────────── */
 
-// Override the initialization to use full version
+// Export Part 2 managers (defined above CONFIG's original export block, so
+// they couldn't be included there) for module/test consumption. No-op in the
+// real browser, where `module` is always undefined — this exists purely so
+// DailyResetManager etc. are reachable from a test file without triggering
+// the real-page-only auto-start block immediately below.
+if (typeof module !== 'undefined' && module.exports) {
+    Object.assign(module.exports, { DailyResetManager, StreakSaverManager, ReportsManager });
+}
+
+// Override the initialization to use full version.
+// Guarded: in a module/test context (module.exports exists), skip the real
+// app's auto-start cascade entirely — initializeFullApp() assumes the real
+// nitnem-tracker.html DOM exists and isn't meant to run against a bare test
+// environment. This guard changes nothing for the real browser, where
+// `module` is always undefined.
+if (typeof module === 'undefined' || !module.exports) {
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
         initializeFullApp();
@@ -11837,6 +11899,7 @@ if (document.readyState === 'loading') {
         });
     }
 }
+} // end module/test guard
 
 // Handle app visibility changes
 document.addEventListener('visibilitychange', () => {

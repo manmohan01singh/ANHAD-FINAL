@@ -137,6 +137,20 @@
     }
   };
 
+  // Module-level (not inside any function) listener registrations below —
+  // this whole file is one IIFE that re-executes on every non-cached SPA
+  // arrival at Home (no longer a SHELL_SCRIPTS entry), so anything
+  // registered here at the IIFE's own top level would otherwise stack a
+  // fresh duplicate on every revisit. { once: true } (below) does NOT save
+  // this — SPA navigation uses history.pushState, which never fires
+  // 'pagehide', so these accumulate indefinitely instead of self-removing.
+  // Confirmed via real-browser testing: anhad_page_changed's listener count
+  // grew 8->14 across 6 Home<->Insights cycles, meaning a single dispatched
+  // event was firing refreshAll() that many times over.
+  const _trendoraModuleListenersAlreadyBound = window.__anhadTrendoraModuleListenersBound;
+  window.__anhadTrendoraModuleListenersBound = true;
+
+  if (!_trendoraModuleListenersAlreadyBound) {
   window.addEventListener('pagehide', () => {
     if (Navigation._exitTimer) {
       clearTimeout(Navigation._exitTimer);
@@ -147,6 +161,7 @@
       Navigation._safetyTimer = null;
     }
   }, { once: true });
+  }
 
   // ═══════════════════════════════════════════════════════════════════════════
   // § 5. CONTEXTUAL GURBANI GREETING
@@ -275,17 +290,17 @@
     _startX: 0,
     _isDragging: false,
     _gurus: [
-      { id: 'guru-nanak', name: 'Sri Guru Nanak Dev Sahib Ji', img: 'guruimages/gurunanakdevsahebji.jpeg', pos: 'center 20%', colors: ['#ddcdb3', '#c9b89f', '#b8a88e'] },
-      { id: 'guru-angad', name: 'Sri Guru Angad Dev Sahib Ji', img: 'guruimages/guruangaddevsahebji.jpeg', pos: 'center 25%', colors: ['#ab9468', '#e6d8bf', '#624d31'] },
-      { id: 'guru-amar-das', name: 'Sri Guru Amar Das Sahib Ji', img: 'guruimages/guruamardasji.jpeg', pos: 'center 25%', colors: ['#e7be7f', '#e4dccd', '#a37f4f'] },
-      { id: 'guru-ram-das', name: 'Sri Guru Ram Das Sahib Ji', img: 'guruimages/gururamdassahebji.jpeg', pos: 'center 25%', colors: ['#a97634', '#e3bc7b', '#8b5e28'] },
-      { id: 'guru-arjan', name: 'Sri Guru Arjan Dev Sahib Ji', img: 'guruimages/guruarjanddevsahebji.jpeg', gurbani: 'ਅੰਮ੍ਰਿਤ ਵੇਲਾ ਸਚੁ ਨਾਉ ਵਡਿਆਈ ਵੀਚਾਰੁ ॥', translation: 'In the Amrit Vela, chant the True Name, and contemplate His Glorious Greatness.', pos: 'center 25%', colors: ['#edeef0', '#e0c195', '#c9a876'] },
-      { id: 'guru-hargobind', name: 'Sri Guru Hargobind Sahib Ji', img: 'guruimages/guruhargobindsahebji.jpeg', pos: 'center 25%', colors: ['#ecedef', '#c0c0bf', '#916026'] },
-      { id: 'guru-har-rai', name: 'Sri Guru Har Rai Sahib Ji', img: 'guruimages/guruharraisahebji.jpeg', pos: 'center 25%', colors: ['#ac7d3d', '#afab85', '#875515'] },
-      { id: 'guru-harkrishan', name: 'Sri Guru Har Krishan Sahib Ji', img: 'guruimages/guruharkrishansahebji.jpeg', pos: 'center 25%', colors: ['#ece5d5', '#d9d0c0', '#c6bbab'] },
-      { id: 'guru-teg-bahadur', name: 'Sri Guru Tegh Bahadur Sahib Ji', img: 'guruimages/gurutegbahadursahebji.jpeg', pos: 'center 45%', colors: ['#2f3d46', '#4a5a63', '#5d6d76'] },
-      { id: 'guru-gobind', name: 'Sri Guru Gobind Singh Sahib Ji', img: 'guruimages/gurugobindsinghsahebji.jpeg', pos: 'center 25%', colors: ['#b77928', '#e1cdac', '#8e5f1f'] },
-      { id: 'sggs', name: 'Sri Guru Granth Sahib Ji', img: 'guruimages/gurugranthsahebji.jpeg', pos: 'center 25%', colors: ['#a06f2c', '#53371e', '#c89035'] }
+      { id: 'guru-nanak', name: 'Sri Guru Nanak Dev Sahib Ji', img: '/guruimages/gurunanakdevsahebji.jpeg', pos: 'center 20%', colors: ['#ddcdb3', '#c9b89f', '#b8a88e'] },
+      { id: 'guru-angad', name: 'Sri Guru Angad Dev Sahib Ji', img: '/guruimages/guruangaddevsahebji.jpeg', pos: 'center 25%', colors: ['#ab9468', '#e6d8bf', '#624d31'] },
+      { id: 'guru-amar-das', name: 'Sri Guru Amar Das Sahib Ji', img: '/guruimages/guruamardasji.jpeg', pos: 'center 25%', colors: ['#e7be7f', '#e4dccd', '#a37f4f'] },
+      { id: 'guru-ram-das', name: 'Sri Guru Ram Das Sahib Ji', img: '/guruimages/gururamdassahebji.jpeg', pos: 'center 25%', colors: ['#a97634', '#e3bc7b', '#8b5e28'] },
+      { id: 'guru-arjan', name: 'Sri Guru Arjan Dev Sahib Ji', img: '/guruimages/guruarjanddevsahebji.jpeg', gurbani: 'ਅੰਮ੍ਰਿਤ ਵੇਲਾ ਸਚੁ ਨਾਉ ਵਡਿਆਈ ਵੀਚਾਰੁ ॥', translation: 'In the Amrit Vela, chant the True Name, and contemplate His Glorious Greatness.', pos: 'center 25%', colors: ['#edeef0', '#e0c195', '#c9a876'] },
+      { id: 'guru-hargobind', name: 'Sri Guru Hargobind Sahib Ji', img: '/guruimages/guruhargobindsahebji.jpeg', pos: 'center 25%', colors: ['#ecedef', '#c0c0bf', '#916026'] },
+      { id: 'guru-har-rai', name: 'Sri Guru Har Rai Sahib Ji', img: '/guruimages/guruharraisahebji.jpeg', pos: 'center 25%', colors: ['#ac7d3d', '#afab85', '#875515'] },
+      { id: 'guru-harkrishan', name: 'Sri Guru Har Krishan Sahib Ji', img: '/guruimages/guruharkrishansahebji.jpeg', pos: 'center 25%', colors: ['#ece5d5', '#d9d0c0', '#c6bbab'] },
+      { id: 'guru-teg-bahadur', name: 'Sri Guru Tegh Bahadur Sahib Ji', img: '/guruimages/gurutegbahadursahebji.jpeg', pos: 'center 45%', colors: ['#2f3d46', '#4a5a63', '#5d6d76'] },
+      { id: 'guru-gobind', name: 'Sri Guru Gobind Singh Sahib Ji', img: '/guruimages/gurugobindsinghsahebji.jpeg', pos: 'center 25%', colors: ['#b77928', '#e1cdac', '#8e5f1f'] },
+      { id: 'sggs', name: 'Sri Guru Granth Sahib Ji', img: '/guruimages/gurugranthsahebji.jpeg', pos: 'center 25%', colors: ['#a06f2c', '#53371e', '#c89035'] }
     ],
 
     init() {
@@ -991,6 +1006,12 @@
     },
 
     async updateEventCard() {
+      // refreshAll() now runs this on every SPA arrival, including pages that
+      // have no event card at all — bail before doing any work so those pages
+      // don't pay for a needless gurpurab JSON fetch. (_renderEventData is
+      // separately null-guarded; this is purely to avoid the network call.)
+      if (!document.getElementById('eventCard')) return;
+
       // 1. Synchronously render cached event if available — removes skeleton
       try {
         const cached = localStorage.getItem('anhad_cached_upcoming_gurpurab');
@@ -1377,13 +1398,31 @@
       this.updateNanakshahiDate();
       this.updateNotesCard();
       this.updateNitnemQuickAccess();
+      // updateEventCard() populates the Upcoming Gurpurab card. It was the ONE
+      // member of App.init()'s criticalUpdates not mirrored here, and it is the
+      // only writer of #eventTitle/#eventDate/#eventCountdown/#eventGuruImg —
+      // so on any path that re-enters via refreshAll() instead of a full
+      // App.init() (SPA return to Home, bfcache restore, visibilitychange) the
+      // card kept the blank, skeleton-classed markup it ships with. It has a
+      // synchronous localStorage fast path, so this renders without a flash.
+      // autoRemindUpcomingGurpurab() below fetches the same data but writes no
+      // DOM — it is not a substitute.
+      this.updateEventCard();
+      // Same class of omission as updateEventCard(): only ever called from
+      // App.init(), so the Hukamnama hero card kept whatever text it was left
+      // with on any refreshAll()-only re-entry. Self-guards when absent.
+      this.updateHukamHeroCard();
       this.autoRemindUpcomingGurpurab();
-      this.updateHeroCardImages();
+      this.reviveHomepageVisuals();
+    },
 
-      // RE-INIT HOMEPAGE COMPONENTS
-      // These elements only exist on index.html, but refreshAll is called 
-      // on every SPA swap. The internal guards in these init methods 
-      // will prevent errors if the elements are missing.
+    // RE-INIT HOMEPAGE COMPONENTS
+    // These elements only exist on index.html, but refreshAll() runs on every
+    // SPA arrival regardless of which page landed. The internal guards in each
+    // of these prevent errors when the elements are missing (i.e. when the swap
+    // landed on a non-Home page).
+    reviveHomepageVisuals() {
+      this.updateHeroCardImages();
       if (typeof Greeting !== 'undefined') Greeting.update();
       if (typeof PortraitSlider !== 'undefined') PortraitSlider.init();
       if (typeof CarouselController !== 'undefined') CarouselController.init();
@@ -1551,25 +1590,25 @@
   // ═ THEME CONTROLLER (Reconstructed — Single Source of Truth) ═
   const ThemeController = {
     init() {
-      // Read the unified theme key
-      const savedTheme = localStorage.getItem('anhad_theme') || 'light';
-
-      const getIsDark = (theme) => {
-        if (theme === 'dark') return true;
-        if (theme === 'light') return false;
-        if (theme === 'auto') {
-          const forced = localStorage.getItem('anhad_forced_time_of_day');
-          if (forced && ['morning', 'day', 'evening', 'night'].includes(forced)) {
-            return forced === 'night';
+      if (window.AnhadTheme) {
+        // Theme is already initialized authoritatively by global-theme.js / head blocker
+      } else {
+        const savedTheme = localStorage.getItem('anhad_theme') || 'auto';
+        const getIsDark = (theme) => {
+          if (theme === 'dark') return true;
+          if (theme === 'light') return false;
+          if (theme === 'auto') {
+            const forced = localStorage.getItem('anhad_forced_time_of_day');
+            if (forced && ['morning', 'day', 'evening', 'night'].includes(forced)) {
+              return forced === 'night';
+            }
+            const hour = new Date().getHours();
+            return hour < 5 || hour >= 20;
           }
-          const hour = new Date().getHours();
-          return hour < 5 || hour >= 20;
-        }
-        return false;
-      };
-
-      const isDark = getIsDark(savedTheme);
-      this._apply(isDark);
+          return false;
+        };
+        this._apply(getIsDark(savedTheme));
+      }
 
       // Listen for custom theme change events
       window.addEventListener('themechange', (e) => {
@@ -1578,36 +1617,21 @@
 
       // Toggle button
       document.getElementById('themeToggle')?.addEventListener('click', () => {
-        const isDark = document.documentElement.classList.contains('dark-mode');
-        const newTheme = isDark ? 'light' : 'dark';
-
-        // Store the theme
-        localStorage.setItem('anhad_theme', newTheme);
-        try { localStorage.setItem('anhad_dark_mode', String(newTheme === 'dark')); } catch (e) { }
-
-        // Apply to DOM
-        this._apply(newTheme === 'dark');
-
-        // Sync with global-theme.js if loaded
         if (window.AnhadTheme) {
-          window.AnhadTheme.set(newTheme);
+          window.AnhadTheme.toggle();
+        } else {
+          const isDark = document.documentElement.classList.contains('dark-mode');
+          const newTheme = isDark ? 'light' : 'dark';
+          localStorage.setItem('anhad_theme', newTheme);
+          this._apply(newTheme === 'dark');
+          window.dispatchEvent(new CustomEvent('themechange', { detail: { theme: newTheme } }));
         }
-
-        // Update meta theme-color
-        const metas = document.querySelectorAll('meta[name="theme-color"]');
-        metas.forEach(m => m.content = newTheme === 'dark' ? '#000000' : '#F2F2F7');
-
-        // Dispatch event for components
-        window.dispatchEvent(new CustomEvent('themechange', { detail: { theme: newTheme } }));
-
-        console.log('🎨 Theme toggled:', newTheme);
       });
 
       // Listen for storage changes (other tabs)
       window.addEventListener('storage', (e) => {
         if ((e.key === 'anhad_theme' || e.key === 'anhad_forced_time_of_day') && localStorage.getItem('anhad_theme')) {
-          const isDark = getIsDark(localStorage.getItem('anhad_theme'));
-          this._apply(isDark);
+          if (window.AnhadTheme) window.AnhadTheme.apply(window.AnhadTheme.get());
         }
         // Update on Nitnem Tracker changes
         if (e.key === 'nitnemTracker_nitnemLog' || e.key === 'nitnemTracker_selectedBanis' || e.key === 'anhad_streak_data' || e.key === 'anhad_unified_stats') {
@@ -1666,9 +1690,6 @@
       const root = document.documentElement;
       const body = document.body;
 
-      // INSTANT THEME CHANGE: Disable transitions temporarily
-      root.classList.add('theme-changing');
-
       if (isDark) {
         root.classList.add('dark-mode');
         if (body) body.classList.add('dark-mode');
@@ -1682,25 +1703,15 @@
       }
 
       // Update theme dot indicator
-      const dot = document.getElementById('themeDot');
       const toggleBtn = document.getElementById('themeToggle');
       if (toggleBtn) {
         toggleBtn.setAttribute('aria-checked', String(isDark));
       }
-
-      // FORCE SYNCHRONOUS LAYOUT to ensure the transition skip applies immediately
-      const _ = root.offsetHeight;
-
-      // Remove the class to re-enable transitions for normal interactions
-      setTimeout(() => {
-        root.classList.remove('theme-changing');
-      }, 100);
     }
   };
 
   // ═ CAROUSEL CONTROLLER ═
   const CarouselController = {
-    _autoTimer: null,
     _paused: false,
 
     init() {
@@ -1733,8 +1744,18 @@
         });
       });
 
-      // Auto-advance every 7 seconds
-      this._autoTimer = setInterval(() => {
+      // Auto-advance every 7 seconds.
+      // Tracked on window, NOT this._autoTimer: CarouselController is a
+      // const object literal inside trendora-app.js's top-level IIFE, which
+      // re-executes fresh (new object, new closure) on every non-cached SPA
+      // arrival at Home — the same trap App._isInitialized had (see its own
+      // comment above). A per-object property is reset to undefined by that
+      // fresh declaration every time, so it can never actually see the
+      // previous execution's interval to clear it — confirmed via real-
+      // browser tracing: this leaked one growing interval per Home revisit
+      // even with the (ineffective) this._autoTimer guard in place.
+      if (window.__anhadCarouselAutoTimer) clearInterval(window.__anhadCarouselAutoTimer);
+      window.__anhadCarouselAutoTimer = setInterval(() => {
         if (this._paused) return;
         current = (current + 1) % totalSlides;
         track.scrollLeft = current * track.offsetWidth;
@@ -2259,17 +2280,22 @@
 
   // ═ APP ORCHESTRATOR ═
   const App = {
-    _isInitialized: false,
-
     init() {
-      // FIX: Guard against duplicate init() calls from SPA page changes
-      // On re-entry, only refresh data — don't re-bind all listeners
-      if (this._isInitialized) {
+      // FIX: Guard against duplicate init() calls from SPA page changes.
+      // Checked on window, NOT a plain object property: this whole file is a
+      // top-level IIFE (see line 2), and trendora-app.js is no longer in
+      // smooth-navigation.js's SHELL_SCRIPTS, so the script tag itself
+      // re-executes (fresh IIFE invocation, fresh App object literal) on
+      // every non-cached SPA arrival at Home. A plain `this._isInitialized`
+      // is reset to false by that fresh declaration every time and would
+      // never actually short-circuit past the very first script execution —
+      // window is the only thing that actually persists across re-runs.
+      if (window.__anhadAppInitialized) {
         console.log('[App] Already initialized, running refreshAll() only');
         requestAnimationFrame(() => UIController.refreshAll());
         return;
       }
-      this._isInitialized = true;
+      window.__anhadAppInitialized = true;
 
       // CRITICAL: Reset body overflow in case it was stuck from previous session
       document.body.style.overflow = '';
@@ -2388,10 +2414,16 @@
       Navigation.bindCard('heroCard2', NAV_PATHS.gurbaniRadioAlt);
       Navigation.bindCard('heroCard3', NAV_PATHS.gurbaniRadioSimran);
 
-      // Notification button
-      document.getElementById('notifBtn')?.addEventListener('click', () => {
-        Navigation.navigateTo(NAV_PATHS.reminders);
-      });
+      // Notification button: bound via a plain onclick="" attribute on
+      // #notifBtn itself (frontend/index.html header markup) instead of
+      // addEventListener here. This matters most on a cached-clone return to
+      // Home (DOM_CACHE hit): that path clones a saved #app node and never
+      // re-runs this._bindNavigation() at all (App.init()'s window-level
+      // guard only lets the FULL bind sequence run once per session), so an
+      // addEventListener-based binding could never survive/rebind once Home
+      // is restored from cache — onclick="" survives because it's baked into
+      // the cloned HTML itself. See also the (now-removed) duplicate binding
+      // this used to have in homepage-data.js.
     },
 
     _bindSheets() {
@@ -2477,7 +2509,14 @@
     setTimeout(removeOverlays, 1000);
   }
 
-  // Handle SPA page changes from the shell
+  // Handle SPA page changes from the shell. smooth-navigation.js currently
+  // has no DOM-cache fast path — every navigation (including a revisit to a
+  // page seen before) re-runs executePageScripts() and dispatches this same
+  // event, so refreshAll() (which ends with reviveHomepageVisuals() — see
+  // its definition above) runs on every arrival at Home. That keeps the
+  // guru portrait slider / hero carousel from going stale on any revisit,
+  // without needing a separate cached-vs-fresh code path.
+  if (!_trendoraModuleListenersAlreadyBound) {
   window.addEventListener('anhad_page_changed', () => {
     console.log('[Trendora] Page change detected, refreshing UI data...');
     // FIX: Don't re-init the entire app — only refresh data to prevent
@@ -2485,6 +2524,7 @@
     Store.clearCache();
     requestAnimationFrame(() => UIController.refreshAll());
   });
+  }
 
 })();
 

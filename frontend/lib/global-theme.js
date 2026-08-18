@@ -52,6 +52,8 @@
         // Sub-pages use clean light/dark mode only (no morning/day/evening/night palette)
         if (html.hasAttribute('data-anhad-home')) {
             html.setAttribute('data-time-of-day', timeOfDay);
+        } else {
+            html.removeAttribute('data-time-of-day');
         }
 
         // 1. SCOPE TRANSITION KILL to background/color properties only
@@ -114,13 +116,12 @@
         }
 
         // 3. RESTORE TRANSITIONS after one rAF so the browser paints the instant switch
-        requestAnimationFrame(() => {
-            html.classList.remove('theme-switching');
-            html.classList.remove('theme-changing');
-        });
-
-        // Force repaint by triggering reflow
-        void html.offsetHeight;
+        if (html.classList.contains('theme-switching') || html.classList.contains('theme-changing')) {
+            requestAnimationFrame(() => {
+                html.classList.remove('theme-switching');
+                html.classList.remove('theme-changing');
+            });
+        }
     }
 
     function getTheme() {

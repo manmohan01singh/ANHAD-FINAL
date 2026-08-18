@@ -9,15 +9,16 @@ if (typeof require !== 'undefined') {
   const { calculateGridLayout } = require('./collage-grid-calculator.js');
   const { loadChannelImages } = require('./collage-image-loader.js');
   const { renderCollageToCanvas } = require('./collage-canvas-renderer.js');
-  globalThis.CollageCache ??= CollageCache;
-  globalThis.calculateGridLayout ??= calculateGridLayout;
-  globalThis.loadChannelImages ??= loadChannelImages;
-  globalThis.renderCollageToCanvas ??= renderCollageToCanvas;
+  globalThis.CollageCache = CollageCache;
+  globalThis.calculateGridLayout = calculateGridLayout;
+  globalThis.loadChannelImages = loadChannelImages;
+  globalThis.renderCollageToCanvas = renderCollageToCanvas;
 }
 
 class CollageGenerator {
   constructor() {
-    this.cache = new CollageCache(5);
+    const CacheClass = (typeof globalThis !== 'undefined' && globalThis.CollageCache) || CollageCache;
+    this.cache = new CacheClass(5);
     this.isGenerating = false;
   }
   
@@ -43,11 +44,15 @@ class CollageGenerator {
         throw new Error('Canvas API not supported');
       }
       
+      const calcGrid = (typeof globalThis !== 'undefined' && globalThis.calculateGridLayout) || calculateGridLayout;
+      const loadImages = (typeof globalThis !== 'undefined' && globalThis.loadChannelImages) || loadChannelImages;
+      const renderCollage = (typeof globalThis !== 'undefined' && globalThis.renderCollageToCanvas) || renderCollageToCanvas;
+
       // Calculate grid layout
-      const layout = calculateGridLayout(channels.length);
+      const layout = calcGrid(channels.length);
       
       // Load images
-      const imageResults = await loadChannelImages(channels, 5000);
+      const imageResults = await loadImages(channels, 5000);
       
       // Check if all images failed
       const anySuccess = imageResults.some(r => r.success);
@@ -56,7 +61,7 @@ class CollageGenerator {
       }
       
       // Render to canvas
-      const canvas = renderCollageToCanvas(imageResults, layout);
+      const canvas = renderCollage(imageResults, layout);
       
       // Export as data URL
       const dataUrl = canvas.toDataURL('image/png');

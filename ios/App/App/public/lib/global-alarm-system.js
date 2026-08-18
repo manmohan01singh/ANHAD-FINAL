@@ -1345,7 +1345,7 @@
         console.log(`   🔊 Audio path: ${CONFIG.AUDIO_BASE_PATH}`);
 
         // ── POST-BOOT RESCHEDULE ──
-        // ReminderForegroundService.java writes needs_alarm_reschedule=true into
+        // StreakSaverBootReceiver.java writes needs_alarm_reschedule=true into
         // SharedPreferences after a device reboot. On the next cold start we pick
         // up that flag here and re-register all alarms + spiritual notifications.
         checkAndRecoverPostBootAlarms();

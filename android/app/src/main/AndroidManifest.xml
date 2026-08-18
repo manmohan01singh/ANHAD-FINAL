@@ -107,12 +107,16 @@
             android:foregroundServiceType="mediaPlayback"
         />
 
-        <!-- Foreground Service for alarm/reminder reliability -->
-        <service
-            android:name=".ReminderForegroundService"
-            android:exported="false"
-            android:foregroundServiceType="dataSync"
-        />
+        <!-- ANDROID 15 FIX: ReminderForegroundService removed entirely. Real
+             device testing (Pixel_7_API35 AVD) showed ForegroundServiceStart
+             NotAllowedException fires for a BOOT_COMPLETED-triggered service
+             start regardless of foregroundServiceType — both dataSync and
+             shortService were tried and both rejected the same way. The
+             service's only caller (StreakSaverBootReceiver) only ever used
+             it for two synchronous SharedPreferences.apply() calls, which
+             need no foreground-service semantics at all — see
+             StreakSaverBootReceiver.java, which now does that write
+             directly. -->
 
         <!-- Streak Saver Boot Receiver -->
         <receiver android:name=".StreakSaverBootReceiver" android:exported="true">

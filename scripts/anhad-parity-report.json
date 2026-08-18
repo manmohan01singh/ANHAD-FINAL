@@ -1,0 +1,57 @@
+{
+  "steps": [
+    {
+      "name": "A0_sessionStartsOnInsights",
+      "ok": true
+    },
+    {
+      "name": "A1_homeScriptsNotYetLoaded",
+      "ok": true,
+      "details": "{\"appDefined\":false,\"windowAppInit\":false,\"scriptTagPresent\":false}"
+    },
+    {
+      "name": "A2_firstSpaArrivalAtHome",
+      "ok": true
+    },
+    {
+      "name": "A3_homeScriptsAndVisualsPopulatedOnFirstSpaArrival",
+      "ok": true,
+      "details": "{\"appInitialized\":true,\"guruSlides\":11,\"heroTrackChildren\":4,\"heroDots\":4,\"navPathsBound\":false}"
+    },
+    {
+      "name": "B1_visualsStillPopulatedAfterCachedReturn",
+      "ok": true,
+      "details": "{\"guruSlides\":11,\"heroTrackChildren\":4}"
+    },
+    {
+      "name": "C1_favoritesHeaderTitleStylesMatchDirectVsSpa",
+      "ok": true,
+      "details": "{\"direct\":{\"fontFamily\":\"Inter, -apple-system, sans-serif\",\"fontSize\":\"20px\",\"fontWeight\":\"700\",\"color\":\"rgb(26, 29, 38)\"},\"spa\":{\"fontFamily\":\"Inter, -apple-system, sans-serif\",\"fontSize\":\"20px\",\"fontWeight\":\"700\",\"color\":\"rgb(26, 29, 38)\"}}"
+    },
+    {
+      "name": "D1_intervalCountBoundedAcross6Cycles",
+      "ok": true,
+      "details": "{\"netActiveIntervalsBefore\":17,\"netActiveIntervalsAfter\":17,\"intervalGrowth\":0,\"beforeCycles\":{\"windowAdd\":{\"anhad_page_changed\":7,\"pagehide\":13,\"anhadPlayStream\":3,\"pageshow\":5,\"scroll\":2,\"popstate\":2,\"load\":2,\"offline\":3,\"online\":5,\"themechange\":2,\"storage\":4,\"nitnemUpdated\":1,\"nitnemCompletionUpdated\":1,\"statsChanged\":1,\"statsInitialized\":1,\"streakUpdated\":1,\"nitnemDayCompleted\":1,\"mousemove\":3,\"touchend\":3,\"touchcancel\":3,\"mouseup\":3,\"anhad_page_restored\":1,\"anhadAudioStateChange\":2,\"beforeinstallprompt\":1,\"appinstalled\":2,\"anhadTimeForced\":1,\"orientationchange\":1,\"anhadaudiostatechange\":1,\"focus\":2,\"naamAbhyasComplete\":1},\"documentAdd\":{\"DOMContentLoaded\":4,\"visibilitychange\":12,\"keydown\":3,\"click\":1,\"mouseover\":1,\"touchstart\":1,\"pointerdown\":3,\"anhadThemeChanged\":1,\"themechange\":1},\"intervalsCreated\":22,\"intervalsCleared\":5,\"tracedSources\":{\"pagehide :: at http://localhost:3000/index.html:354:14\":1,\"pageshow :: at http://localhost:3000/index.html:4013:14\":1,\"setInterval :: at http://localhost:3000/lib/global-theme.js?v=4.0.2:159:5\":1,\"setInterval :: at http://localhost:3000/lib/smooth-navigation.js:1055:37\":1,\"pagehide :: at http://localhost:3000/lib/smooth-navigation.js:1062:10\":1,\"pageshow :: at http://localhost:3000/lib/page-lifecycle.js:27:10\":1,\"pagehide :: at http://localhost:3000/lib/page-lifecycle.js:39:10\":1,\"setInterval :: at boot (http://localhost:3000/lib/capacitor-notifications-global.js:1089:9)\":1,\"setInterval :: at boot (http://localhost:3000/lib/capacitor-notifications-global.js:1113:22)\":1,\"pagehide :: at http://localhost:3000/lib/overlay-player.js:185:10\":1,\"pagehide :: at http://localhost:3000/js/trendora-app.js?v=4.0.4:154:10\":1,\"pageshow :: at Object.init (http://localhost:3000/js/trendora-app.js?v=4.0.4:1665:14)\":1,\"setInterval :: at Object.init (http://localhost:3000/js/trendora-app.js?v=4.0.4:1785:41)\":3,\"setInterval :: at Object._add (http://localhost:3000/js/trendora-app.js?v=4.0.4:2270:28)\":1,\"pageshow :: at Object.init (http://localhost:3000/js/trendora-app.js?v=4.0.4:2218:14)\":1,\"pagehide :: at Object.init (http://localhost:3000/js/trendora-app.js?v=4.0.4:2243:14)\":1,\"setInterval :: at startLightweightTimers (http://localhost:3000/js/homepage-data.js:943:7)\":2,\"setInterval :: at startLightweightTimers (http://localhost:3000/js/homepage-data.js:944:7)\":2,\"pagehide :: at startLightweightTimers (http://localhost:3000/js/homepage-data.js:950:14)\":1,\"setInterval :: at init (http://localhost:3000/js/anhad-sky-bg.js?v=4.0.4:335:5)\":1,\"setInterval :: at HTMLDocument.initHeroInteractions (http://localhost:3000/index.html:3994:41)\":1,\"setInterval :: at PWAManager.startVersionPolling (http://localhost:3000/pwa-register.js?v=4.0.4:274:33)\":1,\"pagehide :: at http://localhost:3000/lib/anhad-audio-singleton.js?v=2.2.0:1386:10\":1,\"setInterval :: at http://localhost:3000/lib/anhad-audio-singleton.js?v=2.2.0:1398:3\":1,\"pagehide :: at OptimizedImageLoader.observeNewImages (http://localhost:3000/lib/optimized-image-loader.js:251:16)\":1,\"pagehide :: at http://localhost:3000/lib/user-stats.js:507:12\":1,\"setInterval :: at AlarmCoordinator._init (http://localhost:3000/lib/alarm-coordinator.js:52:33)\":1,\"setInterval :: at AlarmCoordinator._init (http://localhost:3000/lib/alarm-coordinator.js:55:33)\":1,\"pagehide :: at AlarmCoordinator._init (http://localhost:3000/lib/alarm-coordinator.js:66:20)\":1,\"setInterval :: at init (http://localhost:3000/lib/guaranteed-alarm-system.js:466:31)\":1,\"pagehide :: at init (http://localhost:3000/lib/guaranteed-alarm-system.js:491:16)\":1,\"setInterval :: at init (http://localhost:3000/lib/global-alarm-system.js:1288:31)\":1,\"pagehide :: at init (http://localhost:3000/lib/global-alarm-system.js:1324:16)\":1,\"setInterval :: at Object.startBackgroundCheck (http://localhost:3000/lib/ios-android-notifications.js:441:13)\":1,\"pageshow :: at Object.init (http://localhost:3000/lib/ios-android-notifications.js:531:20)\":1,\"setInterval :: at initHeroInteractions (<anonymous>:210:41)\":1}},\"afterCycles\":{\"windowAdd\":{\"anhad_page_changed\":7,\"pagehide\":13,\"anhadPlayStream\":9,\"pageshow\":5,\"scroll\":3,\"popstate\":2,\"load\":8,\"offline\":15,\"online\":23,\"themechange\":2,\"storage\":4,\"nitnemUpdated\":1,\"nitnemCompletionUpdated\":1,\"statsChanged\":1,\"statsInitialized\":1,\"streakUpdated\":1,\"nitnemDayCompleted\":1,\"mousemove\":15,\"touchend\":15,\"touchcancel\":15,\"mouseup\":15,\"anhad_page_restored\":1,\"anhadAudioStateChange\":2,\"beforeinstallprompt\":1,\"appinstalled\":2,\"anhadTimeForced\":1,\"orientationchange\":1,\"anhadaudiostatechange\":1,\"focus\":2,\"naamAbhyasComplete\":1},\"documentAdd\":{\"DOMContentLoaded\":4,\"visibilitychange\":12,\"keydown\":9,\"click\":1,\"mouseover\":1,\"touchstart\":1,\"pointerdown\":15,\"anhadThemeChanged\":1,\"themechange\":1},\"intervalsCreated\":52,\"intervalsCleared\":35,\"tracedSources\":{\"pagehide :: at http://localhost:3000/index.html:354:14\":1,\"pageshow :: at http://localhost:3000/index.html:4013:14\":1,\"setInterval :: at http://localhost:3000/lib/global-theme.js?v=4.0.2:159:5\":1,\"setInterval :: at http://localhost:3000/lib/smooth-navigation.js:1055:37\":1,\"pagehide :: at http://localhost:3000/lib/smooth-navigation.js:1062:10\":1,\"pageshow :: at http://localhost:3000/lib/page-lifecycle.js:27:10\":1,\"pagehide :: at http://localhost:3000/lib/page-lifecycle.js:39:10\":1,\"setInterval :: at boot (http://localhost:3000/lib/capacitor-notifications-global.js:1089:9)\":1,\"setInterval :: at boot (http://localhost:3000/lib/capacitor-notifications-global.js:1113:22)\":1,\"pagehide :: at http://localhost:3000/lib/overlay-player.js:185:10\":1,\"pagehide :: at http://localhost:3000/js/trendora-app.js?v=4.0.4:154:10\":1,\"pageshow :: at Object.init (http://localhost:3000/js/trendora-app.js?v=4.0.4:1665:14)\":1,\"setInterval :: at Object.init (http://localhost:3000/js/trendora-app.js?v=4.0.4:1785:41)\":15,\"setInterval :: at Object._add (http://localhost:3000/js/trendora-app.js?v=4.0.4:2270:28)\":1,\"pageshow :: at Object.init (http://localhost:3000/js/trendora-app.js?v=4.0.4:2218:14)\":1,\"pagehide :: at Object.init (http://localhost:3000/js/trendora-app.js?v=4.0.4:2243:14)\":1,\"setInterval :: at startLightweightTimers (http://localhost:3000/js/homepage-data.js:943:7)\":8,\"setInterval :: at startLightweightTimers (http://localhost:3000/js/homepage-data.js:944:7)\":8,\"pagehide :: at startLightweightTimers (http://localhost:3000/js/homepage-data.js:950:14)\":1,\"setInterval :: at init (http://localhost:3000/js/anhad-sky-bg.js?v=4.0.4:335:5)\":1,\"setInterval :: at HTMLDocument.initHeroInteractions (http://localhost:3000/index.html:3994:41)\":1,\"setInterval :: at PWAManager.startVersionPolling (http://localhost:3000/pwa-register.js?v=4.0.4:274:33)\":1,\"pagehide :: at http://localhost:3000/lib/anhad-audio-singleton.js?v=2.2.0:1386:10\":1,\"setInterval :: at http://localhost:3000/lib/anhad-audio-singleton.js?v=2.2.0:1398:3\":1,\"pagehide :: at OptimizedImageLoader.observeNewImages (http://localhost:3000/lib/optimized-image-loader.js:251:16)\":1,\"pagehide :: at http://localhost:3000/lib/user-stats.js:507:12\":1,\"setInterval :: at AlarmCoordinator._init (http://localhost:3000/lib/alarm-coordinator.js:52:33)\":1,\"setInterval :: at AlarmCoordinator._init (http://localhost:3000/lib/alarm-coordinator.js:55:33)\":1,\"pagehide :: at AlarmCoordinator._init (http://localhost:3000/lib/alarm-coordinator.js:66:20)\":1,\"setInterval :: at init (http://localhost:3000/lib/guaranteed-alarm-system.js:466:31)\":1,\"pagehide :: at init (http://localhost:3000/lib/guaranteed-alarm-system.js:491:16)\":1,\"setInterval :: at init (http://localhost:3000/lib/global-alarm-system.js:1288:31)\":1,\"pagehide :: at init (http://localhost:3000/lib/global-alarm-system.js:1324:16)\":1,\"setInterval :: at Object.startBackgroundCheck (http://localhost:3000/lib/ios-android-notifications.js:441:13)\":1,\"pageshow :: at Object.init (http://localhost:3000/lib/ios-android-notifications.js:531:20)\":1,\"setInterval :: at initHeroInteractions (<anonymous>:210:41)\":7}}}"
+    },
+    {
+      "name": "D2_noWindowListenerAccumulationAcross6Cycles",
+      "ok": true,
+      "details": "{\"anhadAudioStateChange\":{\"before\":2,\"after\":2,\"grew\":false},\"anhad_page_restored\":{\"before\":1,\"after\":1,\"grew\":false},\"anhad_page_changed\":{\"before\":7,\"after\":7,\"grew\":false},\"anhadTimeForced\":{\"before\":1,\"after\":1,\"grew\":false},\"popstate\":{\"before\":2,\"after\":2,\"grew\":false},\"pageshow\":{\"before\":5,\"after\":5,\"grew\":false},\"pagehide\":{\"before\":13,\"after\":13,\"grew\":false},\"storage\":{\"before\":4,\"after\":4,\"grew\":false},\"visibilitychange\":{\"before\":0,\"after\":0,\"grew\":false}}"
+    },
+    {
+      "name": "D3_visualsStillCorrectAfter6Cycles",
+      "ok": true,
+      "details": "{\"guruSlides\":11,\"heroTrackChildren\":4}"
+    }
+  ],
+  "consoleErrors": [],
+  "failedRequests": [],
+  "uncaughtExceptions": [],
+  "_currentStep": "D-cycle6-insights-to-home",
+  "summary": {
+    "totalConsoleErrors": 0,
+    "totalFailedRequests": 0,
+    "totalUncaughtExceptions": 0,
+    "allStepsOk": true
+  }
+}

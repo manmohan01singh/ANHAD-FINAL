@@ -1,23 +1,23 @@
 {
   "suite": "Phase 9 - Production Runtime Validation (Chromium Engine)",
-  "timestamp": "2026-07-24T16:54:08.162Z",
+  "timestamp": "2026-08-18T03:00:17.619Z",
   "results": {
     "runtimeTelemetry": {
       "endurance100Navigations": {
-        "completedCycles": 0,
-        "totalTimeMs": 0,
-        "avgMsPerNav": 0
+        "completedCycles": 2,
+        "totalTimeMs": -323,
+        "avgMsPerNav": -161.5
       },
       "memoryTelemetryMB": {
-        "initialHeapMB": 0.56,
-        "finalHeapMB": 0.56,
-        "heapGrowthMB": 0
+        "initialHeapMB": 2.62,
+        "finalHeapMB": 1.66,
+        "heapGrowthMB": -0.96
       },
       "startupTiming": {
-        "domContentLoadedMs": 97,
-        "loadEventMs": 98,
-        "firstPaintMs": "Not Measured",
-        "firstContentfulPaintMs": "Not Measured"
+        "domContentLoadedMs": 0,
+        "loadEventMs": 0,
+        "firstPaintMs": null,
+        "firstContentfulPaintMs": null
       },
       "uiComponentsVerified": {
         "headerPresent": false,
@@ -26,8 +26,10 @@
         "appContainerPresent": false
       }
     },
-    "consoleLogs": [],
+    "consoleErrors": [],
+    "consoleWarnings": [],
     "networkFailures": []
   },
-  "status": "VERIFIED SUCCESS ✅"
+  "status": "FAILED",
+  "reason": "2/100 navigation cycles completed; header missing after cycling; tab bar missing after cycling; #app missing after cycling"
 }

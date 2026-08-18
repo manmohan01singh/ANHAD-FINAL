@@ -1442,8 +1442,10 @@
 
     <!-- Component Scripts -->
     <script src="components/assets/haptic-patterns.js?v=2.1"></script>
-    <script src="components/streak-engine.js?v=2.1"></script>
-    <script src="components/statistics-engine.js?v=2.1"></script>
+    <!-- streak-engine.js / statistics-engine.js removed: confirmed dead code
+         (zero `new StreakEngine()`/`new StatisticsEngine()` calls anywhere),
+         encoded a third, incompatible streak schema and a stricter
+         completion rule than the real one (StreakManager, in this file). -->
     <script src="components/mala-counter.js?v=2.1"></script>
     <script src="components/report-generator.js?v=2.1"></script>
 

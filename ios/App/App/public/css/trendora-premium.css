@@ -519,8 +519,17 @@ a:active {
 /* ═══════════════════════════════════════════════════════════════════════════════
    § 4. HEADER — Trendora-Inspired: Avatar | Brand | Actions
    Clean grid. Avatar with theme indicator. Centered brand. Right actions.
+
+   Scoped to .home-header (a second class added to Home's own <header> tag in
+   index.html) — this file is Home-exclusive but was never removed once
+   loaded (smooth-navigation.js's syncHeadAssets() only ever adds
+   stylesheets, never removes them), so its bare .header/.header__title/
+   .header__btn rules used to override Favorites'/other pages' own
+   same-named-but-unrelated rules via !important for the rest of the
+   session (found by running this: Favorites' header padding and button
+   background changed after any SPA visit to Home).
 ═══════════════════════════════════════════════════════════════════════════════ */
-.header {
+.header.home-header {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
@@ -631,7 +640,7 @@ a:active {
 }
 
 /* ANHAD — iOS Clean Typography */
-.header__title {
+.home-header .header__title {
   font-family: 'Optimus Princeps', 'Trajan Pro', serif !important;
   font-size: clamp(2rem, 5.5vw, 2.8rem) !important;
   /* Dynamic fluid responsive text — larger for better visibility */
@@ -654,7 +663,7 @@ a:active {
 }
 
 /* Dark mode override */
-.dark-mode .header__title {
+.dark-mode .home-header .header__title {
   background: linear-gradient(180deg, #FFD700 0%, #FFA500 50%, #FF8C00 100%) !important;
   /* Bright gold gradient for dark mode */
   -webkit-background-clip: text !important;
@@ -664,7 +673,7 @@ a:active {
   filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.6)) drop-shadow(0 0 12px rgba(255, 215, 0, 0.5)) !important;
 }
 
-.header__title-gurmukhi {
+.home-header .header__title-gurmukhi {
   font-family: var(--font-gurmukhi) !important;
   font-size: clamp(1rem, 2.8vw, 1.4rem) !important;
   /* Responsive dynamic Gurmukhi subtitle — larger */
@@ -686,7 +695,7 @@ a:active {
 }
 
 /* Dark mode for Gurmukhi subtitle */
-.dark-mode .header__title-gurmukhi {
+.dark-mode .home-header .header__title-gurmukhi {
   color: #FFD700 !important;
   /* Bright gold in dark mode */
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6), 0 0 8px rgba(255, 215, 0, 0.4) !important;
@@ -699,7 +708,7 @@ a:active {
   gap: var(--space-2);
 }
 
-.header__btn {
+.home-header .header__btn {
   position: relative;
   width: 42px;
   height: 42px;
@@ -720,24 +729,24 @@ a:active {
   pointer-events: auto !important;
 }
 
-.dark-mode .header__btn,
-[data-theme="dark"] .header__btn {
+.dark-mode .home-header .header__btn,
+[data-theme="dark"] .home-header .header__btn {
   background: #2a2a2d !important;
   border: none !important;
   box-shadow: none !important;
 }
 
-.header__btn:active {
+.home-header .header__btn:active {
   transform: scale(0.95) !important;
   box-shadow: none !important;
 }
 
-.dark-mode .header__btn:active,
-[data-theme="dark"] .header__btn:active {
+.dark-mode .home-header .header__btn:active,
+[data-theme="dark"] .home-header .header__btn:active {
   box-shadow: none !important;
 }
 
-.header__btn svg {
+.home-header .header__btn svg {
   width: 22px;
   height: 22px;
   color: #000000 !important;
@@ -745,27 +754,27 @@ a:active {
   stroke-width: 2.5px;
 }
 
-.dark-mode .header__btn svg,
-[data-theme="dark"] .header__btn svg {
+.dark-mode .home-header .header__btn svg,
+[data-theme="dark"] .home-header .header__btn svg {
   color: #FFFFFF !important;
 }
 
-.header__btn:active svg {
+.home-header .header__btn:active svg {
   color: var(--accent) !important;
 }
 
-.header__btn img {
+.home-header .header__btn img {
   width: 22px;
   height: 22px;
   transition: filter var(--duration-fast) ease;
 }
 
-.dark-mode .header__btn img,
-[data-theme="dark"] .header__btn img {
+.dark-mode .home-header .header__btn img,
+[data-theme="dark"] .home-header .header__btn img {
   filter: brightness(0) invert(1) !important;
 }
 
-[data-theme-mode="auto"] .header__btn img {
+[data-theme-mode="auto"] .home-header .header__btn img {
   filter: brightness(0) invert(1) !important;
 }
 
@@ -2192,30 +2201,30 @@ a:active {
   margin-bottom: var(--space-8);
 }
 
-/* Light mode colored backgrounds - soft pastel versions of dark mode colors */
-.quick-card--green {
-  background: linear-gradient(140deg, #E8F5E9 0%, #C8E6C9 100%) !important;
-  border-color: rgba(48, 209, 88, 0.25) !important;
+/* Light mode colored backgrounds - soft pastel versions */
+:root:not([data-theme="dark"]):not(.dark):not(.dark-mode) .quick-card--green {
+  background: linear-gradient(140deg, #E8F5E9 0%, #C8E6C9 100%);
+  border-color: rgba(48, 209, 88, 0.25);
 }
 
-.quick-card--gold {
-  background: linear-gradient(140deg, #FFF8E1 0%, #FFECB3 100%) !important;
-  border-color: rgba(212, 148, 58, 0.25) !important;
+:root:not([data-theme="dark"]):not(.dark):not(.dark-mode) .quick-card--gold {
+  background: linear-gradient(140deg, #FFF8E1 0%, #FFECB3 100%);
+  border-color: rgba(212, 148, 58, 0.25);
 }
 
-.quick-card--purple {
-  background: linear-gradient(140deg, #EDE7F6 0%, #D1C4E9 100%) !important;
-  border-color: rgba(88, 86, 214, 0.25) !important;
+:root:not([data-theme="dark"]):not(.dark):not(.dark-mode) .quick-card--purple {
+  background: linear-gradient(140deg, #EDE7F6 0%, #D1C4E9 100%);
+  border-color: rgba(88, 86, 214, 0.25);
 }
 
-.quick-card--blue {
-  background: linear-gradient(140deg, #E3F2FD 0%, #BBDEFB 100%) !important;
-  border-color: rgba(0, 122, 255, 0.25) !important;
+:root:not([data-theme="dark"]):not(.dark):not(.dark-mode) .quick-card--blue {
+  background: linear-gradient(140deg, #E3F2FD 0%, #BBDEFB 100%);
+  border-color: rgba(0, 122, 255, 0.25);
 }
 
-.quick-card--rose {
-  background: linear-gradient(140deg, #FFEBEE 0%, #FFCDD2 100%) !important;
-  border-color: rgba(255, 107, 107, 0.25) !important;
+:root:not([data-theme="dark"]):not(.dark):not(.dark-mode) .quick-card--rose {
+  background: linear-gradient(140deg, #FFEBEE 0%, #FFCDD2 100%);
+  border-color: rgba(255, 107, 107, 0.25);
 }
 
 /* Subtle glass highlight on top */
@@ -3355,32 +3364,46 @@ a:active {
 }
 
 
+[data-theme="dark"] .quick-card--green,
+.dark .quick-card--green,
 .dark-mode .quick-card--green {
-  background: linear-gradient(140deg, #0C2616 0%, #11301C 100%);
+  background: linear-gradient(140deg, #0C2616 0%, #11301C 100%) !important;
 }
 
+[data-theme="dark"] .quick-card--gold,
+.dark .quick-card--gold,
 .dark-mode .quick-card--gold {
-  background: linear-gradient(140deg, #2A2215 0%, #302818 100%);
+  background: linear-gradient(140deg, #2A2215 0%, #302818 100%) !important;
 }
 
+[data-theme="dark"] .quick-card--purple,
+.dark .quick-card--purple,
 .dark-mode .quick-card--purple {
-  background: linear-gradient(140deg, #1D1C2E 0%, #23213E 100%);
+  background: linear-gradient(140deg, #1D1C2E 0%, #23213E 100%) !important;
 }
 
+[data-theme="dark"] .quick-card--blue,
+.dark .quick-card--blue,
 .dark-mode .quick-card--blue {
-  background: linear-gradient(140deg, #0C1D2C 0%, #112434 100%);
+  background: linear-gradient(140deg, #0C1D2C 0%, #112434 100%) !important;
 }
 
+[data-theme="dark"] .quick-card--teal,
+.dark .quick-card--teal,
 .dark-mode .quick-card--teal {
-  background: linear-gradient(140deg, #0A2520 0%, #0F302A 100%);
+  background: linear-gradient(140deg, #0A2520 0%, #0F302A 100%) !important;
 }
 
+[data-theme="dark"] .quick-card--rose,
+.dark .quick-card--rose,
 .dark-mode .quick-card--rose {
-  background: linear-gradient(140deg, #2C1515 0%, #351A1A 100%);
+  background: linear-gradient(140deg, #2C1515 0%, #351A1A 100%) !important;
 }
 
+[data-theme="dark"] .quick-card::before,
+.dark .quick-card::before,
 .dark-mode .quick-card::before {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, transparent 100%);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, transparent 100%) !important;
 }
 
 .dark-mode .quick-card__icon {

@@ -519,8 +519,17 @@ a:active {
 /* ═══════════════════════════════════════════════════════════════════════════════
    § 4. HEADER — Trendora-Inspired: Avatar | Brand | Actions
    Clean grid. Avatar with theme indicator. Centered brand. Right actions.
+
+   Scoped to .home-header (a second class added to Home's own <header> tag in
+   index.html) — this file is Home-exclusive but was never removed once
+   loaded (smooth-navigation.js's syncHeadAssets() only ever adds
+   stylesheets, never removes them), so its bare .header/.header__title/
+   .header__btn rules used to override Favorites'/other pages' own
+   same-named-but-unrelated rules via !important for the rest of the
+   session (found by running this: Favorites' header padding and button
+   background changed after any SPA visit to Home).
 ═══════════════════════════════════════════════════════════════════════════════ */
-.header {
+.header.home-header {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
@@ -631,7 +640,7 @@ a:active {
 }
 
 /* ANHAD — iOS Clean Typography */
-.header__title {
+.home-header .header__title {
   font-family: 'Optimus Princeps', 'Trajan Pro', serif !important;
   font-size: clamp(2rem, 5.5vw, 2.8rem) !important;
   /* Dynamic fluid responsive text — larger for better visibility */
@@ -654,7 +663,7 @@ a:active {
 }
 
 /* Dark mode override */
-.dark-mode .header__title {
+.dark-mode .home-header .header__title {
   background: linear-gradient(180deg, #FFD700 0%, #FFA500 50%, #FF8C00 100%) !important;
   /* Bright gold gradient for dark mode */
   -webkit-background-clip: text !important;
@@ -664,7 +673,7 @@ a:active {
   filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.6)) drop-shadow(0 0 12px rgba(255, 215, 0, 0.5)) !important;
 }
 
-.header__title-gurmukhi {
+.home-header .header__title-gurmukhi {
   font-family: var(--font-gurmukhi) !important;
   font-size: clamp(1rem, 2.8vw, 1.4rem) !important;
   /* Responsive dynamic Gurmukhi subtitle — larger */
@@ -686,7 +695,7 @@ a:active {
 }
 
 /* Dark mode for Gurmukhi subtitle */
-.dark-mode .header__title-gurmukhi {
+.dark-mode .home-header .header__title-gurmukhi {
   color: #FFD700 !important;
   /* Bright gold in dark mode */
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6), 0 0 8px rgba(255, 215, 0, 0.4) !important;
@@ -699,7 +708,7 @@ a:active {
   gap: var(--space-2);
 }
 
-.header__btn {
+.home-header .header__btn {
   position: relative;
   width: 42px;
   height: 42px;
@@ -720,24 +729,24 @@ a:active {
   pointer-events: auto !important;
 }
 
-.dark-mode .header__btn,
-[data-theme="dark"] .header__btn {
+.dark-mode .home-header .header__btn,
+[data-theme="dark"] .home-header .header__btn {
   background: #2a2a2d !important;
   border: none !important;
   box-shadow: none !important;
 }
 
-.header__btn:active {
+.home-header .header__btn:active {
   transform: scale(0.95) !important;
   box-shadow: none !important;
 }
 
-.dark-mode .header__btn:active,
-[data-theme="dark"] .header__btn:active {
+.dark-mode .home-header .header__btn:active,
+[data-theme="dark"] .home-header .header__btn:active {
   box-shadow: none !important;
 }
 
-.header__btn svg {
+.home-header .header__btn svg {
   width: 22px;
   height: 22px;
   color: #000000 !important;
@@ -745,27 +754,27 @@ a:active {
   stroke-width: 2.5px;
 }
 
-.dark-mode .header__btn svg,
-[data-theme="dark"] .header__btn svg {
+.dark-mode .home-header .header__btn svg,
+[data-theme="dark"] .home-header .header__btn svg {
   color: #FFFFFF !important;
 }
 
-.header__btn:active svg {
+.home-header .header__btn:active svg {
   color: var(--accent) !important;
 }
 
-.header__btn img {
+.home-header .header__btn img {
   width: 22px;
   height: 22px;
   transition: filter var(--duration-fast) ease;
 }
 
-.dark-mode .header__btn img,
-[data-theme="dark"] .header__btn img {
+.dark-mode .home-header .header__btn img,
+[data-theme="dark"] .home-header .header__btn img {
   filter: brightness(0) invert(1) !important;
 }
 
-[data-theme-mode="auto"] .header__btn img {
+[data-theme-mode="auto"] .home-header .header__btn img {
   filter: brightness(0) invert(1) !important;
 }
 

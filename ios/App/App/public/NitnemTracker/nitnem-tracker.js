@@ -2781,24 +2781,30 @@ const HeaderManager = {
      * Update streak display in header
      */
     updateStreakDisplay() {
-        // SYNC: Use global UnifiedStats if available for the most accurate streak
+        // BUG FIX: this used to check UnifiedStats/AnhadStats first and
+        // StreakManager only as a last resort — backwards. StreakManager.state
+        // is recalculated fresh from the actual completion logs
+        // (recalculateStreak()) every time; UnifiedStats/AnhadStats trust
+        // whatever they were last told rather than re-deriving from the logs.
+        // That let this page show two different streak numbers on itself at
+        // once (this header pill vs. the page's own hero stat, which already
+        // read StreakManager directly) whenever the two hadn't been synced
+        // yet. StreakManager is checked first now — it's the more
+        // authoritative source, not the fallback.
         let currentStreak = 0;
 
-        if (typeof UnifiedStats !== 'undefined' && typeof UnifiedStats.getStreaks === 'function') {
+        if (typeof StreakManager !== 'undefined' && StreakManager.state) {
+            currentStreak = StreakManager.state.currentStreak || 0;
+        } else if (typeof UnifiedStats !== 'undefined' && typeof UnifiedStats.getStreaks === 'function') {
             const streaks = UnifiedStats.getStreaks();
             currentStreak = streaks.nitnem || 0;
         } else if (typeof AnhadStats !== 'undefined' && typeof AnhadStats.getStreak === 'function') {
             const streakData = AnhadStats.getStreak();
             currentStreak = streakData.currentStreak || 0;
         } else {
-            // Fallback to local StreakManager state if globals are missing
-            currentStreak = (typeof StreakManager !== 'undefined') ? (StreakManager.state.currentStreak || 0) : 0;
-
             // Last resort: raw storage
-            if (currentStreak === 0) {
-                const streakData = StorageManager.load(CONFIG.STORAGE_KEYS.STREAK_DATA, { currentStreak: 0 });
-                currentStreak = streakData.currentStreak || streakData.current || 0;
-            }
+            const streakData = StorageManager.load(CONFIG.STORAGE_KEYS.STREAK_DATA, { currentStreak: 0 });
+            currentStreak = streakData.currentStreak || streakData.current || 0;
         }
 
         if (this.elements.headerStreakCount) {
@@ -8705,13 +8711,11 @@ const AchievementManager = {
 const PothiCardManager = {
     init() {
         this.updateCard();
-        // Listen for storage changes when Banis are completed in My Pothi page
-        window.addEventListener('storage', (e) => {
-            if (e.key === 'nitnemTracker_selectedBanis' || e.key === 'nitnemTracker_nitnemLog' || e.key === 'nitnemTracker_selectedBanis_history') {
-                this.updateCard();
-            }
-        });
-        // Also listen for custom events & tab focus
+        // Listen for all possible storage/sync events from My Pothi and Nitnem Tracker
+        window.addEventListener('storage', () => this.updateCard());
+        window.addEventListener('nitnemUpdated', () => this.updateCard());
+        window.addEventListener('dashboardRefresh', () => this.updateCard());
+        window.addEventListener('statsUpdated', () => this.updateCard());
         document.addEventListener('nitnemCompleted', () => this.updateCard());
         document.addEventListener('visibilitychange', () => {
             if (!document.hidden) this.updateCard();
@@ -8723,101 +8727,207 @@ const PothiCardManager = {
         if (!card) return;
 
         const today = new Date().toLocaleDateString('en-CA');
-        
-        // 1. Load user selected banis from storage
-        let selectedBanisData = StorageManager.load(CONFIG.STORAGE_KEYS.SELECTED_BANIS, null);
-        if (!selectedBanisData) {
+
+        // Complete Master Bani ID to Gurmukhi Name Mapping matching BaniDB / My Pothi
+        const BANI_MAP = {
+            1: { id: 1, name: 'Japji Sahib', punjabi: 'ਜਪੁਜੀ ਸਾਹਿਬ' },
+            2: { id: 2, name: 'Japji Sahib', punjabi: 'ਜਪੁਜੀ ਸਾਹਿਬ' },
+            3: { id: 3, name: 'Shabad Hazare', punjabi: 'ਸ਼ਬਦ ਹਜ਼ਾਰੇ' },
+            4: { id: 4, name: 'Jaap Sahib', punjabi: 'ਜਾਪੁ ਸਾਹਿਬ' },
+            5: { id: 5, name: 'Shabad Hazare P10', punjabi: 'ਸ਼ਬਦ ਹਜ਼ਾਰੇ ਪਾ: ੧੦' },
+            6: { id: 6, name: 'Tav Prasad Savaiye', punjabi: 'ਤ੍ਵ ਪ੍ਰਸਾਦਿ' },
+            7: { id: 7, name: 'Tav Prasad Savaiye', punjabi: 'ਤ੍ਵ ਪ੍ਰਸਾਦਿ' },
+            8: { id: 8, name: 'Akal Ustat Chaupai', punjabi: 'ਅਕਾਲ ਉਸਤਤਿ ਚੌਪਈ' },
+            9: { id: 9, name: 'Chaupai Sahib', punjabi: 'ਚੌਪਈ ਸਾਹਿਬ' },
+            10: { id: 10, name: 'Anand Sahib', punjabi: 'ਅਨੰਦੁ ਸਾਹਿਬ' },
+            11: { id: 11, name: 'Lavan', punjabi: 'ਲਾਵਾਂ' },
+            12: { id: 12, name: 'Chandi Charitra', punjabi: 'ਚੰਡੀ ਚਰਿਤ੍ਰ' },
+            13: { id: 13, name: 'Chandi Di Vaar', punjabi: 'ਚੰਡੀ ਦੀ ਵਾਰ' },
+            19: { id: 19, name: 'Shastar Naam Mala', punjabi: 'ਸ਼ਸਤ੍ਰ ਨਾਮ ਮਾਲਾ' },
+            21: { id: 21, name: 'Rehras Sahib', punjabi: 'ਰਹਿਰਾਸ ਸਾਹਿਬ' },
+            22: { id: 22, name: 'Aarti', punjabi: 'ਆਰਤੀ' },
+            23: { id: 23, name: 'Kirtan Sohila', punjabi: 'ਕੀਰਤਨ ਸੋਹਿਲਾ' },
+            24: { id: 24, name: 'Ardas', punjabi: 'ਅਰਦਾਸ' },
+            27: { id: 27, name: 'Barah Maha', punjabi: 'ਬਾਰਹ ਮਾਹਾ' },
+            29: { id: 29, name: 'Akal Ustat', punjabi: 'ਅਕਾਲ ਉਸਤਤਿ' },
+            30: { id: 30, name: 'Salok Mahalla 9', punjabi: 'ਸਲੋਕ ਮਹਲਾ ੯' },
+            31: { id: 31, name: 'Sukhmani Sahib', punjabi: 'ਸੁਖਮਨੀ ਸਾਹਿਬ' },
+            32: { id: 32, name: 'Sukhmana Sahib', punjabi: 'ਸੁਖਮਨਾ ਸਾਹਿਬ' },
+            33: { id: 33, name: 'Bavan Akhri', punjabi: 'ਬਾਵਨ ਅਖਰੀ' },
+            34: { id: 34, name: 'Sidh Gosht', punjabi: 'ਸਿੱਧ ਗੋਸਟਿ' },
+            35: { id: 35, name: 'Dakhni Oankar', punjabi: 'ਦਖਣੀ ਓਅੰਕਾਰ' },
+            36: { id: 36, name: 'Dukh Bhanjani Sahib', punjabi: 'ਦੁਖ ਭੰਜਨੀ ਸਾਹਿਬ' },
+            38: { id: 38, name: 'Raag Mala', punjabi: 'ਰਾਗ ਮਾਲਾ' },
+            53: { id: 53, name: 'Ugardanti', punjabi: 'ਉਗ੍ਰਦੰਤੀ' },
+            77: { id: 77, name: 'Salok Bhagat Kabir', punjabi: 'ਸਲੋਕ ਕਬੀਰ ਜੀ' },
+            78: { id: 78, name: 'Salok Sheikh Farid', punjabi: 'ਸਲੋਕ ਫਰੀਦ ਜੀ' },
+            90: { id: 90, name: 'Asa Di Vaar', punjabi: 'ਆਸਾ ਦੀ ਵਾਰ' }
+        };
+
+        // 1. Get Raw User's Pothi Banis from storage
+        let rawUserBanis = [];
+
+        // Source A: anhad_my_pothi_data
+        try {
+            const rawData = localStorage.getItem('anhad_my_pothi_data');
+            if (rawData) {
+                const parsed = JSON.parse(rawData);
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                    rawUserBanis = parsed;
+                }
+            }
+        } catch (e) {}
+
+        // Source B: anhad_my_pothi (array of IDs)
+        if (rawUserBanis.length === 0) {
             try {
-                selectedBanisData = JSON.parse(localStorage.getItem('nitnemTracker_selectedBanis') || 'null');
+                const rawOrder = localStorage.getItem('anhad_my_pothi');
+                if (rawOrder) {
+                    const parsed = JSON.parse(rawOrder);
+                    if (Array.isArray(parsed) && parsed.length > 0) {
+                        rawUserBanis = parsed;
+                    }
+                }
             } catch (e) {}
         }
 
-        // Default Gurmukhi Banis
-        const DEFAULT_BANIS = [
-            { id: 'japji', name: 'Japji Sahib', punjabi: 'ਜਪੁਜੀ ਸਾਹਿਬ' },
-            { id: 'jaap', name: 'Jaap Sahib', punjabi: 'ਜਾਪੁ ਸਾਹਿਬ' },
-            { id: 'tav_prasad', name: 'Tav Prasad Savaiye', punjabi: 'ਤ੍ਵ ਪ੍ਰਸਾਦਿ' },
-            { id: 'chaupai', name: 'Chaupai Sahib', punjabi: 'ਚੌਪਈ ਸਾਹਿਬ' },
-            { id: 'anand', name: 'Anand Sahib', punjabi: 'ਅਨੰਦੁ ਸਾਹਿਬ' }
-        ];
+        // Source C: nitnemTracker_selectedBanis
+        if (rawUserBanis.length === 0) {
+            try {
+                const rawSel = localStorage.getItem('nitnemTracker_selectedBanis');
+                if (rawSel) {
+                    const parsed = JSON.parse(rawSel);
+                    if (Array.isArray(parsed) && parsed.length > 0) {
+                        rawUserBanis = parsed;
+                    } else if (typeof parsed === 'object') {
+                        const combined = [
+                            ...(parsed.amritvela || []),
+                            ...(parsed.rehras || []),
+                            ...(parsed.sohila || [])
+                        ];
+                        if (combined.length > 0) rawUserBanis = combined;
+                    }
+                }
+            } catch (e) {}
+        }
 
-        let userBanis = [];
-        if (selectedBanisData) {
-            if (Array.isArray(selectedBanisData) && selectedBanisData.length > 0) {
-                userBanis = selectedBanisData;
-            } else if (typeof selectedBanisData === 'object') {
-                const combined = [
-                    ...(selectedBanisData.amritvela || []),
-                    ...(selectedBanisData.rehras || []),
-                    ...(selectedBanisData.sohila || [])
-                ];
-                if (combined.length > 0) {
-                    userBanis = combined;
+        // Default Fallback: Standard 5 Amritvela Nitnem Banis
+        if (rawUserBanis.length === 0) {
+            rawUserBanis = [2, 4, 6, 9, 10];
+        }
+
+        // Deduplicate & Normalize Banis
+        const seenKeys = new Set();
+        const userBanis = [];
+
+        rawUserBanis.forEach(b => {
+            let id = typeof b === 'number' || typeof b === 'string' ? b : (b.id || b.name);
+            let numId = parseInt(id, 10);
+            let mapped = (!isNaN(numId) && BANI_MAP[numId]) ? BANI_MAP[numId] : null;
+
+            let punjabi = b.punjabi || b.nameGurmukhi || (mapped ? mapped.punjabi : null);
+            let name = b.name || b.english || (mapped ? mapped.name : null);
+
+            if (!punjabi && !name) {
+                punjabi = `ਬਾਣੀ #${id}`;
+                name = `Bani #${id}`;
+            }
+
+            const item = {
+                id: id,
+                numId: isNaN(numId) ? null : numId,
+                name: name || punjabi,
+                punjabi: punjabi || name
+            };
+
+            const uniqueKey = String(item.numId || item.punjabi || item.name).toLowerCase();
+            if (!seenKeys.has(uniqueKey)) {
+                seenKeys.add(uniqueKey);
+                userBanis.push(item);
+            }
+        });
+
+        // 2. Load Completed Banis for Today
+        const completedSet = new Set();
+
+        // Source A: anhad_my_pothi_completed
+        try {
+            const rawCompleted = localStorage.getItem('anhad_my_pothi_completed');
+            if (rawCompleted) {
+                const parsed = JSON.parse(rawCompleted);
+                const todayList = parsed[today] || [];
+                if (Array.isArray(todayList)) {
+                    todayList.forEach(id => {
+                        completedSet.add(String(id).toLowerCase());
+                        const num = parseInt(id, 10);
+                        if (!isNaN(num) && BANI_MAP[num]) {
+                            completedSet.add(BANI_MAP[num].punjabi.toLowerCase());
+                            completedSet.add(BANI_MAP[num].name.toLowerCase());
+                        }
+                    });
                 }
             }
-        }
+        } catch (e) {}
 
-        if (userBanis.length === 0) {
-            userBanis = DEFAULT_BANIS;
-        }
-
-        // 2. Load today's completion log
-        let nitnemLog = StorageManager.load(CONFIG.STORAGE_KEYS.NITNEM_LOG, {});
-        if (typeof nitnemLog !== 'object') nitnemLog = {};
-
-        const todayEntry = nitnemLog[today] || {};
-        let completedIds = [];
-
-        if (Array.isArray(todayEntry)) {
-            completedIds = todayEntry;
-        } else if (todayEntry && typeof todayEntry === 'object') {
-            if (Array.isArray(todayEntry.completedBanis)) {
-                completedIds = todayEntry.completedBanis;
-            } else if (Array.isArray(todayEntry.banis)) {
-                completedIds = todayEntry.banis;
-            } else if (typeof todayEntry.banis === 'object') {
-                const bObj = todayEntry.banis;
-                for (const k in bObj) {
-                    if (bObj[k] === true) completedIds.push(k);
+        // Source B: nitnemTracker_nitnemLog
+        try {
+            const rawLog = localStorage.getItem('nitnemTracker_nitnemLog');
+            if (rawLog) {
+                const parsed = JSON.parse(rawLog);
+                const todayEntry = parsed[today] || {};
+                if (Array.isArray(todayEntry)) {
+                    todayEntry.forEach(id => completedSet.add(String(id).toLowerCase()));
+                } else if (todayEntry && typeof todayEntry === 'object') {
+                    const allComps = [
+                        ...(todayEntry.completedBanis || []),
+                        ...(todayEntry.banis || []),
+                        ...(todayEntry.amritvela || []),
+                        ...(todayEntry.rehras || []),
+                        ...(todayEntry.sohila || [])
+                    ];
+                    allComps.forEach(id => {
+                        completedSet.add(String(id).toLowerCase());
+                        const num = parseInt(id, 10);
+                        if (!isNaN(num) && BANI_MAP[num]) {
+                            completedSet.add(BANI_MAP[num].punjabi.toLowerCase());
+                            completedSet.add(BANI_MAP[num].name.toLowerCase());
+                        }
+                    });
+                    if (typeof todayEntry.banis === 'object' && !Array.isArray(todayEntry.banis)) {
+                        Object.keys(todayEntry.banis).forEach(k => {
+                            if (todayEntry.banis[k] === true) completedSet.add(String(k).toLowerCase());
+                        });
+                    }
                 }
-            } else {
-                const subCombined = [
-                    ...(todayEntry.amritvela || []),
-                    ...(todayEntry.rehras || []),
-                    ...(todayEntry.sohila || [])
-                ];
-                if (subCombined.length > 0) completedIds = subCombined;
             }
-        }
+        } catch (e) {}
 
-        const totalBanisCount = userBanis.length;
+        // 3. Match user banis with completion set
+        const totalCount = userBanis.length;
         let completedCount = 0;
 
-        // Map banis to chip objects with completion status
         const baniChipsData = userBanis.map(b => {
-            const id = typeof b === 'string' ? b : (b.id || b.name);
-            const title = typeof b === 'string' ? b : (b.punjabi || b.name || id);
-            
-            const isDone = completedIds.some(c => {
-                if (typeof c === 'string') {
-                    return c.toLowerCase() === String(id).toLowerCase() || 
-                           c.toLowerCase() === String(title).toLowerCase();
-                }
-                if (c && (c.id || c.name)) {
-                    return String(c.id || c.name).toLowerCase() === String(id).toLowerCase();
-                }
-                return false;
-            });
+            const bId = String(b.id || '').toLowerCase();
+            const bNumId = b.numId ? String(b.numId) : '';
+            const bName = String(b.name || '').toLowerCase();
+            const bPunjabi = String(b.punjabi || '').toLowerCase();
+
+            const isDone = (
+                completedSet.has(bId) ||
+                (bNumId && completedSet.has(bNumId)) ||
+                completedSet.has(bName) ||
+                completedSet.has(bPunjabi)
+            );
 
             if (isDone) completedCount++;
 
             return {
-                title: title,
+                title: b.punjabi || b.name,
                 isDone: isDone
             };
         });
 
-        // 3. Update Chips UI inside .card-body
+        // 4. Update Chips UI inside .card-body
         const chipsContainer = card.querySelector('.pothi-chips-row');
         if (chipsContainer) {
             chipsContainer.innerHTML = baniChipsData.map(b => `
@@ -8827,20 +8937,20 @@ const PothiCardManager = {
             `).join('');
         }
 
-        // 4. Update Stat Items inside .card-footer
+        // 5. Update Stat Items inside .card-footer
         const statItems = card.querySelectorAll('.card-footer .stat-item');
         if (statItems.length >= 3) {
             const stat1Value = statItems[0].querySelector('.stat-value');
             const stat1Label = statItems[0].querySelector('.stat-label');
-            if (stat1Value) stat1Value.textContent = `${completedCount}/${totalBanisCount} Done`;
-            if (stat1Label) stat1Label.textContent = completedCount === totalBanisCount ? '100% Complete' : 'Daily Path';
+            if (stat1Value) stat1Value.textContent = `${completedCount}/${totalCount} Done`;
+            if (stat1Label) stat1Label.textContent = completedCount === totalCount ? '100% Complete' : 'Daily Path';
 
             const stat2Value = statItems[1].querySelector('.stat-value');
             if (stat2Value) stat2Value.textContent = '📖 Open Pothi';
 
             const stat3Value = statItems[2].querySelector('.stat-value');
             const stat3Label = statItems[2].querySelector('.stat-label');
-            const pct = totalBanisCount > 0 ? Math.round((completedCount / totalBanisCount) * 100) : 0;
+            const pct = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
             if (stat3Value) stat3Value.textContent = `⚡ ${pct}%`;
             if (stat3Label) stat3Label.textContent = 'Today Progress';
         }
@@ -8855,6 +8965,24 @@ const ReportsManager = {
     elements: {},
     activeReport: 'weekly',
     currentMonth: new Date(),
+
+    /**
+     * Whether a NITNEM_LOG day entry counts as complete. Same rule
+     * StreakManager already uses in 3 other places (recalculateStreak,
+     * checkAndUpdate) — kept consistent rather than reintroducing a second
+     * definition of "complete."
+     * BUG FIX: this method did not previously exist on ReportsManager at
+     * all (confirmed: grepping the whole file finds only call sites, no
+     * definition) — every call to finalizeDay()/checkReset() at a real day
+     * boundary threw "ReportsManager.isNitnemComplete is not a function",
+     * silently aborting the rest of that day's reset logic (streak-break
+     * check, temp-state clear, seeding today's entry) for every user, every
+     * day. Found by writing a real test against the real function instead
+     * of a mock.
+     */
+    isNitnemComplete(dayData) {
+        return !!(dayData && (dayData.completed === true || dayData.percentage === 100));
+    },
 
     /**
      * Initialize Reports Manager
@@ -11334,6 +11462,28 @@ const DailyResetManager = {
     },
 
     /**
+     * checkReset() was previously only ever called once, at app startup.
+     * If the app/tab stays continuously foregrounded across local midnight
+     * with no visibility change (screen stays on, app stays in front), the
+     * day never rolled over until some later reload. Schedule a one-shot
+     * timer for the next local midnight and have it reschedule itself, so
+     * the rollover fires on its own regardless of visibility events.
+     * checkReset() is idempotent (it only acts when the date actually
+     * differs), so this is safe to layer on top of the existing
+     * startup + visibilitychange checks without risk of double-firing.
+     */
+    scheduleMidnightCheck() {
+        if (this._midnightTimer) clearTimeout(this._midnightTimer);
+        const now = new Date();
+        const nextMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 5);
+        const msUntilMidnight = nextMidnight.getTime() - now.getTime();
+        this._midnightTimer = setTimeout(() => {
+            this.checkReset();
+            this.scheduleMidnightCheck();
+        }, msUntilMidnight);
+    },
+
+    /**
      * Handle new day logic - streak check and reset
      */
     handleNewDay(lastProcessed, today) {
@@ -11441,6 +11591,7 @@ const initializeFullApp = async () => {
 
         // Perform Mid-night Check after all systems (including Toast and StreakSaverManager) are initialized
         DailyResetManager.checkReset();
+        DailyResetManager.scheduleMidnightCheck();
 
         // Hide loading screen
         const loadingScreen = document.getElementById('appLoading');
@@ -11661,7 +11812,22 @@ const KeyboardShortcuts = {
    SECTION 29: FINAL EVENT LISTENERS & STARTUP
    ───────────────────────────────────────────────────────────────────────────── */
 
-// Override the initialization to use full version
+// Export Part 2 managers (defined above CONFIG's original export block, so
+// they couldn't be included there) for module/test consumption. No-op in the
+// real browser, where `module` is always undefined — this exists purely so
+// DailyResetManager etc. are reachable from a test file without triggering
+// the real-page-only auto-start block immediately below.
+if (typeof module !== 'undefined' && module.exports) {
+    Object.assign(module.exports, { DailyResetManager, StreakSaverManager, ReportsManager });
+}
+
+// Override the initialization to use full version.
+// Guarded: in a module/test context (module.exports exists), skip the real
+// app's auto-start cascade entirely — initializeFullApp() assumes the real
+// nitnem-tracker.html DOM exists and isn't meant to run against a bare test
+// environment. This guard changes nothing for the real browser, where
+// `module` is always undefined.
+if (typeof module === 'undefined' || !module.exports) {
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
         initializeFullApp();
@@ -11733,6 +11899,7 @@ if (document.readyState === 'loading') {
         });
     }
 }
+} // end module/test guard
 
 // Handle app visibility changes
 document.addEventListener('visibilitychange', () => {

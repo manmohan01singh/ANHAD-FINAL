@@ -56,8 +56,34 @@ class RitualEngine {
     init() {
         this.createRitualOverlay();
         this.bindVisibilityTracking();
+        this.checkForInterruptedSession();
         // Note: We don't auto-start state monitor for scheduled sessions yet
         // this.startStateMonitor();
+    }
+
+    /**
+     * If enterActiveState() persisted a marker that cleanup() never cleared,
+     * the app was killed mid-session. We deliberately do NOT invent partial-
+     * credit logic here (no reliable way to know how far the user actually
+     * got, and crediting a session that didn't fully happen would make the
+     * tracker less trustworthy, not more) — just detect it, log it so it's
+     * not a silent/untraceable loss, and clear the marker so it doesn't sit
+     * around indefinitely.
+     */
+    checkForInterruptedSession() {
+        try {
+            const raw = localStorage.getItem('naam_abhyas_active_session');
+            if (!raw) return;
+            localStorage.removeItem('naam_abhyas_active_session');
+            const marker = JSON.parse(raw);
+            const ageSeconds = (Date.now() - (marker.startedAt || 0)) / 1000;
+            console.warn('[RitualEngine] Detected a Naam Abhyas session interrupted by app close/kill:', {
+                startedAt: new Date(marker.startedAt).toISOString(),
+                durationMinutes: marker.durationMinutes,
+                hour: marker.hour,
+                ageSeconds: Math.round(ageSeconds)
+            });
+        } catch (e) {}
     }
 
     /**
@@ -255,6 +281,22 @@ class RitualEngine {
                 if (document.hidden) {
                     this.sessionMetrics.windowBlurCount++;
                     this.sessionMetrics.userStayedFocused = false;
+                    this._hiddenAt = Date.now();
+                } else if (this._hiddenAt) {
+                    // The countdown deadline (this.countdownEndTime) is a fixed
+                    // wall-clock timestamp, so simply being hidden doesn't pause
+                    // it on its own — the interval callback below skips its work
+                    // entirely while hidden (so it can't silently complete the
+                    // session in the background), and here we shift the deadline
+                    // forward by exactly how long we were hidden, so backgrounded
+                    // time isn't credited toward (or against) the session either
+                    // way. Scales naturally: a brief few-second background is
+                    // imperceptible, a long one resumes exactly where it left off.
+                    const hiddenDuration = Date.now() - this._hiddenAt;
+                    this._hiddenAt = null;
+                    if (typeof this.countdownEndTime === 'number') {
+                        this.countdownEndTime += hiddenDuration;
+                    }
                 }
             }
         });
@@ -385,6 +427,20 @@ class RitualEngine {
         if (presenceBtn) presenceBtn.classList.remove('confirmed');
         if (presenceCheck) presenceCheck.style.display = 'none';
 
+        // Persist a lightweight marker so an app kill mid-session isn't a
+        // silent, untraceable loss. this.currentSession itself only ever
+        // lives in memory; if the process dies before completeSession()/
+        // cleanup() clears this, the next launch detects and logs it (see
+        // constructor) instead of the interruption vanishing without a trace.
+        try {
+            localStorage.setItem('naam_abhyas_active_session', JSON.stringify({
+                startedAt: Date.now(),
+                durationMinutes: this.sessionDurationMinutes,
+                isExtra: this.isExtraSession,
+                hour: this.currentSession ? this.currentSession.hour : null
+            }));
+        } catch (e) {}
+
         // Start countdown timer with actual duration
         this.startCountdown(this.sessionDurationMinutes);
 
@@ -428,7 +484,9 @@ class RitualEngine {
     startCountdown(durationMinutes) {
         const durationSeconds = durationMinutes * 60;
         const startTime = Date.now();
-        const endTime = startTime + (durationSeconds * 1000);
+        // Instance property (not a local const) so bindVisibilityTracking()
+        // can shift it forward when the app returns from the background.
+        this.countdownEndTime = startTime + (durationSeconds * 1000);
 
         const timerEl = document.getElementById('ritualTimerValue');
         const progressRing = document.getElementById('progressRingFill');
@@ -445,8 +503,12 @@ class RitualEngine {
         console.log(`[RitualEngine] Starting countdown: ${durationMinutes} minutes (${durationSeconds} seconds)`);
 
         this.countdownInterval = setInterval(() => {
+            // Skip entirely while backgrounded: don't tick the display and,
+            // critically, don't evaluate the completion check below against a
+            // deadline that hasn't been shifted yet (see bindVisibilityTracking).
+            if (document.hidden) return;
             const now = Date.now();
-            const remaining = Math.max(0, (endTime - now) / 1000);
+            const remaining = Math.max(0, (this.countdownEndTime - now) / 1000);
 
             // TIMER COMPLETE - Auto-complete and return
             if (remaining <= 0) {
@@ -740,7 +802,16 @@ class RitualEngine {
                     presenceConfirmed: this.presenceConfirmed
                 }
             }));
-            console.log('[RitualEngine] ✅ Dispatched naamAbhyasComplete for Nitnem sync');
+            // ALSO dispatch naamAbhyasSessionComplete (with the full sessionData,
+            // which already has status:'completed' + hour + duration) — Nitnem's
+            // canonical-streak bridge (nitnem-tracker.js syncNaamAbhyasIntoCanonicalStreak)
+            // listens for THIS name specifically, not naamAbhyasComplete. The other
+            // code path that completes a session (naam-abhyas.js _syncToNitemTracker)
+            // already dispatches both names; this path was previously only
+            // dispatching one, so the Nitnem sync silently didn't fire when a
+            // session completed through the ritual overlay.
+            window.dispatchEvent(new CustomEvent('naamAbhyasSessionComplete', { detail: sessionData }));
+            console.log('[RitualEngine] ✅ Dispatched naamAbhyasComplete + naamAbhyasSessionComplete for Nitnem sync');
         }
 
         // Show brief completion message then auto-close
@@ -946,6 +1017,10 @@ class RitualEngine {
      * Cleanup timers and state
      */
     cleanup() {
+        // Called on every proper session end (completed or skipped) — clear
+        // the interrupted-session marker set in enterActiveState().
+        try { localStorage.removeItem('naam_abhyas_active_session'); } catch (e) {}
+
         if (this.countdownInterval) {
             clearInterval(this.countdownInterval);
             this.countdownInterval = null;

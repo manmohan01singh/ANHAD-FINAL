@@ -21,6 +21,16 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
+(function () {
+  'use strict';
+
+  // Idempotency guard: this file is already skip-listed in smooth-navigation.js's
+  // SHELL_SCRIPTS so a normal SPA swap never re-executes it, but this makes
+  // "exactly one PWAManager for the app's lifetime" hold unconditionally rather
+  // than depending on that list staying correct.
+  if (window.__anhadPWAManagerInit) return;
+  window.__anhadPWAManagerInit = true;
+
 class PWAManager {
   constructor() {
     this.registration = null;
@@ -594,3 +604,5 @@ if (document.readyState === 'loading') {
   pwaManager = new PWAManager();
   window.pwaManager = pwaManager;
 }
+
+})();

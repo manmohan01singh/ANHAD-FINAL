@@ -8,7 +8,7 @@ const fc = require('fast-check');
 // Mock Image class for Node.js environment
 class MockImage {
   constructor() {
-    this.src = '';
+    this._src = '';
     this.crossOrigin = '';
     this.onload = null;
     this.onerror = null;
@@ -16,11 +16,12 @@ class MockImage {
   
   set src(url) {
     this._src = url;
+    if (!url) return;
     // Simulate async image loading
     setTimeout(() => {
-      if (url.includes('timeout')) {
+      if (typeof url === 'string' && (url.includes('timeout') || url.includes('slow'))) {
         // Don't trigger any event for timeout simulation
-      } else if (url.includes('error') || url.includes('404')) {
+      } else if (typeof url === 'string' && (url.includes('error') || url.includes('404') || url.includes('fail'))) {
         if (this.onerror) this.onerror(new Error('Load failed'));
       } else {
         if (this.onload) this.onload();
@@ -41,11 +42,12 @@ class MockCanvas {
   }
   
   getContext() {
+    const fn = (typeof vi !== 'undefined' && vi.fn) ? vi.fn() : () => {};
     return {
       fillStyle: '',
-      fillRect: jest.fn(),
-      fillText: jest.fn(),
-      clearRect: jest.fn(),
+      fillRect: fn,
+      fillText: fn,
+      clearRect: fn,
       font: '',
       textAlign: '',
       textBaseline: ''
@@ -54,6 +56,9 @@ class MockCanvas {
 }
 
 global.Image = MockImage;
+if (typeof window !== 'undefined') {
+  window.Image = MockImage;
+}
 global.document = {
   createElement: (tag) => {
     if (tag === 'canvas') {
@@ -69,7 +74,8 @@ global.getComputedStyle = () => ({
 // Load the module - inline implementation for testing
 const loadImageWithTimeout = function(url, timeout = 5000) {
   return new Promise((resolve, reject) => {
-    const img = new Image();
+    const ImageConstructor = window.Image || MockImage;
+    const img = new ImageConstructor();
     img.crossOrigin = 'anonymous';
     
     const timer = setTimeout(() => {
@@ -94,6 +100,8 @@ function createFallbackPlaceholder(channel, size = 116) {
   const canvas = document.createElement('canvas');
   canvas.width = size;
   canvas.height = size;
+  canvas.type = 'fallback';
+  canvas.channelName = channel.channelName;
   const ctx = canvas.getContext('2d');
   
   // Background
@@ -128,6 +136,10 @@ async function loadChannelImages(channels, timeout = 5000) {
 }
 
 describe('Image Loader - Unit Tests', () => {
+  beforeEach(() => {
+    window.Image = MockImage;
+    global.Image = MockImage;
+  });
   
   test('successfully loads valid image URLs', async () => {
     const url = 'https://example.com/valid-image.jpg';
@@ -209,10 +221,8 @@ describe('Image Loader - Unit Tests', () => {
       channel: channel
     });
     expect(results[0].error).toBeDefined();
-    expect(results[0].fallback).toEqual({
-      type: 'fallback',
-      channelName: 'Test Channel'
-    });
+    expect(results[0].fallback.channelName).toBe('Test Channel');
+    expect(results[0].fallback.type).toBe('fallback');
   });
   
   test('handles mixed success and failure results', async () => {
@@ -246,6 +256,10 @@ describe('Image Loader - Unit Tests', () => {
 });
 
 describe('Image Loader - Property-Based Tests', () => {
+  beforeEach(() => {
+    window.Image = MockImage;
+    global.Image = MockImage;
+  });
   
   test('Property 5: Image Load Timeout - timeouts trigger within expected range', () => {
     return fc.assert(

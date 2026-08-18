@@ -2694,3 +2694,57 @@ body.has-results .main-content {
     margin-top: 12px;
     font-variant-numeric: tabular-nums;
 }
+
+/* ═══════════════════════════════════════════════════════════
+   DARK MODE OVERRIDES FOR QUICK SEARCH CARDS
+   ═══════════════════════════════════════════════════════════ */
+[data-theme="dark"] .quick-card,
+html.dark .quick-card,
+body.dark-mode .quick-card,
+html[data-theme="dark"] .quick-card {
+    background: #1C1C1E !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4) !important;
+}
+
+[data-theme="dark"] .card-title-punjabi,
+html.dark .card-title-punjabi,
+body.dark-mode .card-title-punjabi,
+html[data-theme="dark"] .card-title-punjabi {
+    color: #F2F2F7 !important;
+}
+
+[data-theme="dark"] .quick-card--gold,
+body.dark-mode .quick-card--gold,
+html.dark .quick-card--gold {
+    background: linear-gradient(140deg, #2A2215 0%, #201A10 100%) !important;
+    border-color: rgba(212, 148, 58, 0.3) !important;
+}
+
+[data-theme="dark"] .quick-card--green,
+body.dark-mode .quick-card--green,
+html.dark .quick-card--green {
+    background: linear-gradient(140deg, #0C2616 0%, #081B0E 100%) !important;
+    border-color: rgba(48, 209, 88, 0.3) !important;
+}
+
+[data-theme="dark"] .quick-card--purple,
+body.dark-mode .quick-card--purple,
+html.dark .quick-card--purple {
+    background: linear-gradient(140deg, #1D1C2E 0%, #151422 100%) !important;
+    border-color: rgba(88, 86, 214, 0.3) !important;
+}
+
+[data-theme="dark"] .quick-card--blue,
+body.dark-mode .quick-card--blue,
+html.dark .quick-card--blue {
+    background: linear-gradient(140deg, #0C1D2C 0%, #081420 100%) !important;
+    border-color: rgba(0, 122, 255, 0.3) !important;
+}
+
+[data-theme="dark"] .quick-card--rose,
+body.dark-mode .quick-card--rose,
+html.dark .quick-card--rose {
+    background: linear-gradient(140deg, #2C1515 0%, #200E0E 100%) !important;
+    border-color: rgba(255, 107, 107, 0.3) !important;
+}
