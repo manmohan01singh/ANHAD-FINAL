@@ -17,7 +17,10 @@
   bottom: calc(98px + max(env(safe-area-inset-bottom, 0px), 4px)) !important;
   left: 12px;
   right: 12px;
-  z-index: 9000;
+  /* Mini-player tier: above page content and the nav pill, but BELOW every
+     sheet, modal and dialog. At 9000 this painted over the Insights modal,
+     the Favorites note modal and Home's radio sheet. */
+  z-index: var(--z-mini-player, 300);
 
   display: none; /* Hidden by default — shown via JS with display: flex */
   align-items: center;
@@ -603,4 +606,25 @@ html.dark-mode .gmp--error .gmp__sub {
 
 @media (prefers-reduced-motion: reduce) {
   .gmp--reconnecting .gmp__art { animation: none; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   DEFER TO MODALS
+
+   The z-scale already puts the mini player (--z-mini-player) below every sheet
+   and modal tier, so a modal cannot be painted over. This is the second half of
+   that contract: while a modal is open the player is also removed from the
+   picture entirely, exactly as the bottom nav pill already is
+   (Insights/insights.css `body.modal-open .tab-bar`).
+
+   Why both: z-order alone still leaves an ambient control sitting on screen
+   competing for attention and for taps at the bottom edge during a deliberate
+   interruption. Playback is unaffected — this is purely visual.
+═══════════════════════════════════════════════════════════════════════════ */
+body.modal-open #gmp,
+body.modal-open .gmp {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
 }

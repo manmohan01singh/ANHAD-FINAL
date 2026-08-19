@@ -143,11 +143,20 @@
     if (isPlayerPage || isDashboardPage || (!state.currentStream && !state.isLoading)) {
       miniPlayerEl.style.display = 'none';
       miniPlayerEl.classList.remove('gmp--visible');
+      // Release the reserved band so pages don't keep an empty gap at the
+      // bottom when there is no player to make room for.
+      document.body.classList.remove('has-mini-player');
       return;
     }
 
     miniPlayerEl.style.display = 'flex';
     miniPlayerEl.classList.add('gmp--visible');
+    // The mini player is position:fixed, so it does not participate in layout
+    // and will sit on top of whatever the page's last content happens to be.
+    // This class is the single signal every page uses to reserve scroll runway
+    // for it (and to lift floating controls out of its band). Set here because
+    // this function is the ONE place the player's visibility is decided.
+    document.body.classList.add('has-mini-player');
 
     const artImg = document.getElementById('gmp-art-img');
     const titleEl = document.getElementById('gmp-title-text');
