@@ -200,7 +200,7 @@ describe('PRESERVATION: Darbar Sahib Live Stream', () => {
   it('PROPERTY: Volume control works for all valid values (0.0-1.0)', () => {
     fc.assert(
       fc.property(
-        fc.float({ min: 0.0, max: 1.0 }),
+        fc.float({ min: 0.0, max: 1.0, noNaN: true }),
         (volume) => {
           mockAudio.volume = volume;
           

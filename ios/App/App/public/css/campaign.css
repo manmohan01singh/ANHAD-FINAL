@@ -1,0 +1,161 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   CAMPAIGN CARD
+   Rendered by js/campaign-renderer.js from the remote campaign config.
+
+   Deliberately restrained: one card, no gradients-on-gradients, no floating
+   decoration, no competing accent colours. ANHAD is a Gurbani product and a
+   campaign should feel like an invitation, not an advertisement. The accent is
+   campaign-supplied but falls back to the app's own gold so a config without
+   themeTokens still looks native.
+
+   Nothing here is loaded conditionally — the card simply does not exist in the
+   DOM unless a campaign is active, so this file costs one small stylesheet and
+   never affects the default experience.
+═══════════════════════════════════════════════════════════════════════════ */
+
+#campaignMount[hidden] {
+  display: none;
+}
+
+.campaign-card {
+  position: relative;
+  margin: 0 0 var(--space-4, 16px);
+  padding: 18px 20px 20px;
+  border-radius: var(--radius-lg, 28px);
+  background: var(--surface-primary, #FFFDF8);
+  border: 1px solid var(--campaign-accent, rgba(212, 148, 58, 0.28));
+  box-shadow: 0 8px 28px var(--campaign-accent-glow, rgba(212, 148, 58, 0.14));
+}
+
+.campaign-card__badge {
+  display: inline-block;
+  margin-bottom: 10px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: var(--campaign-badge-bg, linear-gradient(135deg, #8A6D3B 0%, #D4AF37 100%));
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.campaign-card__title {
+  margin: 0;
+  font-size: 1.18rem;
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--text-primary, #1A1A1F);
+}
+
+.campaign-card__subtitle {
+  margin: 6px 0 0;
+  font-size: 0.92rem;
+  line-height: 1.45;
+  color: var(--text-secondary, #6E6E73);
+}
+
+.campaign-card__countdown {
+  margin: 10px 0 0;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--campaign-accent, #8A6D3B);
+}
+
+.campaign-card__message {
+  margin: 12px 0 0;
+  padding-top: 12px;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--text-secondary, #6E6E73);
+}
+
+.campaign-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.campaign-card__cta,
+.campaign-card__secondary {
+  /* min-height keeps the WCAG 2.5.5 target size without the padding shorthand
+     that mobile-accessibility.css used to force onto every button. */
+  min-height: 44px;
+  padding: 0 18px;
+  border-radius: 999px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform var(--duration-fast, 0.2s) ease, opacity var(--duration-fast, 0.2s) ease;
+}
+
+.campaign-card__cta {
+  background: var(--campaign-badge-bg, linear-gradient(135deg, #8A6D3B 0%, #D4AF37 100%));
+  color: #fff;
+  border: none;
+}
+
+.campaign-card__secondary {
+  background: transparent;
+  color: var(--campaign-accent, #8A6D3B);
+  border: 1px solid var(--campaign-accent, rgba(212, 148, 58, 0.4));
+}
+
+.campaign-card__cta:active,
+.campaign-card__secondary:active {
+  transform: scale(0.97);
+}
+
+.campaign-card__dismiss {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  border-radius: 50%;
+  font-size: 1.15rem;
+  line-height: 1;
+  color: var(--text-tertiary, #AEAEB2);
+  cursor: pointer;
+}
+
+.campaign-card__dismiss:active {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+/* ── Dark mode ── */
+[data-theme="dark"] .campaign-card,
+html.dark-mode .campaign-card {
+  background: rgba(28, 28, 30, 0.92);
+  border-color: var(--campaign-accent, rgba(212, 175, 55, 0.32));
+}
+
+[data-theme="dark"] .campaign-card__title,
+html.dark-mode .campaign-card__title {
+  color: #F5F5F7;
+}
+
+[data-theme="dark"] .campaign-card__message,
+html.dark-mode .campaign-card__message {
+  border-top-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .campaign-card__countdown,
+html.dark-mode .campaign-card__countdown {
+  color: var(--campaign-accent, #D4AF37);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .campaign-card__cta,
+  .campaign-card__secondary {
+    transition: none;
+  }
+}

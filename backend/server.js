@@ -15,6 +15,7 @@ const fs = require('fs').promises;
 const fsSync = require('fs');
 const { Readable } = require('stream');
 const crypto = require('crypto');
+const configStore = require('./lib/config-store');
 const rateLimitModule = require('express-rate-limit');
 const rateLimit = rateLimitModule.rateLimit || rateLimitModule;
 const ipKeyGenerator = rateLimitModule.ipKeyGenerator || ((ip) => ip);
@@ -519,12 +520,102 @@ const DEFAULT_CAMPAIGNS = {
   ]
 };
 
-app.get('/api/config/campaigns', (req, res) => {
-  res.set({
-    'Cache-Control': 'public, max-age=300, stale-while-revalidate=600',
-    'Access-Control-Allow-Origin': '*'
-  });
-  res.json(DEFAULT_CAMPAIGNS);
+/**
+ * Reads the live config: stored value if one exists and validates, else the
+ * built-in DEFAULT_CAMPAIGNS above as a seed. configStore.read() never throws,
+ * so a store outage degrades to defaults rather than taking this route down.
+ */
+async function getLiveCampaignConfig() {
+  const stored = await configStore.read();
+  return stored || DEFAULT_CAMPAIGNS;
+}
+
+function configEtag(config) {
+  return '"' + crypto.createHash('sha1').update(JSON.stringify(config)).digest('hex') + '"';
+}
+
+app.get('/api/config/campaigns', async (req, res) => {
+  try {
+    const config = await getLiveCampaignConfig();
+    const etag = configEtag(config);
+
+    // Previously `public, max-age=300` — a five-minute cache directive, which is
+    // in direct tension with the sub-15s propagation an admin toggle needs. The
+    // client already defeats it per-browser with a ?t= cache-buster, so it only
+    // ever risked confusing shared caches. no-cache + ETag means the 15s poll
+    // revalidates every time but costs a 304 with no body when nothing changed.
+    res.set({
+      'Cache-Control': 'no-cache',
+      'ETag': etag,
+      'Access-Control-Allow-Origin': '*'
+    });
+
+    if (req.headers['if-none-match'] === etag) {
+      return res.status(304).end();
+    }
+    res.json(config);
+  } catch (e) {
+    console.error('[Config] Failed to serve campaign config:', e);
+    // Last-resort: never fail this endpoint. A campaign system must not be able
+    // to break the app it decorates.
+    res.set({ 'Cache-Control': 'no-cache', 'Access-Control-Allow-Origin': '*' });
+    res.json(DEFAULT_CAMPAIGNS);
+  }
+});
+
+// ─── Admin write path ─────────────────────────────────────────────────────
+// Gated by the same requireAdminToken used for the Sadhsangat admin routes:
+// X-Admin-Token header, crypto.timingSafeEqual, fails CLOSED with 503 when
+// ADMIN_API_TOKEN is unset. These are the only writes in the campaign system.
+// (requireAdminToken is a hoisted function declaration defined further below.)
+
+app.get('/api/config/admin/campaigns', requireAdminToken, async (req, res) => {
+  try {
+    const config = await getLiveCampaignConfig();
+    // Admins need every campaign, including inactive and out-of-window ones —
+    // unlike the public endpoint's consumers, which resolve to just one.
+    res.set('Cache-Control', 'no-store');
+    res.json({ config, store: configStore.describe() });
+  } catch (e) {
+    console.error('[Config] admin read failed:', e);
+    res.status(500).json({ error: 'Failed to read campaign config' });
+  }
+});
+
+/** Validate a draft without persisting it — powers the admin Preview button. */
+app.post('/api/config/admin/preview', requireAdminToken, (req, res) => {
+  const draft = req.body && req.body.config;
+  if (!configStore.isValidConfig(draft)) {
+    return res.status(400).json({ valid: false, error: 'Config failed validation' });
+  }
+  res.json({ valid: true, config: draft });
+});
+
+/** Replace the whole config. updatedAt and version are stamped by the store. */
+app.put('/api/config/admin/campaigns', requireAdminToken, async (req, res) => {
+  try {
+    const saved = await configStore.write(req.body && req.body.config);
+    res.json({ success: true, config: saved, store: configStore.describe() });
+  } catch (e) {
+    const code = e.statusCode || 500;
+    console.error('[Config] admin write failed:', e.message);
+    res.status(code).json({ error: code === 400 ? 'Config failed validation' : 'Failed to save campaign config' });
+  }
+});
+
+/** The toggle. Smallest possible write, so a flip cannot corrupt other fields. */
+app.patch('/api/config/admin/campaigns/:id/active', requireAdminToken, async (req, res) => {
+  try {
+    const config = JSON.parse(JSON.stringify(await getLiveCampaignConfig()));
+    const target = (config.campaigns || []).find(c => c.id === req.params.id);
+    if (!target) return res.status(404).json({ error: 'Campaign not found' });
+    target.active = !!(req.body && req.body.active);
+    const saved = await configStore.write(config);
+    res.json({ success: true, id: target.id, active: target.active, config: saved });
+  } catch (e) {
+    console.error('[Config] admin toggle failed:', e.message);
+    res.status(500).json({ error: 'Failed to toggle campaign' });
+  }
 });
 
 // ═══════════════════════════════════════════════════════════════════
@@ -5100,6 +5191,9 @@ async function startServer() {
 
     // Initialize Sadhsangat Live DB and start the Cron Poller
     await initSadhsangatDb();
+    // Make it unambiguous which campaign-config backend is live — a file
+    // backend on Render silently loses every admin change on restart.
+    configStore.logBackend();
     startSadhsangatCron();
 
     app.listen(PORT, () => {

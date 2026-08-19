@@ -338,7 +338,7 @@ describe('PRESERVATION: Basic Playback Functionality', () => {
   it('PROPERTY: Playback rate can be adjusted (0.5-2.0)', () => {
     fc.assert(
       fc.property(
-        fc.float({ min: 0.5, max: 2.0 }),
+        fc.float({ min: 0.5, max: 2.0, noNaN: true }),
         (rate) => {
           mockAudio.playbackRate = rate;
           

@@ -17,6 +17,7 @@ describe('Preservation Properties: Light Mode, Theme Switching, Dynamic Theme Fe
   let mockRoot;
   let mockBody;
   let mockLocalStorage;
+  let savedStorage = null;
   
   beforeEach(() => {
     // Set up DOM environment
@@ -46,15 +47,27 @@ describe('Preservation Properties: Light Mode, Theme Switching, Dynamic Theme Fe
     mockRoot = document.documentElement;
     mockBody = document.body;
     
-    // Mock localStorage for theme persistence tests
+    // Mock localStorage for theme persistence tests.
+    //
+    // These MUST patch the localStorage object itself, not Storage.prototype.
+    // vitest.setup.js replaces global.localStorage with a PLAIN OBJECT LITERAL
+    // (vitest.setup.js:242-265), not a Storage instance — so its own getItem
+    // shadows the prototype and a Storage.prototype patch has no effect at all.
+    // That is why every assertion here previously read back null: the test wrote
+    // into mockLocalStorage and then read from the setup's untouched store.
     mockLocalStorage = {};
-    Storage.prototype.getItem = jest.fn((key) => mockLocalStorage[key] || null);
-    Storage.prototype.setItem = jest.fn((key, value) => {
-      mockLocalStorage[key] = value;
-    });
-    Storage.prototype.removeItem = jest.fn((key) => {
-      delete mockLocalStorage[key];
-    });
+    const getItem = (key) => (key in mockLocalStorage ? mockLocalStorage[key] : null);
+    const setItem = (key, value) => { mockLocalStorage[key] = String(value); };
+    const removeItem = (key) => { delete mockLocalStorage[key]; };
+
+    savedStorage = {
+      getItem: localStorage.getItem,
+      setItem: localStorage.setItem,
+      removeItem: localStorage.removeItem,
+    };
+    localStorage.getItem = jest.fn(getItem);
+    localStorage.setItem = jest.fn(setItem);
+    localStorage.removeItem = jest.fn(removeItem);
   });
   
   afterEach(() => {
@@ -63,6 +76,14 @@ describe('Preservation Properties: Light Mode, Theme Switching, Dynamic Theme Fe
     mockRoot.removeAttribute('data-theme-mode');
     mockRoot.removeAttribute('data-time-of-day');
     mockLocalStorage = {};
+    // localStorage is a shared global across test files — restore it so this
+    // suite cannot leak its mock into whatever runs next.
+    if (savedStorage) {
+      localStorage.getItem = savedStorage.getItem;
+      localStorage.setItem = savedStorage.setItem;
+      localStorage.removeItem = savedStorage.removeItem;
+      savedStorage = null;
+    }
     jest.clearAllMocks();
   });
   

@@ -29,10 +29,21 @@ describe('Remote Configuration & Campaign Engine', () => {
     global.fetch = vi.fn().mockRejectedValue(new Error('Network offline'));
     const manager = loadFreshManager();
     expect(manager).toBeDefined();
-    
-    const active = manager.getActiveCampaign();
-    expect(active).toBeDefined();
-    expect(active.id).toBe('chaliya-amritvela-2026');
+
+    // The built-in config still carries the Chaliya campaign so it can be
+    // enabled remotely without an app release...
+    const config = manager.getConfig();
+    expect(config.campaigns.some(c => c.id === 'chaliya-amritvela-2026')).toBe(true);
+
+    // ...but it ships with active:false. This assertion used to expect Chaliya
+    // to resolve as the ACTIVE campaign, which would have switched the whole
+    // Chaliya experience on for every user the moment the consumption layer
+    // landed — its date window is a placeholder spanning all of 2026. Shipping
+    // dark and enabling from the admin screen is the intended contract, so with
+    // no network and no cache there must be NO active campaign at all.
+    expect(manager.getActiveCampaign()).toBeNull();
+
+    // Feature flags still resolve from the built-in defaults.
     expect(manager.isFeatureEnabled('enableVirtualLive')).toBe(true);
   });
 

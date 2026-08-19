@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Theme blocker — must be the first thing in <head>, before any <meta>.
+       Matches Settings/appearance.html exactly so this page cannot flash. -->
+  <script>
+    (function() {
+      try {
+        const theme = localStorage.getItem('anhad_theme') || 'auto';
+        let effectiveTheme = theme;
+        let timeOfDay = localStorage.getItem('anhad_forced_time_of_day');
+        if (theme === 'auto') {
+          if (timeOfDay && ['morning', 'day', 'evening', 'night'].includes(timeOfDay)) {
+            effectiveTheme = (timeOfDay === 'night') ? 'dark' : 'light';
+          } else {
+            const hour = new Date().getHours();
+            effectiveTheme = (hour >= 5 && hour < 20) ? 'light' : 'dark';
+            if (hour >= 5 && hour < 9) timeOfDay = 'morning';
+            else if (hour >= 9 && hour < 16) timeOfDay = 'day';
+            else if (hour >= 16 && hour < 20) timeOfDay = 'evening';
+            else timeOfDay = 'night';
+          }
+        }
+        document.documentElement.setAttribute('data-theme', effectiveTheme);
+        document.documentElement.setAttribute('data-theme-mode', theme);
+        if (theme === 'auto') document.documentElement.setAttribute('data-time-of-day', timeOfDay);
+        document.documentElement.style.colorScheme = effectiveTheme;
+        if (effectiveTheme === 'dark') {
+          document.documentElement.classList.add('dark', 'dark-mode');
+          document.documentElement.style.backgroundColor = '#0D0D0F';
+          document.documentElement.style.color = '#F5F5F7';
+        } else {
+          document.documentElement.style.backgroundColor = '#FAF8F5';
+          document.documentElement.style.color = '#1C1C1E';
+        }
+      } catch (e) {}
+    })();
+  </script>
+
+  <!-- CRITICAL: Inline theme styles to prevent flash -->
+  <style>
+    html, body { margin: 0; padding: 0; }
+    html { background-color: #FAF8F5 !important; color: #1C1C1E !important; }
+    html[data-theme="dark"], html.dark-mode {
+      background-color: #0D0D0F !important; color: #F5F5F7 !important;
+    }
+    body { background-color: inherit !important; color: inherit !important; }
+  </style>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <!-- Unlisted: nothing in the app links here, and it must never be indexed. -->
+  <meta name="robots" content="noindex, nofollow">
+  <title>Campaign Admin | ANHAD</title>
+
+  <link rel="stylesheet" href="../css/theme-variables.css">
+  <link rel="stylesheet" href="../css/trendora-premium.css">
+  <link rel="stylesheet" href="../css/anhad-core.css">
+  <link rel="stylesheet" href="../css/nav-glass.css">
+  <link rel="stylesheet" href="./admin.css">
+</head>
+<body>
+  <nav class="glass-nav">
+    <button class="glass-nav__back" onclick="history.back()">
+      <svg class="back-chevron" viewBox="0 0 9 16"><path d="M8 1L1 8L8 15" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="back-label">Back</span>
+    </button>
+    <span class="glass-nav__title">Campaign Admin</span>
+    <div class="glass-nav__action"></div>
+  </nav>
+
+  <main class="admin-page">
+
+    <!-- ── Gate: token entry ─────────────────────────────────────────── -->
+    <section class="admin-card" id="gateCard">
+      <h2 class="admin-card__title">Admin access</h2>
+      <p class="admin-hint">
+        Enter the admin token. It is stored on this device only and sent as an
+        <code>X-Admin-Token</code> header. It is never shown again after saving.
+      </p>
+      <label class="admin-label" for="tokenInput">Admin token</label>
+      <input class="admin-input" id="tokenInput" type="password" autocomplete="off"
+             autocapitalize="off" autocorrect="off" spellcheck="false"
+             placeholder="Paste token">
+      <div class="admin-actions">
+        <button class="admin-btn admin-btn--primary" id="unlockBtn">Unlock</button>
+        <button class="admin-btn" id="forgetBtn" hidden>Forget token</button>
+      </div>
+      <p class="admin-status" id="gateStatus"></p>
+    </section>
+
+    <!-- ── Editor ────────────────────────────────────────────────────── -->
+    <div id="editor" hidden>
+
+      <section class="admin-card admin-card--info" id="storeCard">
+        <div class="admin-store" id="storeInfo">Checking storage…</div>
+      </section>
+
+      <section class="admin-card">
+        <h2 class="admin-card__title">Campaigns</h2>
+        <p class="admin-hint">
+          Toggling publishes immediately. Open devices pick it up within about 15 seconds.
+        </p>
+        <div id="campaignList" class="admin-list"></div>
+      </section>
+
+      <section class="admin-card" id="detailCard" hidden>
+        <h2 class="admin-card__title" id="detailTitle">Edit campaign</h2>
+
+        <label class="admin-label" for="fTitle">Title</label>
+        <input class="admin-input" id="fTitle" type="text">
+
+        <label class="admin-label" for="fBadge">Badge text</label>
+        <input class="admin-input" id="fBadge" type="text">
+
+        <label class="admin-label" for="fHeroTitle">Hero title</label>
+        <input class="admin-input" id="fHeroTitle" type="text">
+
+        <label class="admin-label" for="fHeroSub">Hero subtitle</label>
+        <input class="admin-input" id="fHeroSub" type="text">
+
+        <label class="admin-label" for="fCtaText">CTA label</label>
+        <input class="admin-input" id="fCtaText" type="text">
+
+        <label class="admin-label" for="fCtaAction">CTA action</label>
+        <input class="admin-input" id="fCtaAction" type="text" placeholder="STREAM:amritvela or a relative path">
+
+        <label class="admin-label" for="fMessage">Announcement message</label>
+        <textarea class="admin-input admin-input--area" id="fMessage" rows="3"></textarea>
+
+        <div class="admin-row">
+          <div class="admin-col">
+            <label class="admin-label" for="fStart">Starts</label>
+            <input class="admin-input" id="fStart" type="datetime-local">
+          </div>
+          <div class="admin-col">
+            <label class="admin-label" for="fEnd">Ends</label>
+            <input class="admin-input" id="fEnd" type="datetime-local">
+          </div>
+        </div>
+        <!-- Dates are stored as ISO-8601 UTC. datetime-local is local time, so
+             the resolved UTC window is shown explicitly to avoid an off-by-hours
+             mistake when scheduling a 40-day Chaliya window. -->
+        <p class="admin-status" id="utcPreview"></p>
+
+        <label class="admin-label" for="fPriority">Priority (higher wins when campaigns overlap)</label>
+        <input class="admin-input" id="fPriority" type="number" inputmode="numeric">
+
+        <div class="admin-actions">
+          <button class="admin-btn" id="previewBtn">Preview</button>
+          <button class="admin-btn admin-btn--primary" id="publishBtn">Publish</button>
+        </div>
+        <p class="admin-status" id="editStatus"></p>
+      </section>
+
+      <section class="admin-card" id="previewCard" hidden>
+        <h2 class="admin-card__title">Preview</h2>
+        <p class="admin-hint">Rendered with the same code path users get.</p>
+        <div id="campaignMount"></div>
+      </section>
+
+    </div>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <!-- campaign.css + the real renderer, so Preview is genuinely what ships. -->
+  <link rel="stylesheet" href="../css/campaign.css">
+  <script src="../lib/global-theme.js" defer></script>
+  <script src="../js/anhad-core.js" defer></script>
+  <!-- The real renderer, used only via renderPreview(). Its own update() gates
+       on isHome() so it will not try to render this page as if it were Home. -->
+  <script src="../js/campaign-renderer.js" defer></script>
+  <script src="./admin.js" defer></script>
+</body>
+</html>
