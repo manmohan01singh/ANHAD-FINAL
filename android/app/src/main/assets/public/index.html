@@ -879,7 +879,7 @@
     #anhadComingSoonOverlay {
       position: fixed;
       inset: 0;
-      z-index: 999999;
+      z-index: var(--z-critical, 900);
       background: rgba(0,0,0,0.45);
       backdrop-filter: blur(6px);
       -webkit-backdrop-filter: blur(6px);
@@ -2285,7 +2285,7 @@
           width: 280px !important;
           max-width: 280px !important;
           min-width: 280px !important;
-          z-index: 1001 !important;
+          z-index: var(--z-mini-player, 300) !important;
           border-radius: 0 !important;
           box-sizing: border-box !important;
         }
@@ -3798,7 +3798,7 @@
   </script>
 
   <!-- Floating Tab Bar — Same as Dashboard -->
-  <nav class="tab-bar" id="mainNav" aria-label="Main Navigation" style="position: fixed !important; bottom: 32px !important; left: 50% !important; transform: translateX(-50%) !important; z-index: 100000 !important;">
+  <nav class="tab-bar" id="mainNav" aria-label="Main Navigation" style="position: fixed !important; bottom: 32px !important; left: 50% !important; transform: translateX(-50%) !important; z-index: 200 !important;">
     <a href="/index.html" class="tab-item active">
       <span class="tab-icon">&#x1F3E0;</span>
       <span class="tab-label">Home</span>

@@ -13,7 +13,9 @@
   transform: translateX(-50%) !important;
   width: calc(100% - 40px) !important;
   max-width: 420px !important;
-  z-index: 100000 !important;
+  /* Nav tier. 100000 was an escalation that put the pill above sheets and
+     modals; body.modal-open hides it during a modal anyway. */
+  z-index: var(--z-nav, 200) !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -118,11 +120,50 @@ html.dark-mode .tab-item.active {
   transform: scale(0.96) !important;
 }
 
-/* Prevent content overlap across the app - Optimized spacing to avoid massive white gaps */
+/* ═══════════════════════════════════════════════════════════════════════════
+   BOTTOM SCROLL RUNWAY
+
+   Both the nav pill and the mini player are position:fixed, so neither takes
+   part in layout — the page must reserve scroll space or its last content ends
+   up permanently underneath them.
+
+   Geometry, measured from the viewport bottom:
+     nav pill      32px  ->  ~110px   (bottom:32px, ~78px tall)
+     mini player  132px  ->  ~200px   (global-mini-player.css: bottom is
+                                       calc(98px + max(safe-area,4px)),
+                                       min-height 68px)
+
+   110px covers the nav alone. It does NOT cover the player, which is why the
+   last quick-access card on Home (Gurbani GPT) sat at 120->188px and was ~82%
+   buried whenever audio was playing.
+
+   The extra runway is added ONLY while the player is on screen —
+   body.has-mini-player is set in lib/overlay-player.js's updateUI(), the single
+   place its visibility is decided — so pages don't carry a large empty gap when
+   there is nothing to make room for.
+   ═══════════════════════════════════════════════════════════════════════════ */
 .app,
 main,
 .app-container,
 #dashboardApp,
 #profileApp {
   padding-bottom: 110px !important;
+}
+
+body.has-mini-player .app,
+body.has-mini-player main,
+body.has-mini-player .app-container,
+body.has-mini-player #dashboardApp,
+body.has-mini-player #profileApp {
+  /* 200px clears the player's top edge; +16px keeps the last card from sitting
+     flush against it. */
+  padding-bottom: 216px !important;
+}
+
+/* Floating page actions live in the same band and would be covered outright.
+   The Favorites "New Note" button sits at bottom:calc(96px + safe-area) ~ 130px,
+   squarely inside 132->200px, and at the FAB tier it loses to the player. Lift
+   it clear rather than escalating its z-index above an ambient surface. */
+body.has-mini-player .floating-add-btn {
+  bottom: calc(200px + var(--safe-bottom, 16px)) !important;
 }

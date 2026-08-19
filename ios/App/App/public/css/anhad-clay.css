@@ -91,7 +91,7 @@ body.light-theme .anhad-popup-overlay {
 .anhad-popup-overlay {
   position: fixed;
   inset: 0;
-  z-index: 100000;
+  z-index: var(--z-modal, 500);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -324,7 +324,7 @@ body.light-theme .anhad-popup-icon {
   top: 28px;
   left: 50%;
   transform: translateX(-50%) translateY(-20px);
-  z-index: 100001;
+  z-index: var(--z-toast, 700);
   display: flex;
   align-items: center;
   gap: 12px;

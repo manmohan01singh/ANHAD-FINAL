@@ -213,17 +213,45 @@
   --safe-left: env(safe-area-inset-left, 0px);
   --safe-right: env(safe-area-inset-right, 0px);
 
-  /* ── Z-Index Scale ── */
+  /* ── Z-Index Scale ───────────────────────────────────────────────────────
+     THE layering contract for ANHAD. Ordered lowest to highest; every floating
+     surface should use one of these rather than inventing a number.
+
+       content            page content, in flow
+       fab                floating page actions (Favorites "New Note")
+       sticky             sticky section headers, page headers
+       nav                the bottom navigation pill
+       mini-player        the floating player — above the page, BELOW anything
+                          that asks for the user's attention
+       sheet-overlay      the dimming scrim behind a bottom sheet
+       sheet              the bottom sheet itself
+       modal              full-screen modals and dialogs
+       banner             the install banner
+       toast              transient confirmations
+       system             app-level chrome: offline banner, update prompt, the
+                          SPA loading overlay
+       critical           blocking dialogs that must beat everything
+
+     The rule that matters: MODALS ARE ABOVE THE MINI PLAYER. The player is
+     ambient; a modal is a deliberate interruption. Before this, #gmp sat at
+     9000 — above the Insights modal (2000), the Favorites note modal (1000) and
+     Home's radio sheet (1000/999) — so it painted over every one of them.
+     ──────────────────────────────────────────────────────────────────────── */
   --z-base: 0;
   --z-above: 10;
+  --z-fab: 50;
   --z-sticky: 100;
+  --z-nav: 200;
+  --z-mini-player: 300;
+  --z-sheet-overlay: 400;
+  --z-sheet: 410;
+  --z-modal: 500;
+  --z-banner: 600;
+  --z-toast: 700;
+  --z-system: 800;
+  --z-critical: 900;
+  /* Retained: still referenced by older rules. Aliases the modal tier. */
   --z-overlay: 500;
-  --z-mini-player: 800;
-  --z-nav: 900;
-  --z-banner: 950;
-  --z-sheet: 1000;
-  --z-sheet-overlay: 999;
-  --z-toast: 2000;
 
   /* ── Blur Tokens ── */
   --blur-sm: 8px;

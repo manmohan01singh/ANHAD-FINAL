@@ -540,6 +540,19 @@
        return;
     }
 
+    // ── ARRIVAL EPOCH ────────────────────────────────────────────────────
+    // A monotonic counter identifying THIS navigation. Page modules repopulate
+    // themselves from two independent triggers that both fire for a single
+    // arrival — runPageInit() below, and the anhad_page_changed event at the
+    // end of this function. They need to collapse to one run per ARRIVAL.
+    //
+    // They previously deduplicated on wall-clock time instead, which is not the
+    // same thing and dropped real arrivals: a 500ms window was stamped even when
+    // LEAVING a page, so returning within 500ms silently skipped the only code
+    // that repopulates Home. Bumped here, before executePageScripts(), so a
+    // script injected during this navigation observes the epoch it arrived on.
+    window.__anhadNavEpoch = (window.__anhadNavEpoch || 0) + 1;
+
     // Run cleanup on departing page
     runPageCleanup(currentActiveUrl);
 

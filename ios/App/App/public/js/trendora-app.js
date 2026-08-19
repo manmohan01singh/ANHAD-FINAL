@@ -1856,6 +1856,10 @@
       overlay.style.pointerEvents = '';
       sheet.classList.add('sheet--active');
       document.body.style.overflow = 'hidden';
+      // Same signal Insights uses. Lets the shared rules suppress the nav
+      // pill and the mini player while a sheet is up, so all three SPA pages
+      // behave identically instead of only Insights getting the treatment.
+      document.body.classList.add('modal-open');
       this._active = sheetId;
 
       // Bound once per overlay element, not once per open. A {once:true}
@@ -1886,6 +1890,7 @@
           overlay.classList.remove('sheet-overlay--active');
         }, 300);
       }
+      document.body.classList.remove('modal-open');
       document.body.style.overflow = '';
       this._active = null;
     },
@@ -2595,26 +2600,54 @@
   // is fixed — still only does the actual work once, instead of reintroducing
   // the double-render this function was written to eliminate in the first
   // place.
+  // Deduplicated per ARRIVAL, not per elapsed time.
+  //
+  // The previous version used two wall-clock windows and both dropped real
+  // arrivals, leaving Home with its shipped placeholders — an empty guru
+  // slider, three &nbsp; greeting lines and a skeleton Gurpurab card:
+  //
+  //   * A 500ms window stamped on every call. The anhad_page_changed listener
+  //     below had no "am I on Home?" check and that event fires on EVERY
+  //     navigation, so LEAVING Home stamped the clock. Returning within 500ms —
+  //     trivial, because PAGE_CACHE makes the swap instant — made both triggers
+  //     bail and nothing repopulated Home.
+  //   * A 2500ms window measured from __anhadHomeBootedAt, which boot() stamps
+  //     once per JS realm. Every arrival inside the first 2.5s of a session
+  //     bailed against a DOM that applyNewContent had already replaced.
+  //
+  // smooth-navigation.js now bumps window.__anhadNavEpoch once per arrival, so
+  // the two triggers for a single arrival collapse correctly while a genuinely
+  // new arrival always runs — no timing assumption, no artificial delay.
+  let pendingEpoch = null;
   const refreshHomeForSpa = () => {
-    const now = Date.now();
-    if (now - window.__anhadHomeBootedAt < 2500) {
-      console.log('[Trendora] Skipping refresh — App.init() just fully populated Home for this arrival');
-      return;
-    }
-    if (now - window.__anhadHomeLastRefreshAt < 500) {
-      console.log('[Trendora] Skipping refresh — already refreshed moments ago for this same arrival');
-      return;
-    }
-    window.__anhadHomeLastRefreshAt = now;
+    const epoch = window.__anhadNavEpoch || 0;
+    if (window.__anhadHomeHandledEpoch === epoch) return; // already done for this arrival
+    if (pendingEpoch === epoch) return;                   // already scheduled for this arrival
+    pendingEpoch = epoch;
     Store.clearCache();
     requestAnimationFrame(() => {
+      pendingEpoch = null;
+      // Claimed only once the work actually runs, so a frame dropped while
+      // backgrounded cannot mark the arrival handled without repopulating.
+      window.__anhadHomeHandledEpoch = epoch;
       try { UIController.refreshAll(); }
       catch (err) { console.warn('[Trendora] refreshAll failed', err); }
     });
   };
 
+  const isOnHome = () => {
+    const p = window.location.pathname;
+    return p === '/' || p === '/frontend/' ||
+      p.endsWith('/index.html') || p.endsWith('/frontend/');
+  };
+
   if (!_trendoraModuleListenersAlreadyBound) {
     window.addEventListener('anhad_page_changed', () => {
+      // anhad_page_changed fires for every navigation, including departures.
+      // Without this check, leaving Home ran refreshAll() against the incoming
+      // page's DOM and — under the old time-based debounce — poisoned the very
+      // window a fast return needed.
+      if (!isOnHome()) return;
       console.log('[Trendora] Page change detected, refreshing UI data...');
       refreshHomeForSpa();
     });
@@ -2647,6 +2680,12 @@
     try {
       App.init();
       window.__anhadHomeBootedAt = Date.now();
+      // App.init() fully populates Home, so claim the arrival this script was
+      // injected on. That is the one case where both the epoch triggers below
+      // AND a full init fire for the same navigation (arriving at Home from a
+      // page that never loaded this file); without this they would rebuild
+      // everything a second time, which is the visible "two-time flash".
+      window.__anhadHomeHandledEpoch = window.__anhadNavEpoch || 0;
       console.log('[Trendora] App Initialized');
     } catch (err) {
       // Never let an init failure take down the rest of this module.
