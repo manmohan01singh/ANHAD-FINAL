@@ -485,7 +485,12 @@ const DEFAULT_CAMPAIGNS = {
       platforms: ['web', 'android', 'ios'],
       startDate: '2026-01-01T00:00:00.000Z',
       endDate: '2026-12-31T23:59:59.000Z',
-      active: true,
+      // Ships OFF, matching SAFE_BUILTIN_CONFIG in frontend/lib/remote-config.js.
+      // The dates above span all of 2026 and are placeholders, so leaving this
+      // true switched the Chaliya experience on for every user the moment the
+      // consumption layer landed. Turn it on — with the real 40-day window —
+      // from the admin screen, never from source.
+      active: false,
       content: {
         badgeText: 'CHALIYA 2026',
         heroTitle: 'Chaliya Amritvela 2026',

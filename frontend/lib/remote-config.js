@@ -19,7 +19,11 @@
   'use strict';
 
   const CONFIG_CACHE_KEY = 'anhad_remote_config_cache_v1';
-  const CONFIG_CACHE_TTL = 3600000; // 1 Hour
+  const CONFIG_CACHE_TTL = 3600000; // 1 Hour — past this the cache is served but treated as stale
+  // An admin toggle must reach open devices quickly, so poll while the app is
+  // in the foreground. Paused entirely while hidden (see startPolling) so a
+  // backgrounded app costs nothing.
+  const POLL_INTERVAL_MS = 15000;
 
   const SAFE_BUILTIN_CONFIG = {
     version: '1.0.0',
@@ -39,7 +43,11 @@
         platforms: ['web', 'android', 'ios'],
         startDate: '2026-01-01T00:00:00.000Z',
         endDate: '2026-12-31T23:59:59.000Z',
-        active: true,
+        // Ships OFF. The dates above are placeholders spanning all of 2026, so
+        // leaving this true would switch the Chaliya experience on for every
+        // user the moment a consumption layer existed. Enable it — with the
+        // real 40-day window — from the admin screen, not from source.
+        active: false,
         content: {
           badgeText: 'CHALIYA 2026',
           heroTitle: 'Chaliya Amritvela 2026',
@@ -82,8 +90,11 @@
 
   class RemoteConfigManager {
     constructor() {
+      this.cacheIsStale = false;
       this.config = this.loadCachedConfig() || SAFE_BUILTIN_CONFIG;
       this.isOnline = navigator.onLine !== false;
+      this._pollTimer = null;
+      this._lastPayload = null;
       this.init();
     }
 
@@ -92,7 +103,11 @@
       // loadCachedConfig() above, so the network refresh is not on the critical
       // path for first paint/interaction — defer it to idle time (same pattern
       // as trendora-app.js's Hukamnama hero-card fetch).
-      if ('requestIdleCallback' in window) {
+      // Exception: if the cache is past its TTL we no longer trust it, so fetch
+      // straight away rather than waiting for an idle slot.
+      if (this.cacheIsStale) {
+        this.fetchRemoteConfig();
+      } else if ('requestIdleCallback' in window) {
         requestIdleCallback(() => this.fetchRemoteConfig(), { timeout: 2000 });
       } else {
         setTimeout(() => this.fetchRemoteConfig(), 1000);
@@ -103,6 +118,33 @@
         this.isOnline = true;
         this.fetchRemoteConfig();
       });
+
+      // Coming back to the foreground is the most likely moment for the config
+      // to have changed since the user last looked.
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+          this.stopPolling();
+        } else {
+          this.fetchRemoteConfig();
+          this.startPolling();
+        }
+      });
+
+      if (!document.hidden) this.startPolling();
+    }
+
+    startPolling() {
+      if (this._pollTimer) return;
+      this._pollTimer = setInterval(() => {
+        if (document.hidden) return;
+        this.fetchRemoteConfig();
+      }, POLL_INTERVAL_MS);
+    }
+
+    stopPolling() {
+      if (!this._pollTimer) return;
+      clearInterval(this._pollTimer);
+      this._pollTimer = null;
     }
 
     loadCachedConfig() {
@@ -111,7 +153,11 @@
         if (!raw) return null;
         const parsed = JSON.parse(raw);
         if (parsed && parsed.data && parsed.timestamp) {
-          // Check TTL (soft expiration: return cached data while background revalidating)
+          // Soft expiration: serve the cached data either way (it is far better
+          // than nothing when offline), but record staleness so init() can skip
+          // the idle deferral. The TTL constant was previously declared and
+          // never read, which made a cached config effectively immortal.
+          this.cacheIsStale = (Date.now() - parsed.timestamp) > CONFIG_CACHE_TTL;
           return parsed.data;
         }
       } catch (e) {
@@ -146,12 +192,19 @@
         const data = await resp.json();
 
         if (data && Array.isArray(data.campaigns)) {
+          // Only notify when something actually changed — otherwise a 15s poll
+          // would re-render the campaign UI four times a minute forever.
+          const payload = JSON.stringify(data);
+          const changed = payload !== this._lastPayload;
+          this._lastPayload = payload;
           this.config = data;
+          this.cacheIsStale = false;
           this.saveCachedConfig(data);
-          this.notifyCampaignChange();
+          if (changed) this.notifyCampaignChange();
         }
       } catch (e) {
-        // Fallback gracefully to cache or built-in default
+        // Fallback gracefully to cache or built-in default. Never throw: a
+        // campaign system must not be able to break the app it decorates.
         console.log('[RemoteConfig] Using local/fallback config:', e.message);
       }
     }

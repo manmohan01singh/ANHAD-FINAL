@@ -260,7 +260,11 @@
     'user-stats.js',
     'trendora-app.js',
     'homepage-data.js',
-    'insights.js'
+    'insights.js',
+    // Both hold module-level state and bind window listeners; they re-render on
+    // 'anhad_page_changed' rather than needing re-execution.
+    'remote-config.js',
+    'campaign-renderer.js'
   ];
 
   // Resolve App Root once on load

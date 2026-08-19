@@ -452,6 +452,7 @@
   <!-- ANHAD: Animated Sky Background (Auto Mode) -->
   <link rel="stylesheet" href="css/anhad-sky-bg.css?v=2">
   <link rel="stylesheet" href="css/scroll-engine.css">
+  <link rel="stylesheet" href="css/campaign.css?v=1">
 
   <!-- CRITICAL: ANHAD Adaptive Title - Changes with background -->
   <style id="anhad-header-title-override">
@@ -2894,6 +2895,15 @@
     </div>
 
     <!-- ════════════════════════════════════════════════════════════════════
+         CAMPAIGN SLOT — filled by js/campaign-renderer.js from remote config.
+         Empty and hidden unless a campaign is active and in its schedule
+         window, so the default Home experience is untouched. Placed after the
+         daily-progress bar so a campaign reads as an invitation below the
+         user's own practice, never as a takeover above it.
+    ════════════════════════════════════════════════════════════════════ -->
+    <div id="campaignMount" hidden></div>
+
+    <!-- ════════════════════════════════════════════════════════════════════
          HERO CAROUSEL — Premium Swipeable Cards
     ════════════════════════════════════════════════════════════════════ -->
     <section class="hero-carousel" aria-label="Featured Content">
@@ -3382,6 +3392,8 @@
   <script src="lib/audio-coordinator.js" defer></script>
   <script src="lib/overlay-player.js" defer></script>
   <script src="lib/remote-config.js?v=4.0.5" defer></script>
+  <!-- Consumes window.AnhadCampaigns; must load after the resolver above. -->
+  <script src="js/campaign-renderer.js?v=1" defer></script>
   
   <!-- Core UI logic -->
   <script src="js/trendora-app.js?v=4.0.4" defer></script>
