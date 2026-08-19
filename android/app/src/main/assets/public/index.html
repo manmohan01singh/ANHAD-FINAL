@@ -385,6 +385,16 @@
       
       // Use Page Lifecycle API for better performance
       if ('requestIdleCallback' in window) {
+        // Captured NOW, synchronously, while this is guaranteed to still be
+        // index.html's own document — not inside the callback below. This is
+        // a HEAD script, so it never re-runs on SPA return (syncHeadAssets
+        // only touches <link>/<style> in <head>, not <script>); it fires once
+        // per hard load, with the browser free to delay requestIdleCallback
+        // arbitrarily. If the user SPA-navigates to e.g. Favorites before it
+        // fires, resolving these bare relative paths at THAT moment resolved
+        // them against /Favorites/... instead of the site root — the actual
+        // 404s reported ("GET /Favorites/lib/anhad-audio-singleton.js").
+        var _idlePrefetchBase = document.baseURI;
         requestIdleCallback(function() {
           // Preload critical resources when idle
           var criticalLinks = [
@@ -392,12 +402,12 @@
             'js/anhad-core.js',
             'lib/smooth-navigation.js'
           ];
-          
+
           criticalLinks.forEach(function(src) {
             var link = document.createElement('link');
             link.rel = 'prefetch';
             link.as = 'script';
-            link.href = src;
+            link.href = new URL(src, _idlePrefetchBase).href;
             document.head.appendChild(link);
           });
         });
@@ -2750,7 +2760,7 @@
     </defs>
   </svg>
 
-  <main class="app" id="app">
+  <main class="app page-enter" id="app">
 
     <!-- ════════════════════════════════════════════════════════════════════
          HEADER — Avatar | ANHAD | Emoji Actions
@@ -3388,6 +3398,17 @@
     (function() {
       var _audioLoaded = false;
       var _audioLoading = false;
+      // Captured synchronously, at the moment THIS execution of the inline
+      // block runs — this script is not shell-listed, so it re-executes on
+      // every SPA arrival at Home, and loadAudioEngine() is invoked lazily
+      // (idle callback / pointerdown / a queued event) well after that. If
+      // the base were resolved at call time instead, a user who SPA-navigated
+      // away from Home before the callback fired had it resolve the bare
+      // relative script src against the NEW page's URL — e.g.
+      // "GET /Favorites/lib/anhad-audio-singleton.js" (404, wrong MIME on the
+      // JSON error body). Capturing it now, while this is still Home, makes
+      // every later use correct regardless of where the user has since gone.
+      var _audioEngineBase = document.baseURI;
       // Capture queued play requests before the engine loads
       window._anhadAudioQueue = [];
 
@@ -3404,7 +3425,7 @@
         _audioLoading = true;
         console.log('[AnhadAudio] Loading audio singleton...');
         var s = document.createElement('script');
-        s.src = 'lib/anhad-audio-singleton.js?v=2.2.0';
+        s.src = new URL('lib/anhad-audio-singleton.js?v=2.2.0', _audioEngineBase).href;
         s.onload = function() {
           _audioLoaded = true;
           _audioLoading = false;

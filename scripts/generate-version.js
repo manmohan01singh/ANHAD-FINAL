@@ -23,7 +23,7 @@ function getGitInfo() {
 
 // Generate version info
 const versionInfo = {
-  version: '4.7.0',
+  version: '4.8.0',
   buildTime: new Date().toISOString(),
   timestamp: Date.now(),
   ...getGitInfo()

@@ -637,6 +637,8 @@
         }
     ];
 
+    const QUIZ_ANSWERED_KEY = 'anhad_daily_quiz_answered';
+
     function setupDailyQuiz() {
         const questionEl = document.getElementById('quizQuestion');
         const optionsEl = document.getElementById('quizOptions');
@@ -645,6 +647,11 @@
 
         const qIdx = new Date().getDate() % QUIZ_QUESTIONS.length;
         const currentQ = QUIZ_QUESTIONS[qIdx];
+        // en-CA gives YYYY-MM-DD — the same "today" convention already used
+        // app-wide (NitnemTracker's Utils.getTodayString(), festival-mode-
+        // config.js's popup-shown-today gate, etc.), so this naturally resets
+        // on a new calendar day with no separate cleanup logic needed.
+        const today = new Date().toLocaleDateString('en-CA');
 
         questionEl.textContent = currentQ.question;
         optionsEl.innerHTML = currentQ.options.map((opt, i) => `
@@ -652,23 +659,48 @@
         `).join('');
 
         const buttons = optionsEl.querySelectorAll('.quiz-option-btn');
+
+        function showResult(selectedIdx) {
+            buttons.forEach(b => b.disabled = true);
+            if (selectedIdx === currentQ.correct) {
+                buttons[selectedIdx].classList.add('correct');
+                feedbackEl.style.display = 'block';
+                feedbackEl.innerHTML = `<strong>✨ Correct!</strong> ${currentQ.explanation}`;
+                feedbackEl.style.borderColor = 'rgba(16, 185, 129, 0.4)';
+            } else {
+                buttons[selectedIdx].classList.add('wrong');
+                buttons[currentQ.correct].classList.add('correct');
+                feedbackEl.style.display = 'block';
+                feedbackEl.innerHTML = `<strong>🙏 Good try!</strong> ${currentQ.explanation}`;
+                feedbackEl.style.borderColor = 'rgba(239, 68, 68, 0.4)';
+            }
+        }
+
+        // Already answered today? Restore that exact result instead of a
+        // fresh, re-clickable question — this was previously never checked at
+        // all, so the same question could be "answered" over and over on every
+        // single revisit. A new calendar day naturally fails this check (the
+        // stored date won't match `today`) and gets a fresh, clickable quiz.
+        let answeredToday = null;
+        try {
+            const saved = JSON.parse(localStorage.getItem(QUIZ_ANSWERED_KEY) || 'null');
+            if (saved && saved.date === today && typeof saved.selectedIdx === 'number') {
+                answeredToday = saved;
+            }
+        } catch (e) {}
+
+        if (answeredToday) {
+            showResult(answeredToday.selectedIdx);
+            return;
+        }
+
         buttons.forEach(btn => {
             btn.addEventListener('click', () => {
                 const selectedIdx = parseInt(btn.dataset.idx, 10);
-                buttons.forEach(b => b.disabled = true);
-
-                if (selectedIdx === currentQ.correct) {
-                    btn.classList.add('correct');
-                    feedbackEl.style.display = 'block';
-                    feedbackEl.innerHTML = `<strong>✨ Correct!</strong> ${currentQ.explanation}`;
-                    feedbackEl.style.borderColor = 'rgba(16, 185, 129, 0.4)';
-                } else {
-                    btn.classList.add('wrong');
-                    buttons[currentQ.correct].classList.add('correct');
-                    feedbackEl.style.display = 'block';
-                    feedbackEl.innerHTML = `<strong>🙏 Good try!</strong> ${currentQ.explanation}`;
-                    feedbackEl.style.borderColor = 'rgba(239, 68, 68, 0.4)';
-                }
+                try {
+                    localStorage.setItem(QUIZ_ANSWERED_KEY, JSON.stringify({ date: today, selectedIdx }));
+                } catch (e) {}
+                showResult(selectedIdx);
             });
         });
     }
@@ -830,7 +862,19 @@
             }
         });
         
-        window.addEventListener('themechange', updateIcon);
+        // Same one-per-realm reasoning as setupHeaderScroll(): `window`
+        // survives SPA navigation, so this would otherwise stack a copy per
+        // visit to Insights. It deliberately does NOT reuse updateIcon() —
+        // that closes over the `icon` node from THIS visit, which the next
+        // content swap detaches; re-resolve by id on each event instead.
+        if (!window.__anhadInsightsThemeChangeBound) {
+            window.__anhadInsightsThemeChangeBound = true;
+            window.addEventListener('themechange', () => {
+                const liveIcon = document.getElementById('themeIcon');
+                if (!liveIcon) return;
+                liveIcon.textContent = document.documentElement.classList.contains('dark-mode') ? '☀️' : '🌙';
+            });
+        }
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -942,18 +986,26 @@
             header.classList.add('scrolled');
         }
 
+        // Registered at most once per JS realm. `window` outlives every SPA
+        // navigation, and init() runs again on each arrival at Insights, so an
+        // unguarded anonymous listener here accumulated one more copy per
+        // visit — each one holding a reference to that visit's (now detached)
+        // #pageHeader and doing its own scrollY read + rAF on every scroll
+        // event. That is the scroll jank that got worse the longer the app was
+        // used. Re-resolve the current header on each tick instead of closing
+        // over one node, so the single listener stays correct across swaps.
+        if (window.__anhadInsightsHeaderScrollBound) return;
+        window.__anhadInsightsHeaderScrollBound = true;
+
         let ticking = false;
         window.addEventListener('scroll', () => {
             if (!ticking) {
+                ticking = true;
                 window.requestAnimationFrame(() => {
-                    if (window.scrollY > 20) {
-                        header.classList.add('scrolled');
-                    } else {
-                        header.classList.remove('scrolled');
-                    }
+                    const el = document.getElementById('pageHeader');
+                    if (el) el.classList.toggle('scrolled', window.scrollY > 20);
                     ticking = false;
                 });
-                ticking = true;
             }
         }, { passive: true });
     }
@@ -963,6 +1015,25 @@
     // ═══════════════════════════════════════════════════════════════════════════
 
     function init() {
+        // insights.js is in smooth-navigation.js's SHELL_SCRIPTS: on a FRESH
+        // injection (arriving here from a page that never loaded this file,
+        // e.g. Home on a session that started elsewhere) its own bottom-of-file
+        // call below fires synchronously, and smooth-navigation's registry
+        // (window.__anhadPageInit, registered further down) calls this SAME
+        // function again moments later once the rest of the page's scripts
+        // resolve — two full inits back to back for the one arrival. That was
+        // visible as a real flash: loadRandomQuote() picks a RANDOM quote each
+        // call, so the two inits could render two different quotes in a row.
+        // On every later, ordinary return to Insights the script is never
+        // re-injected and only the registry call fires — so this only needs to
+        // swallow the one call that lands within a moment of the last.
+        const now = Date.now();
+        if (window.__anhadInsightsLastInitAt && (now - window.__anhadInsightsLastInitAt) < 2000) {
+            console.log('[Insights] Skipping duplicate init (already ran <2s ago)');
+            return;
+        }
+        window.__anhadInsightsLastInitAt = now;
+
         console.log('📚 ANHAD Learning & Library initializing...');
 
         loadJsonData();

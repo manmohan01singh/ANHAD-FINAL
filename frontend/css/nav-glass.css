@@ -118,11 +118,11 @@ html.dark-mode .tab-item.active {
   transform: scale(0.96) !important;
 }
 
-/* Prevent content overlap across the app */
+/* Prevent content overlap across the app - Optimized spacing to avoid massive white gaps */
 .app,
 main,
 .app-container,
 #dashboardApp,
 #profileApp {
-  padding-bottom: 160px !important;
+  padding-bottom: 110px !important;
 }

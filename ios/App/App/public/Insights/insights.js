@@ -637,6 +637,8 @@
         }
     ];
 
+    const QUIZ_ANSWERED_KEY = 'anhad_daily_quiz_answered';
+
     function setupDailyQuiz() {
         const questionEl = document.getElementById('quizQuestion');
         const optionsEl = document.getElementById('quizOptions');
@@ -645,6 +647,11 @@
 
         const qIdx = new Date().getDate() % QUIZ_QUESTIONS.length;
         const currentQ = QUIZ_QUESTIONS[qIdx];
+        // en-CA gives YYYY-MM-DD — the same "today" convention already used
+        // app-wide (NitnemTracker's Utils.getTodayString(), festival-mode-
+        // config.js's popup-shown-today gate, etc.), so this naturally resets
+        // on a new calendar day with no separate cleanup logic needed.
+        const today = new Date().toLocaleDateString('en-CA');
 
         questionEl.textContent = currentQ.question;
         optionsEl.innerHTML = currentQ.options.map((opt, i) => `
@@ -652,23 +659,48 @@
         `).join('');
 
         const buttons = optionsEl.querySelectorAll('.quiz-option-btn');
+
+        function showResult(selectedIdx) {
+            buttons.forEach(b => b.disabled = true);
+            if (selectedIdx === currentQ.correct) {
+                buttons[selectedIdx].classList.add('correct');
+                feedbackEl.style.display = 'block';
+                feedbackEl.innerHTML = `<strong>✨ Correct!</strong> ${currentQ.explanation}`;
+                feedbackEl.style.borderColor = 'rgba(16, 185, 129, 0.4)';
+            } else {
+                buttons[selectedIdx].classList.add('wrong');
+                buttons[currentQ.correct].classList.add('correct');
+                feedbackEl.style.display = 'block';
+                feedbackEl.innerHTML = `<strong>🙏 Good try!</strong> ${currentQ.explanation}`;
+                feedbackEl.style.borderColor = 'rgba(239, 68, 68, 0.4)';
+            }
+        }
+
+        // Already answered today? Restore that exact result instead of a
+        // fresh, re-clickable question — this was previously never checked at
+        // all, so the same question could be "answered" over and over on every
+        // single revisit. A new calendar day naturally fails this check (the
+        // stored date won't match `today`) and gets a fresh, clickable quiz.
+        let answeredToday = null;
+        try {
+            const saved = JSON.parse(localStorage.getItem(QUIZ_ANSWERED_KEY) || 'null');
+            if (saved && saved.date === today && typeof saved.selectedIdx === 'number') {
+                answeredToday = saved;
+            }
+        } catch (e) {}
+
+        if (answeredToday) {
+            showResult(answeredToday.selectedIdx);
+            return;
+        }
+
         buttons.forEach(btn => {
             btn.addEventListener('click', () => {
                 const selectedIdx = parseInt(btn.dataset.idx, 10);
-                buttons.forEach(b => b.disabled = true);
-
-                if (selectedIdx === currentQ.correct) {
-                    btn.classList.add('correct');
-                    feedbackEl.style.display = 'block';
-                    feedbackEl.innerHTML = `<strong>✨ Correct!</strong> ${currentQ.explanation}`;
-                    feedbackEl.style.borderColor = 'rgba(16, 185, 129, 0.4)';
-                } else {
-                    btn.classList.add('wrong');
-                    buttons[currentQ.correct].classList.add('correct');
-                    feedbackEl.style.display = 'block';
-                    feedbackEl.innerHTML = `<strong>🙏 Good try!</strong> ${currentQ.explanation}`;
-                    feedbackEl.style.borderColor = 'rgba(239, 68, 68, 0.4)';
-                }
+                try {
+                    localStorage.setItem(QUIZ_ANSWERED_KEY, JSON.stringify({ date: today, selectedIdx }));
+                } catch (e) {}
+                showResult(selectedIdx);
             });
         });
     }

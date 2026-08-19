@@ -2079,6 +2079,14 @@ body.modal-open .bottom-nav {
     color: #EF4444 !important;
 }
 
+.quiz-option-btn:disabled {
+    cursor: default;
+}
+
+.quiz-option-btn:disabled:not(.correct):not(.wrong) {
+    opacity: 0.45;
+}
+
 .quiz-feedback {
     padding: 12px 14px;
     border-radius: 12px;

@@ -2719,18 +2719,48 @@
       transform: scale(0.92);
     }
 
-    /* Action pills row */
+    /* Action pills row — 3 items now (Like / More / Options), so this centers
+       them instead of the horizontal-scroll treatment the previous 6-pill
+       row needed. */
     .player-actions-row {
       display: flex;
-      gap: 8px;
-      overflow-x: auto;
-      scrollbar-width: none;
+      justify-content: center;
+      gap: 10px;
       padding: 2px 0 8px;
     }
-    .player-actions-row::-webkit-scrollbar {
-      display: none;
+
+    /* Rows inside the "More Actions" sheet — full-width, list-style, reusing
+       the same visual language as .player-settings-row (border separators)
+       instead of the pill treatment, since these read as a menu here. */
+    .player-more-action-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      width: 100%;
+      background: none;
+      border: none;
+      border-bottom: 0.5px solid var(--separator);
+      padding: 14px 2px;
+      color: var(--text-primary);
+      font-size: 14.5px;
+      font-weight: 600;
+      font-family: inherit;
+      text-align: left;
+      cursor: pointer;
     }
-    
+    .player-more-action-row:last-child {
+      border-bottom: none;
+    }
+    .player-more-action-row svg {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+      color: var(--gold-accent);
+    }
+    .player-more-action-row:active {
+      background: var(--card-active);
+    }
+
     .player-pill-btn {
       display: inline-flex;
       align-items: center;
@@ -5165,36 +5195,56 @@
         </button>
       </div>
 
-      <!-- Pills buttons row -->
+      <!-- Pills buttons row — reduced from 6 to 3 visible actions per explicit
+           request: Like stays as the one primary, always-visible action;
+           Dislike/Share/YouTube/Learn Vichar collapse into the "More" sheet
+           below (same buttons, same ids, same handlers — just relocated, so
+           none of the existing click-handler JS needed to change); Settings
+           stays separate since it already owns its own dedicated panel. -->
       <div class="player-actions-row">
         <button class="player-pill-btn" id="playerLikeBtn">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
           <span id="playerLikeText">Like</span>
         </button>
-        <button class="player-pill-btn" id="playerDislikeBtn">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm12-13h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-3"/></svg>
-          <span>Dislike</span>
-        </button>
-        <button class="player-pill-btn" id="playerShareBtn">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-          <span>Share</span>
-        </button>
-        <button class="player-pill-btn" id="playerWatchOnYtBtn">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-          <span>YouTube</span>
-        </button>
-        <button class="player-pill-btn" id="playerLearnVicharBtn" title="Learn Context & Vichar (Gurbani GPT)">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10"/>
-            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
-            <line x1="12" y1="17" x2="12.01" y2="17"/>
-          </svg>
-          <span>Learn Vichar</span>
+        <button class="player-pill-btn" id="playerMoreActionsBtn">
+          <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+          <span>More</span>
         </button>
         <button class="player-pill-btn" id="playerSettingsPillBtn">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
           <span>Options</span>
         </button>
+      </div>
+
+      <!-- More Actions sheet — Dislike/Share/YouTube/Learn Vichar, collapsed
+           out of the primary row. Same ids as before the redesign. -->
+      <div class="player-settings-overlay" id="playerMoreActionsOverlay">
+        <div class="player-settings-card">
+          <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-color); padding-bottom:10px;">
+            <span class="player-settings-title">More Actions</span>
+            <button class="hdr-btn" id="closePlayerMoreActionsBtn" style="font-weight:700;">✕</button>
+          </div>
+          <button class="player-more-action-row" id="playerDislikeBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm12-13h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-3"/></svg>
+            <span>Dislike</span>
+          </button>
+          <button class="player-more-action-row" id="playerShareBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+            <span>Share</span>
+          </button>
+          <button class="player-more-action-row" id="playerWatchOnYtBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            <span>Watch on YouTube</span>
+          </button>
+          <button class="player-more-action-row" id="playerLearnVicharBtn" title="Learn Context & Vichar (Gurbani GPT)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+              <line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+            <span>Learn Vichar</span>
+          </button>
+        </div>
       </div>
 
       <!-- Comments preview -->
@@ -9736,6 +9786,22 @@
     });
     $('closePlayerSettingsBtn').addEventListener('click', () => {
       $('playerSettingsOverlay').classList.remove('visible');
+    });
+
+    $('playerMoreActionsBtn').addEventListener('click', () => {
+      $('playerMoreActionsOverlay').classList.add('visible');
+    });
+    $('closePlayerMoreActionsBtn').addEventListener('click', () => {
+      $('playerMoreActionsOverlay').classList.remove('visible');
+    });
+    // Auto-close the sheet after any action inside it — Dislike/Share/YouTube/
+    // Learn Vichar's own handlers (bound elsewhere, unchanged) already ran by
+    // the time this fires; the delay just lets their own feedback (a toast,
+    // a share sheet) start before the overlay dismisses under it.
+    $('playerMoreActionsOverlay').querySelector('.player-settings-card').addEventListener('click', (e) => {
+      if (e.target.closest('.player-more-action-row')) {
+        setTimeout(() => $('playerMoreActionsOverlay').classList.remove('visible'), 150);
+      }
     });
 
     $('playerSpeedSelector').addEventListener('change', () => {

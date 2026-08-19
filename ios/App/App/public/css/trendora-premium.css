@@ -2000,29 +2000,44 @@ a:active {
 }
 
 .practice-card:active {
-  transform: scale(0.92) translateY(2px);
+  transform: scale(0.95) translateY(2px) !important;
+  box-shadow: 
+    2px 4px 8px rgba(0, 0, 0, 0.08),
+    inset 1px 1px 2px rgba(255, 255, 255, 0.7),
+    inset -2px -2px 4px rgba(0, 0, 0, 0.1) !important;
 }
 
-/* Trendora-inspired warm card backgrounds with ULTRA 3D Claymorphism */
 .practice-card--nitnem {
-  background: linear-gradient(165deg, #FFF8F0 0%, #FFEFD8 50%, #FFE8D0 100%) !important;
-  box-shadow: none !important;
-  border: 3px solid rgba(255, 255, 255, 0.6) !important;
+  background: linear-gradient(165deg, #FFFDFB 0%, #FFEFD8 50%, #FFE5C0 100%) !important;
+  border: 2px solid rgba(255, 255, 255, 0.9) !important;
   border-radius: 32px !important;
+  box-shadow: 
+    6px 10px 20px rgba(212, 148, 58, 0.15),
+    2px 4px 8px rgba(139, 69, 19, 0.06),
+    inset 2px 2px 4px rgba(255, 255, 255, 0.9),
+    inset -3px -3px 6px rgba(212, 148, 58, 0.15) !important;
 }
 
 .practice-card--sehaj {
-  background: linear-gradient(165deg, #F8F5FF 0%, #F0EBFF 50%, #E8E8FF 100%) !important;
-  box-shadow: none !important;
-  border: 3px solid rgba(255, 255, 255, 0.6) !important;
+  background: linear-gradient(165deg, #FBF9FF 0%, #F0EBFF 50%, #E4DCFF 100%) !important;
+  border: 2px solid rgba(255, 255, 255, 0.9) !important;
   border-radius: 32px !important;
+  box-shadow: 
+    6px 10px 20px rgba(88, 86, 214, 0.15),
+    2px 4px 8px rgba(45, 0, 135, 0.06),
+    inset 2px 2px 4px rgba(255, 255, 255, 0.9),
+    inset -3px -3px 6px rgba(88, 86, 214, 0.15) !important;
 }
 
 .practice-card--hukam {
-  background: linear-gradient(165deg, #FFF8F0 0%, #FFF0E8 50%, #FFE8D8 100%) !important;
-  box-shadow: none !important;
-  border: 3px solid rgba(255, 255, 255, 0.6) !important;
+  background: linear-gradient(165deg, #FFFDFB 0%, #FFF0E8 50%, #FFE0CC 100%) !important;
+  border: 2px solid rgba(255, 255, 255, 0.9) !important;
   border-radius: 32px !important;
+  box-shadow: 
+    6px 10px 20px rgba(255, 110, 74, 0.15),
+    2px 4px 8px rgba(139, 45, 0, 0.06),
+    inset 2px 2px 4px rgba(255, 255, 255, 0.9),
+    inset -3px -3px 6px rgba(255, 110, 74, 0.15) !important;
 }
 
 /* Subtle inner glow */
@@ -3317,30 +3332,36 @@ a:active {
 
 /* --- Practice Card Dark Mode Overrides --- */
 .dark-mode .practice-card--nitnem {
-  background: linear-gradient(165deg, #2D251C 0%, #3D3325 50%, #2A2215 100%) !important;
+  background: linear-gradient(165deg, #251D14 0%, #352B1C 50%, #1F170E 100%) !important;
+  border: 2px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 32px !important;
   box-shadow:
-    20px 20px 60px rgba(0, 0, 0, 0.45),
-    inset 2px 2px 5px rgba(255, 255, 255, 0.05),
-    0 0 0 1px rgba(212, 148, 58, 0.25) !important;
-  border-color: rgba(255, 255, 255, 0.05) !important;
+    8px 12px 28px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(212, 148, 58, 0.15),
+    inset 2px 2px 4px rgba(255, 255, 255, 0.12),
+    inset -4px -4px 8px rgba(0, 0, 0, 0.6) !important;
 }
 
 .dark-mode .practice-card--sehaj {
-  background: linear-gradient(165deg, #1D1C2E 0%, #23213E 50%, #1A192A 100%) !important;
+  background: linear-gradient(165deg, #161525 0%, #22203B 50%, #11101E 100%) !important;
+  border: 2px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 32px !important;
   box-shadow:
-    20px 20px 60px rgba(0, 0, 0, 0.45),
-    inset 2px 2px 5px rgba(255, 255, 255, 0.05),
-    0 0 0 1px rgba(88, 86, 214, 0.25) !important;
-  border-color: rgba(255, 255, 255, 0.05) !important;
+    8px 12px 28px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(88, 86, 214, 0.15),
+    inset 2px 2px 4px rgba(255, 255, 255, 0.12),
+    inset -4px -4px 8px rgba(0, 0, 0, 0.6) !important;
 }
 
 .dark-mode .practice-card--hukam {
-  background: linear-gradient(165deg, #2D1C1C 0%, #3D2525 50%, #2A1A1A 100%) !important;
+  background: linear-gradient(165deg, #251414 0%, #351C1C 50%, #1F0E0E 100%) !important;
+  border: 2px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 32px !important;
   box-shadow:
-    20px 20px 60px rgba(0, 0, 0, 0.45),
-    inset 2px 2px 5px rgba(255, 255, 255, 0.05),
-    0 0 0 1px rgba(255, 149, 0, 0.25) !important;
-  border-color: rgba(255, 255, 255, 0.05) !important;
+    8px 12px 28px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(255, 110, 74, 0.15),
+    inset 2px 2px 4px rgba(255, 255, 255, 0.12),
+    inset -4px -4px 8px rgba(0, 0, 0, 0.6) !important;
 }
 
 .dark-mode .practice-card__ring-bg {
@@ -3612,9 +3633,7 @@ a:active {
 /* Visual hint now via CSS transition on hover/active only */
 
 /* ── Practice Card — Enhanced Touch Depth ── */
-.practice-card:active {
-  box-shadow: none !important;
-}
+/* Practice Card active shadow is styled in core components */
 
 .practice-card:active .practice-card__ring-icon {
   transform: scale(0.85);
