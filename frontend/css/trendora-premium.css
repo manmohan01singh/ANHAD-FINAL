@@ -2019,14 +2019,13 @@ a:active {
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding: var(--space-7) var(--space-5) var(--space-6);
-  border-radius: var(--radius-xl);
+  padding: 16px 10px 14px;
+  border-radius: 26px !important;
   cursor: pointer;
   transition: transform var(--duration-fast) var(--ease-spring),
     box-shadow var(--duration-fast) ease;
   position: relative;
   overflow: hidden;
-  /* No will-change — same reason as .quick-card above. */
   border: var(--border-card);
 }
 
@@ -2040,8 +2039,8 @@ a:active {
 
 .practice-card--nitnem {
   background: linear-gradient(165deg, #FFFDFB 0%, #FFEFD8 50%, #FFE5C0 100%) !important;
-  border: 2px solid rgba(255, 255, 255, 0.9) !important;
-  border-radius: 32px !important;
+  border: 1px solid rgba(212, 148, 58, 0.22) !important;
+  border-radius: 26px !important;
   box-shadow: 
     6px 10px 20px rgba(212, 148, 58, 0.15),
     2px 4px 8px rgba(139, 69, 19, 0.06),
@@ -2051,8 +2050,8 @@ a:active {
 
 .practice-card--sehaj {
   background: linear-gradient(165deg, #FBF9FF 0%, #F0EBFF 50%, #E4DCFF 100%) !important;
-  border: 2px solid rgba(255, 255, 255, 0.9) !important;
-  border-radius: 32px !important;
+  border: 1px solid rgba(88, 86, 214, 0.22) !important;
+  border-radius: 26px !important;
   box-shadow: 
     6px 10px 20px rgba(88, 86, 214, 0.15),
     2px 4px 8px rgba(45, 0, 135, 0.06),
@@ -2062,8 +2061,8 @@ a:active {
 
 .practice-card--hukam {
   background: linear-gradient(165deg, #FFFDFB 0%, #FFF0E8 50%, #FFE0CC 100%) !important;
-  border: 2px solid rgba(255, 255, 255, 0.9) !important;
-  border-radius: 32px !important;
+  border: 1px solid rgba(255, 110, 74, 0.22) !important;
+  border-radius: 26px !important;
   box-shadow: 
     6px 10px 20px rgba(255, 110, 74, 0.15),
     2px 4px 8px rgba(139, 45, 0, 0.06),

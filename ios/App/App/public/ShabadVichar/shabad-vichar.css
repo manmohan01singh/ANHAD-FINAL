@@ -1,71 +1,89 @@
 /* ═══════════════════════════════════════════════════════════════════════════════
-   SHABAD VICHAR — Apple Notes Style Design
-   Native iOS Aesthetic • Paper-like • Line Separators • No Cards
+   ✦ SHABAD VICHAR — Premium iOS 18 Experience
+   Clean • Rounded Glass Cards • Sacred Aesthetics • Apple HIG Standards
    ═══════════════════════════════════════════════════════════════════════════════ */
 
 /* ═══════════════════════════════════════════════════════════════
-   DESIGN TOKENS — Native iOS Notes
-═══════════════════════════════════════════════════════════════ */
+   § 1. DESIGN TOKENS
+   ═══════════════════════════════════════════════════════════════ */
 
 :root {
-  /* iOS Notes Light Theme */
+  /* iOS 18 Light Theme */
   --bg-primary: #F2F2F7;
   --bg-secondary: #FFFFFF;
-  --bg-paper: #FFFFFF;
-  
-  /* iOS System Text Colors */
+  --bg-paper: #F2F2F7;
+  --bg-card: #FFFFFF;
+  --bg-card-inner: rgba(0, 0, 0, 0.025);
+  --bg-tertiary: #E5E5EA;
+
+  /* iOS Text Hierarchy */
   --text-primary: #000000;
   --text-secondary: #3C3C43;
   --text-tertiary: #8E8E93;
   --text-muted: #C7C7CC;
-  
-  /* iOS System Separator */
+
+  /* Borders & Shadows */
   --separator: #C6C6C8;
   --separator-light: rgba(0, 0, 0, 0.08);
-  
-  /* iOS System Gold/Orange */
-  --accent-gold: #FF9500;
+  --border-card: 1px solid rgba(0, 0, 0, 0.06);
+  --border-card-inner: 1px solid rgba(0, 0, 0, 0.04);
+  --card-shadow: 0 4px 16px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.02);
+  --card-shadow-active: 0 2px 8px rgba(0, 0, 0, 0.03);
+
+  /* Sacred Accents */
+  --accent-gold: #D4943A;
+  --accent-gold-light: rgba(212, 148, 58, 0.12);
+  --accent-gold-glow: rgba(212, 148, 58, 0.25);
   --accent-orange: #FF6B00;
-  
-  /* Spacing — iOS Standards */
+  --accent-amber: #FF9500;
+
+  /* Spacing */
   --safe-top: env(safe-area-inset-top, 44px);
   --safe-bottom: env(safe-area-inset-bottom, 34px);
   --safe-left: env(safe-area-inset-left, 16px);
   --safe-right: env(safe-area-inset-right, 16px);
-  
-  /* Typography — iOS Native */
-  --font-system: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', system-ui, sans-serif;
+
+  /* Typography */
+  --font-system: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Inter', system-ui, sans-serif;
   --font-gurmukhi: 'Noto Sans Gurmukhi', 'Gurmukhi MN', 'AnmolLipi', sans-serif;
-  --font-size: 1.25rem;
-  
-  /* iOS Transitions */
+  --font-size: 1.35rem;
+
+  /* Spring Curves */
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-ios: cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-/* iOS Notes Dark Theme */
-[data-theme="dark"] {
-  --bg-primary: #1C1C1E;
-  --bg-secondary: #2C2C2E;
-  --bg-tertiary: #3A3A3C;
-  --bg-paper: #1C1C1E;
-  
+/* iOS 18 Dark Theme */
+[data-theme="dark"],
+.dark-mode {
+  --bg-primary: #0D0D0F;
+  --bg-secondary: #1C1C1E;
+  --bg-paper: #0D0D0F;
+  --bg-card: #1C1C1E;
+  --bg-card-inner: rgba(255, 255, 255, 0.035);
+  --bg-tertiary: #2C2C2E;
+
   --text-primary: #FFFFFF;
-  --text-secondary: #A0A0A0;
-  --text-tertiary: #6B6B6B;
-  --text-muted: #4A4A4C;
-  
-  --separator: #48484A;
-  --separator-light: rgba(255, 255, 255, 0.15);
-  
-  --accent-gold: #FF9500;
-  
-  --card-bg: #2C2C2E;
-  --card-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+  --text-secondary: rgba(235, 235, 245, 0.6);
+  --text-tertiary: rgba(235, 235, 245, 0.38);
+  --text-muted: #48484A;
+
+  --separator: #38383A;
+  --separator-light: rgba(255, 255, 255, 0.08);
+  --border-card: 1px solid rgba(255, 255, 255, 0.08);
+  --border-card-inner: 1px solid rgba(255, 255, 255, 0.05);
+  --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.45), 0 2px 6px rgba(0, 0, 0, 0.3);
+  --card-shadow-active: 0 4px 12px rgba(0, 0, 0, 0.35);
+
+  --accent-gold: #F7C634;
+  --accent-gold-light: rgba(247, 198, 52, 0.15);
+  --accent-gold-glow: rgba(247, 198, 52, 0.35);
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   BASE RESET
-═══════════════════════════════════════════════════════════════ */
+   § 2. BASE RESET & VIEWPORT
+   ═══════════════════════════════════════════════════════════════ */
 
 *, *::before, *::after {
   margin: 0;
@@ -96,12 +114,8 @@ body {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   APP HEADER — iOS Native with Blur
-═══════════════════════════════════════════════════════════════ */
-
-/* ═══════════════════════════════════════════════════════════════
-   APP HEADER — Beautiful Premium iOS Native
-═══════════════════════════════════════════════════════════════ */
+   § 3. APP HEADER — iOS 18 Glass Bar
+   ═══════════════════════════════════════════════════════════════ */
 
 .app-header {
   position: fixed;
@@ -112,34 +126,31 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: calc(var(--safe-top) + 54px);
-  padding: var(--safe-top) 12px 0;
-  background: rgba(242, 242, 247, 0.85);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  height: calc(var(--safe-top) + 52px);
+  padding: var(--safe-top) 16px 0;
+  background: rgba(242, 242, 247, 0.88);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
   border-bottom: 0.5px solid var(--separator-light);
 }
 
-[data-theme="dark"] .app-header {
-  background: rgba(28, 28, 30, 0.85);
+[data-theme="dark"] .app-header,
+.dark-mode .app-header {
+  background: rgba(13, 13, 15, 0.88);
 }
 
 .header-back {
-  width: 40px;
-  height: 40px;
+  width: 38px;
+  height: 38px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--accent-gold);
-  background: rgba(255, 149, 0, 0.1);
+  background: var(--accent-gold-light);
   border-radius: 50%;
-  text-decoration: none;
-  transition: transform 0.2s ease, opacity 0.2s ease;
-  margin-left: 4px;
-}
-
-[data-theme="dark"] .header-back {
-  background: rgba(255, 149, 0, 0.15);
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s var(--ease-spring), opacity 0.2s ease;
 }
 
 .header-back:active {
@@ -149,9 +160,10 @@ body {
 
 .header-title {
   font-family: var(--font-gurmukhi);
-  font-size: 18px;
-  font-weight: 600;
+  font-size: 19px;
+  font-weight: 700;
   color: var(--text-primary);
+  letter-spacing: -0.2px;
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
@@ -161,71 +173,81 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-right: 4px;
 }
 
 .header-action {
-  width: 40px;
-  height: 40px;
+  width: 38px;
+  height: 38px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--bg-tertiary);
+  background: var(--bg-card);
   border-radius: 50%;
-  border: none;
+  border: var(--border-card);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
   color: var(--text-secondary);
   cursor: pointer;
-  transition: transform 0.2s ease, color 0.2s ease;
+  transition: transform 0.2s var(--ease-spring), color 0.2s ease, background 0.2s ease;
 }
 
 .header-action:active {
   transform: scale(0.9);
   color: var(--accent-gold);
+  background: var(--accent-gold-light);
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   INFO BAR — Elegant Wrap Design
-═══════════════════════════════════════════════════════════════ */
+   § 4. INFO BAR — Floating Glass Pill Bar
+   ═══════════════════════════════════════════════════════════════ */
 
 .info-bar {
   position: fixed;
-  top: calc(var(--safe-top) + 54px);
+  top: calc(var(--safe-top) + 52px);
   left: 0;
   right: 0;
   z-index: 99;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   gap: 12px;
-  min-height: 44px;
+  min-height: 48px;
   padding: 8px 16px;
-  background: var(--bg-primary);
+  background: rgba(242, 242, 247, 0.85);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
   border-bottom: 0.5px solid var(--separator-light);
 }
 
-.ang-pill {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background: rgba(255, 149, 0, 0.1);
-  padding: 4px 10px;
-  border-radius: 8px;
-  flex-shrink: 0;
+[data-theme="dark"] .info-bar,
+.dark-mode .info-bar {
+  background: rgba(13, 13, 15, 0.85);
 }
 
-[data-theme="dark"] .ang-pill {
-  background: rgba(255, 149, 0, 0.15);
+.ang-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, rgba(212, 148, 58, 0.16) 0%, rgba(212, 148, 58, 0.08) 100%);
+  border: 1px solid rgba(212, 148, 58, 0.25);
+  padding: 5px 12px;
+  border-radius: 14px;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(212, 148, 58, 0.08);
+}
+
+[data-theme="dark"] .ang-pill,
+.dark-mode .ang-pill {
+  background: linear-gradient(135deg, rgba(247, 198, 52, 0.2) 0%, rgba(247, 198, 52, 0.08) 100%);
+  border: 1px solid rgba(247, 198, 52, 0.3);
 }
 
 .ang-label {
   font-family: var(--font-gurmukhi);
-  font-size: 10px;
-  font-weight: 500;
+  font-size: 11px;
+  font-weight: 600;
   color: var(--accent-gold);
   text-transform: uppercase;
   line-height: 1;
-  margin-bottom: 2px;
 }
 
 .ang-number {
@@ -237,12 +259,12 @@ body {
 
 .source-text {
   font-family: var(--font-gurmukhi);
-  font-size: 12px;
-  font-weight: 500;
+  font-size: 12.5px;
+  font-weight: 600;
   color: var(--text-secondary);
   white-space: normal;
   line-height: 1.4;
-  text-align: left;
+  text-align: right;
   flex: 1;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -251,31 +273,30 @@ body {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   SHABAD CONTENT — Apple Notes Style
-═══════════════════════════════════════════════════════════════ */
+   § 5. SHABAD CONTENT AREA
+   ═══════════════════════════════════════════════════════════════ */
 
 .shabad-content {
   position: fixed;
-  top: calc(var(--safe-top) + 110px);
-  bottom: calc(50px + var(--safe-bottom));
+  top: calc(var(--safe-top) + 104px);
+  bottom: calc(68px + var(--safe-bottom));
   left: 0;
   right: 0;
   overflow-y: auto;
   overflow-x: hidden;
-
   background: var(--bg-paper);
   scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
 }
 
-/* Hide scrollbar but keep functionality */
 .shabad-content::-webkit-scrollbar {
   width: 0;
   background: transparent;
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   STATES
-═══════════════════════════════════════════════════════════════ */
+   § 6. STATES (Loading, Error, Verses)
+   ═══════════════════════════════════════════════════════════════ */
 
 .state {
   display: none;
@@ -305,16 +326,13 @@ body {
 }
 
 .state--verses {
-  padding-bottom: 20px;
+  padding-bottom: 24px;
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   LOADING STATE
-═══════════════════════════════════════════════════════════════ */
-
+/* Loading Spinner */
 .loading-spinner {
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   position: relative;
   margin-bottom: 20px;
 }
@@ -323,120 +341,117 @@ body {
   content: '';
   position: absolute;
   inset: 0;
-  border: 3px solid var(--separator-light);
+  border: 3.5px solid var(--separator-light);
   border-top-color: var(--accent-gold);
   border-radius: 50%;
-  animation: spin 0.9s linear infinite;
+  animation: spin 0.85s linear infinite;
 }
 
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
 
-/* iOS-style shimmer loading */
-.loading-shimmer {
-  background: linear-gradient(
-    90deg,
-    var(--bg-tertiary) 0%,
-    rgba(255,255,255,0.5) 50%,
-    var(--bg-tertiary) 100%
-  );
-  background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
-}
-
-@keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
-}
-
 .loading-text {
   font-family: var(--font-gurmukhi);
-  font-size: 15px;
+  font-size: 16px;
   color: var(--text-secondary);
-  font-weight: 500;
+  font-weight: 600;
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   ERROR STATE
-═══════════════════════════════════════════════════════════════ */
-
+/* Error State */
 .error-text {
   font-family: var(--font-gurmukhi);
-  font-size: 15px;
+  font-size: 16px;
   color: var(--text-secondary);
   margin-bottom: 20px;
+  font-weight: 500;
 }
 
 .btn-retry {
   font-family: var(--font-gurmukhi);
   padding: 12px 28px;
-  background: var(--accent-gold);
+  background: linear-gradient(135deg, #FF9500 0%, #E68500 100%);
   border: none;
-  border-radius: 24px;
+  border-radius: 22px;
   color: #FFFFFF;
-  font-size: 14px;
+  font-size: 14.5px;
   font-weight: 600;
   cursor: pointer;
-  transition: transform 0.2s ease, opacity 0.2s ease;
+  box-shadow: 0 4px 14px rgba(255, 149, 0, 0.3);
+  transition: transform 0.2s var(--ease-spring), opacity 0.2s ease;
 }
 
 .btn-retry:active {
-  transform: scale(0.96);
+  transform: scale(0.95);
   opacity: 0.9;
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   VERSES — Apple Notes List Style (NO CARDS)
-═══════════════════════════════════════════════════════════════ */
+   § 7. VERSES — iOS 18 Rounded Glass Cards
+   ═══════════════════════════════════════════════════════════════ */
 
 .verses-container {
   display: flex;
   flex-direction: column;
-  background: var(--bg-paper);
+  gap: 14px;
   width: 100%;
-  max-width: 100%;
+  max-width: 680px;
   margin: 0 auto;
+  padding: 14px 16px 28px;
 }
 
 .verse-item {
-  padding: 20px 16px;
-  border-bottom: 0.5px solid var(--separator-light);
-  animation: verseFadeIn 0.3s var(--ease-out) backwards;
-  transition: background-color 0.15s ease;
+  background: var(--bg-card);
+  border: var(--border-card);
+  border-radius: 24px;
+  box-shadow: var(--card-shadow);
+  padding: 22px 18px 20px;
+  animation: verseFadeIn 0.35s var(--ease-spring) backwards;
+  transition: transform 0.22s var(--ease-spring), box-shadow 0.22s ease, border-color 0.2s ease;
   cursor: pointer;
-  -webkit-tap-highlight-color: rgba(255, 149, 0, 0.1);
+  position: relative;
+  overflow: hidden;
 }
 
-.verse-item:last-child {
-  border-bottom: none;
+.verse-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 40%;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, transparent 100%);
+  border-radius: inherit;
+  pointer-events: none;
 }
 
 .verse-item:active {
-  background-color: rgba(255, 149, 0, 0.05);
+  transform: scale(0.985);
+  box-shadow: var(--card-shadow-active);
+  border-color: rgba(212, 148, 58, 0.25);
 }
 
 @keyframes verseFadeIn {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(14px) scale(0.98);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
 }
 
-/* Gurmukhi Text — Native iOS */
+/* Gurmukhi Verse Typography */
 .verse-gurmukhi {
   font-family: var(--font-gurmukhi);
   font-size: var(--font-size);
-  font-weight: 400;
-  line-height: 1.8;
+  font-weight: 500;
+  line-height: 1.9;
   color: var(--text-primary);
   text-align: center;
-  margin-bottom: 12px;
-  letter-spacing: 0.01em;
+  margin-bottom: 8px;
+  letter-spacing: 0.015em;
   word-break: break-word;
   overflow-wrap: break-word;
 }
@@ -445,30 +460,34 @@ body {
   letter-spacing: -0.01em;
 }
 
-/* Transliteration — iOS System Style */
+/* Transliteration */
 .verse-transliteration {
   font-family: var(--font-system);
-  font-size: 15px;
-  font-weight: 400;
+  font-size: 14.5px;
+  font-weight: 500;
   color: var(--accent-gold);
   text-align: center;
-  margin-bottom: 12px;
+  margin-top: 6px;
+  margin-bottom: 6px;
   line-height: 1.5;
+  letter-spacing: 0.01em;
 }
 
-/* Translations — Notes Style */
+/* Translations Container — Inner iOS Card */
 .verse-translations {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  padding-top: 12px;
-  margin-top: 8px;
-  border-top: 0.5px solid var(--separator-light);
+  padding: 14px 16px;
+  margin-top: 14px;
+  background: var(--bg-card-inner);
+  border: var(--border-card-inner);
+  border-radius: 16px;
 }
 
 .verse-translation {
   font-family: var(--font-system);
-  font-size: 15px;
+  font-size: 14px;
   line-height: 1.6;
   color: var(--text-secondary);
   text-align: center;
@@ -477,13 +496,15 @@ body {
 
 .verse-translation.punjabi {
   font-family: var(--font-gurmukhi);
-  font-size: 15px;
-  color: var(--text-secondary);
+  font-size: 14.5px;
+  line-height: 1.65;
+  color: var(--text-primary);
+  font-weight: 500;
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   ACTION BAR — Ultra Minimal iOS Native
-═══════════════════════════════════════════════════════════════ */
+   § 8. ACTION BAR — Floating iOS 18 Glass Island
+   ═══════════════════════════════════════════════════════════════ */
 
 .action-bar {
   position: fixed;
@@ -494,70 +515,85 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: calc(50px + var(--safe-bottom));
-  padding: 0 8px var(--safe-bottom);
-  background: var(--bg-primary);
+  height: calc(54px + var(--safe-bottom));
+  padding: 0 16px var(--safe-bottom);
+  background: rgba(242, 242, 247, 0.88);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
   border-top: 0.5px solid var(--separator-light);
+}
+
+[data-theme="dark"] .action-bar,
+.dark-mode .action-bar {
+  background: rgba(13, 13, 15, 0.88);
 }
 
 .quick-actions {
   display: flex;
   align-items: center;
+  gap: 4px;
 }
 
 .action-btn {
-  width: 44px;
-  height: 44px;
+  width: 42px;
+  height: 42px;
   display: flex;
   align-items: center;
   justify-content: center;
   background: transparent;
+  border-radius: 50%;
   border: none;
   color: var(--text-secondary);
   cursor: pointer;
-  transition: color 0.15s ease;
+  transition: transform 0.2s var(--ease-spring), color 0.15s ease, background 0.15s ease;
 }
 
 .action-btn:active {
+  transform: scale(0.9);
   color: var(--accent-gold);
-  opacity: 0.7;
+  background: var(--accent-gold-light);
 }
 
 .action-btn.active {
   color: var(--accent-gold);
+  background: var(--accent-gold-light);
 }
 
+/* Radiant Gold New Shabad Button */
 .btn-new-shabad {
   font-family: var(--font-gurmukhi);
-  padding: 8px 16px;
-  background: var(--accent-gold);
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #FF9500 0%, #E68500 100%);
   border: none;
-  border-radius: 16px;
+  border-radius: 20px;
   color: #FFFFFF;
-  font-size: 13px;
-  font-weight: 500;
+  font-size: 14px;
+  font-weight: 700;
   cursor: pointer;
-  transition: opacity 0.15s ease;
-  margin-right: 8px;
+  box-shadow: 0 4px 14px rgba(255, 149, 0, 0.35);
+  transition: transform 0.2s var(--ease-spring), opacity 0.15s ease, box-shadow 0.2s ease;
 }
 
 .btn-new-shabad:active {
-  opacity: 0.7;
+  transform: scale(0.95);
+  opacity: 0.9;
+  box-shadow: 0 2px 8px rgba(255, 149, 0, 0.25);
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   SETTINGS SHEET — iOS Bottom Sheet
-═══════════════════════════════════════════════════════════════ */
+   § 9. SETTINGS & INFO SHEETS — Modern iOS 18 Bottom Sheets
+   ═══════════════════════════════════════════════════════════════ */
 
 .sheet-backdrop {
   position: fixed;
   inset: 0;
   z-index: 200;
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(0, 0, 0, 0.45);
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.3s ease, visibility 0.3s ease;
-  backdrop-filter: blur(2px);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 }
 
 .sheet-backdrop.visible {
@@ -565,53 +601,59 @@ body {
   visibility: visible;
 }
 
-.settings-sheet {
+.settings-sheet,
+.info-sheet {
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
   z-index: 201;
-  background: var(--bg-secondary);
-  border-radius: 24px 24px 0 0;
-  padding: 12px 0 calc(20px + var(--safe-bottom));
+  background: var(--bg-card);
+  border-radius: 28px 28px 0 0;
+  padding: 12px 0 calc(24px + var(--safe-bottom));
   transform: translateY(100%);
-  transition: transform 0.35s var(--ease-spring);
+  transition: transform 0.36s cubic-bezier(0.32, 0.72, 0, 1);
   max-height: 85vh;
   overflow-y: auto;
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.25);
+  border-top: 1px solid var(--separator-light);
 }
 
-.settings-sheet.visible {
+.settings-sheet.visible,
+.info-sheet.visible {
   transform: translateY(0);
 }
 
 .sheet-handle {
-  width: 36px;
-  height: 4px;
+  width: 40px;
+  height: 5px;
   background: var(--text-muted);
-  border-radius: 2px;
-  margin: 0 auto 16px;
+  border-radius: 3px;
+  margin: 4px auto 16px;
+  opacity: 0.7;
 }
 
 .sheet-header {
-  padding: 0 20px 16px;
-  border-bottom: 1px solid var(--bg-tertiary);
+  padding: 0 22px 14px;
+  border-bottom: 0.5px solid var(--separator-light);
   margin-bottom: 8px;
 }
 
 .sheet-header h2 {
   font-family: var(--font-gurmukhi);
-  font-size: 20px;
-  font-weight: 600;
+  font-size: 21px;
+  font-weight: 700;
   color: var(--text-primary);
+  letter-spacing: -0.2px;
 }
 
 .sheet-body {
-  padding: 8px 20px;
+  padding: 8px 22px;
 }
 
 .settings-section {
-  padding: 16px 0;
-  border-bottom: 1px solid var(--bg-tertiary);
+  padding: 14px 0;
+  border-bottom: 0.5px solid var(--separator-light);
 }
 
 .settings-section:last-child {
@@ -622,7 +664,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 0;
+  padding: 10px 0;
 }
 
 .setting-label {
@@ -631,11 +673,11 @@ body {
   font-weight: 500;
 }
 
-/* iOS Toggle */
+/* iOS Toggle Switch */
 .ios-toggle {
   position: relative;
-  width: 50px;
-  height: 30px;
+  width: 51px;
+  height: 31px;
   cursor: pointer;
 }
 
@@ -650,7 +692,7 @@ body {
   position: absolute;
   inset: 0;
   background: var(--bg-tertiary);
-  border-radius: 15px;
+  border-radius: 16px;
   transition: background 0.25s ease;
 }
 
@@ -659,16 +701,16 @@ body {
   position: absolute;
   top: 2px;
   left: 2px;
-  width: 26px;
-  height: 26px;
+  width: 27px;
+  height: 27px;
   background: #FFFFFF;
   border-radius: 50%;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.18);
   transition: transform 0.25s var(--ease-spring);
 }
 
 .ios-toggle input:checked + .toggle-track {
-  background: var(--accent-gold);
+  background: #34C759;
 }
 
 .ios-toggle input:checked + .toggle-track::after {
@@ -679,110 +721,88 @@ body {
 .font-slider-wrap {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-top: 12px;
+  gap: 14px;
+  margin-top: 14px;
 }
 
 .font-icon {
   font-family: var(--font-gurmukhi);
   font-size: 14px;
+  font-weight: 600;
   color: var(--text-tertiary);
 }
 
 .font-icon--large {
-  font-size: 20px;
+  font-size: 22px;
 }
 
 .font-slider {
   flex: 1;
   -webkit-appearance: none;
   appearance: none;
-  height: 4px;
+  height: 6px;
   background: var(--bg-tertiary);
-  border-radius: 2px;
+  border-radius: 3px;
   outline: none;
 }
 
 .font-slider::-webkit-slider-thumb {
   -webkit-appearance: none;
-  width: 20px;
-  height: 20px;
-  background: var(--accent-gold);
+  width: 24px;
+  height: 24px;
+  background: #FFFFFF;
+  border: 0.5px solid rgba(0, 0, 0, 0.04);
   border-radius: 50%;
   cursor: pointer;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
 }
 
 .font-slider::-moz-range-thumb {
-  width: 20px;
-  height: 20px;
-  background: var(--accent-gold);
+  width: 24px;
+  height: 24px;
+  background: #FFFFFF;
+  border: 0.5px solid rgba(0, 0, 0, 0.04);
   border-radius: 50%;
   cursor: pointer;
-  border: none;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
 }
 
 /* Theme Toggle Button */
 .theme-toggle {
-  width: 40px;
-  height: 40px;
+  width: 42px;
+  height: 42px;
   display: flex;
   align-items: center;
   justify-content: center;
   background: var(--bg-tertiary);
   border: none;
-  border-radius: 12px;
+  border-radius: 14px;
   color: var(--accent-gold);
   cursor: pointer;
-  transition: background 0.2s ease;
+  transition: transform 0.2s var(--ease-spring), background 0.2s ease;
 }
 
 .theme-toggle:active {
-  background: var(--card-bg);
+  transform: scale(0.92);
 }
 
 .theme-toggle .icon-sun {
   display: none;
 }
 
-[data-theme="dark"] .theme-toggle .icon-moon {
+[data-theme="dark"] .theme-toggle .icon-moon,
+.dark-mode .theme-toggle .icon-moon {
   display: none;
 }
 
-[data-theme="dark"] .theme-toggle .icon-sun {
+[data-theme="dark"] .theme-toggle .icon-sun,
+.dark-mode .theme-toggle .icon-sun {
   display: block;
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   INFO SHEET — About Shabad Vichar
-═══════════════════════════════════════════════════════════════ */
-
-.info-sheet {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 201;
-  background: var(--bg-secondary);
-  border-radius: 24px 24px 0 0;
-  padding: 12px 0 calc(20px + var(--safe-bottom));
-  transform: translateY(100%);
-  transition: transform 0.35s var(--ease-spring);
-  max-height: 85vh;
-  overflow-y: auto;
-}
-
-.info-sheet.visible {
-  transform: translateY(0);
-}
-
-.info-sheet-body {
-  padding: 8px 20px 20px;
-}
-
+/* Info Sheet Content */
 .info-section {
-  padding: 16px 0;
+  padding: 14px 0;
   border-bottom: 0.5px solid var(--separator-light);
 }
 
@@ -791,145 +811,113 @@ body {
 }
 
 .info-quote {
-  text-align: center;
-  padding: 16px 12px;
-  background: var(--bg-tertiary);
-  border-radius: 16px;
-  margin-bottom: 8px;
+  background: linear-gradient(135deg, rgba(212, 148, 58, 0.12) 0%, rgba(212, 148, 58, 0.04) 100%);
+  border-left: 3.5px solid var(--accent-gold);
+  border-radius: 0 16px 16px 0;
+  padding: 14px 16px;
+  margin-bottom: 6px;
 }
 
 .gurmukhi-quote {
   font-family: var(--font-gurmukhi);
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 600;
   color: var(--accent-gold);
   line-height: 1.6;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .quote-translation {
-  font-size: 13px;
+  font-size: 13.5px;
   color: var(--text-secondary);
-  font-style: italic;
   line-height: 1.5;
+  font-style: italic;
 }
 
 .info-title {
   font-family: var(--font-gurmukhi);
-  font-size: 18px;
-  font-weight: 600;
+  font-size: 16.5px;
+  font-weight: 700;
   color: var(--text-primary);
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 }
 
 .info-text {
   font-family: var(--font-gurmukhi);
-  font-size: 15px;
+  font-size: 14.5px;
+  line-height: 1.65;
   color: var(--text-secondary);
-  line-height: 1.7;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 }
 
 .info-list {
   list-style: none;
   padding: 0;
-  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .info-list li {
   font-family: var(--font-gurmukhi);
-  font-size: 15px;
+  font-size: 14.5px;
+  line-height: 1.55;
   color: var(--text-secondary);
-  line-height: 1.7;
-  padding: 8px 0;
-  padding-left: 20px;
+  padding-left: 18px;
   position: relative;
 }
 
 .info-list li::before {
-  content: '•';
+  content: '✦';
   position: absolute;
   left: 0;
   color: var(--accent-gold);
-  font-weight: bold;
-}
-
-.info-list li strong {
-  color: var(--text-primary);
-  font-weight: 600;
-}
-
-.info-footer {
-  text-align: center;
-  padding-top: 20px;
-}
-
-.info-footer .info-text {
-  font-family: var(--font-gurmukhi);
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--accent-gold);
-  margin-bottom: 8px;
+  font-size: 11px;
+  top: 2px;
 }
 
 .info-subtext {
   font-family: var(--font-gurmukhi);
-  font-size: 14px;
+  font-size: 13.5px;
   color: var(--text-tertiary);
-  line-height: 1.6;
+  text-align: center;
+  line-height: 1.5;
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   TOAST
-═══════════════════════════════════════════════════════════════ */
+   § 10. TOAST NOTIFICATION
+   ═══════════════════════════════════════════════════════════════ */
 
 .toast {
   position: fixed;
-  bottom: calc(100px + var(--safe-bottom));
+  bottom: calc(76px + var(--safe-bottom));
   left: 50%;
-  transform: translateX(-50%) translateY(20px);
-  background: var(--text-primary);
+  transform: translateX(-50%) translateY(20px) scale(0.95);
+  background: rgba(0, 0, 0, 0.85);
   color: #FFFFFF;
   padding: 10px 20px;
-  border-radius: 24px;
+  border-radius: 22px;
   font-size: 14px;
   font-weight: 500;
+  z-index: 300;
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.3s var(--ease-out), visibility 0.3s var(--ease-out);
-  z-index: 300;
+  transition: transform 0.28s var(--ease-spring), opacity 0.28s ease, visibility 0.28s ease;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
   white-space: nowrap;
+  pointer-events: none;
+}
+
+[data-theme="dark"] .toast,
+.dark-mode .toast {
+  background: rgba(255, 255, 255, 0.92);
+  color: #000000;
 }
 
 .toast.show {
   opacity: 1;
   visibility: visible;
-  transform: translateX(-50%) translateY(0);
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   RESPONSIVE
-═══════════════════════════════════════════════════════════════ */
-
-@media (min-width: 768px) {
-  .shabad-content {
-    padding: 0 40px;
-  }
-  
-  .verse-item {
-    padding: 32px 36px;
-  }
-  
-  .action-bar {
-    padding: 16px 40px calc(16px + var(--safe-bottom));
-  }
-}
-
-@media (min-width: 1024px) {
-  .verses-container {
-    max-width: 800px;
-    margin: 0 auto;
-    border-left: 0.5px solid var(--separator-light);
-    border-right: 0.5px solid var(--separator-light);
-  }
+  transform: translateX(-50%) translateY(0) scale(1);
 }
