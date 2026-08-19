@@ -264,6 +264,13 @@ class PWAManager {
 
   startVersionPolling() {
     this.currentVersion = localStorage.getItem('anhad_app_version') || null;
+    // See checkVersionAndUpdate() below for why this is compared by
+    // timestamp, not by `version` — scripts/generate-version.js hardcodes
+    // the `version` field, so it silently stops changing the moment someone
+    // forgets to hand-bump it (confirmed: it stayed "4.8.0" across several
+    // real fixes in this project's history). `timestamp` is written fresh by
+    // `Date.now()` on every single run, so it can never go stale this way.
+    this.currentBuildTimestamp = localStorage.getItem('anhad_app_build_ts') || null;
 
     // Initial check (delayed to let page fully settle)
     setTimeout(() => this.checkVersionAndUpdate(), 3000);
@@ -290,21 +297,33 @@ class PWAManager {
 
       const data = await response.json();
       const serverVersion = data.version;
+      // Primary change signal. `version` is a hand-maintained semver string
+      // in scripts/generate-version.js — reliable only if every fix also
+      // remembers to bump it, which has demonstrably not always happened.
+      // `timestamp` (Date.now(), regenerated on every single run of that
+      // script) can't go stale the same way, so it's what actually decides
+      // "did the build change", with `version` kept only for the log lines.
+      const serverBuildTimestamp = data.timestamp ? String(data.timestamp) : null;
 
       if (!this.currentVersion) {
         // First load — just record the version, don't trigger anything
         this.currentVersion = serverVersion;
+        this.currentBuildTimestamp = serverBuildTimestamp;
         localStorage.setItem('anhad_app_version', serverVersion);
-        console.log(`[PWA] Version initialized: ${serverVersion}`);
+        if (serverBuildTimestamp) localStorage.setItem('anhad_app_build_ts', serverBuildTimestamp);
+        console.log(`[PWA] Version initialized: ${serverVersion} (build ${serverBuildTimestamp})`);
         return;
       }
 
-      if (serverVersion !== this.currentVersion) {
-        console.log(`[PWA] 🔄 VERSION CHANGED: ${this.currentVersion} → ${serverVersion}`);
+      const buildChanged = serverBuildTimestamp && serverBuildTimestamp !== this.currentBuildTimestamp;
+      if (serverVersion !== this.currentVersion || buildChanged) {
+        console.log(`[PWA] 🔄 VERSION CHANGED: ${this.currentVersion} → ${serverVersion} (build ${this.currentBuildTimestamp} → ${serverBuildTimestamp})`);
 
         // Update stored version FIRST (so after reload it won't re-trigger)
         this.currentVersion = serverVersion;
+        this.currentBuildTimestamp = serverBuildTimestamp;
         localStorage.setItem('anhad_app_version', serverVersion);
+        if (serverBuildTimestamp) localStorage.setItem('anhad_app_build_ts', serverBuildTimestamp);
 
         // Stop polling — we found a change, no need to keep checking
         if (this.versionCheckInterval) {

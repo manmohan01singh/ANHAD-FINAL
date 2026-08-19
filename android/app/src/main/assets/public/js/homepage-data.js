@@ -179,11 +179,25 @@ function _anhadHomepageDataInit() {
     notesCard: 'Notes/notes.html'
   };
 
-  // NATIVE APP FIX: HomeStateManager-backed fast return path
+  // NATIVE APP FIX: HomeStateManager-backed fast return path.
+  //
+  // Gated on having ALREADY done a full init in this JS realm. Previously this
+  // only checked HomeStateManager, and both of its signals are effectively
+  // always true: isReturningFromNavigation() falls through to "is there any
+  // session state?" (anhad-sky-bg.js writes some via saveImageState), and
+  // isRecentlyInitialized() is re-stamped on every visibilitychange so it never
+  // expires. sessionStorage also survives a hard reload. So on the exact
+  // sequence the user reported — hard-reload on Insights, then navigate to
+  // Home — this file was freshly injected, took the fast path on its FIRST
+  // run, and skipped everything below: #hukamDate, listener counts, the nitnem
+  // and sehaj subtitles, the Gurpurab fields, the notification badge, the
+  // filter panel, the radio menu and all five update intervals. It also never
+  // set _homepageDataInitialized, so every later call repeated the same
+  // shortcut and Home never recovered.
   const isReturning = window.HomeStateManager?.isReturningFromNavigation();
   const hasRecentState = window.HomeStateManager?.isRecentlyInitialized();
-  
-  if (isReturning && hasRecentState) {
+
+  if (window._homepageDataInitialized && isReturning && hasRecentState) {
     console.log('[HomepageData] 🚀 Fast return - restoring from cached state');
     
     // Restore data from cache without re-fetching
@@ -706,15 +720,19 @@ function _anhadHomepageDataInit() {
   // Intervals are tracked on `window`, not in a per-call local, and any set
   // from a previous init are cleared first — otherwise each re-entry into this
   // body leaked another five permanently-running timers.
-  (window.__anhadHomepageIntervals || []).forEach(id => clearInterval(id));
-  window.__anhadHomepageIntervals = [
-    setInterval(() => { if (!document.hidden) updateClock(); }, 15000),
-    setInterval(() => { if (!document.hidden) updateListenerCount(); }, 60000),
-    setInterval(() => { if (!document.hidden) updateGreeting(); }, 300000),
-    setInterval(() => { if (!document.hidden) updateNitnemSubtitle(); }, 300000),
-    setInterval(() => { if (!document.hidden) updateNotificationBadge(); }, 300000)
-  ];
-  _hpIntervals.push(...window.__anhadHomepageIntervals);
+  function startHomepageIntervals() {
+    (window.__anhadHomepageIntervals || []).forEach(id => clearInterval(id));
+    window.__anhadHomepageIntervals = [
+      setInterval(() => { if (!document.hidden) updateClock(); }, 15000),
+      setInterval(() => { if (!document.hidden) updateListenerCount(); }, 60000),
+      setInterval(() => { if (!document.hidden) updateGreeting(); }, 300000),
+      setInterval(() => { if (!document.hidden) updateNitnemSubtitle(); }, 300000),
+      setInterval(() => { if (!document.hidden) updateNotificationBadge(); }, 300000)
+    ];
+    return window.__anhadHomepageIntervals;
+  }
+
+  _hpIntervals.push(...startHomepageIntervals());
 
   // Clean up intervals on genuine page unload.
   //
@@ -732,6 +750,20 @@ function _anhadHomepageDataInit() {
     window.addEventListener('pagehide', () => {
       (window.__anhadHomepageIntervals || []).forEach(id => clearInterval(id));
       window.__anhadHomepageIntervals = [];
+    });
+
+    // ...and put them back when the page returns. `pagehide` fires every time a
+    // mobile PWA is backgrounded, and the guard above means this init body will
+    // not run again — so without this, one app switch permanently froze Home's
+    // clock, listener count, greeting, nitnem subtitle and notification badge
+    // for the rest of the session.
+    window.addEventListener('pageshow', () => {
+      const p = window.location.pathname;
+      const onHome = p === '/' || p === '/frontend/' ||
+        p.endsWith('/index.html') || p.endsWith('/frontend/');
+      if (onHome && !(window.__anhadHomepageIntervals || []).length) {
+        startHomepageIntervals();
+      }
     });
   }
 
@@ -757,8 +789,16 @@ function _anhadHomepageDataInit() {
   // CRITICAL FIX: When user navigates back to homepage via SPA, force refresh
   // all dynamic data (especially Gurpurab) to prevent stale information.
   window.addEventListener('anhad_page_changed', function () {
-    // Only run if we're on the homepage
-    if (window.location.pathname.endsWith('/index.html') || window.location.pathname.endsWith('/frontend/')) {
+    // Only run if we're on the homepage.
+    // smooth-navigation.js normalises '/index.html' to '/' before pushState
+    // (normalizeUrl, smooth-navigation.js:46), so after any SPA navigation the
+    // live pathname is bare '/'. The two endsWith() tests below matched neither,
+    // and this entire refresh block — ten updaters including the Gurpurab card,
+    // Nitnem tracker and Hukamnama date — never ran on a return to Home.
+    const p = window.location.pathname;
+    const onHome = p === '/' || p === '/frontend/' ||
+      p.endsWith('/index.html') || p.endsWith('/frontend/');
+    if (onHome) {
       console.log('[HomepageData] SPA page changed back to homepage, refreshing data');
       updateNextGurpurab();
       updateGreeting();
@@ -899,11 +939,22 @@ function _anhadHomepageDataInit() {
   console.log('✨ ANHAD Premium Homepage Data Initialized');
 }
 
+// Composes with whatever is already registered at each key instead of
+// overwriting it outright — see the matching comment in trendora-app.js's own
+// __anhadPageInit registration (loaded just before this script,
+// index.html:3387-3388) for why: both scripts register these same 4 keys,
+// and whichever ran second used to silently win, so only one of the two
+// intended repopulation paths ever actually fired.
 window.__anhadPageInit = window.__anhadPageInit || {};
-window.__anhadPageInit['/index.html'] = _anhadHomepageDataInit;
-window.__anhadPageInit['/'] = _anhadHomepageDataInit;
-window.__anhadPageInit['/frontend/index.html'] = _anhadHomepageDataInit;
-window.__anhadPageInit['/frontend/'] = _anhadHomepageDataInit;
+['/index.html', '/', '/frontend/index.html', '/frontend/'].forEach(p => {
+  const existing = window.__anhadPageInit[p];
+  window.__anhadPageInit[p] = (existing && existing !== _anhadHomepageDataInit)
+    ? () => {
+        try { existing(); } catch (e) { console.warn('[HomepageData] chained page-init (existing) failed', e); }
+        _anhadHomepageDataInit();
+      }
+    : _anhadHomepageDataInit;
+});
 
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', _anhadHomepageDataInit);

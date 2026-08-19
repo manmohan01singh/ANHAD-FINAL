@@ -890,8 +890,17 @@ body {
   background-color: var(--ios-bg-primary);
 }
 
-/* Dark Mode Scroll State Fix - Disable transitions during scroll */
-[data-theme="dark"].scrolling * {
+/* Dark Mode Scroll State Fix - Disable transitions during scroll.
+   Scoped to the cards that actually carry transitions. As `.scrolling *` this
+   matched every node in the document, so each add/remove of the .scrolling
+   class on <html> (twice per scroll gesture) invalidated the computed
+   transition of the entire tree — a full-document style recalc mid-scroll. */
+[data-theme="dark"].scrolling .quick-card,
+[data-theme="dark"].scrolling .practice-card,
+[data-theme="dark"].scrolling .event-card,
+[data-theme="dark"].scrolling .hero-card,
+[data-theme="dark"].scrolling .glass-card,
+[data-theme="dark"].scrolling .stat-card {
   transition: none !important;
 }
 

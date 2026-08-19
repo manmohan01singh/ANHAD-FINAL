@@ -19,6 +19,9 @@
   let unsubscribeStateChange = null;
   let unsubscribeLoading = null;
   let unsubscribeTimeUpdate = null;
+  let unsubscribeError = null;
+  // Latest error, cleared as soon as audio flows again.
+  let lastError = null;
   let retryCount = 0;
   const MAX_RETRIES = 200;
 
@@ -84,6 +87,16 @@
     document.getElementById('gmp-play-btn').onclick = (e) => {
       e.stopPropagation();
       if (window.navigator?.vibrate) window.navigator.vibrate(10);
+      // After a failure, toggle() is the wrong call — it would try to pause a
+      // stream that is already dead. Re-issue play() on the current stream so
+      // the singleton re-resolves the live position and resets the errored
+      // media element.
+      const state = window.AnhadAudio.getState();
+      if ((state.connectionState === 'failed' || lastError) && !state.isPlaying && state.currentStream) {
+        lastError = null;
+        window.AnhadAudio.play(state.currentStream);
+        return;
+      }
       window.AnhadAudio.toggle();
     };
 
@@ -144,9 +157,24 @@
     const loader = document.getElementById('gmp-loader');
     const btnLoader = document.getElementById('gmp-btn-loader');
 
+    // Any confirmed playback clears a stale error banner.
+    if (state.isPlaying) lastError = null;
+
+    const conn = state.connectionState;
+    const isReconnecting = conn === 'reconnecting';
+    const hasFailed = conn === 'failed' || (!!lastError && !state.isPlaying && !state.isLoading);
+
     if (artImg) artImg.src = state.artwork || 'assets/HERO CARD IMAGES/day-darbar-sahib.webp';
     if (titleEl) titleEl.textContent = state.currentTrackTitle;
-    if (subEl) subEl.textContent = state.currentTrackArtist;
+    // connectionState was previously write-only — nothing in the app read it,
+    // so a failed stream looked identical to a paused one.
+    if (subEl) {
+      if (isReconnecting) subEl.textContent = 'Reconnecting…';
+      else if (hasFailed) subEl.textContent = 'Tap to retry';
+      else subEl.textContent = state.currentTrackArtist;
+    }
+    miniPlayerEl.classList.toggle('gmp--error', hasFailed);
+    miniPlayerEl.classList.toggle('gmp--reconnecting', isReconnecting);
     if (liveDot) liveDot.style.display = state.streamType === 'live' ? 'block' : 'none';
 
     if (loader) loader.classList.toggle('active', state.isLoading);
@@ -167,6 +195,13 @@
 
     unsubscribeStateChange = window.AnhadAudio.on('statechange', updateUI);
     unsubscribeLoading = window.AnhadAudio.on('loading', updateUI);
+    // The mini player never subscribed to 'error' at all, so a stream could die
+    // and the UI would keep showing a pause button over silence with no way for
+    // the user to know, let alone retry.
+    unsubscribeError = window.AnhadAudio.on('error', (info) => {
+      lastError = info || { message: 'Playback error' };
+      updateUI();
+    });
     unsubscribeTimeUpdate = window.AnhadAudio.on('timeupdate', (data) => {
       if (data && data.progress !== undefined) {
         const progressFill = document.getElementById('gmp-progress-fill');
@@ -179,6 +214,7 @@
     if (unsubscribeStateChange) unsubscribeStateChange();
     if (unsubscribeLoading) unsubscribeLoading();
     if (unsubscribeTimeUpdate) unsubscribeTimeUpdate();
+    if (unsubscribeError) unsubscribeError();
   }
 
   if (document.readyState === 'loading') {

@@ -255,6 +255,12 @@
   let isTransitioning = false; // CRITICAL FIX: Prevent concurrent track transitions
   let connectionState = 'idle'; // 'idle' | 'connected' | 'reconnecting' | 'failed'
   let liveReconnectAttempts = 0; // reset on any successful play; bounds the retry loop below
+  // "The user wants audio." Set when playback is requested, cleared only by an
+  // explicit pause()/stop(). Survives errors, offline periods and exhausted
+  // retries, so the 'online' handler knows whether an interrupted listen should
+  // be resumed. isPlaying answers "is sound coming out right now?" — a very
+  // different question, and the one that must go false the moment audio dies.
+  let wantsPlayback = false;
 
   const listeners = {
     statechange: [],
@@ -523,6 +529,21 @@
           errorType = 'offline';
         }
         
+        // A fatal MediaError stops playback but, per the HTML spec, does NOT
+        // fire a 'pause' event and does NOT set audio.paused — so nothing else
+        // in this file ever cleared isPlaying. Both recovery branches below are
+        // gated on !isPlaying, so every retry was silently skipped while the
+        // attempt counter still burned down to a terminal 'failed'. It also
+        // left every getPublicState() consumer (mini player, radio page, hero
+        // cards, lock-screen MediaSession) showing "playing" over a silent
+        // stream, which made the user's first tap call pause() instead of
+        // resuming. Clear it here, before any recovery decision is taken.
+        isPlaying = false;
+        isLoading = false;
+        emit('loading', { isLoading: false });
+        emit('statechange', getPublicState());
+        updateNativeMediaState();
+
         emit('error', {
           message: errorMessage,
           type: errorType,
@@ -532,14 +553,27 @@
           networkState: this.audio.networkState,
           readyState: this.audio.readyState
         });
-        
+
+        // Offline is not a stream fault — retrying on a dead network just burns
+        // the attempt budget (2+4+8+16+30s ≈ 60s total, i.e. any outage longer
+        // than a minute used to exhaust it permanently). Park until 'online'.
+        if (!navigator.onLine) {
+          connectionState = 'reconnecting';
+          emit('statechange', getPublicState());
+          console.log('[PlaybackQueueController] 📴 Offline — deferring recovery until the network returns');
+          return;
+        }
+
         // CRITICAL FIX: Auto-recovery for playlist errors
         if (currentStream && STREAMS[currentStream]?.type === 'playlist') {
           console.log('[PlaybackQueueController] 🔄 Error detected in playlist, attempting recovery in 3 seconds...');
           setTimeout(() => {
-            if (!isPlaying) {
-              console.log('[PlaybackQueueController] ⏭️ Skipping to next track after error');
-              handleTrackEnded();
+            if (!isPlaying && wantsPlayback) {
+              // Re-resolve the live broadcast position rather than skipping to
+              // the next file: a virtual-live listener wants where the
+              // broadcast is NOW, not the next track in the playlist.
+              console.log('[PlaybackQueueController] ⏭️ Re-resolving broadcast position after error');
+              playStream(currentStream);
             }
           }, 3000);
         } else if (currentStream && STREAMS[currentStream]?.type === 'live') {
@@ -555,7 +589,7 @@
             const backoffMs = Math.min(2000 * Math.pow(2, liveReconnectAttempts - 1), 30000); // 2s,4s,8s,16s,30s(cap)
             console.log(`[PlaybackQueueController] 🔄 Live stream error, reconnect attempt ${liveReconnectAttempts}/${MAX_LIVE_RECONNECT_ATTEMPTS} in ${backoffMs}ms...`);
             setTimeout(() => {
-              if (currentStream && STREAMS[currentStream]?.type === 'live' && !isPlaying) {
+              if (currentStream && STREAMS[currentStream]?.type === 'live' && !isPlaying && wantsPlayback) {
                 playStream(currentStream);
               }
             }, backoffMs);
@@ -582,13 +616,30 @@
           stallRecoveryTimer = null;
         }
       };
+      // Re-arms itself after each attempt instead of firing once and vanishing.
+      // The old version cleared its own handle and relied on the browser
+      // emitting another 'waiting'/'stalled' to come back — which an errored
+      // element in HAVE_NOTHING never does, so a single failed recovery ended
+      // the watchdog for the rest of the session.
       const armStallTimer = () => {
         clearStallTimer();
-        stallRecoveryTimer = setTimeout(() => {
+        stallRecoveryTimer = setTimeout(function attempt() {
           stallRecoveryTimer = null;
           if (!currentStream || !STREAMS[currentStream]) return;
+          // Deliberately NOT gated on isPlaying: a stall is precisely the case
+          // where playback started (so isPlaying is true) and then hung with no
+          // further 'playing' event. The timer is already cleared by the
+          // 'playing' and 'pause' listeners below, which is what distinguishes
+          // recovery from a genuine stall.
+          if (!wantsPlayback) return;
+          if (!navigator.onLine) {
+            // Don't burn attempts against a dead network; the 'online'
+            // handler owns recovery from here.
+            return;
+          }
           console.warn('[PlaybackQueueController] ⚠️ Stall watchdog: no recovery within 15s, reloading current source');
           playStream(currentStream);
+          armStallTimer();
         }, 15000);
       };
       this.audio.addEventListener('waiting', armStallTimer);
@@ -654,11 +705,27 @@
         this.audio.removeAttribute('crossorigin');
       }
 
+      // A MediaError is STICKY: audio.error stays set and readyState stays at
+      // HAVE_NOTHING until the media load algorithm re-runs, which only a src
+      // reassignment or an explicit load() triggers. Calling play() on such an
+      // element is a no-op. Since virtual-live tracks resolve to a stable URL,
+      // the old `src !== url` guard meant a recovery attempt on the same track
+      // never reset anything — which is why playback stayed dead even when the
+      // user tapped play manually. load() must also run on Capacitor; skipping
+      // it there left native builds the least recoverable of all.
+      const isErrored = !!this.audio.error || this.audio.networkState === 3 /* NETWORK_NO_SOURCE */;
       if (this.audio.src !== url) {
         this.audio.src = url;
-        // PWA only: call load() to reset pipeline
-        if (!window.Capacitor) {
-          try { this.audio.load(); } catch (e) { }
+        try { this.audio.load(); } catch (e) { }
+      } else if (isErrored) {
+        console.log('[PlaybackQueueController] ♻️ Resetting errored media element to force a fresh load');
+        try {
+          this.audio.removeAttribute('src');
+          this.audio.load();
+          this.audio.src = url;
+          this.audio.load();
+        } catch (e) {
+          console.warn('[PlaybackQueueController] Media element reset failed:', e);
         }
       }
 
@@ -783,6 +850,7 @@
   function playStream(streamName) {
     if (!STREAMS[streamName]) return;
     currentStream = streamName;
+    wantsPlayback = true;
     pauseAnchor = null;
 
     if (STREAMS[streamName].type === 'live') {
@@ -931,6 +999,8 @@
   }
 
   function pause() {
+    // Deliberate user pause — stop any in-flight auto-recovery from fighting it.
+    wantsPlayback = false;
     if (!isPlaying) return;
     PlaybackQueueController.pause();
     
@@ -1031,6 +1101,11 @@
   }
 
   function stop() {
+    wantsPlayback = false;
+    // connectionState previously survived stop(), so a 'failed' state leaked
+    // into the next, unrelated listening session.
+    connectionState = 'idle';
+    liveReconnectAttempts = 0;
     PlaybackQueueController.stop();
     manualOffset = 0;
     pauseAnchor = null;
@@ -1372,6 +1447,29 @@
     persistState();
   }
 
+  // ─── RECOVERY: the network came back ───
+  // This engine previously had NO reaction to reconnection at all — the whole
+  // file contained zero addEventListener('online'), and navigator.onLine was
+  // read once, purely to pick an error string. Every recovery path was a timer
+  // armed at the moment of failure, so an outage that outlived those timers
+  // (~60s of backoff) left playback permanently dead, with the mini player
+  // still on screen showing a play button that did nothing.
+  function recoverAfterReconnect(reason) {
+    if (!wantsPlayback || !currentStream) return;
+    if (isPlaying) return;
+    // A fresh network is a fresh budget — otherwise one bad patch of signal
+    // permanently poisons the session.
+    liveReconnectAttempts = 0;
+    connectionState = 'reconnecting';
+    emit('statechange', getPublicState());
+    console.log(`[AnhadAudio] 🌐 ${reason} — resuming "${currentStream}"`);
+    // Go through playStream so the virtual-live broadcast position is
+    // re-resolved for NOW, not the stale position from before the outage.
+    playStream(currentStream);
+  }
+
+  window.addEventListener('online', () => recoverAfterReconnect('Network restored'));
+
   document.addEventListener('visibilitychange', () => {
     if (document.hidden) {
       snapshotBackgroundAnchor();
@@ -1381,9 +1479,23 @@
       // a real pause() always sets a fresh one anyway when it actually runs.
       pauseAnchor = null;
       persistState();
+    } else if (wantsPlayback && currentStream && navigator.onLine) {
+      // Returning to the foreground after audio died while backgrounded —
+      // previously there was no branch for this at all. Note the anchor is
+      // deliberately NOT cleared here: recoverAfterReconnect needs it to
+      // reconstruct the right position, and the old `else if (isPlaying)`
+      // branch used to destroy it precisely because a stale isPlaying=true
+      // survived the error.
+      recoverAfterReconnect('Returned to foreground');
     }
   });
   window.addEventListener('pagehide', snapshotBackgroundAnchor);
+  // bfcache restore — 'visibilitychange' does not fire on a back-forward
+  // restore, so without this a user returning via the back button after an
+  // outage got nothing.
+  window.addEventListener('pageshow', (e) => {
+    if (e.persisted) recoverAfterReconnect('Restored from bfcache');
+  });
 
   // ─── PERIODIC LIVE-DRIFT CORRECTION ───
   // The timeline model assumes real playback runs at exactly 1x wall-clock
@@ -1398,6 +1510,16 @@
   setInterval(() => {
     if (!isPlaying || !currentStream || isTransitioning) return;
     if (!STREAMS[currentStream] || STREAMS[currentStream].type !== 'playlist') return;
+    // Never correct against a broken element. Previously isPlaying stayed true
+    // through a media error, so this kept firing every 30s on a dead stream —
+    // and worse, its seek() branch set the default playback start position,
+    // which the currentTime getter reads straight back, so the next tick
+    // measured ~0 drift and the corrector concluded it had fixed things
+    // instead of escalating to the reload that might actually have recovered.
+    const el = PlaybackQueueController.audio;
+    if (!el || el.error || el.readyState === 0 /* HAVE_NOTHING */) return;
+    if (!navigator.onLine) return;
+    if (document.hidden) return;
 
     const expected = getExpectedBroadcastPosition();
     if (!expected) return;

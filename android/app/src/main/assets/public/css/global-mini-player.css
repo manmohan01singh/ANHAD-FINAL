@@ -567,3 +567,40 @@ html::view-transition {
   inset: 0;
   background: rgba(0, 0, 0, 0.4);
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CONNECTION STATES
+   The singleton tracks connectionState ('reconnecting' | 'failed') but nothing
+   ever read it, so a dead stream was visually identical to a paused one — the
+   player sat there showing a play button that did nothing. These give the two
+   failure states a quiet, non-alarming presence in keeping with the rest of the
+   app, and mark the subtitle as the retry affordance.
+═══════════════════════════════════════════════════════════════════════════ */
+.gmp--reconnecting .gmp__sub {
+  opacity: 0.75;
+  font-style: italic;
+}
+
+.gmp--error .gmp__sub {
+  color: #C2410C;
+  font-weight: 600;
+}
+
+[data-theme="dark"] .gmp--error .gmp__sub,
+html.dark-mode .gmp--error .gmp__sub {
+  color: #FDBA74;
+}
+
+/* Subtle pulse while retrying, so it reads as "working" rather than "stuck". */
+.gmp--reconnecting .gmp__art {
+  animation: gmp-reconnect-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes gmp-reconnect-pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.55; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gmp--reconnecting .gmp__art { animation: none; }
+}

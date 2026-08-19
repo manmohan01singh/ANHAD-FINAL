@@ -14,6 +14,15 @@
 (function () {
   'use strict';
 
+  // Run-once guard. smooth-navigation.js removes and re-appends body scripts by
+  // resolved URL on every SPA arrival, and this file is a bare IIFE — so each
+  // visit to the radio page stacked another set of window listeners
+  // (online/offline), another AnhadAudio 'statechange' subscription (which is
+  // never off()'d anywhere in the app), another 15s alarm interval, and another
+  // 'timeupdate' listener on the SHARED singleton audio element.
+  if (window.__anhadGurbaniRadioInit) return;
+  window.__anhadGurbaniRadioInit = true;
+
   // ─── DOM References ───
   var DOM = {};
   var sleepTimerId = null;
@@ -972,18 +981,24 @@
       }
     }
 
-    // Monitor network changes
+    // Monitor network changes.
+    //
+    // This page used to call audio.pause() on 'offline' and, on 'online', show
+    // a toast reading "Back online! You can now stream Gurbani" while doing
+    // nothing to actually resume — so kirtan stopped on a dropped connection
+    // and never came back. The pause() also fired the audio element's 'pause'
+    // event, which disarmed the stall watchdog, removing the one mechanism
+    // that could have recovered on its own.
+    //
+    // Recovery now lives entirely in the AnhadAudio singleton, which owns the
+    // 'online' listener and knows the difference between "the user paused" and
+    // "the network died". This page only reports status.
     window.addEventListener('online', function() {
-      showToast('🌐 Back online! You can now stream Gurbani.');
+      showToast('🌐 Back online');
     });
 
     window.addEventListener('offline', function() {
-      showToast('📡 Connection lost - Please check your network');
-      // Pause audio if playing
-      var audio = window.AnhadAudio;
-      if (audio && audio.isPlaying()) {
-        audio.pause();
-      }
+      showToast('📡 Connection lost — playback will resume automatically');
     });
 
     // Check on load
