@@ -332,15 +332,28 @@
   }
 }
 
+/* No will-change here. `will-change: transform` makes the element a containing
+   block for its position:fixed descendants — and .page-enter sits on Home's
+   <main class="app"> and Favorites' #app, which contain the radio sheet, its
+   overlay and the "New Note" FAB. Those anchored to the content box instead of
+   the viewport, so the radio sheet opened below the fold while still locking
+   body scroll, and the FAB drifted off-screen. */
+/* Container fades only; the staggered children below still slide. Animating
+   transform on the page container makes it a containing block for its
+   position:fixed descendants (sheets, overlays, FABs) — see the note on
+   @keyframes glassReveal in trendora-premium.css. */
+@keyframes ac-page-enter-container {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
 .page-enter {
-  animation: ac-page-enter 0.48s var(--ac-spring) both;
-  will-change: opacity, transform;
+  animation: ac-page-enter-container 0.48s var(--ac-spring) both;
 }
 
 .page-exiting {
   animation: ac-page-exit 0.18s var(--ac-smooth) both;
   pointer-events: none !important;
-  will-change: opacity, transform;
 }
 
 /* Staggered children */

@@ -341,7 +341,7 @@
   <script src="./js/anhad-core.js" defer></script>
   
   <!-- CRITICAL: SPA Navigation MUST load early to intercept clicks -->
-  <script src="lib/smooth-navigation.js" defer></script>
+  <script src="lib/smooth-navigation.js?v=3" defer></script>
   
   <!-- PERFORMANCE: Page visibility handler for instant restoration -->
   <script>
@@ -2805,7 +2805,7 @@
     <!-- ════════════════════════════════════════════════════════════════════
          GREETING — iOS Large Title Inspired
     ════════════════════════════════════════════════════════════════════ -->
-    <section class="greeting ios-animate-in" aria-label="Personal Greeting" style="position: relative; overflow: visible;">
+    <section class="greeting" aria-label="Personal Greeting" style="position: relative; overflow: visible;">
       <!-- Sky Blue Orbs - 2-3 circular orbs with 100% blur -->
       <div class="greeting-orb greeting-orb-1" aria-hidden="true"></div>
       <div class="greeting-orb greeting-orb-2" aria-hidden="true"></div>
@@ -2885,7 +2885,7 @@
     <!-- ════════════════════════════════════════════════════════════════════
          DAILY PROGRESS — iOS-Style Inline Bar
     ════════════════════════════════════════════════════════════════════ -->
-    <div class="progress-inline ios-animate-in" role="progressbar" aria-label="Today's Progress" aria-valuenow="0" aria-valuemin="0" aria-valuemax="8">
+    <div class="progress-inline" role="progressbar" aria-label="Today's Progress" aria-valuenow="0" aria-valuemin="0" aria-valuemax="8">
       <span class="progress-inline__label" id="progressLabel">☀️ Continue morning Nitnem</span>
       <div class="progress-inline__bar">
         <div class="progress-inline__fill" id="progressFill"></div>
@@ -2896,7 +2896,7 @@
     <!-- ════════════════════════════════════════════════════════════════════
          HERO CAROUSEL — Premium Swipeable Cards
     ════════════════════════════════════════════════════════════════════ -->
-    <section class="hero-carousel ios-animate-in" aria-label="Featured Content">
+    <section class="hero-carousel" aria-label="Featured Content">
       <!-- Adaptive Background Glow — Changes color based on current hero card -->
       <div class="hero-carousel__glow" id="heroGlow" aria-hidden="true"></div>
 
@@ -3124,7 +3124,7 @@
     <!-- ════════════════════════════════════════════════════════════════════
          UPCOMING GURPURAB — Contextual Event Card
     ════════════════════════════════════════════════════════════════════ -->
-    <article class="event-card ios-animate-in" id="eventCard" aria-label="Upcoming Gurpurab" data-href="Calendar/GurpurabCalendar-ios.html" style="margin-top: -30px !important;">
+    <article class="event-card" id="eventCard" aria-label="Upcoming Gurpurab" data-href="Calendar/GurpurabCalendar-ios.html" style="margin-top: -30px !important;">
       <!-- Celebration/Remembrance Badges -->
       <div class="gurpurab-celebration-badge">✦ Today: Gurpurab</div>
       <div class="gurpurab-remembrance-badge">🕯️ Remembrance Day</div>
@@ -3155,7 +3155,7 @@
     <!-- ════════════════════════════════════════════════════════════════════
          YOUR PRACTICE — Premium Cards with Progress Rings & Emojis
     ════════════════════════════════════════════════════════════════════ -->
-    <div class="section-header ios-animate-in">
+    <div class="section-header">
       <h2 class="section-header__title">Your Practice</h2>
     </div>
 
@@ -3203,7 +3203,7 @@
     <!-- ════════════════════════════════════════════════════════════════════
          QUICK ACCESS — iOS Tinted Surface Cards with Emoji Icons
     ════════════════════════════════════════════════════════════════════ -->
-    <div class="section-header ios-animate-in quick-access-header">
+    <div class="section-header quick-access-header">
       <h2 class="section-header__title">Quick Access</h2>
     </div>
 
@@ -3342,7 +3342,7 @@
   <!-- ════════════════════════════════════════════════════════════════════════
        INSTALL BANNER — Smart App Banner
   ════════════════════════════════════════════════════════════════════════ -->
-  <div class="install-banner" id="installBanner" role="alert" style="display: none; transform:translateY(100%); opacity: 0;">
+  <div class="install-banner" id="installBanner" role="alert" style="display: none;">
     <div class="install-banner__inner">
       <div class="install-banner__icon">
         <img decoding="async" src="assets/app-logo.webp" alt="" aria-hidden="true">
@@ -3385,7 +3385,7 @@
   
   <!-- Core UI logic -->
   <script src="js/trendora-app.js?v=4.0.4" defer></script>
-  <script src="js/homepage-data.js" defer></script>
+  <script src="js/homepage-data.js?v=2" defer></script>
   <script src="pwa-register.js?v=4.0.4" defer></script>
   <script src="js/update-controller.js" defer></script>
 
@@ -3398,6 +3398,14 @@
     (function() {
       var _audioLoaded = false;
       var _audioLoading = false;
+      // Load state lives on `window`, not in this block's `var`s. This inline
+      // script re-executes on every SPA arrival at Home, which reset the local
+      // flags to false and let loadAudioEngine() inject ANOTHER copy of the
+      // 97KB singleton each time — measured growing 1 -> 2 -> 3 -> 4 script
+      // tags over four Home visits, re-running the whole engine's top-level
+      // side effects on every one.
+      if (window.__anhadAudioEngineLoaded) _audioLoaded = true;
+      if (window.__anhadAudioEngineLoading) _audioLoading = true;
       // Captured synchronously, at the moment THIS execution of the inline
       // block runs — this script is not shell-listed, so it re-executes on
       // every SPA arrival at Home, and loadAudioEngine() is invoked lazily
@@ -3409,26 +3417,39 @@
       // JSON error body). Capturing it now, while this is still Home, makes
       // every later use correct regardless of where the user has since gone.
       var _audioEngineBase = document.baseURI;
-      // Capture queued play requests before the engine loads
-      window._anhadAudioQueue = [];
+      // Capture queued play requests before the engine loads.
+      // Preserved across re-execution so a play queued just before an SPA
+      // navigation isn't silently dropped when this block runs again.
+      window._anhadAudioQueue = window._anhadAudioQueue || [];
 
-      // Intercept play stream events before dynamic script load completes
-      window.addEventListener('anhadPlayStream', function(e) {
-        if (!_audioLoaded && e.detail && e.detail.stream) {
-          window._anhadAudioQueue.push({ type: 'play', stream: e.detail.stream });
-          if (!_audioLoading) loadAudioEngine();
-        }
-      });
+      // Intercept play stream events before dynamic script load completes.
+      // Bound once per JS realm — this inline block re-executes on every SPA
+      // arrival at Home, so an unguarded registration added one more permanent
+      // window listener per visit, each queueing its own duplicate play action.
+      if (!window.__anhadPlayStreamQueueBound) {
+        window.__anhadPlayStreamQueueBound = true;
+        window.addEventListener('anhadPlayStream', function(e) {
+          if (!window.__anhadAudioEngineLoaded && e.detail && e.detail.stream) {
+            window._anhadAudioQueue.push({ type: 'play', stream: e.detail.stream });
+            if (!window.__anhadAudioEngineLoading) window.AnhadAudioLoadEngine();
+          }
+        });
+      }
 
       function loadAudioEngine() {
         if (_audioLoaded || _audioLoading) return;
+        if (window.__anhadAudioEngineLoaded || window.__anhadAudioEngineLoading) return;
+        if (window.AnhadAudio) { _audioLoaded = true; window.__anhadAudioEngineLoaded = true; return; }
         _audioLoading = true;
+        window.__anhadAudioEngineLoading = true;
         console.log('[AnhadAudio] Loading audio singleton...');
         var s = document.createElement('script');
         s.src = new URL('lib/anhad-audio-singleton.js?v=2.2.0', _audioEngineBase).href;
         s.onload = function() {
           _audioLoaded = true;
           _audioLoading = false;
+          window.__anhadAudioEngineLoaded = true;
+          window.__anhadAudioEngineLoading = false;
           console.log('[AnhadAudio] Audio singleton loaded, draining queue');
           // Expose loaded status and fire ready event
           window.dispatchEvent(new Event('anhad_audio_ready'));

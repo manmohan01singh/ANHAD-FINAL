@@ -10,7 +10,13 @@
 
 /* Target touch devices using pointer: coarse media query */
 @media (pointer: coarse) {
-  /* Base interactive elements */
+  /* Base interactive elements.
+     No `padding` here. It is a shorthand, so on every touch device it wiped the
+     component-specific padding of every button and link in the app and inflated
+     their boxes until adjacent hit areas overlapped — taps then landed on
+     whichever element painted last rather than the one aimed at. min-width /
+     min-height alone satisfy WCAG 2.5.5 without touching visual layout, which
+     is what "Preservation: Visual layout and spacing (Req 3.8)" above asks for. */
   button,
   a,
   .interactive,
@@ -20,7 +26,6 @@
   input[type="reset"] {
     min-width: 44px;
     min-height: 44px;
-    padding: 12px;
   }
 
   /* Icon buttons - ensure proper centering */
@@ -85,12 +90,10 @@
     padding: 12px;
   }
 
-  /* Ensure proper spacing between adjacent touch targets */
-  button + button,
-  a + a,
-  .interactive + .interactive {
-    margin-left: 8px;
-  }
+  /* Spacing between adjacent touch targets is left to each component's own
+     layout (the header, nav pill and card grids all set their own gap). A blanket
+     `margin-left` on every button/link pair shifted those layouts on touch
+     devices only, so the phone rendering drifted away from the design. */
 
   /* Floating action buttons */
   .fab,

@@ -69,6 +69,10 @@
   }
 
   let currentActiveUrl = normalizeUrl(window.location.href);
+  // Holds the normalized url of the swap currently running, or null when idle.
+  // Cleared in performSwap()'s finally block and on every early return in
+  // navigateTo(), so a bailout can never wedge navigation permanently.
+  let navInFlight = null;
 
   // ── PAGE CSS OWNERSHIP ──────────────────────────────────────────────────
   // Every page-owned <style>/<link> carries data-spa-page="<pathname>" plus a
@@ -401,8 +405,21 @@
 
     const absoluteUrl = resolveAppUrl(url);
     const normalized = normalizeUrl(absoluteUrl);
-    
+
     if (normalized === currentActiveUrl && !options.force) return;
+
+    // currentActiveUrl is only assigned at the very END of applyNewContent, and
+    // two awaits sit in between (syncHeadAssets, executePageScripts — the latter
+    // network-bound). For that whole window the dedupe check above still sees
+    // the OLD url, so a second tap started a concurrent performSwap: two runs
+    // interleaved `currentApp.innerHTML = ...`, both called pushState, and the
+    // second one's script-cleanup removed <script> nodes the first was still
+    // awaiting, leaving those promises to settle only via onerror.
+    if (navInFlight && !options.force) {
+      console.warn('[SmoothNav] Navigation already in flight, ignoring:', normalized);
+      return;
+    }
+    navInFlight = normalized;
 
     // Run page cleanup before leaving
     runPageCleanup(currentActiveUrl);
@@ -430,8 +447,12 @@
     }
 
     if (isShellPage(absoluteUrl)) {
+      // performSwap clears navInFlight in its own finally block.
       performSwap(absoluteUrl, options);
     } else {
+      // Full page load — this document is being torn down, but clear the flag
+      // anyway so a blocked/cancelled navigation can't wedge the SPA.
+      navInFlight = null;
       window.location.href = absoluteUrl;
     }
   };
@@ -487,6 +508,7 @@
       clearTimeout(loaderTimeout);
       window.location.href = fetchUrl;
     } finally {
+      navInFlight = null;
       if (loaderTimeout) clearTimeout(loaderTimeout);
       loader.classList.remove('visible');
       document.body.classList.remove('page-loading');
@@ -550,7 +572,11 @@
       // leftover copy renders as a fully visible unstyled block. Listing it
       // here means it is removed on leaving Home and restored on return; the
       // inline script that binds it re-runs afterwards and re-finds it by id.
-      '#anhadComingSoonOverlay'
+      '#anhadComingSoonOverlay',
+      // Same story: Home-owned, declared outside #app, and position:fixed. Once
+      // shown it survived every content swap and kept floating over Insights'
+      // and Favorites' navigation for the rest of the session.
+      '#installBanner'
     ];
 
     // Shell elements that belong ABOVE the page content. Appending these to the
@@ -804,7 +830,13 @@
     'claymorphism-system.css',
     'nav-glass.css',
     'no-shadows.css',
-    'mobile-lock.css',
+    // 'mobile-lock.css' deliberately NOT listed, same reasoning as
+    // ios-override.css below. It is loaded by Insights/Favorites but NOT by
+    // index.html, and allowlisting it meant it was never tagged data-spa-page
+    // and therefore never deactivatable — so after one visit to either page its
+    // rules (a landscape `body { transform: rotate(-90deg) }` block and
+    // `* { max-width: 100% }`) stayed live on Home for the rest of the session.
+    // Treating it as page-owned lets deactivateForeignPageCss() mute it off Home.
     'font-awesome',
     'all.min.css',
     'global-mini-player.css',
@@ -969,6 +1001,53 @@
   }
 
   /**
+   * Injects a SHELL_SCRIPTS entry, retrying once on failure instead of
+   * silently treating a failed fetch as success.
+   *
+   * Previously both onload and onerror called the same `resolve`, so a
+   * flaky connection (far more likely on a real phone than on localhost)
+   * left trendora-app.js/homepage-data.js/anhad-sky-bg.js permanently
+   * unloaded for the rest of the session — nothing logged, nothing retried,
+   * Home silently stuck half-initialized. A failed attempt is also removed
+   * from the DOM: isScriptAlreadyLoaded() only checks whether a <script> tag
+   * with this src exists, not whether it actually loaded, so leaving the
+   * failed tag in place would have permanently convinced every later
+   * navigation this script was "already loaded" and skip it forever.
+   */
+  function loadShellScriptWithRetry(sourceScript, absoluteSrc) {
+    function attempt() {
+      return new Promise((resolve) => {
+        const el = document.createElement('script');
+        Array.from(sourceScript.attributes).forEach(attr => {
+          if (attr.name !== 'src') el.setAttribute(attr.name, attr.value);
+        });
+        // A dynamically-created <script> defaults to async, and the `defer`
+        // attribute copied above is ignored for such scripts — so without
+        // this these would race each other. These are the page's own content
+        // scripts and can depend on document order, so force ordered exec.
+        el.async = false;
+        el.src = absoluteSrc;
+        el.onload = () => resolve(true);
+        el.onerror = () => {
+          el.remove();
+          resolve(false);
+        };
+        document.body.appendChild(el);
+      });
+    }
+
+    return attempt().then((ok) => {
+      if (ok) return;
+      console.warn('[SmoothNav] Shell script failed to load, retrying once:', absoluteSrc);
+      return attempt().then((retryOk) => {
+        if (!retryOk) {
+          console.error('[SmoothNav] Shell script failed again after retry — will try again on the next navigation:', absoluteSrc);
+        }
+      });
+    });
+  }
+
+  /**
    * Finds and executes scripts from the new document.
    */
   async function executePageScripts(newDoc, sourceUrl) {
@@ -1001,21 +1080,7 @@
           continue;
         }
         if (isScriptAlreadyLoaded(shellAbsoluteSrc)) continue;
-        externalScripts.push(new Promise((resolve) => {
-          const shellScript = document.createElement('script');
-          Array.from(script.attributes).forEach(attr => {
-            if (attr.name !== 'src') shellScript.setAttribute(attr.name, attr.value);
-          });
-          // A dynamically-created <script> defaults to async, and the `defer`
-          // attribute copied above is ignored for such scripts — so without
-          // this these would race each other. These are the page's own content
-          // scripts and can depend on document order, so force ordered exec.
-          shellScript.async = false;
-          shellScript.src = shellAbsoluteSrc;
-          shellScript.onload = resolve;
-          shellScript.onerror = resolve;
-          document.body.appendChild(shellScript);
-        }));
+        externalScripts.push(loadShellScriptWithRetry(script, shellAbsoluteSrc));
         continue;
       }
 
@@ -1163,7 +1228,20 @@
       const targetUrl = normalizeUrl(window.location.href);
       const cached = PAGE_CACHE.get(targetUrl);
       if (cached) {
-        applyNewContent(cached, targetUrl, { replace: true, isBack: true });
+        // applyNewContent is async and does DOM surgery. Called bare, any throw
+        // became an unhandled rejection that left a half-swapped document with
+        // no way out but a manual refresh — performSwap's try/catch fallback
+        // only covers the non-cached branch below. Mirror that safety net here,
+        // and hold navInFlight for the duration so a rapid back/forward burst
+        // can't interleave two swaps.
+        if (navInFlight) return;
+        navInFlight = targetUrl;
+        Promise.resolve(applyNewContent(cached, targetUrl, { replace: true, isBack: true }))
+          .catch(err => {
+            console.error('[SmoothNav] Back-navigation swap failed, falling back to full reload:', err);
+            window.location.href = toFetchUrl(targetUrl);
+          })
+          .finally(() => { navInFlight = null; });
       } else {
         performSwap(targetUrl, { replace: true, isBack: true });
       }

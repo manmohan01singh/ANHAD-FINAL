@@ -52,6 +52,7 @@
     NAAM_CONFIG: 'naam_abhyas_config',
     REMINDERS: 'smart_reminders_v1',
     INSTALL_DISMISSED: 'installBannerDismissed',
+    INSTALL_FIRST_SEEN: 'installBannerFirstSeen',
     PWA_INSTALLED: 'pwaInstalled',
     WELCOME_SEEN: 'anhad_welcome_seen',
     SESSION_ACTIVE: 'anhad_session_active',
@@ -328,19 +329,26 @@
         console.warn('[PortraitSlider] Failed to parse cached upcoming gurpurab on init:', e);
       }
 
-      // Clear track and inject slides
-      track.innerHTML = '';
-      this._gurus.forEach((guru, i) => {
-        const slide = document.createElement('div');
-        slide.className = 'greeting__slide';
-        slide.dataset.index = i;
-        slide.innerHTML = `
-          <div class="greeting__guru-portrait">
-            <img class="greeting__guru-img" src="${guru.img}" alt="${guru.name}" loading="lazy" style="object-position: ${guru.pos || 'center 25%'} !important;">
-          </div>
-        `;
-        track.appendChild(slide);
-      });
+      // Only rebuild when the track isn't already showing this exact set.
+      // init() runs on every SPA arrival at Home (via refreshAll ->
+      // reviveHomepageVisuals), and the unconditional wipe below blanked all 11
+      // portraits and re-injected them as loading="lazy" images — a visible
+      // empty-then-repopulate on every return to Home.
+      const alreadyBuilt = track.children.length === this._gurus.length;
+      if (!alreadyBuilt) {
+        track.innerHTML = '';
+        this._gurus.forEach((guru, i) => {
+          const slide = document.createElement('div');
+          slide.className = 'greeting__slide';
+          slide.dataset.index = i;
+          slide.innerHTML = `
+            <div class="greeting__guru-portrait">
+              <img class="greeting__guru-img" src="${guru.img}" alt="${guru.name}" loading="lazy" style="object-position: ${guru.pos || 'center 25%'} !important;">
+            </div>
+          `;
+          track.appendChild(slide);
+        });
+      }
 
       this._bindEvents();
       this.update(true);
@@ -350,12 +358,26 @@
       const slider = document.getElementById('guruSlider');
       if (!slider) return;
 
-      slider.addEventListener('touchstart', (e) => this._onDragStart(e.touches[0].clientX), { passive: true });
-      slider.addEventListener('mousedown', (e) => this._onDragStart(e.clientX));
+      // Element-level listeners: the slider node is recreated by each SPA
+      // content swap, so these die with it and must be rebound every time.
+      // Guarded so one swap can't double-bind a surviving node.
+      if (!slider._anhadSliderBound) {
+        slider._anhadSliderBound = true;
+        slider.addEventListener('touchstart', (e) => this._onDragStart(e.touches[0].clientX), { passive: true });
+        slider.addEventListener('mousedown', (e) => this._onDragStart(e.clientX));
 
-      // SCROLL FIX: passive:true on touchmove prevents the browser from waiting to
-      // see if we'll call preventDefault() — which would block page scroll on mobile.
-      slider.addEventListener('touchmove', (e) => this._onDragMove(e.touches[0].clientX), { passive: true });
+        // SCROLL FIX: passive:true on touchmove prevents the browser from waiting to
+        // see if we'll call preventDefault() — which would block page scroll on mobile.
+        slider.addEventListener('touchmove', (e) => this._onDragMove(e.touches[0].clientX), { passive: true });
+      }
+
+      // Window-level listeners survive every DOM swap, so binding them per
+      // init() leaked four permanent listeners on every single return to Home —
+      // the app's largest listener leak. They only ever call back into this
+      // singleton, so one set per JS realm is all that is needed.
+      if (window.__anhadPortraitSliderWindowBound) return;
+      window.__anhadPortraitSliderWindowBound = true;
+
       window.addEventListener('mousemove', (e) => this._onDragMove(e.clientX));
 
       // SCROLL FIX: passive:true on window touchend is CRITICAL.
@@ -1218,7 +1240,13 @@
         const wrapper = el.parentElement;
         const preloadImg = new window.Image();
 
+        // Guarded: a memory-cached image reports complete===true synchronously
+        // AND still fires a real load event, so the manual doSwap() below plus
+        // preloadImg.onload ran this whole fade twice — a visible double blink.
+        let swapDone = false;
         const doSwap = () => {
+          if (swapDone) return;
+          swapDone = true;
           // Prepare the transition on the real element — start invisible
           el.style.transition = 'opacity 0s'; // instant reset first
           el.style.opacity = '0';
@@ -1436,6 +1464,11 @@
       if (typeof Greeting !== 'undefined') Greeting.update();
       if (typeof PortraitSlider !== 'undefined') PortraitSlider.init();
       if (typeof CarouselController !== 'undefined') CarouselController.init();
+      // Re-point the compact-header observer at the incoming .greeting node.
+      // App.init() is guarded to run once per realm, so without this the
+      // observer stayed attached to the element the first content swap
+      // detached, and the header never compacted again after leaving Home.
+      if (typeof ScrollHeader !== 'undefined') ScrollHeader.init();
     },
 
     async autoRemindUpcomingGurpurab() {
@@ -1580,7 +1613,13 @@
         const newAbsolute = new URL(src, document.baseURI).href;
         if (img.src === newAbsolute) return; // Already correct, no re-download
         const preload = new Image();
-        preload.onload = () => {
+        // Guarded — see swapHeroImgSmooth() in anhad-sky-bg.js. A cached image
+        // triggers both the synchronous manual call and a real load event,
+        // running the crossfade twice.
+        let done = false;
+        const doSwap = () => {
+          if (done) return;
+          done = true;
           img.style.transition = 'opacity 0s';
           img.style.opacity = '0';
           requestAnimationFrame(() => {
@@ -1589,9 +1628,10 @@
             requestAnimationFrame(() => { img.style.opacity = '1'; });
           });
         };
-        preload.onerror = () => { img.src = src; };
+        preload.onload = doSwap;
+        preload.onerror = () => { if (!done) { done = true; img.src = src; } };
         preload.src = src;
-        if (preload.complete && preload.naturalWidth > 0) preload.onload();
+        if (preload.complete && preload.naturalWidth > 0) doSwap();
       });
     }
 
@@ -1732,13 +1772,36 @@
       let current = 0;
       const totalSlides = track.children.length;
 
+      // The track has `gap: var(--space-3)` between cards and the cards use
+      // `scroll-snap-align: center`, so `i * track.offsetWidth` is never an
+      // actual snap position. Writing it to scrollLeft left the container
+      // slightly off-snap, and `scroll-snap-type: x mandatory` immediately
+      // animated a correction — which swallowed touch gestures that started
+      // over the carousel. Measure the real cards instead.
+      const scrollTargetFor = (i) => {
+        const card = track.children[i];
+        if (!card) return 0;
+        return card.offsetLeft + card.offsetWidth / 2 - track.clientWidth / 2;
+      };
+      const indexFromScroll = () => {
+        const centre = track.scrollLeft + track.clientWidth / 2;
+        let best = 0;
+        let bestDist = Infinity;
+        for (let i = 0; i < track.children.length; i++) {
+          const card = track.children[i];
+          const dist = Math.abs(card.offsetLeft + card.offsetWidth / 2 - centre);
+          if (dist < bestDist) { bestDist = dist; best = i; }
+        }
+        return best;
+      };
+
       // PERF: Throttled scroll handler using rAF to prevent 100+ events/sec
       let scrollTicking = false;
       track.addEventListener('scroll', () => {
         if (!scrollTicking) {
           scrollTicking = true;
           requestAnimationFrame(() => {
-            const idx = Math.round(track.scrollLeft / track.offsetWidth);
+            const idx = indexFromScroll();
             if (idx !== current) {
               current = idx;
               dots.forEach((d, i) => d.classList.toggle('hero-carousel__dot--active', i === idx));
@@ -1750,7 +1813,7 @@
 
       dots.forEach((dot, i) => {
         dot.addEventListener('click', () => {
-          track.scrollLeft = i * track.offsetWidth;
+          track.scrollLeft = scrollTargetFor(i);
         });
       });
 
@@ -1768,7 +1831,7 @@
       window.__anhadCarouselAutoTimer = setInterval(() => {
         if (this._paused) return;
         current = (current + 1) % totalSlides;
-        track.scrollLeft = current * track.offsetWidth;
+        track.scrollLeft = scrollTargetFor(current);
         dots.forEach((d, i) => d.classList.toggle('hero-carousel__dot--active', i === current));
       }, 7000);
 
@@ -1790,12 +1853,20 @@
       if (!overlay || !sheet) return;
 
       overlay.classList.add('sheet-overlay--active');
+      overlay.style.pointerEvents = '';
       sheet.classList.add('sheet--active');
       document.body.style.overflow = 'hidden';
       this._active = sheetId;
 
-      // Close on overlay click
-      overlay.addEventListener('click', () => this.close(sheetId), { once: true });
+      // Bound once per overlay element, not once per open. A {once:true}
+      // listener is only consumed if the overlay itself is clicked, so closing
+      // the sheet any other way left it armed and the next open() stacked
+      // another one. The element is recreated by the SPA content swap, so the
+      // flag correctly resets when the page is re-rendered.
+      if (!overlay._anhadSheetCloseBound) {
+        overlay._anhadSheetCloseBound = true;
+        overlay.addEventListener('click', () => this.close(sheetId));
+      }
     },
 
     close(sheetId) {
@@ -1807,6 +1878,10 @@
 
       if (sheet) sheet.classList.remove('sheet--active');
       if (overlay) {
+        // The class removal is delayed so the backdrop can fade out, but the
+        // overlay covers the whole viewport and stayed hit-testable for that
+        // whole 300ms — swallowing the first tap after every close.
+        overlay.style.pointerEvents = 'none';
         setTimeout(() => {
           overlay.classList.remove('sheet-overlay--active');
         }, 300);
@@ -1997,6 +2072,8 @@
   };
 
   // ═ INSTALL CONTROLLER ═
+  const INSTALL_COOLDOWN_MS = 7 * 24 * 60 * 60 * 1000;
+
   const InstallController = {
     _deferredPrompt: null,
 
@@ -2022,10 +2099,19 @@
         return;
       }
 
-      // Check for persistent dismissal (24h cooldown)
+      // Check for persistent dismissal
       const dismissedTime = Store.get(KEYS.INSTALL_DISMISSED);
-      if (dismissedTime && (Date.now() - parseInt(dismissedTime)) < 86400000) {
+      if (dismissedTime && (Date.now() - parseInt(dismissedTime)) < INSTALL_COOLDOWN_MS) {
         console.log('[PWA] Banner dismissed recently, waiting for cooldown');
+        banner.style.display = 'none';
+        return;
+      }
+
+      // Never on a first visit — the banner is an interruption, and a brand new
+      // user has not seen the app yet. Record the visit and wait for the next one.
+      if (!Store.get(KEYS.INSTALL_FIRST_SEEN)) {
+        Store.set(KEYS.INSTALL_FIRST_SEEN, Date.now().toString());
+        console.log('[PWA] First visit — deferring install banner');
         banner.style.display = 'none';
         return;
       }
@@ -2065,7 +2151,7 @@
       setTimeout(() => {
         if (!this._isStandalone() && !this._deferredPrompt) {
           const dismissed = Store.get(KEYS.INSTALL_DISMISSED);
-          if (!dismissed || (Date.now() - parseInt(dismissed)) > 86400000) {
+          if (!dismissed || (Date.now() - parseInt(dismissed)) > INSTALL_COOLDOWN_MS) {
             console.log('[PWA] Showing install banner (Fallback/iOS)');
             this._showBanner();
           }
@@ -2085,15 +2171,22 @@
       const banner = document.getElementById('installBanner');
       if (!banner) return;
 
+      // The mini player occupies the same floating strip above the nav pill.
+      // Two stacked floating cards there overlap, so defer to the player.
+      if (document.querySelector('.mini-player--visible')) {
+        console.log('[PWA] Mini player is visible, not showing install banner');
+        return;
+      }
+
       console.log('[PWA] Displaying install banner');
       banner.style.display = 'block';
       // Force reflow
       banner.offsetHeight;
 
+      // Visibility is driven purely by the class — inline transform/opacity
+      // would outrank the stylesheet and pin the banner to a hard-coded offset.
       requestAnimationFrame(() => {
         banner.classList.add('install-banner--visible');
-        banner.style.opacity = '1';
-        banner.style.transform = 'translateY(0)';
       });
     },
 
@@ -2103,8 +2196,6 @@
 
       console.log('[PWA] Hiding install banner');
       banner.classList.remove('install-banner--visible');
-      banner.style.transform = 'translateY(100%)';
-      banner.style.opacity = '0';
       setTimeout(() => {
         if (!banner.classList.contains('install-banner--visible')) {
           banner.style.display = 'none';
@@ -2263,18 +2354,29 @@
 
   // ═ SCROLL HEADER ═
   const ScrollHeader = {
-    init() {
-      const header = document.querySelector('.header');
-      const greeting = document.querySelector('.greeting');
-      if (!header || !greeting) return;
+    _observer: null,
 
-      const observer = new IntersectionObserver(
+    init() {
+      const greeting = document.querySelector('.greeting');
+      if (!greeting) return;
+
+      // Both nodes are inside #app, which the SPA replaces wholesale on every
+      // navigation. The previous version captured them once and never
+      // reconnected: the observer kept a strong reference to a detached
+      // .greeting forever (so it could never fire again) while writing to a
+      // detached .header, and header--compact silently stopped working after
+      // the first return to Home. Rebuild against the live nodes, and resolve
+      // .header at callback time rather than closing over it.
+      if (this._observer) this._observer.disconnect();
+
+      this._observer = new IntersectionObserver(
         ([entry]) => {
-          header.classList.toggle('header--compact', !entry.isIntersecting);
+          const header = document.querySelector('.header');
+          if (header) header.classList.toggle('header--compact', !entry.isIntersecting);
         },
         { threshold: 0, rootMargin: '-20px 0px 0px 0px' }
       );
-      observer.observe(greeting);
+      this._observer.observe(greeting);
     }
   };
 
@@ -2480,8 +2582,30 @@
   // only the listener below fires — this window only needs to suppress the
   // one redundant call that follows an App.init() moments earlier.
   window.__anhadHomeBootedAt = 0;
+  window.__anhadHomeLastRefreshAt = 0;
 
+  // Debounce lives INSIDE refreshHomeForSpa, not in whichever caller happens
+  // to invoke it. There are now two independent triggers for the same
+  // navigation — the anhad_page_changed listener below, AND
+  // smooth-navigation.js's runPageInit() -> window.__anhadPageInit registry
+  // (see that registration further down, which used to be silently
+  // overwritten by homepage-data.js's own registration for the same 4 keys —
+  // now fixed to compose instead of clobber). Putting the debounce here means
+  // BOTH triggers firing for one arrival — expected once the clobbering bug
+  // is fixed — still only does the actual work once, instead of reintroducing
+  // the double-render this function was written to eliminate in the first
+  // place.
   const refreshHomeForSpa = () => {
+    const now = Date.now();
+    if (now - window.__anhadHomeBootedAt < 2500) {
+      console.log('[Trendora] Skipping refresh — App.init() just fully populated Home for this arrival');
+      return;
+    }
+    if (now - window.__anhadHomeLastRefreshAt < 500) {
+      console.log('[Trendora] Skipping refresh — already refreshed moments ago for this same arrival');
+      return;
+    }
+    window.__anhadHomeLastRefreshAt = now;
     Store.clearCache();
     requestAnimationFrame(() => {
       try { UIController.refreshAll(); }
@@ -2491,10 +2615,6 @@
 
   if (!_trendoraModuleListenersAlreadyBound) {
     window.addEventListener('anhad_page_changed', () => {
-      if (Date.now() - window.__anhadHomeBootedAt < 2500) {
-        console.log('[Trendora] Skipping refresh — App.init() just fully populated Home for this arrival');
-        return;
-      }
       console.log('[Trendora] Page change detected, refreshing UI data...');
       refreshHomeForSpa();
     });
@@ -2504,9 +2624,23 @@
   // registry (smooth-navigation.js runPageInit), mirroring how
   // homepage-data.js and Insights/insights.js already register. Belt and
   // braces: if the event listener above is ever lost, Home still repopulates.
+  //
+  // Composes with whatever is already registered at each key instead of
+  // overwriting it outright. homepage-data.js registers these SAME 4 keys
+  // (loaded right after this script, index.html:3387-3388) — whichever
+  // script's registration ran second used to silently win, so
+  // window.__anhadPageInit['/index.html'] only ever called ONE of the two
+  // intended repopulation functions, never both, despite each script's own
+  // comments describing this as redundant "belt and braces" coverage.
   window.__anhadPageInit = window.__anhadPageInit || {};
   ['/', '/index.html', '/frontend/', '/frontend/index.html'].forEach(p => {
-    window.__anhadPageInit[p] = refreshHomeForSpa;
+    const existing = window.__anhadPageInit[p];
+    window.__anhadPageInit[p] = (existing && existing !== refreshHomeForSpa)
+      ? () => {
+          try { existing(); } catch (e) { console.warn('[Trendora] chained page-init (existing) failed', e); }
+          refreshHomeForSpa();
+        }
+      : refreshHomeForSpa;
   });
 
   const boot = () => {

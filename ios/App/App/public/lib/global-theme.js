@@ -94,13 +94,17 @@
         }
 
         // Update meta theme-color (cached — not queried on every tick)
-        if (!_metaTheme) _metaTheme = document.querySelector('meta[name="theme-color"]');
+        if (!_metaTheme || !document.contains(_metaTheme)) _metaTheme = document.querySelector('meta[name="theme-color"]');
         if (_metaTheme) {
             _metaTheme.content = effectiveTheme === 'dark' ? '#0D0D0F' : '#FAF8F5';
         }
 
-        // Update theme toggle icons (use cache, reset cache if icons were removed by SPA swap)
-        if (!_themeIcons || !_themeIcons.length) {
+        // Re-queried whenever the cached nodes are no longer in the document.
+        // The old check was `!_themeIcons.length`, which never fired: a static
+        // NodeList keeps its length after its nodes are detached, so once the
+        // first SPA content swap replaced the header the cache held dead nodes
+        // for the rest of the session and the theme icon stopped updating.
+        if (!_themeIcons || !_themeIcons.length || !document.contains(_themeIcons[0])) {
             _themeIcons = document.querySelectorAll('#themeIcon, .theme-icon');
         }
         if (_themeIcons.length > 0) {
@@ -217,15 +221,15 @@
         });
     }
 
-    // Add scroll state detection to prevent transition interference
-    let scrollTimeout;
-    window.addEventListener('scroll', () => {
-        document.documentElement.classList.add('scrolling');
-        clearTimeout(scrollTimeout);
-        scrollTimeout = setTimeout(() => {
-            document.documentElement.classList.remove('scrolling');
-        }, 150);
-    }, { passive: true });
+    // Scroll-state detection lives in js/scroll-engine.js, which owns the
+    // .scrolling / .is-scrolling classes and guards on a cached boolean so it
+    // only touches classList on an actual state change. The copy that used to
+    // be here had no such guard — it ran classList.add plus a
+    // clearTimeout/setTimeout pair on every one of the hundreds of scroll
+    // events per gesture, and its independent 150ms timer raced
+    // scroll-engine's, leaving the class state inconsistent. Every stylesheet
+    // that keys off .scrolling is Home-only, and scroll-engine.js is loaded on
+    // Home, so nothing else needs to set it.
 
     // Expose Global API
     window.AnhadTheme = {

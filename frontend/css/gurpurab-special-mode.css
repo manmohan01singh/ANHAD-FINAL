@@ -19,11 +19,13 @@
   --glow-subtle: 0.15;
   --glow-medium: 0.25;
   --glow-strong: 0.4;
-  
-  /* Animation timing */
-  --duration-slow: 4s;
-  --duration-medium: 3s;
-  --duration-fast: 2s;
+
+  /* No --duration-* tokens here. This file loads AFTER trendora-premium.css,
+     so declaring them on :root silently redefined the app-wide UI timings —
+     --duration-fast went 0.2s -> 2s and --duration-slow 0.5s -> 4s. Those feed
+     23 transition declarations (every .quick-card, .practice-card, .event-card,
+     hero play button, header button and nav tab), so every tap took two full
+     seconds to settle. Nothing in this file ever consumed them. */
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════

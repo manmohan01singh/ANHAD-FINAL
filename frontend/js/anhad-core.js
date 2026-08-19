@@ -98,16 +98,32 @@
     if (!el) return;
     el.classList.add('page-enter');
 
-    // Remove after animation completes so bfcache restore looks right
-    el.addEventListener('animationend', function handler() {
-      el.classList.remove('page-enter');
+    // The class is deliberately NOT removed here any more.
+    //
+    // animationend BUBBLES, so the first staggered child's event (0.48s) used
+    // to fire this {once:true} handler while children 2-5 were still animating
+    // (0.52s-0.64s). Dropping .page-enter mid-flight made them stop matching
+    // `.page-enter > *:nth-child(N)` and fall through to index.html's
+    // `.app > * { animation: anhad-enter ... }` — a newly-matching animation
+    // rule always restarts, so they blinked back to opacity:0 and replayed.
+    // That was the second of the two reported flashes.
+    //
+    // Waiting for the container's own animation instead does not help either:
+    // it finishes at 0.5s, still ahead of children 4 and 5. And Home ships
+    // class="app page-enter" in its static markup, which the SPA copies back
+    // onto #app via syncElementAttributes on every return — so a removed class
+    // gets re-added, restarting the animation and flashing again. Leaving it in
+    // place makes that copy a no-op. The finished animations hold their end
+    // state via their `both`/`forwards` fill, and
+    // `.app:not(.app--exiting) { opacity: 1 !important }` keeps the container
+    // visible on bfcache restore regardless.
+    el.addEventListener('animationend', function handler(e) {
+      if (e.target !== el) return;
       el.removeEventListener('animationend', handler);
-      
-      // Mark animations as played
       if (window.HomeStateManager) {
         window.HomeStateManager.markAnimationsPlayed();
       }
-    }, { once: true });
+    });
   }
 
   /* ─── Offline banner ─────────────────────────────────────────────────────── */
@@ -140,19 +156,28 @@
 
     if (!navigator.onLine) _render(false);
 
+    // AnhadCore.init() is re-run by smooth-navigation.js on every SPA
+    // navigation, so an unguarded pair here stacked one more online/offline
+    // handler per page change for the whole session.
+    if (window.__anhadCoreOfflineBound) return;
+    window.__anhadCoreOfflineBound = true;
+
     window.addEventListener('offline', function() { _render(false); });
     window.addEventListener('online',  function() { _render(true);  });
   }
 
   /* ─── Compact nav on scroll ─────────────────────────────────────────────── */
   function initNavCompact() {
-    var nav = document.querySelector('.glass-nav');
-    if (!nav) return;
+    if (window.__anhadCoreNavCompactBound) return;
+    window.__anhadCoreNavCompactBound = true;
     var ticking = false;
     window.addEventListener('scroll', function() {
       if (!ticking) {
         requestAnimationFrame(function() {
-          nav.classList.toggle('compact', window.scrollY > 8);
+          // Re-resolved per tick: the previous version captured .glass-nav at
+          // init time, and the SPA content swap detaches that node.
+          var nav = document.querySelector('.glass-nav');
+          if (nav) nav.classList.toggle('compact', window.scrollY > 8);
           ticking = false;
         });
         ticking = true;
@@ -162,6 +187,11 @@
 
   /* ─── Tappable spring feedback (supplement CSS :active) ─────────────────── */
   function initHaptics() {
+    // One document-level listener per session, not per navigation. Each copy
+    // ran a closest() tree walk on every tap, so after N page changes a single
+    // tap did N walks before the click dispatched.
+    if (window.__anhadCoreHapticsBound) return;
+    window.__anhadCoreHapticsBound = true;
     document.addEventListener('pointerdown', function(e) {
       if (e.pointerType === 'touch') {
         var t = e.target.closest('.tappable, .glass-nav__back, .glass-back-btn, .icon-btn, .glass-nav__action-btn');

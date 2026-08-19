@@ -220,10 +220,10 @@
   --z-overlay: 500;
   --z-mini-player: 800;
   --z-nav: 900;
+  --z-banner: 950;
   --z-sheet: 1000;
   --z-sheet-overlay: 999;
   --z-toast: 2000;
-  --z-banner: 100001;
 
   /* ── Blur Tokens ── */
   --blur-sm: 8px;
@@ -429,15 +429,23 @@ a:active {
   }
 }
 
+/* Opacity only — deliberately no transform.
+   An element with an animation that TARGETS transform becomes a containing
+   block for its position:fixed descendants in Chrome, even when a later
+   `transform: none !important` wins the cascade for the value (see
+   `.app:not(.app--exiting)` below). .page-enter sits on Home's <main class="app">
+   and Favorites' #app, both of which contain fixed children — the radio sheet,
+   its full-screen overlay and the "New Note" FAB. Those were being anchored to
+   the page container instead of the viewport, so the radio sheet opened ~1600px
+   down the document (invisible) while still locking body scroll, and the FAB
+   drifted off-screen. The transform here was never visible anyway. */
 @keyframes glassReveal {
   from {
     opacity: 0;
-    transform: translateY(20px) scale(0.98);
   }
 
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
   }
 }
 
@@ -494,7 +502,8 @@ a:active {
 #app .hero-card__image,
 #app picture,
 #app [style*="background-image"] {
-  will-change: transform;
+  /* translateZ(0) already promotes these to their own layer; will-change on top
+     of it just doubles the budget pressure across every image on the page. */
   transform: translateZ(0);
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
@@ -504,7 +513,6 @@ a:active {
 #app img {
   image-rendering: -webkit-optimize-contrast;
   image-rendering: crisp-edges;
-}
 }
 
 /* Safety: if app--exiting gets stuck (bfcache), undo it on pageshow via JS.
@@ -1053,11 +1061,6 @@ a:active {
   line-height: 1.25;
   margin-bottom: var(--space-1);
   margin-top: 2px;
-  max-width: 100%;
-  letter-spacing: -0.2px;
-  text-align: center;
-  padding: 0 16px;
-}
   max-width: 100%;
   letter-spacing: -0.2px;
   text-align: center;
@@ -1995,7 +1998,7 @@ a:active {
     box-shadow var(--duration-fast) ease;
   position: relative;
   overflow: hidden;
-  will-change: transform;
+  /* No will-change — same reason as .quick-card above. */
   border: var(--border-card);
 }
 
@@ -2203,7 +2206,10 @@ a:active {
   transition: transform var(--duration-fast) var(--ease-spring),
     box-shadow var(--duration-fast) ease;
   border: var(--border-card);
-  will-change: transform;
+  /* No will-change: this selector matches 7 cards on Home, and a permanent
+     will-change holds a compositor layer for each one for the whole session.
+     scroll-engine.css:7-11 documents this exact hazard. The tap transition is
+     short-lived, so the browser can promote on demand. */
   position: relative;
   overflow: hidden;
 }
@@ -2940,23 +2946,33 @@ a:active {
 /* ═══════════════════════════════════════════════════════════════════════════════
    § 14. INSTALL BANNER — Trendora Minimal Floating
 ═══════════════════════════════════════════════════════════════════════════════ */
+/* Floats ABOVE the nav pill, never over it. At bottom:0 this banner sat directly
+   on top of .tab-bar (fixed, bottom:32px, ~80px tall — nav-glass.css:8-37),
+   hiding the whole navigation and turning the lower ~140px of the screen into a
+   fixed, non-scrollable dead zone. */
 .install-banner {
   position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  bottom: calc(32px + 80px + 12px);
+  left: 12px;
+  right: 12px;
+  max-width: calc(var(--max-width) - 24px);
+  margin: 0 auto;
   z-index: var(--z-banner);
-  padding: var(--space-4) var(--space-5);
-  padding-bottom: calc(var(--space-4) + var(--safe-bottom));
+  padding: var(--space-3) var(--space-4);
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(var(--blur-lg)) saturate(200%);
   -webkit-backdrop-filter: blur(var(--blur-lg)) saturate(200%);
-  border-top: var(--border-hairline);
-  transform: translateY(100%);
-  transition: transform 0.5s var(--ease-ios-spring);
+  border: var(--border-hairline);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.14);
+  opacity: 0;
+  /* Own height plus its bottom offset, so it clears the viewport entirely. */
+  transform: translateY(calc(100% + 124px));
+  transition: transform 0.5s var(--ease-ios-spring), opacity 0.3s ease;
 }
 
 .install-banner--visible {
+  opacity: 1;
   transform: translateY(0);
 }
 
@@ -3273,9 +3289,11 @@ a:active {
     display: none;
   }
 
-  body {
-    padding-bottom: var(--space-12);
-  }
+  /* No body padding-bottom here. It used to add 48px on top of the 110px that
+     nav-glass.css already reserves on .app, producing 170px of empty space
+     below the last card at tablet widths and in phone landscape. The floating
+     .tab-bar is not hidden at this breakpoint, so that reservation is still
+     needed — but only once. */
 
   .app {
     padding-top: var(--space-8);
@@ -3517,7 +3535,7 @@ a:active {
 
 .dark-mode .install-banner {
   background: rgba(28, 28, 30, 0.94);
-  border-top-color: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.06);
 }
 
 

@@ -95,8 +95,19 @@
     const slot = getSlot();
     const currentSlot = document.documentElement.getAttribute('data-time-of-day');
 
-    // NATIVE APP FIX: If slot hasn't changed, skip expensive updates
-    if (currentSlot === slot) {
+    // NATIVE APP FIX: If slot hasn't changed, skip expensive updates.
+    //
+    // ...but only when the work this function does is actually still in place.
+    // On leaving Home, applyNewContent() clears --dynamic-bg-url and the
+    // --sky-card-* palette; on returning it re-sets data-time-of-day ITSELF
+    // (to avoid painting the wrong background for a frame) and only then calls
+    // us. So the slot always matched, this returned early, and the two things
+    // that restore Home's background and card colours below were unreachable.
+    // Home came back with no background image and untinted cards, and because
+    // --dynamic-bg-url stayed unset the 5s smartRefresh() saw a permanently
+    // "stale" background and never idled again for the rest of the session.
+    const bgRestored = document.documentElement.style.getPropertyValue('--dynamic-bg-url');
+    if (currentSlot === slot && bgRestored) {
       return;
     }
 
@@ -138,7 +149,15 @@
     const inactiveLayer = activeLayerIndex === 1 ? layer2 : layer1;
 
     const activeUrl = activeLayer.style.backgroundImage || '';
-    if (activeUrl.includes(bgUrl)) return;
+    if (activeUrl.includes(bgUrl)) {
+      // The layer already shows the right image — it lives outside #app, so it
+      // survives the SPA content swap — but applyNewContent() cleared the
+      // --dynamic-bg-url custom property that Home's own CSS reads
+      // (index.html body::before). Restore it before bailing out, or Home comes
+      // back with the layer painted but the property empty.
+      document.documentElement.style.setProperty('--dynamic-bg-url', `url('${bgUrl}')`);
+      return;
+    }
 
     // Set background on inactive layer, then swap classes for smooth transition
     inactiveLayer.style.backgroundImage = `url('${bgUrl}')`;
@@ -204,7 +223,15 @@
     if (el.src === newAbsolute) return; // already correct
 
     const preload = new Image();
-    preload.onload = () => {
+    // Runs exactly once. For an image already in the memory cache, `complete`
+    // is true synchronously AND the browser still queues a real load event —
+    // so the manual call below plus that event ran the whole
+    // opacity-0 → src → 500ms fade sequence twice in a row on the same
+    // element. That double crossfade is the reported "two-time flash".
+    let done = false;
+    const doSwap = () => {
+      if (done) return;
+      done = true;
       // Old image visible → quick opacity-0 → src swap → fade in
       el.style.transition = 'opacity 0s';
       el.style.opacity = '0';
@@ -214,12 +241,15 @@
         requestAnimationFrame(() => { el.style.opacity = '1'; });
       });
     };
+    preload.onload = doSwap;
     preload.onerror = () => {
+      if (done) return;
+      done = true;
       // Fallback: just set src directly without fade
       el.src = newSrc;
     };
     preload.src = newSrc;
-    if (preload.complete && preload.naturalWidth > 0) preload.onload();
+    if (preload.complete && preload.naturalWidth > 0) doSwap();
   }
 
   function updateHeroCardImages() {

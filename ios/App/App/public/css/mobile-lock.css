@@ -68,7 +68,11 @@ html {
     -webkit-text-size-adjust: 100% !important;
     -moz-text-size-adjust: 100% !important;
     text-size-adjust: 100% !important;
-    touch-action: pan-y !important;
+    /* No touch-action here. `pan-y` on the root intersects with every
+       descendant, so nothing on the page could pan horizontally — the hero
+       carousel became un-swipeable and any swipe with a diagonal component was
+       rejected outright, which reads as "scrolling sticks, you have to try
+       harder". Pinch-zoom is already controlled by the viewport meta tag. */
 }
 
 /* Prevent any element from scaling beyond bounds */
