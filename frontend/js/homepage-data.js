@@ -722,6 +722,10 @@ function _anhadHomepageDataInit() {
   // body leaked another five permanently-running timers.
   function startHomepageIntervals() {
     (window.__anhadHomepageIntervals || []).forEach(id => clearInterval(id));
+    // Retire the lightweight set too — it duplicates updateClock/updateGreeting
+    // from this set under a different window key. See startLightweightTimers().
+    (window.__anhadHomeLightweightIntervals || []).forEach(id => clearInterval(id));
+    window.__anhadHomeLightweightIntervals = [];
     window.__anhadHomepageIntervals = [
       setInterval(() => { if (!document.hidden) updateClock(); }, 15000),
       setInterval(() => { if (!document.hidden) updateListenerCount(); }, 60000),
@@ -894,26 +898,31 @@ function _anhadHomepageDataInit() {
 
   function startLightweightTimers() {
     // Guarded on window: this function (called from the "fast return" branch
-    // above) can run again on a later re-execution of this file, and neither
-    // the intervals nor the pagehide cleanup listener were previously
-    // deduplicated — each call leaked 2 more permanently-running intervals
-    // plus another pagehide registration (pagehide doesn't fire on SPA
-    // navigation, only on genuine tab close, so { once: true } never got a
-    // chance to clean these up in between).
-    if (window.__anhadHomeLightweightIntervals) {
-      window.__anhadHomeLightweightIntervals.forEach(id => clearInterval(id));
-    }
-    const lightweightIntervals = [
+    // above) can run again on a later re-execution of this file.
+    //
+    // It also has to clear the FULL set, not just its own. The two sets are
+    // disjoint arrays under different window keys, but they overlap in duty —
+    // updateClock @15s and updateGreeting @300s appear in both — so a session
+    // that took the full-init path and later the fast-return path ended up
+    // running each of those twice, permanently. Whichever set arms last now
+    // owns those two jobs outright.
+    (window.__anhadHomeLightweightIntervals || []).forEach(id => clearInterval(id));
+    (window.__anhadHomepageIntervals || []).forEach(id => clearInterval(id));
+    window.__anhadHomepageIntervals = [];
+
+    window.__anhadHomeLightweightIntervals = [
       setInterval(() => { if (!document.hidden) updateClock(); }, 15000),
       setInterval(() => { if (!document.hidden) updateGreeting(); }, 300000)
     ];
-    window.__anhadHomeLightweightIntervals = lightweightIntervals;
 
     if (!window.__anhadHomeLightweightPagehideBound) {
       window.__anhadHomeLightweightPagehideBound = true;
+      // NOT { once: true }: pagehide also fires when a mobile PWA is merely
+      // backgrounded, so the first background used to consume the listener and
+      // leave every later departure without cleanup.
       window.addEventListener('pagehide', () => {
         (window.__anhadHomeLightweightIntervals || []).forEach(id => clearInterval(id));
-      }, { once: true });
+      });
     }
   }
 

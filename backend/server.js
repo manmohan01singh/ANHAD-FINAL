@@ -1130,6 +1130,19 @@ app.delete('/api/sehaj-paath/bookmarks/:id', async (req, res) => {
     }
 });
 
+// ─── ROUTE ALIASES: Reader Redirects (Placed high in route order) ───────
+app.get('/reader.html', (req, res) => {
+    const query = req.url.includes('?') ? req.url.substring(req.url.indexOf('?')) : '';
+    if (req.query.ang || req.url.includes('ang=')) {
+        return res.redirect(301, `/SehajPaath/reader.html${query}`);
+    }
+    return res.redirect(301, `/nitnem/reader.html${query}`);
+});
+app.get('/sehaj-reader.html', (req, res) => {
+    const query = req.url.includes('?') ? req.url.substring(req.url.indexOf('?')) : '';
+    return res.redirect(301, `/SehajPaath/reader.html${query}`);
+});
+
 // ═══════════════════════════════════════════════════════════════════
 // STATIC AUDIO FILES - Alarm tones (must be before /audio proxy)
 // ═══════════════════════════════════════════════════════════════════
@@ -4857,162 +4870,6 @@ app.get('/manifest.json', (req, res) => {
 });
 
 // ═══════════════════════════════════════════════════════════════════
-// GURBANI GPT — AI Chat API (Groq Llama-3.3-70B, SSE Streaming)
-// POST /api/gurbani-gpt/chat
-//   Body: { messages: [{role, content}], systemPrompt?: string }
-//   Response: text/event-stream (SSE) with OpenAI-compatible deltas
-// ═══════════════════════════════════════════════════════════════════
-
-const GURBANI_GPT_RATE_LIMIT = rateLimit({
-    windowMs: 60 * 1000, // 1 minute
-    max: 30,             // 30 messages per minute per IP
-    message: { error: 'Too many requests. Please wait a moment and try again.' },
-    standardHeaders: true,
-    legacyHeaders: false
-});
-
-// Fallback system prompt (used if frontend doesn't send one)
-const GURBANI_GPT_SYSTEM_PROMPT = `You are "Gurbani GPT" — a warm, humble, spiritually grounded assistant for Sikh guidance, remembrance of Naam, and practical daily discipline.
-
-CORE IDENTITY
-- Your tone must feel humble, shant, respectful, devotional, and steady.
-- Speak like a gurmukh guide: gentle, direct, compassionate, and practical.
-- Do not sound preachy, arrogant, argumentative, or overly academic.
-- Your primary mission is to inspire Naam Jap, Simran, inner discipline, humility, seva, patience, and remembrance of Waheguru.
-- Keep the style uplifting and simple.
-- Adapt to the user's language automatically: English→English, Punjabi→Punjabi, Hindi→Hindi, mixed→mixed.
-
-SPIRITUAL STYLE
-- Always bring the user back to Naam Jap and remembrance of Waheguru.
-- Guide toward: swas swas Naam jap, simran in daily life, humility, sewa, patience, acceptance of Hukam, self-observation.
-- Feel like a compassionate spiritual elder who encourages practice, not debate.
-- Prefer short, repeatable practices.
-- If distressed user: bring them back to one simple practice first.
-
-NO GURBANI PANKTI QUOTING RULE
-- Do NOT provide Gurbani pankti, verse references, or exact quotations as default.
-- Do NOT invent or hallucinate Gurbani.
-- If not fully certain of a verse, say: "Main exact pankti nahi de reha, par Gurmat da saar eh hai..." or "I will avoid exact lines so I do not risk mistakes, but the teaching is..."
-- Prefer paraphrase over quotation.
-
-RESPONSE BEHAVIOR
-- Be concise by default. Give simple, actionable spiritual steps.
-- End with soft reminders: "Keep simran steady." / "One breath, one Waheguru." / "Swas swas Naam jap."
-- When confused user appears: give ONE clear next step, not ten.
-
-SAFETY AND HUMILITY
-- Grief/anxiety/crisis: respond with compassion and simple grounding.
-- Always remain humble. Do not replace medical/professional help.
-
-FINAL PRINCIPLE
-Make every response help the user move closer to Naam, humility, and inner steadiness — accurate, gentle, and free from invented scripture.`;
-
-app.post('/api/gurbani-gpt/chat', GURBANI_GPT_RATE_LIMIT, async (req, res) => {
-    const { messages, systemPrompt } = req.body;
-
-    if (!messages || !Array.isArray(messages) || messages.length === 0) {
-        return res.status(400).json({ error: 'messages array is required' });
-    }
-
-    // Sanitize messages — only allow user/assistant roles, trim content
-    const cleanMessages = messages
-        .filter(m => m && ['user', 'assistant'].includes(m.role) && typeof m.content === 'string')
-        .map(m => ({ role: m.role, content: m.content.slice(0, 4000) }))
-        .slice(-30); // max 30 messages in context
-
-    if (cleanMessages.length === 0) {
-        return res.status(400).json({ error: 'No valid messages provided' });
-    }
-
-    const sysPrompt = (typeof systemPrompt === 'string' && systemPrompt.length > 10)
-        ? systemPrompt
-        : GURBANI_GPT_SYSTEM_PROMPT;
-
-    const payload = {
-        model: 'llama-3.3-70b-versatile',
-        messages: [
-            { role: 'system', content: sysPrompt },
-            ...cleanMessages
-        ],
-        temperature: 0.75,
-        max_tokens: 800,
-        stream: true
-    };
-
-    console.log(`[GurbaniGPT] Chat request — ${cleanMessages.length} messages, last: "${cleanMessages.slice(-1)[0]?.content?.slice(0, 60)}..."`);
-
-    try {
-        const groqResponse = await axios.post(CONFIG.GROQ_API_URL, payload, {
-            headers: {
-                'Authorization': `Bearer ${CONFIG.GROQ_API_KEY}`,
-                'Content-Type': 'application/json'
-            },
-            responseType: 'stream',
-            timeout: 30000
-        });
-
-        // Set SSE headers
-        res.setHeader('Content-Type', 'text/event-stream');
-        res.setHeader('Cache-Control', 'no-cache');
-        res.setHeader('Connection', 'keep-alive');
-        res.setHeader('X-Accel-Buffering', 'no'); // Disable nginx buffering
-        res.flushHeaders();
-
-        let fullContent = '';
-
-        groqResponse.data.on('data', (chunk) => {
-            const rawText = chunk.toString();
-            const lines = rawText.split('\n');
-
-            for (const line of lines) {
-                if (line.startsWith('data: ')) {
-                    const data = line.slice(6).trim();
-                    if (data === '[DONE]') {
-                        res.write('data: [DONE]\n\n');
-                        console.log(`[GurbaniGPT] Stream complete — ${fullContent.length} chars`);
-                        return;
-                    }
-                    try {
-                        const parsed = JSON.parse(data);
-                        const token = parsed.choices?.[0]?.delta?.content || '';
-                        if (token) {
-                            fullContent += token;
-                            res.write(`data: ${JSON.stringify(parsed)}\n\n`);
-                        }
-                    } catch (e) {
-                        // Skip non-JSON lines (keep-alive pings etc)
-                    }
-                }
-            }
-        });
-
-        groqResponse.data.on('end', () => {
-            res.write('data: [DONE]\n\n');
-            res.end();
-        });
-
-        groqResponse.data.on('error', (err) => {
-            console.error('[GurbaniGPT] Stream error:', err.message);
-            res.write(`data: ${JSON.stringify({ error: err.message })}\n\n`);
-            res.end();
-        });
-
-        // Handle client disconnect
-        req.on('close', () => {
-            groqResponse.data.destroy();
-        });
-
-    } catch (error) {
-        console.error('[GurbaniGPT] API error:', error.message);
-        if (!res.headersSent) {
-            res.status(500).json({
-                error: error.response?.data?.error?.message || error.message || 'AI service unavailable'
-            });
-        }
-    }
-});
-
-// ═══════════════════════════════════════════════════════════════════
 // BaniDB API Proxy - Avoid CORS issues by proxying through backend
 // ═══════════════════════════════════════════════════════════════════
 
@@ -5042,70 +4899,6 @@ app.use('/api/banidb', async (req, res) => {
             error: 'Failed to fetch from BaniDB',
             message: error.message,
             url: targetUrl
-        });
-    }
-});
-
-// ═══════════════════════════════════════════════════════════════════
-// 🤖 CHAT COMPLETIONS PROXY — Proxies LLM requests to Groq API
-// ═══════════════════════════════════════════════════════════════════
-
-/**
- * POST /api/chat/completions
- *
- * Proxies chat completion requests to Groq API using the server's
- * GROQ_API_KEY environment variable. The frontend calls this endpoint
- * so it doesn't need to expose the API key to clients.
- *
- * Supports both streaming and non-streaming responses.
- */
-app.post('/api/chat/completions', async (req, res) => {
-    const groqApiKey = CONFIG.GROQ_API_KEY;
-    if (!groqApiKey) {
-        return res.status(502).json({
-            error: 'LLM proxy unavailable',
-            message: 'Server GROQ_API_KEY is not configured. Set GROQ_API_KEY in backend/.env'
-        });
-    }
-
-    try {
-        const groqResponse = await fetch(CONFIG.GROQ_API_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + groqApiKey
-            },
-            body: JSON.stringify(req.body)
-        });
-
-        if (!groqResponse.ok) {
-            const errorText = await groqResponse.text();
-            console.error('[ChatProxy] Groq API error:', groqResponse.status, errorText.slice(0, 500));
-            return res.status(groqResponse.status).json({
-                error: 'Groq API error',
-                status: groqResponse.status,
-                detail: errorText.slice(0, 500)
-            });
-        }
-
-        const contentType = groqResponse.headers.get('content-type') || '';
-        if (contentType.includes('stream') || req.body.stream) {
-            res.setHeader('Content-Type', 'text/event-stream');
-            res.setHeader('Cache-Control', 'no-cache');
-            res.setHeader('Connection', 'keep-alive');
-            const stream = Readable.fromWeb(groqResponse.body);
-            stream.pipe(res);
-            stream.on('error', () => res.end());
-            res.on('close', () => stream.destroy());
-        } else {
-            const data = await groqResponse.json();
-            res.json(data);
-        }
-    } catch (error) {
-        console.error('[ChatProxy] Proxy error:', error.message);
-        res.status(502).json({
-            error: 'LLM proxy error',
-            message: error.message
         });
     }
 });
@@ -5163,6 +4956,18 @@ app.use(express.static(CONFIG.FRONTEND_ROOT, staticOptions));
 
 // Serve under ANHAD-FINAL sub-path (for VS Code Live Preview & local subdirectory support)
 app.use('/ANHAD-FINAL/frontend', express.static(CONFIG.FRONTEND_ROOT, staticOptions));
+
+// ─── ROUTE ALIASES: Short-hand URLs for common pages ────────────────────────
+// '/reader.html' → '/nitnem/reader.html'  (e.g. old links from nitnem/category pages)
+app.get('/reader.html', (req, res) => {
+    const query = req.url.includes('?') ? req.url.substring(req.url.indexOf('?')) : '';
+    res.redirect(301, `/nitnem/reader.html${query}`);
+});
+// '/sehaj-reader.html' → '/SehajPaath/reader.html'
+app.get('/sehaj-reader.html', (req, res) => {
+    const query = req.url.includes('?') ? req.url.substring(req.url.indexOf('?')) : '';
+    res.redirect(301, `/SehajPaath/reader.html${query}`);
+});
 
 // Serve MainWebPage at root
 app.use('/', express.static(CONFIG.MAIN_UI, staticOptions));

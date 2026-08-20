@@ -557,58 +557,44 @@
         // Offline is not a stream fault — retrying on a dead network just burns
         // the attempt budget (2+4+8+16+30s ≈ 60s total, i.e. any outage longer
         // than a minute used to exhaust it permanently). Park until 'online'.
+        // Offline or Network Hiccup Handling
         if (!navigator.onLine) {
           connectionState = 'reconnecting';
           emit('statechange', getPublicState());
-          console.log('[PlaybackQueueController] 📴 Offline — deferring recovery until the network returns');
+          console.log('[PlaybackQueueController] 📴 Offline detected — active network watchdog will auto-resume upon reconnection');
           return;
         }
 
-        // CRITICAL FIX: Auto-recovery for playlist errors
+        // AUTO-RECOVERY for Playlist Streams
         if (currentStream && STREAMS[currentStream]?.type === 'playlist') {
-          console.log('[PlaybackQueueController] 🔄 Error detected in playlist, attempting recovery in 3 seconds...');
+          console.log('[PlaybackQueueController] 🔄 Error in playlist stream, auto-recovering in 2.5 seconds...');
           setTimeout(() => {
             if (!isPlaying && wantsPlayback) {
-              // Re-resolve the live broadcast position rather than skipping to
-              // the next file: a virtual-live listener wants where the
-              // broadcast is NOW, not the next track in the playlist.
-              console.log('[PlaybackQueueController] ⏭️ Re-resolving broadcast position after error');
+              console.log('[PlaybackQueueController] ⏭️ Re-resolving live broadcast position after error');
               playStream(currentStream);
             }
-          }, 3000);
+          }, 2500);
         } else if (currentStream && STREAMS[currentStream]?.type === 'live') {
-          // Bounded-retry reconnect for true-live streams (Darbar Sahib,
-          // SikhNet channels) — previously these had NO auto-recovery at all,
-          // unlike playlist streams above. Exponential backoff, capped
-          // attempts, so a genuinely-down upstream doesn't retry forever.
-          const MAX_LIVE_RECONNECT_ATTEMPTS = 5;
-          if (liveReconnectAttempts < MAX_LIVE_RECONNECT_ATTEMPTS) {
-            liveReconnectAttempts++;
-            connectionState = 'reconnecting';
-            emit('statechange', getPublicState());
-            const backoffMs = Math.min(2000 * Math.pow(2, liveReconnectAttempts - 1), 30000); // 2s,4s,8s,16s,30s(cap)
-            console.log(`[PlaybackQueueController] 🔄 Live stream error, reconnect attempt ${liveReconnectAttempts}/${MAX_LIVE_RECONNECT_ATTEMPTS} in ${backoffMs}ms...`);
-            setTimeout(() => {
-              if (currentStream && STREAMS[currentStream]?.type === 'live' && !isPlaying && wantsPlayback) {
-                playStream(currentStream);
-              }
-            }, backoffMs);
-          } else {
-            connectionState = 'failed';
-            emit('statechange', getPublicState());
-            console.warn('[PlaybackQueueController] ❌ Live stream reconnect attempts exhausted, giving up');
-          }
+          // UNSTOPPABLE 24/7 AUTO-RECOVERY FOR LIVE STREAMS (Darbar Sahib, SikhNet, etc.)
+          // Never give up if user wants playback (wantsPlayback === true).
+          liveReconnectAttempts++;
+          connectionState = 'reconnecting';
+          emit('statechange', getPublicState());
+          
+          // Adaptive backoff: 2s -> 4s -> 8s -> 12s -> max 15s
+          const backoffMs = Math.min(2000 * Math.pow(1.5, Math.min(liveReconnectAttempts - 1, 6)), 15000);
+          console.log(`[PlaybackQueueController] 🔄 Live stream auto-recovery attempt #${liveReconnectAttempts} in ${Math.round(backoffMs)}ms...`);
+          
+          setTimeout(() => {
+            if (currentStream && STREAMS[currentStream]?.type === 'live' && !isPlaying && wantsPlayback) {
+              console.log('[PlaybackQueueController] 📡 Attempting live stream reconnection now...');
+              playStream(currentStream);
+            }
+          }, backoffMs);
         }
       });
 
-      // STALL WATCHDOG: 'waiting'/'stalled' fire when playback has already
-      // started successfully but then hangs mid-stream (rebuffering, network
-      // hiccup) — a different failure window than loadAndPlay()'s own 15s
-      // initial-load timeout above, and not something the 'error' handler
-      // above sees (no MediaError is raised while merely buffering). If a
-      // 'playing' event doesn't follow within 15s, treat it as hung and
-      // reload the current source via the normal playStream() resolution
-      // path (live vs. playlist is handled correctly by that function).
+      // RAPID STALL & BUFFER WATCHDOG (6 seconds instead of 15 seconds)
       let stallRecoveryTimer = null;
       const clearStallTimer = () => {
         if (stallRecoveryTimer) {
@@ -616,31 +602,19 @@
           stallRecoveryTimer = null;
         }
       };
-      // Re-arms itself after each attempt instead of firing once and vanishing.
-      // The old version cleared its own handle and relied on the browser
-      // emitting another 'waiting'/'stalled' to come back — which an errored
-      // element in HAVE_NOTHING never does, so a single failed recovery ended
-      // the watchdog for the rest of the session.
+      
       const armStallTimer = () => {
         clearStallTimer();
         stallRecoveryTimer = setTimeout(function attempt() {
           stallRecoveryTimer = null;
           if (!currentStream || !STREAMS[currentStream]) return;
-          // Deliberately NOT gated on isPlaying: a stall is precisely the case
-          // where playback started (so isPlaying is true) and then hung with no
-          // further 'playing' event. The timer is already cleared by the
-          // 'playing' and 'pause' listeners below, which is what distinguishes
-          // recovery from a genuine stall.
           if (!wantsPlayback) return;
-          if (!navigator.onLine) {
-            // Don't burn attempts against a dead network; the 'online'
-            // handler owns recovery from here.
-            return;
-          }
-          console.warn('[PlaybackQueueController] ⚠️ Stall watchdog: no recovery within 15s, reloading current source');
+          if (!navigator.onLine) return;
+          
+          console.warn('[PlaybackQueueController] ⚠️ Audio stream stalled/hung > 6s, auto-reconnecting stream...');
           playStream(currentStream);
           armStallTimer();
-        }, 15000);
+        }, 6000);
       };
       this.audio.addEventListener('waiting', armStallTimer);
       this.audio.addEventListener('stalled', armStallTimer);
@@ -778,13 +752,17 @@
               trackTitle: currentTrackTitle
             });
             
-            // CRITICAL FIX: Auto-recovery on timeout for playlists
-            if (isTimeout && currentStream && STREAMS[currentStream]?.type === 'playlist') {
-              console.log('[PlaybackQueueController] 🔄 Auto-recovering: Skipping to next track in 2 seconds...');
+            // UNIVERSAL AUTO-RECOVERY on timeout for all streams (Live and Playlist)
+            if (isTimeout && currentStream && wantsPlayback) {
+              console.log('[PlaybackQueueController] 🔄 Auto-recovering from timeout in 2 seconds...');
               setTimeout(() => {
-                if (!isPlaying) { // Only recover if still not playing
-                  console.log('[PlaybackQueueController] ⏭️ Executing auto-recovery...');
-                  handleTrackEnded();
+                if (!isPlaying && wantsPlayback && currentStream) {
+                  console.log('[PlaybackQueueController] ⏭️ Executing auto-recovery after timeout...');
+                  if (STREAMS[currentStream]?.type === 'playlist') {
+                    handleTrackEnded();
+                  } else {
+                    playStream(currentStream);
+                  }
                 }
               }, 2000);
             }
@@ -1469,6 +1447,38 @@
   }
 
   window.addEventListener('online', () => recoverAfterReconnect('Network restored'));
+
+  // ─── ACTIVE NETWORK HEARTBEAT & AUTO-RETRIEVAL WATCHDOG ───
+  // Smart TVs, desktop browsers, and certain network cards frequently drop
+  // or restore WiFi/Ethernet without firing the browser 'online' event.
+  // This active watchdog probes network health every 6s whenever playback was
+  // requested (wantsPlayback === true) but is currently stopped/disconnected,
+  // and automatically resumes Kirtan/stream playback immediately upon retrieval!
+  const NETWORK_WATCHDOG_INTERVAL_MS = 6000;
+  let isWatchdogProbing = false;
+  
+  setInterval(async () => {
+    if (!wantsPlayback || !currentStream || isPlaying || isLoading || isWatchdogProbing) return;
+    
+    // Check if network is reported online or probe reachable
+    if (navigator.onLine) {
+      recoverAfterReconnect('Active watchdog detected network available');
+      return;
+    }
+
+    // If navigator.onLine is false or unreliable on TV, test with quick probe
+    isWatchdogProbing = true;
+    try {
+      const probe = await fetch(document.baseURI || window.location.href, { method: 'HEAD', cache: 'no-store' });
+      if (probe.ok || probe.status < 500) {
+        recoverAfterReconnect('Network probe succeeded — auto-resuming stream');
+      }
+    } catch(e) {
+      // Network still offline, will retry next tick
+    } finally {
+      isWatchdogProbing = false;
+    }
+  }, NETWORK_WATCHDOG_INTERVAL_MS);
 
   document.addEventListener('visibilitychange', () => {
     if (document.hidden) {

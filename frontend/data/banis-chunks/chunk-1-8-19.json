@@ -3333,7 +3333,7 @@
               "english": "dharam dhiraRahu har naam dhiaavahu simirat naam dhiraRaiaa ||",
               "hindi": "धरमु दृड़हु हरि नामु धिआवहु सिमृति नामु दृड़ाइआ ॥",
               "en": "dharam dhiraRahu har naam dhiaavahu simirat naam dhiraRaiaa ||",
-              "hi": "धरमु दृड़हु हरि न��मु धिआवहु सिमृति नामु दृड़ाइआ ॥",
+              "hi": "धरमु दृड़हु हरि नमु धिआवहु सिमृति नामु दृड़ाइआ ॥",
               "ipa": "t̪ərəm d̪ɪɹəɽəh hər nɑm t̪ɪəɑʋəh sɪmɪɹət̪ nɑm d̪ɪɹəɽɑɪɑ.",
               "ur": "دھرم درڑهُ هر نام دھآوهُ سمِرت نام درڑاایا ۔۔"
             },
@@ -3736,7 +3736,7 @@
                 },
                 "bdb": {
                   "gurmukhi": "mn (dunIAw dy) swry frW vloN infr ho jWdw hY, (gurU aus dy AMdroN) haumY dI mYl dUr kr dyNdw hY—iehI hY pRBU-pqI nwl (jIv-iesq®I dy ivAwh dI) dUjI sohxI lWv [",
-                  "unicode": "ਮਨ (ਦੁਨੀਆ ਦੇ) ਸਾਰੇ ਡਰਾਂ ਵਲੋਂ ਨਿਡਰ ਹੋ ਜਾਂਦਾ ਹੈ, (ਗੁਰ��� ਉਸ ਦੇ ਅੰਦਰੋਂ) ਹਉਮੈ ਦੀ ਮੈਲ ਦੂਰ ਕਰ ਦੇਂਦਾ ਹੈ—ਇਹੀ ਹੈ ਪ੍ਰਭੂ-ਪਤੀ ਨਾਲ (ਜੀਵ-ਇਸਤ੍ਰੀ ਦੇ ਵਿਆਹ ਦੀ) ਦੂਜੀ ਸੋਹਣੀ ਲਾਂਵ ।"
+                  "unicode": "ਮਨ (ਦੁਨੀਆ ਦੇ) ਸਾਰੇ ਡਰਾਂ ਵਲੋਂ ਨਿਡਰ ਹੋ ਜਾਂਦਾ ਹੈ, (ਗੁਰ ਉਸ ਦੇ ਅੰਦਰੋਂ) ਹਉਮੈ ਦੀ ਮੈਲ ਦੂਰ ਕਰ ਦੇਂਦਾ ਹੈ—ਇਹੀ ਹੈ ਪ੍ਰਭੂ-ਪਤੀ ਨਾਲ (ਜੀਵ-ਇਸਤ੍ਰੀ ਦੇ ਵਿਆਹ ਦੀ) ਦੂਜੀ ਸੋਹਣੀ ਲਾਂਵ ।"
                 },
                 "ms": {
                   "gurmukhi": "r`b dy fr duAwrw myrw ic`q fr-rihq ho igAw hY Aqy myrI svY-hMgqw dI mlInqw DoqI geI hY[",
@@ -4010,7 +4010,7 @@
             },
             "transliteration": {
               "english": "a(n)tar baahar har prabh eko mil har jan ma(n)gal gaae ||",
-              "hindi": "अंतरि बाहरि हरि प्रभु एको म���लि हरि जन मंगल गाए ॥",
+              "hindi": "अंतरि बाहरि हरि प्रभु एको मलि हरि जन मंगल गाए ॥",
               "en": "a(n)tar baahar har prabh eko mil har jan ma(n)gal gaae ||",
               "hi": "अंतरि बाहरि हरि प्रभु एको मिलि हरि जन मंगल गाए ॥",
               "ipa": "əŋt̪ər bɑhər hər pɹəɓ eekɔ mɪl hər d͡ʒən məŋGəl Gɑee.",
@@ -7393,7 +7393,7 @@
             },
             "transliteration": {
               "english": "teg bahaadhar simariaai ghar nau nidh aavai dhai ||",
-              "hindi": "तेग बहादर स���मरिऐ घरि नउ निधि आवै धाइ ॥",
+              "hindi": "तेग बहादर समरिऐ घरि नउ निधि आवै धाइ ॥",
               "en": "teg bahaadhar simariaai ghar nau nidh aavai dhai ||",
               "hi": "तेग बहादर सिमरिऐ घरि नउ निधि आवै धाइ ॥",
               "ipa": "t̪eG bəhɑd̪ər sɪmərɪæ Gʰər no nɪt̪ə̀ əɑʋæ t̪ɑeɪ.",
@@ -8445,7 +8445,7 @@
                 },
                 "bdb": {
                   "gurmukhi": "(PirAwd AQvw shwieqw inimq) ieMdr durgw kol AwieAw ]3]",
-                  "unicode": "(ਫਰਿਆਦ ਅਥਵਾ ਸਹਾਇਤਾ ਨਿਮਿਤ) ਇੰ��ਰ ਦੁਰਗਾ ਕੋਲ ਆਇਆ ॥੩॥"
+                  "unicode": "(ਫਰਿਆਦ ਅਥਵਾ ਸਹਾਇਤਾ ਨਿਮਿਤ) ਇੰਰ ਦੁਰਗਾ ਕੋਲ ਆਇਆ ॥੩॥"
                 }
               },
               "es": {
@@ -9735,7 +9735,7 @@
               "pu": {
                 "ss": {
                   "gurmukhi": "nyizAW nwl bMnHIAW JMfIAW AQvw PuMmx JUlx lgy sn Aqy cmkIly inSwn (JMfy) ilSkw mwrdy sn।",
-                  "unicode": "ਨੇਜ਼ਿਆਂ ਨਾਲ ਬੰਨ੍ਹੀਆਂ ਝੰਡੀਆਂ ਅਥਵਾ ਫੁੰਮਣ ਝੂਲਣ ��ਗੇ ਸਨ ਅਤੇ ਚਮਕੀਲੇ ਨਿਸ਼ਾਨ (ਝੰਡੇ) ਲਿਸ਼ਕਾ ਮਾਰਦੇ ਸਨ।"
+                  "unicode": "ਨੇਜ਼ਿਆਂ ਨਾਲ ਬੰਨ੍ਹੀਆਂ ਝੰਡੀਆਂ ਅਥਵਾ ਫੁੰਮਣ ਝੂਲਣ ਗੇ ਸਨ ਅਤੇ ਚਮਕੀਲੇ ਨਿਸ਼ਾਨ (ਝੰਡੇ) ਲਿਸ਼ਕਾ ਮਾਰਦੇ ਸਨ।"
                 },
                 "ft": {
                   "gurmukhi": "",
@@ -13266,7 +13266,7 @@
             },
             "larivaar": {
               "gurmukhi": "kVkau~iTAwPaujqyvfwAhMkwrI]",
-              "unicode": "ਕੜ��ਉੱਠਿਆਫਉਜਤੇਵਡਾਅਹੰਕਾਰੀ॥"
+              "unicode": "ਕੜਉੱਠਿਆਫਉਜਤੇਵਡਾਅਹੰਕਾਰੀ॥"
             },
             "translation": {
               "en": {
@@ -13814,7 +13814,7 @@
                 },
                 "bdb": {
                   "gurmukhi": "(iPr) (GoVy aupr pweI hoeI lohy dI) Jul Aqy kwTI (nUM cIrdI hoeI) DrqI auqy jw vjI।",
-                  "unicode": "(ਫਿਰ) (ਘੋੜੇ ਉਪਰ ਪਾਈ ਹੋਈ ਲੋਹੇ ਦੀ) ਝੁਲ ਅਤੇ ਕਾਠੀ (ਨੂੰ ��ੀਰਦੀ ਹੋਈ) ਧਰਤੀ ਉਤੇ ਜਾ ਵਜੀ।"
+                  "unicode": "(ਫਿਰ) (ਘੋੜੇ ਉਪਰ ਪਾਈ ਹੋਈ ਲੋਹੇ ਦੀ) ਝੁਲ ਅਤੇ ਕਾਠੀ (ਨੂੰ ੀਰਦੀ ਹੋਈ) ਧਰਤੀ ਉਤੇ ਜਾ ਵਜੀ।"
                 }
               },
               "es": {
@@ -14396,7 +14396,7 @@
               "pu": {
                 "ss": {
                   "gurmukhi": "(rx ivc vYrI) dl nUM llkwrdy hoey (sUrvIr) pwxI qk nhIN mMgdy sn।",
-                  "unicode": "(ਰਣ ਵਿਚ ਵੈਰੀ) ਦਲ ਨੂੰ ਲਲਕਾਰਦੇ ਹੋਏ (ਸ���ਰਵੀਰ) ਪਾਣੀ ਤਕ ਨਹੀਂ ਮੰਗਦੇ ਸਨ।"
+                  "unicode": "(ਰਣ ਵਿਚ ਵੈਰੀ) ਦਲ ਨੂੰ ਲਲਕਾਰਦੇ ਹੋਏ (ਸਰਵੀਰ) ਪਾਣੀ ਤਕ ਨਹੀਂ ਮੰਗਦੇ ਸਨ।"
                 },
                 "ft": {
                   "gurmukhi": "",
@@ -16330,7 +16330,7 @@
             "verseId": 2208,
             "verse": {
               "gurmukhi": "jx lY kty Awry drKq bwFIAW ]27]",
-              "unicode": "ਜਣ ���ੈ ਕਟੇ ਆਰੇ ਦਰਖਤ ਬਾਢੀਆਂ ॥੨੭॥"
+              "unicode": "ਜਣ ੈ ਕਟੇ ਆਰੇ ਦਰਖਤ ਬਾਢੀਆਂ ॥੨੭॥"
             },
             "larivaar": {
               "gurmukhi": "jxlYktyAwrydrKqbwFIAW]27]",
@@ -17514,7 +17514,7 @@
             },
             "larivaar": {
               "gurmukhi": "jyqyrwiebulwiec`lyju`Dno]",
-              "unicode": "���ੇਤੇਰਾਇਬੁਲਾਇਚੱਲੇਜੁੱਧਨੋ॥"
+              "unicode": "ੇਤੇਰਾਇਬੁਲਾਇਚੱਲੇਜੁੱਧਨੋ॥"
             },
             "translation": {
               "en": {
@@ -24190,7 +24190,7 @@
               "pu": {
                 "ss": {
                   "gurmukhi": "jtwDwrI XoDy kqwrw bMnH ky Xu`D ivc jut gey sn।",
-                  "unicode": "ਜਟਾਧਾਰੀ ਯੋਧੇ ਕਤਾਰਾ ਬੰਨ੍ਹ ਕੇ ਯੁੱ�� ਵਿਚ ਜੁਟ ਗਏ ਸਨ।"
+                  "unicode": "ਜਟਾਧਾਰੀ ਯੋਧੇ ਕਤਾਰਾ ਬੰਨ੍ਹ ਕੇ ਯੁੱ ਵਿਚ ਜੁਟ ਗਏ ਸਨ।"
                 },
                 "ft": {
                   "gurmukhi": "",
@@ -27561,7 +27561,7 @@
                 },
                 "bdb": {
                   "gurmukhi": "rwjy ieMdr dy isr auqy CqR iPrw id`qw।",
-                  "unicode": "ਰਾਜੇ ਇੰਦਰ ���ੇ ਸਿਰ ਉਤੇ ਛਤ੍ਰ ਫਿਰਾ ਦਿੱਤਾ।"
+                  "unicode": "ਰਾਜੇ ਇੰਦਰ ੇ ਸਿਰ ਉਤੇ ਛਤ੍ਰ ਫਿਰਾ ਦਿੱਤਾ।"
                 }
               },
               "es": {
@@ -28351,7 +28351,7 @@
             "verseId": 2410,
             "verse": {
               "gurmukhi": "sy gux mM\\u n AwvnI hau kY jI dos Dryau jIau ]",
-              "unicode": "ਸੇ ਗੁਣ ਮੰ��ੁ ਨ ਆਵਨੀ ਹਉ ਕੈ ਜੀ ਦੋਸ ਧਰੇਉ ਜੀਉ ॥"
+              "unicode": "ਸੇ ਗੁਣ ਮੰੁ ਨ ਆਵਨੀ ਹਉ ਕੈ ਜੀ ਦੋਸ ਧਰੇਉ ਜੀਉ ॥"
             },
             "larivaar": {
               "gurmukhi": "syguxmM\\unAwvnIhaukYjIdosDryaujIau]",
@@ -28844,7 +28844,7 @@
               "pu": {
                 "ss": {
                   "gurmukhi": "mYN iehnW sohxy pdwrQW ivc hI (Ps ky) ZlqI Kw geI, (ieh pdwrQ dyx vwly) aus Ksm-pRBU dy pws mYN nwh bYTI [",
-                  "unicode": "ਮੈਂ ਇਹਨਾਂ ਸੋਹਣੇ ਪਦਾਰਥਾਂ ਵਿਚ ���ੀ (ਫਸ ਕੇ) ਗ਼ਲਤੀ ਖਾ ਗਈ, (ਇਹ ਪਦਾਰਥ ਦੇਣ ਵਾਲੇ) ਉਸ ਖਸਮ-ਪ੍ਰਭੂ ਦੇ ਪਾਸ ਮੈਂ ਨਾਹ ਬੈਠੀ ।"
+                  "unicode": "ਮੈਂ ਇਹਨਾਂ ਸੋਹਣੇ ਪਦਾਰਥਾਂ ਵਿਚ ੀ (ਫਸ ਕੇ) ਗ਼ਲਤੀ ਖਾ ਗਈ, (ਇਹ ਪਦਾਰਥ ਦੇਣ ਵਾਲੇ) ਉਸ ਖਸਮ-ਪ੍ਰਭੂ ਦੇ ਪਾਸ ਮੈਂ ਨਾਹ ਬੈਠੀ ।"
                 },
                 "ft": {
                   "gurmukhi": "mYN ien pdwrQoN myN hI BUl geI hUM[ Apnw jo qUM suAwmI hYN (iqs) qyry pws nw bYTI, Bwv qyry srUp icMqn kw AnMd nw lIAw]",
@@ -31266,7 +31266,7 @@
               "en": "hau aapahu bol na jaanadhaa mai kahiaa sabh hukamaau jeeau ||",
               "hi": "हउ आपहु बोलि न जाणदा मै कहिआ सभु हुकमाउ जीउ ॥",
               "ipa": "ho əɑpəh bɔl nə d͡ʒɑɳəd̪ɑ mæ kəhɪəɑ səɓ hʊkəmɑo d͡ʒio.",
-              "ur": "ها آپهُ بول ن جاݨدا مَے کهِآ سبھ هُکماا جیِ�� ۔۔"
+              "ur": "ها آپهُ بول ن جاݨدا مَے کهِآ سبھ هُکماا جیِ ۔۔"
             },
             "pageNo": 763,
             "lineNo": 6,
@@ -32549,7 +32549,7 @@
               "pu": {
                 "ss": {
                   "gurmukhi": "(jy) solHW isMgwr BI kr ley jwx, qy (A`KW ivc) surmw BI pw ilAw jwey,",
-                  "unicode": "(ਜੇ) ਸੋਲ੍ਹਾਂ ਸ��ੰਗਾਰ ਭੀ ਕਰ ਲਏ ਜਾਣ, ਤੇ (ਅੱਖਾਂ ਵਿਚ) ਸੁਰਮਾ ਭੀ ਪਾ ਲਿਆ ਜਾਏ,"
+                  "unicode": "(ਜੇ) ਸੋਲ੍ਹਾਂ ਸੰਗਾਰ ਭੀ ਕਰ ਲਏ ਜਾਣ, ਤੇ (ਅੱਖਾਂ ਵਿਚ) ਸੁਰਮਾ ਭੀ ਪਾ ਲਿਆ ਜਾਏ,"
                 },
                 "ft": {
                   "gurmukhi": "ds ieMdRY AO pWc pRwx, eyk mn ien solW ko Awpny vs krn rUpI solW sIgwr kIey hYN, punw SwsqRoN kw igAwn rUpI (ik) jo surmw hY iqs ko buDI nyqRoN myN (pwijAw) imlwieAw hY[ kjl sy surmw iBMn hoqw hY]",
@@ -33459,7 +33459,7 @@
               "en": "kahu naanak bea(n)t bea(n)t dhiaaiaa ||",
               "hi": "कहु नानक बेअंतु बेअंतु धिआइआ ॥",
               "ipa": "kəh nɑnək beəŋt̪ beəŋt̪ t̪ɪəɑɪɑ.",
-              "ur": "کهُ نانک بےاںت بےاںت د��آایا ۔۔"
+              "ur": "کهُ نانک بےاںت بےاںت دآایا ۔۔"
             },
             "pageNo": 1362,
             "lineNo": 3,
@@ -33933,7 +33933,7 @@
               "pu": {
                 "ss": {
                   "gurmukhi": "ijhVw prmwqmw swry suKW dw somw hY (gurU dI imhr dw sdkw) mYN aus isRStI dy pwlxhwr nwl (sdw) v`sdI hW [",
-                  "unicode": "ਜਿਹੜਾ ਪਰਮਾਤਮਾ ਸਾਰ�� ਸੁਖਾਂ ਦਾ ਸੋਮਾ ਹੈ (ਗੁਰੂ ਦੀ ਮਿਹਰ ਦਾ ਸਦਕਾ) ਮੈਂ ਉਸ ਸ੍ਰਿਸ਼ਟੀ ਦੇ ਪਾਲਣਹਾਰ ਨਾਲ (ਸਦਾ) ਵੱਸਦੀ ਹਾਂ ।"
+                  "unicode": "ਜਿਹੜਾ ਪਰਮਾਤਮਾ ਸਾਰ ਸੁਖਾਂ ਦਾ ਸੋਮਾ ਹੈ (ਗੁਰੂ ਦੀ ਮਿਹਰ ਦਾ ਸਦਕਾ) ਮੈਂ ਉਸ ਸ੍ਰਿਸ਼ਟੀ ਦੇ ਪਾਲਣਹਾਰ ਨਾਲ (ਸਦਾ) ਵੱਸਦੀ ਹਾਂ ।"
                 },
                 "ft": {
                   "gurmukhi": "hrI gopwl jo srb suKoN kI rws hY Ab mYN iqs ky swQ hI vsqw hUM]Çjy khy vuh kYsw hY? so kihqy hYN:",
@@ -34923,7 +34923,7 @@
                 },
                 "bdb": {
                   "gurmukhi": "hy rwm dy dwsW dy Shr! (hy sqsMg!) (qyry AMdr au~cy Awqmk guxW dI) v`soN bhuq sMGxI hY, byAMq hY, by-ibswl hY [ ",
-                  "unicode": "ਹੇ ਰਾਮ ਦੇ ਦਾਸਾਂ ਦੇ ਸ਼ਹਰ! (ਹੇ ਸਤਸੰਗ!) (ਤੇਰੇ ਅੰਦਰ ਉੱਚੇ ��ਤਮਕ ਗੁਣਾਂ ਦੀ) ਵੱਸੋਂ ਬਹੁਤ ਸੰਘਣੀ ਹੈ, ਬੇਅੰਤ ਹੈ, ਬੇ-ਬਿਸਾਲ ਹੈ । "
+                  "unicode": "ਹੇ ਰਾਮ ਦੇ ਦਾਸਾਂ ਦੇ ਸ਼ਹਰ! (ਹੇ ਸਤਸੰਗ!) (ਤੇਰੇ ਅੰਦਰ ਉੱਚੇ ਤਮਕ ਗੁਣਾਂ ਦੀ) ਵੱਸੋਂ ਬਹੁਤ ਸੰਘਣੀ ਹੈ, ਬੇਅੰਤ ਹੈ, ਬੇ-ਬਿਸਾਲ ਹੈ । "
                 },
                 "ms": {
                   "gurmukhi": "rwmdwspur bVw sMGxw Awbwd hY, ieh lwswnI Aqy prm suMdr hY[",
@@ -36232,7 +36232,7 @@
             "verseId": 2505,
             "verse": {
               "gurmukhi": "rsnw jpY n nwmu iqlu iqlu kir ktIAY ]",
-              "unicode": "ਰਸਨਾ ਜ���ੈ ਨ ਨਾਮੁ ਤਿਲੁ ਤਿਲੁ ਕਰਿ ਕਟੀਐ ॥"
+              "unicode": "ਰਸਨਾ ਜੈ ਨ ਨਾਮੁ ਤਿਲੁ ਤਿਲੁ ਕਰਿ ਕਟੀਐ ॥"
             },
             "larivaar": {
               "gurmukhi": "rsnwjpYnnwmuiqluiqlukirktIAY]",
@@ -36648,7 +36648,7 @@
             },
             "larivaar": {
               "gurmukhi": "nwnkiekusRIDrnwQuijtUtylyiesWiT]15]",
-              "unicode": "ਨਾਨਕਇਕੁਸ੍ਰੀਧਰਨਾਥੁਜਿਟੂਟੇਲੇਇਸਾਂਠਿ॥੧��॥"
+              "unicode": "ਨਾਨਕਇਕੁਸ੍ਰੀਧਰਨਾਥੁਜਿਟੂਟੇਲੇਇਸਾਂਠਿ॥੧॥"
             },
             "translation": {
               "en": {
@@ -37427,7 +37427,7 @@
             },
             "transliteration": {
               "english": "jithai jaae bhagatu su thaan suhaavanaa ||",
-              "hindi": "जिथै जाए भगतु सु ���ानु सुहावणा ॥",
+              "hindi": "जिथै जाए भगतु सु ानु सुहावणा ॥",
               "en": "jithai jaae bhagatu su thaan suhaavanaa ||",
               "hi": "जिथै जाए भगतु सु थानु सुहावणा ॥",
               "ipa": "d͡ʒɪt̪ʰæ d͡ʒɑee ɓəGət̪ s t̪ʰɑn sʊhɑʋəɳɑ.",
@@ -39755,7 +39755,7 @@
               "pu": {
                 "ss": {
                   "gurmukhi": "(hy dwnI mnu`K! vyK, ijs mnu`K dw) ihrdw (Awpxy pRIqm dy) pRym-ipAwr ivc mgn hoieAw rihMdw hY (aus dy AMdr Awpxy pRIqm nwloN) rqw Br BI iv`Q nhIN huMdI,",
-                  "unicode": "(ਹੇ ਦਾਨੀ ਮਨੁੱਖ! ਵੇਖ, ਜਿਸ ਮਨੁੱਖ ਦਾ) ਹਿਰਦਾ (ਆਪਣੇ ਪ੍ਰੀਤਮ ਦੇ) ਪ੍ਰੇਮ-ਪਿਆਰ ਵਿਚ ਮਗਨ ਹੋਇਆ ਰਹਿੰਦਾ ਹੈ (ਉਸ ਦੇ ਅੰਦਰ ਆਪਣੇ ਪ੍ਰੀਤਮ ਨਾਲੋਂ) ਰਤਾ ਭਰ ਭ��� ਵਿੱਥ ਨਹੀਂ ਹੁੰਦੀ,"
+                  "unicode": "(ਹੇ ਦਾਨੀ ਮਨੁੱਖ! ਵੇਖ, ਜਿਸ ਮਨੁੱਖ ਦਾ) ਹਿਰਦਾ (ਆਪਣੇ ਪ੍ਰੀਤਮ ਦੇ) ਪ੍ਰੇਮ-ਪਿਆਰ ਵਿਚ ਮਗਨ ਹੋਇਆ ਰਹਿੰਦਾ ਹੈ (ਉਸ ਦੇ ਅੰਦਰ ਆਪਣੇ ਪ੍ਰੀਤਮ ਨਾਲੋਂ) ਰਤਾ ਭਰ ਭ ਵਿੱਥ ਨਹੀਂ ਹੁੰਦੀ,"
                 },
                 "ft": {
                   "gurmukhi": "hy ipqw jI! siqguroN AO hrI kI pRym pRIqI myN ijnoN kw qn, mn Kcq hoie rihAw hY, iqnoN kw rweI mwqR BI (bIcu) AMqr ArQwq Prk nhIN hoqw hY]",
@@ -40085,7 +40085,7 @@
                 },
                 "ft": {
                   "gurmukhi": "jYsy kmloN myN BOry pRym kr bWDy jwqy hYN AO iqn ky kMifEN sy (bIDy) ivMny BI jwqy hYN, qdip Eh qhW hI lptwie rihqy hY; Bwv Xyh qYsy hI pRymI jnoN ko prmysÍr prwiex hony sy Xdip duK BI pRwpiq hoie qdip Eh iqsI ky Bjn myN qqpr rihqy hYN]4]",
-                  "unicode": "ਜੈਸੇ ��ਮਲੋਂ ਮੇਂ ਭੌਰੇ ਪ੍ਰੇਮ ਕਰ ਬਾਂਧੇ ਜਾਤੇ ਹੈਂ ਔ ਤਿਨ ਕੇ ਕੰਡਿਓਂ ਸੇ (ਬੀਧੇ) ਵਿੰਨੇ ਭੀ ਜਾਤੇ ਹੈਂ, ਤਦਪਿ ਓਹ ਤਹਾਂ ਹੀ ਲਪਟਾਇ ਰਹਿਤੇ ਹੈ; ਭਾਵ ਯੇਹ ਤੈਸੇ ਹੀ ਪ੍ਰੇਮੀ ਜਨੋਂ ਕੋ ਪਰਮੇਸ੍ਵਰ ਪਰਾਇਣ ਹੋਨੇ ਸੇ ਯਦਪਿ ਦੁਖ ਭੀ ਪ੍ਰਾਪਤਿ ਹੋਇ ਤਦਪਿ ਓਹ ਤਿਸੀ ਕੇ ਭਜਨ ਮੇਂ ਤਤਪਰ ਰਹਿਤੇ ਹੈਂ॥੪॥"
+                  "unicode": "ਜੈਸੇ ਮਲੋਂ ਮੇਂ ਭੌਰੇ ਪ੍ਰੇਮ ਕਰ ਬਾਂਧੇ ਜਾਤੇ ਹੈਂ ਔ ਤਿਨ ਕੇ ਕੰਡਿਓਂ ਸੇ (ਬੀਧੇ) ਵਿੰਨੇ ਭੀ ਜਾਤੇ ਹੈਂ, ਤਦਪਿ ਓਹ ਤਹਾਂ ਹੀ ਲਪਟਾਇ ਰਹਿਤੇ ਹੈ; ਭਾਵ ਯੇਹ ਤੈਸੇ ਹੀ ਪ੍ਰੇਮੀ ਜਨੋਂ ਕੋ ਪਰਮੇਸ੍ਵਰ ਪਰਾਇਣ ਹੋਨੇ ਸੇ ਯਦਪਿ ਦੁਖ ਭੀ ਪ੍ਰਾਪਤਿ ਹੋਇ ਤਦਪਿ ਓਹ ਤਿਸੀ ਕੇ ਭਜਨ ਮੇਂ ਤਤਪਰ ਰਹਿਤੇ ਹੈਂ॥੪॥"
                 },
                 "bdb": {
                   "gurmukhi": "(aus vyly) BOry kOol-Pu`l ivc iv`Jy hoey b`Jy hoey (kOl-Pu`l ivc hI) lpt rhy hMudy hn (iesy qrHW ijnHW mnu`KW dy ihrdy-) AwkwS ƒ pRBU-pRym dI cwnxI rOSn kr rhI huMdI hY (auh mnu`K pRBU-pRym ivc) iv`Jy hoey (pRBU dy) sohxy crnW ivc juVy rihMdy hn [4[",
@@ -40333,7 +40333,7 @@
                 },
                 "bdb": {
                   "gurmukhi": "hy Awqmk jIvn ƒ lutw rhy mnu`K! (vyK, qyry vWg hI ieh) jgq (pRym dw) Byq nhIN jwxdw, (qy) Awqmk mOqy mr irhw hY, Awqmk jIvn dI rws-pMUjI lutw irhw hY,",
-                  "unicode": "ਹੇ ਆਤਮਕ ਜੀਵਨ ਨੂੰ ਲੁਟਾ ਰਹ�� ਮਨੁੱਖ! (ਵੇਖ, ਤੇਰੇ ਵਾਂਗ ਹੀ ਇਹ) ਜਗਤ (ਪ੍ਰੇਮ ਦਾ) ਭੇਤ ਨਹੀਂ ਜਾਣਦਾ, (ਤੇ) ਆਤਮਕ ਮੌਤੇ ਮਰ ਰਿਹਾ ਹੈ, ਆਤਮਕ ਜੀਵਨ ਦੀ ਰਾਸ-ਪੰੂਜੀ ਲੁਟਾ ਰਿਹਾ ਹੈ,"
+                  "unicode": "ਹੇ ਆਤਮਕ ਜੀਵਨ ਨੂੰ ਲੁਟਾ ਰਹ ਮਨੁੱਖ! (ਵੇਖ, ਤੇਰੇ ਵਾਂਗ ਹੀ ਇਹ) ਜਗਤ (ਪ੍ਰੇਮ ਦਾ) ਭੇਤ ਨਹੀਂ ਜਾਣਦਾ, (ਤੇ) ਆਤਮਕ ਮੌਤੇ ਮਰ ਰਿਹਾ ਹੈ, ਆਤਮਕ ਜੀਵਨ ਦੀ ਰਾਸ-ਪੰੂਜੀ ਲੁਟਾ ਰਿਹਾ ਹੈ,"
                 },
                 "ms": {
                   "gurmukhi": "ieh dunIAW mrdI Aqy lutI-putI jw rhI hY, hy mUsn! ieh pRBU dy Byt ƒ AnuBv nhIN krdI[",
@@ -41925,7 +41925,7 @@
               "english": "kavachaatak satraat kar teg teer dharabaadd ||2||",
               "hindi": "कवचातकि सत्रात कर तेग तीर धरबाढ ॥२॥",
               "en": "kavachaatak satraat kar teg teer dharabaadd ||2||",
-              "hi": "कवचातकि सत्रात क�� तेग तीर धरबाढ ॥२॥",
+              "hi": "कवचातकि सत्रात क तेग तीर धरबाढ ॥२॥",
               "ipa": "kəʋət͡ʃɑt̪ək sət̪ɹɑt̪ kər t̪eG t̪ir t̪ərəbɑʈə̀.2.",
               "ur": "کوچاتک سترات کر تےگ تیِر دھرباڈھ ۔۔۲۔۔"
             },
@@ -44370,7 +44370,7 @@
             "verseId": 2618,
             "verse": {
               "gurmukhi": "sqRü surysr qum kIXo Bgq Awpuno jwin ]23]",
-              "unicode": "ਸਤ੍���ੁ ਸੁਰੇਸਰ ਤੁਮ ਕੀਯੋ ਭਗਤ ਆਪੁਨੋ ਜਾਨਿ ॥੨੩॥"
+              "unicode": "ਸਤ੍ੁ ਸੁਰੇਸਰ ਤੁਮ ਕੀਯੋ ਭਗਤ ਆਪੁਨੋ ਜਾਨਿ ॥੨੩॥"
             },
             "larivaar": {
               "gurmukhi": "sqRüsurysrqumkIXoBgqAwpunojwin]23]",

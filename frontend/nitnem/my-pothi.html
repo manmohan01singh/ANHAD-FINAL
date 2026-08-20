@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pa" dir="ltr">
 
 <head>
@@ -67,6 +67,10 @@
     })();
   </script>
   
+    <link rel="stylesheet" href="../css/theme-variables.css">
+    <link rel="stylesheet" href="../css/global-mini-player.css?v=5">
+    <link rel="stylesheet" href="../css/desktop-responsive.css?v=24">
+    <script src="../lib/desktop-sidebar.js" defer></script>
     <script src="../lib/page-lifecycle.js"></script>
     <script src="../lib/smooth-navigation.js"></script>
     <script src="../lib/state-preservation.js"></script>
@@ -734,7 +738,7 @@
                 Back
             </button>
             <span class="header-title">ਮੇਰੀ ਪੋਥੀ</span>
-            <button class="edit-btn" id="editBtn" title="Edit My Pothi">✏️</button>
+            <button class="edit-btn" id="editBtn" title="Edit My Pothi">✍️ï¸</button>
         </header>
 
         <!-- READING MODE -->
@@ -743,7 +747,7 @@
                 <div class="icon">📖</div>
                 <h2>ਮੇਰੀ ਪੋਥੀ ਖਾਲੀ ਹੈ</h2>
                 <p>Your Pothi is empty. Tap the + button to select Banis for your daily reading.</p>
-                <button class="start-btn" onclick="enterEditMode()">✏️ Add Banis</button>
+                <button class="start-btn" onclick="enterEditMode()">✍️ï¸ Add Banis</button>
             </div>
             
             <!-- Floating Add Button -->
@@ -757,14 +761,14 @@
                 </div>
                 
                 <div class="reorder-hint">
-                    <span>☰</span> Long press & drag to reorder
+                    <span>â˜°</span> Long press & drag to reorder
                 </div>
                 <div class="pothi-list" id="pothiList"></div>
                 
                 <!-- Pending Banis Section -->
                 <div class="pending-banis-card" id="pendingBanisSection" style="display:none; margin: 16px; padding: 16px; background: linear-gradient(135deg, rgba(255, 149, 0, 0.1), rgba(255, 149, 0, 0.05)); border: 1px solid rgba(255, 149, 0, 0.3); border-radius: 20px; box-shadow: 0 4px 20px rgba(255, 149, 0, 0.15);">
                     <div style="display:flex; align-items:center; gap: 12px; margin-bottom: 16px;">
-                        <span style="font-size: 28px; filter: drop-shadow(0 2px 4px rgba(255, 149, 0, 0.3));">⚠️</span>
+                        <span style="font-size: 28px; filter: drop-shadow(0 2px 4px rgba(255, 149, 0, 0.3));">âš ï¸</span>
                         <div>
                             <h3 style="font-size: 17px; font-weight: 700; margin: 0; color: var(--text-primary);">ਬਾਕੀ ਨਿਤਨੇਮ (Pending Prayers)</h3>
                             <p style="font-size: 13px; margin: 4px 0 0; color: var(--text-secondary);">Complete unfinished Nitnem from yesterday</p>
@@ -781,7 +785,7 @@
         <!-- EDIT MODE -->
         <div class="edit-view" id="editView">
             <div class="edit-hero">
-                <h2>✏️ Edit My Pothi</h2>
+                <h2>✍️ï¸ Edit My Pothi</h2>
                 <p>Select Banis for your daily reading</p>
             </div>
             <div class="selected-count">
@@ -1383,7 +1387,7 @@
                                 </div>
                             </div>
                             <button onclick="markPendingBaniComplete(${id}, '${yestStr}')" style="padding:8px 16px; background:linear-gradient(135deg, #FF9500, #E65C00); color:#fff; font-size:13px; font-weight:700; border:none; border-radius:12px; cursor:pointer; box-shadow: 0 2px 8px rgba(255, 149, 0, 0.3); transition: transform 0.2s ease;">
-                                ✓ Complete
+                                ✍️“ Complete
                             </button>
                         </div>
                     `;
@@ -1877,5 +1881,7 @@
     <script src="../lib/capacitor-notifications-global.js"></script>
     <script src="../lib/anhad-widget-bridge.js"></script>
     <script src="../lib/anhad-audio-singleton.js?v=2.1.5"></script>
+    <script src="../lib/overlay-player.js" defer></script>
 </body>
 </html>
+

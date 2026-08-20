@@ -62,10 +62,13 @@
   
   <!-- Global Theme -->
   <link rel="stylesheet" href="../css/theme-variables.css">
+  <link rel="stylesheet" href="../css/global-mini-player.css?v=5">
+    <link rel="stylesheet" href="../css/desktop-responsive.css?v=24">
   <script src="../lib/global-theme.js"></script>
   <script src="../lib/page-lifecycle.js"></script>
   <script src="../lib/audio-preload.js"></script>
   <script src="../lib/audio-coordinator.js"></script>
+  <script src="../lib/desktop-sidebar.js" defer></script>
   <script src="../lib/smooth-navigation.js?v=3"></script>
   
   <script src="../js/anhad-core.js" defer></script>
@@ -180,7 +183,7 @@
         </div>
         <div class="category-card" data-topic="composers" onclick="openModal('composers')">
           <div class="category-card__glow"></div>
-          <div class="category-icon">✍️</div>
+          <div class="category-icon">✍️ï¸</div>
           <span class="category-name">35 Authors</span>
           <span class="category-desc">੩੫ ਰਚਣਹਾਰ • Gurus & Bhagats</span>
           <span class="category-pill">35 Contributors</span>
@@ -244,7 +247,7 @@
         </a>
         <a href="../Hukamnama/daily-hukamnama.html" class="topic-card">
           <div class="topic-info">
-            <span class="topic-emoji">⚡</span>
+            <span class="topic-emoji">📜</span>
             <div>
               <span class="topic-name">ਹੁਕਮਨਾਮਾ – Daily Hukamnama</span>
               <span class="topic-desc">Today's divine royal command from Sachkhand Sri Harmandir Sahib</span>
@@ -254,9 +257,9 @@
         </a>
         <a href="../SehajPaath/reader.html" class="topic-card">
           <div class="topic-info">
-            <span class="topic-emoji">📕</span>
+            <span class="topic-emoji">📖</span>
             <div>
-              <span class="topic-name">ਸਹਜ ਪਾਠ – Sehaj Paath Reader</span>
+              <span class="topic-name">ਸਹਿਜ ਪਾਠ – Sehaj Paath Reader</span>
               <span class="topic-desc">Continuous sacred reading of Sri Guru Granth Sahib Ji</span>
             </div>
           </div>
@@ -267,7 +270,7 @@
 
     <!-- --- RECOMMENDED SACRED SHABADS --- -->
     <section class="recommendations-section">
-      <h2 class="section-title">🌟 Essential Banis & Shabads</h2>
+      <h2 class="section-title">✨ Essential Banis & Shabads</h2>
       <div class="shabads-list">
         <div class="shabad-card glass-card" onclick="window.navigateTo ? window.navigateTo('../SehajPaath/reader.html?ang=1') : window.location.href='../SehajPaath/reader.html?ang=1'">
           <div class="shabad-info">
@@ -342,7 +345,7 @@
       <div class="insight-modal__lang-switch" id="langSwitch" style="display:none;">
         <button class="lang-btn lang-btn--active" data-lang="en">English</button>
         <button class="lang-btn" data-lang="pa">ਪੰਜਾਬੀ</button>
-        <button class="lang-btn" data-lang="hi">हिंदी</button>
+        <button class="lang-btn" data-lang="hi">à¤¹à¤¿à¤‚à¤¦à¥€</button>
       </div>
       
       <div class="insight-modal__body" id="modalBody">
@@ -370,7 +373,7 @@
       <span class="tab-label">Learning</span>
     </a>
     <a href="/Favorites/favorites.html" class="tab-item">
-      <span class="tab-icon">❤️</span>
+      <span class="tab-icon">❤️ï¸</span>
       <span class="tab-label">Favorites</span>
     </a>
     <a href="/sadhsangat-live/index.html" class="tab-item">
@@ -385,5 +388,7 @@
   <script src="../lib/capacitor-notifications-global.js"></script>
   <script src="../lib/anhad-widget-bridge.js"></script>
   <script src="../lib/anhad-audio-singleton.js?v=2.1.5"></script>
+    <script src="../lib/overlay-player.js" defer></script>
 </body>
 </html>
+

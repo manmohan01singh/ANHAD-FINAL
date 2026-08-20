@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pa" data-theme="light">
 <head>
     <!-- CRITICAL: Theme blocker - MUST run before paint -->
@@ -122,11 +122,14 @@
   <link rel="stylesheet" href="../css/mobile-lock.css">
   <link rel="stylesheet" href="../css/anhad-core.css">
   <link rel="stylesheet" href="../css/theme-variables.css">
+  <link rel="stylesheet" href="../css/global-mini-player.css?v=5">
+    <link rel="stylesheet" href="../css/desktop-responsive.css?v=24">
 
   <!-- Global Theme -->
   <script src="../lib/global-theme.js"></script>
 
   <!-- Navigation -->
+  <script src="../lib/desktop-sidebar.js" defer></script>
   <script src="../lib/smart-back.js"></script>
   <script src="../lib/page-lifecycle.js"></script>
   <script src="../lib/smooth-navigation.js"></script>
@@ -359,7 +362,7 @@
         <div class="hero-card-content">
           <div class="hero-ek-onkar">ੴ</div>
           <h2 class="hero-card-title">Search the eternal<br>words <span>of the Gurus</span></h2>
-          <p class="hero-card-subtitle">✦ with pure devotion ✦</p>
+          <p class="hero-card-subtitle">✍️¦ with pure devotion ✍️¦</p>
         </div>
       </div>
 
@@ -787,7 +790,7 @@
     <div class="sheet-handle"></div>
     <div class="history-header">
       <h2 class="history-title-modal">Recent Searches</h2>
-      <button class="history-close" id="historyClose">✕</button>
+      <button class="history-close" id="historyClose">✍️•</button>
     </div>
     <div class="history-content" id="historyContent">
       <div class="history-empty" id="historyEmpty">
@@ -811,7 +814,7 @@
         <span class="mic-pulse" id="micPulse"></span>
         <span class="mic-text" id="micText">Ready</span>
       </div>
-      <button class="live-kirtan-close" id="liveKirtanClose">✕</button>
+      <button class="live-kirtan-close" id="liveKirtanClose">✍️•</button>
     </div>
     <div class="live-transcript-zone" id="liveTranscriptZone">
       <p class="transcript-label">What I'm hearing:</p>
@@ -829,8 +832,8 @@
     </div>
     <div class="tracker-controls" id="trackerControls">
       <button class="control-btn" id="unlockBtn">🔓 Unlock</button>
-      <button class="control-btn" id="pauseBtn">⏸ Pause</button>
-      <button class="control-btn active" id="autoScrollBtn">⏬ Auto-scroll</button>
+      <button class="control-btn" id="pauseBtn">â¸ Pause</button>
+      <button class="control-btn active" id="autoScrollBtn">â¬ Auto-scroll</button>
     </div>
   </div>
 </div>
@@ -845,7 +848,7 @@
         <h2 class="history-title-modal">Daily Rare Suggestions</h2>
         <span class="modal-subtitle-punjabi" style="font-size: 13px; color: var(--text-secondary); display: block; margin-top: 2px;">ਰੋਜ਼ਾਨਾ ਅਨਮੋਲ ਗੁਰਬਾਣੀ ਸੁਝਾਅ</span>
       </div>
-      <button class="history-close" id="rareSuggestionsClose">✕</button>
+      <button class="history-close" id="rareSuggestionsClose">✍️•</button>
     </div>
     <div class="history-content" style="max-height: 60vh; overflow-y: auto; padding-bottom: 20px;">
       <div class="daily-suggestions-list" id="rareSuggestionsList">
@@ -885,7 +888,7 @@
       </button>
       <div class="raag-fs-header-text">
         <h1 class="raag-fs-title" id="selectedRaagTitle">Raag Asa</h1>
-        <span class="raag-fs-subtitle" id="selectedRaagMeta">Early Morning · 485 Shabads</span>
+        <span class="raag-fs-subtitle" id="selectedRaagMeta">Early Morning Â· 485 Shabads</span>
       </div>
     </div>
     <div class="raag-detail-info-banner" id="selectedRaagDesc"></div>
@@ -947,6 +950,7 @@
 
 <script src="../lib/capacitor-notifications-global.js"></script>
 <script src="../lib/anhad-audio-singleton.js?v=2.1.5"></script>
+    <script src="../lib/overlay-player.js" defer></script>
 <script src="../js/anhad-core.js?v=28" defer></script>
 
 <!-- INLINE INIT: Ensures Raag/Simran/Bell buttons always work, even if SW serves old JS -->
@@ -993,3 +997,4 @@ document.addEventListener('DOMContentLoaded', function() {
 
 </body>
 </html>
+

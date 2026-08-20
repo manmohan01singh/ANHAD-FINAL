@@ -28,7 +28,6 @@
             { selector: '#searchCard', title: '🔍 Advanced Gurbani Khoj', text: 'An incredibly powerful search tool that allows you to instantly search for any Shabad inside Sri Guru Granth Sahib Ji by first-letter initials or keywords.', position: 'top-center' },
             { selector: '#notesCard', title: '📝 Spiritual Notes', text: 'Jot down, edit, and safely store your personal spiritual inspirations, reflections, and notes as you read Gurbani or contemplate your devotions.', position: 'top-center' },
             { selector: '#sadhsangatLiveCard', title: '📡 Sadhsangat Live', text: 'Discover and listen to live Gurdwara broadcasts, Katha, and Kirtan programs from communities worldwide.', position: 'top-center' },
-            { selector: '#gurbaniGptCard', title: '📿 Gurbani GPT', text: 'Our advanced AI spiritual guide trained on sacred scripture to assist you with deep wisdom, contemplation, and understanding of Gurbani.', position: 'top-center' },
             { selector: '#mainNav', title: '📈 Navigation & Dashboard', text: 'Easily transition between the home dashboard, your personal favorites list, the learning library (Insights), or open your complete stats dashboard.', position: 'top-center' }
         ],
         pa: [
@@ -45,7 +44,6 @@
             { selector: '#searchCard', title: '🔍 ਗੁਰਬਾਣੀ ਖੋਜ', text: 'ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ ਵਿੱਚੋਂ ਕਿਸੇ ਵੀ ਸ਼ਬਦ ਨੂੰ ਪਹਿਲੇ ਅੱਖਰ (initials) ਜਾਂ ਕੀਵਰਡ ਨਾਲ ਸਕਿੰਟਾਂ ਵਿੱਚ ਲੱਭਣ ਲਈ ਇੱਕ ਸ਼ਕਤੀਸ਼ਾਲੀ ਖੋਜ ਇੰਜਣ।', position: 'top-center' },
             { selector: '#notesCard', title: '📝 ਗੁਰਬਾਣੀ ਨੋਟਸ', text: 'ਪਾਠ ਕਰਦੇ ਸਮੇਂ ਜਾਂ ਵਿਚਾਰ ਸੁਣਦੇ ਸਮੇਂ ਆਪਣੇ ਮਨ ਵਿੱਚ ਆਏ ਰੂਹਾਨੀ ਵਿਚਾਰਾਂ, ਪ੍ਰੇਰਨਾਵਾਂ ਅਤੇ ਨਿੱਜੀ ਨੋਟਸ ਨੂੰ ਲਿਖ ਕੇ ਸੁਰੱਖਿਅਤ ਰੱਖੋ।', position: 'top-center' },
             { selector: '#sadhsangatLiveCard', title: '📡 ਸਾਧਸੰਗਤ ਲਾਈਵ', text: 'ਦੁਨੀਆ ਭਰ ਦੀਆਂ ਸੰਗਤਾਂ ਅਤੇ ਗੁਰਦੁਆਰਾ ਸਾਹਿਬਾਨ ਤੋਂ ਲਾਈਵ ਕੀਰਤਨ, ਕਥਾ ਅਤੇ ਧਾਰਮਿਕ ਪ੍ਰੋਗਰਾਮਾਂ ਦੀ ਖੋਜ ਕਰੋ ਅਤੇ ਸਰਵਣ ਕਰੋ।', position: 'top-center' },
-            { selector: '#gurbaniGptCard', title: '📿 ਗੁਰਬਾਣੀ ਜੀ.ਪੀ.ਟੀ (AI)', text: 'ਗੁਰਬਾਣੀ ਦੇ ਡੂੰਘੇ ਅਧਿਆਤਮਿਕ ਅਰਥਾਂ, ਗਿਆਨ ਅਤੇ ਵਿਚਾਰਾਂ ਨੂੰ ਸਮਝਣ ਲਈ ਪਵਿੱਤਰ ਲਿਖਤਾਂ ’ਤੇ ਅਧਾਰਿਤ ਸਾਡਾ ਉੱਨਤ AI ਮਾਰਗਦਰਸ਼ਕ।', position: 'top-center' },
             { selector: '#mainNav', title: '📈 ਨੇਵੀਗੇਸ਼ਨ ਅਤੇ ਡੈਸ਼ਬੋਰਡ', text: 'ਹੋਮ ਪੇਜ, ਪਸੰਦੀਦਾ (favorites) ਸ਼ਬਦਾਂ ਦੀ ਸੂਚੀ, ਲਾਇਬ੍ਰੇਰੀ (Insights), ਜਾਂ ਆਪਣੀ ਭਗਤੀ ਦੇ ਵਿਸ਼ਲੇਸ਼ਣ ਡੈਸ਼ਬੋਰਡ ਦੇ ਵਿਚਕਾਰ ਆਸਾਨੀ ਨਾਲ ਬਦਲੋ।', position: 'top-center' }
         ],
         hi: [
@@ -62,7 +60,6 @@
             { selector: '#searchCard', title: '🔍 उन्नत गुरबाणी खोज', text: 'श्री गुरु ग्रंथ साहिब जी में से किसी भी शबद को पहले अक्षर या कीवर्ड के माध्यम से तुरंत खोजने के लिए एक अत्यंत शक्तिशाली खोज उपकरण।', position: 'top-center' },
             { selector: '#notesCard', title: '📝 आध्यात्मिक नोट्स', text: 'पाठ करते समय या ध्यान लगाते समय अपने मन में उठने वाले आध्यात्मिक विचारों, प्रेरणाओं और व्यक्तिगत नोट्स को लिखकर सुरक्षित रखें।', position: 'top-center' },
             { selector: '#sadhsangatLiveCard', title: '📡 साधसंगत लाइव', text: 'दुनिया भर के गुरुद्वारों और संगत से लाइव कीर्तन, कथा और धार्मिक कार्यक्रमों को खोजें और सुनें।', position: 'top-center' },
-            { selector: '#gurbaniGptCard', title: '📿 गुरबाणी जीपीटी (AI)', text: 'गुरबाणी के गहरे आध्यात्मिक अर्थों, चिंतन और समझ के लिए पवित्र ग्रंथों पर आधारित हमारा उन्नत एआई मार्गदर्शक।', position: 'top-center' },
             { selector: '#mainNav', title: '📈 नेविगेशन और डैशबोर्ड', text: 'होम पेज, पसंदीदा (favorites) शबद सूची, लाइब्रेरी (Insights), या अपनी प्रगति के पूर्ण डैशबोर्ड के बीच आसानी से नेविगेट करें।', position: 'top-center' }
         ]
     };
@@ -734,14 +731,6 @@
                 <div class="anhad-tour-badges">
                     <span class="anhad-badge badge-gold">📡 Community Streams</span>
                     <span class="anhad-badge badge-green">🔊 Live Katha & Kirtan</span>
-                </div>
-            `;
-        }
-        if (selector === '#gurbaniGptCard') {
-            return `
-                <div class="anhad-tour-badges">
-                    <span class="anhad-badge badge-purple">🤖 AI Spiritual Guide</span>
-                    <span class="anhad-badge badge-gold">📖 Deep Vichar</span>
                 </div>
             `;
         }

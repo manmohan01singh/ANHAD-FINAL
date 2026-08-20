@@ -71,14 +71,16 @@
                     // Don't replay animations if we're returning to the page
                     const hasPlayedAnimations = window.HomeStateManager?.hasPlayedAnimations();
                     
+                    target.classList.add('revealed', 'scroll-revealed', 'in-viewport');
                     if (hasPlayedAnimations) {
-                        // Just add classes without animation
-                        target.classList.add('revealed', 'scroll-revealed', 'in-viewport');
-                        // Remove animation to make it instant
-                        target.style.animation = 'none';
-                    } else {
-                        // First time - play animation
-                        target.classList.add('revealed', 'scroll-revealed', 'in-viewport');
+                        // Skip the entrance animation on a revisit — but via a
+                        // class, not `target.style.animation = 'none'`. That
+                        // inline write stuck permanently to every .practice-card
+                        // / .quick-card / .event-card and nothing ever cleared
+                        // it (page-lifecycle.js resets opacity/transform/filter/
+                        // pointerEvents/visibility, but never animation), so the
+                        // cards carried a dead inline animation:none all session.
+                        target.classList.add('anhad-reveal-instant');
                     }
                     
                     // Stop observing once revealed — single-fire, no ongoing cost
@@ -107,6 +109,14 @@
 
     // Re-scan after SPA navigation (new elements mounted to DOM)
     window.addEventListener('anhad_page_changed', () => {
+        // Resync the module flag with the DOM first. smooth-navigation.js
+        // strips every body class outside its allow-list on each swap
+        // (:633-639), which removes .scrolling/.is-scrolling — but `isScrolling`
+        // in here stayed true, so setScrollingState(true) early-returned and
+        // the class was never re-added. scroll-engine.css:53-70 keys
+        // `transition: none !important` on .practice-card off those classes, so
+        // the two drifted apart for the rest of the session.
+        isScrolling = document.body ? document.body.classList.contains('is-scrolling') : false;
         setTimeout(scanAndObserveReveals, 100);
     });
 

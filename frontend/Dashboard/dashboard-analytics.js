@@ -244,7 +244,7 @@
         } else if (avgScore > 0) {
             insight = `🌱 Building habits. Average score: ${avgScore}%`;
         } else {
-            insight = `� Start your journey today! Complete Nitnem, listen to Kirtan, read Gurbani.`;
+            insight = ` Start your journey today! Complete Nitnem, listen to Kirtan, read Gurbani.`;
         }
 
         return `

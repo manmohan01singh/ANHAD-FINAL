@@ -60,7 +60,7 @@ class SehajPaathReader {
                 this.detachedSource = 'search';
             }
 
-            console.log('� Loading Ang:', this.currentAng);
+            console.log(' Loading Ang:', this.currentAng);
 
             // Initialize API with error handling
             try {

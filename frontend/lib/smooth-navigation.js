@@ -1071,9 +1071,12 @@
     const scripts = Array.from(newDoc.body.querySelectorAll('script'));
     const externalScripts = [];
 
+    // EXECUTED_INLINE_PAGES is still recorded (other code reads it), but the
+    // `isFirstVisit` local it used to feed was never read — inline scripts are
+    // re-run on every arrival regardless. Removed so it stops implying a
+    // first-visit fast path that does not exist.
     const pageKey = new URL(sourceUrl, window.location.origin).pathname;
-    const isFirstVisit = !EXECUTED_INLINE_PAGES.has(pageKey);
-    if (isFirstVisit) EXECUTED_INLINE_PAGES.add(pageKey);
+    EXECUTED_INLINE_PAGES.add(pageKey);
     
     for (const script of scripts) {
       const src = script.getAttribute('src');

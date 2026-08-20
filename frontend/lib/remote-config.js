@@ -67,6 +67,15 @@
             link: 'GurbaniRadio/gurbani-radio.html?stream=amritvela',
             accentColor: '#D4AF37'
           },
+          // Copy for the in-greeting rotating announcement (State B). Short by
+          // necessity: it renders inside the 152px portrait disc and the
+          // greeting text block, both of which are fixed-size boxes.
+          announce: {
+            badge: 'CHALIYA 2026',
+            title: 'Chaliya 2026',
+            line: 'ਪ੍ਰਕਾਸ਼ ਪੁਰਬ ਸ੍ਰੀ ਗੁਰੂ ਨਾਨਕ ਦੇਵ ਜੀ',
+            sub: 'Coming Soon — 40 days of Amritvela Simran'
+          },
           themeTokens: {
             accentGlow: 'rgba(212, 175, 55, 0.3)',
             badgeBackground: 'linear-gradient(135deg, #8A6D3B 0%, #D4AF37 100%)'
@@ -91,6 +100,14 @@
   class RemoteConfigManager {
     constructor() {
       this.cacheIsStale = false;
+      // Where this.config actually came from: 'remote' | 'cache' | 'builtin'.
+      // Consumers need this to distinguish an authoritative "nothing is
+      // active" (the owner switched a campaign off) from "this device has
+      // never heard from the server". Only the latter may fall back to the
+      // built-in — otherwise a deliberately disabled campaign resurrects
+      // itself on every offline device. loadCachedConfig() sets 'cache' on a
+      // hit; assigning 'builtin' first makes the miss path correct.
+      this.source = 'builtin';
       this.config = this.loadCachedConfig() || SAFE_BUILTIN_CONFIG;
       this.isOnline = navigator.onLine !== false;
       this._pollTimer = null;
@@ -158,6 +175,7 @@
           // the idle deferral. The TTL constant was previously declared and
           // never read, which made a cached config effectively immortal.
           this.cacheIsStale = (Date.now() - parsed.timestamp) > CONFIG_CACHE_TTL;
+          this.source = 'cache';
           return parsed.data;
         }
       } catch (e) {
@@ -199,6 +217,7 @@
           this._lastPayload = payload;
           this.config = data;
           this.cacheIsStale = false;
+          this.source = 'remote';
           this.saveCachedConfig(data);
           if (changed) this.notifyCampaignChange();
         }
@@ -257,6 +276,15 @@
 
     getConfig() {
       return this.config;
+    }
+
+    /**
+     * 'remote' | 'cache' | 'builtin' — the provenance of the current config.
+     * See the note in the constructor for why callers must branch on this
+     * rather than treating a null active campaign as "no config".
+     */
+    getSource() {
+      return this.source;
     }
   }
 

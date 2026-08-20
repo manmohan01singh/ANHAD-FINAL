@@ -4228,7 +4228,7 @@ const NitnemManager = {
                     <span class="bani-name-english">${group.nameEnglish}</span>
                 </div>
                 <span class="bani-duration">${group.duration}</span>
-                <button class="bani-vichar-btn" data-bani-name="${group.nameEnglish}" aria-label="Deep Vichar in Gurbani GPT" title="Deep Vichar in Gurbani GPT">
+                <button class="bani-vichar-btn" data-bani-name="${group.nameEnglish}" aria-label="Deep Vichar" title="Deep Vichar">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
                         <circle cx="12" cy="12" r="10"/>
                         <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
@@ -4257,9 +4257,14 @@ const NitnemManager = {
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 const name = btn.dataset.baniName;
-                const url = `../GurbaniGPT/index.html?prompt=${encodeURIComponent(name)}&deepVichar=true`;
-                if (window.navigateTo) window.navigateTo(url);
-                else window.location.href = url;
+                if (window.AnhadComingSoon) {
+                    window.AnhadComingSoon.show({
+                        title: 'Deep Vichar',
+                        gurmukhi: 'ਸ਼ਬਦ ਵਿਚਾਰ',
+                        feature: name || '',
+                        desc: 'A guided space for deeper reflection on this Bani is on its way.'
+                    });
+                }
             });
         });
 
@@ -12111,8 +12116,8 @@ const PremiumUXManager = {
             let quoteIdx = 0;
             setInterval(() => {
                 quoteIdx = (quoteIdx + 1) % quotes.length;
-                txt.textContent = quotes[quoteIdx] + "   •   ";
-                clone.textContent = quotes[quoteIdx] + "   •   ";
+                txt.textContent = quotes[quoteIdx] + " • ";
+                clone.textContent = quotes[quoteIdx] + " • ";
             }, 30000); // Change text when it loops approximately
         }
     }

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en" data-global-theme="force">
 <head>
     <!-- CRITICAL: Theme blocker - MUST run before paint -->
@@ -61,10 +61,12 @@
   
   <!-- Global Theme -->
   <link rel="stylesheet" href="../css/theme-variables.css">
+  <link rel="stylesheet" href="../css/desktop-responsive.css?v=24">
   <script src="../lib/global-theme.js"></script>
   <script src="../lib/page-lifecycle.js"></script>
   <script src="../lib/audio-preload.js"></script>
   <script src="../lib/audio-coordinator.js"></script>
+  <script src="../lib/desktop-sidebar.js" defer></script>
   <script src="../lib/smooth-navigation.js?v=3"></script>
   
   <script src="../js/anhad-core.js" defer></script>
@@ -913,7 +915,7 @@
           <span class="fav-stat-label">Angs</span>
         </div>
         <div class="fav-stat-card" data-tab-target="notes">
-          <div class="fav-stat-icon">✍️</div>
+          <div class="fav-stat-icon">✍️ï¸</div>
           <span class="fav-stat-num" id="heroNoteCount">0</span>
           <span class="fav-stat-label">Notes</span>
         </div>
@@ -943,7 +945,7 @@
           <span class="tab-btn__badge" id="bookmarkCount">0</span>
         </button>
         <button class="tab-btn" data-tab="notes" role="tab" aria-selected="false">
-          <span class="tab-btn__icon">✍️</span>
+          <span class="tab-btn__icon">✍️ï¸</span>
           <span>Notes</span>
           <span class="tab-btn__badge" id="noteCount">0</span>
         </button>
@@ -984,7 +986,7 @@
     <div class="note-modal-sheet">
       <div class="note-modal-handle"></div>
       <div class="note-modal-header">
-        <h3 class="note-modal-title" id="noteModalTitle">✍️ New Gurbani Note</h3>
+        <h3 class="note-modal-title" id="noteModalTitle">✍️ï¸ New Gurbani Note</h3>
         <button class="note-modal-close" id="closeNoteModalBtn" aria-label="Close Modal"><i class="fas fa-times"></i></button>
       </div>
       <div class="note-modal-body">
@@ -1020,7 +1022,7 @@
       <span class="tab-label">Learning</span>
     </a>
     <a href="/Favorites/favorites.html" class="tab-item active">
-      <span class="tab-icon">❤️</span>
+      <span class="tab-icon">❤️ï¸</span>
       <span class="tab-label">Favorites</span>
     </a>
     <a href="/sadhsangat-live/index.html" class="tab-item">
@@ -1038,6 +1040,7 @@
   <script src="../lib/capacitor-notifications-global.js"></script>
   <script src="../lib/anhad-widget-bridge.js"></script>
   <script src="../lib/anhad-audio-singleton.js?v=2.1.5"></script>
+    <script src="../lib/overlay-player.js" defer></script>
 
   <!-- Favorites Page Engine -->
   <script>
@@ -1313,7 +1316,7 @@
             container.innerHTML = `
               <div class="empty-state">
                 <div class="empty-state-glow"></div>
-                <div class="empty-state__icon">✍️</div>
+                <div class="empty-state__icon">✍️ï¸</div>
                 <h3 class="empty-state__title">${searchQuery ? 'No Matching Notes' : 'No Notes Yet'}</h3>
                 <p class="empty-state__desc">${searchQuery ? 'Try a different search query.' : 'Reflect and write personal thoughts, meanings, and insights on Gurbani.'}</p>
                 <div class="empty-state__actions">
@@ -1389,7 +1392,7 @@
         const shabads = JSON.parse(localStorage.getItem(STORAGE_KEYS.SHABADS) || '[]');
         shabads.splice(index, 1);
         localStorage.setItem(STORAGE_KEYS.SHABADS, JSON.stringify(shabads));
-        showToast('🗑️ Shabad removed');
+        showToast('🗑ï¸ Shabad removed');
         renderShabads();
       };
       
@@ -1398,7 +1401,7 @@
         const bookmarks = JSON.parse(localStorage.getItem(STORAGE_KEYS.BOOKMARKS) || '[]');
         bookmarks.splice(index, 1);
         localStorage.setItem(STORAGE_KEYS.BOOKMARKS, JSON.stringify(bookmarks));
-        showToast('🗑️ Bookmark removed');
+        showToast('🗑ï¸ Bookmark removed');
         renderBookmarks();
       };
       
@@ -1407,7 +1410,7 @@
         const notes = JSON.parse(localStorage.getItem(STORAGE_KEYS.NOTES) || '[]');
         const updated = notes.filter(n => (n.id || String(n.timestamp)) !== noteId);
         localStorage.setItem(STORAGE_KEYS.NOTES, JSON.stringify(updated));
-        showToast('🗑️ Note deleted');
+        showToast('🗑ï¸ Note deleted');
         renderNotes();
       };
       
@@ -1440,7 +1443,7 @@
         if (noteTitleInput) noteTitleInput.value = '';
         if (noteAngInput) noteAngInput.value = '';
         if (noteContentInput) noteContentInput.value = '';
-        if (noteModalTitle) noteModalTitle.textContent = '✍️ New Gurbani Note';
+        if (noteModalTitle) noteModalTitle.textContent = '✍️ï¸ New Gurbani Note';
         if (noteModalOverlay) noteModalOverlay.style.display = 'flex';
         document.body.classList.add('modal-open');
       };
@@ -1454,7 +1457,7 @@
         if (noteTitleInput) noteTitleInput.value = note.title || '';
         if (noteAngInput) noteAngInput.value = note.ang || '';
         if (noteContentInput) noteContentInput.value = note.text || note.content || '';
-        if (noteModalTitle) noteModalTitle.textContent = '✏️ Edit Note';
+        if (noteModalTitle) noteModalTitle.textContent = '✍️ï¸ Edit Note';
         if (noteModalOverlay) noteModalOverlay.style.display = 'flex';
         document.body.classList.add('modal-open');
       };
@@ -1513,3 +1516,4 @@
   </script>
 </body>
 </html>
+

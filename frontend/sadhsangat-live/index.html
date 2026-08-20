@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
   <meta name="color-scheme" content="light dark">
@@ -85,7 +85,7 @@
   <style>
     /* ═══════════════════════════════════════════════════════════════
        ULTIMATE PREMIUM DESIGN SYSTEM
-       iOS-Level Visual DNA · Apple SF + Gurbani Golden Touch
+       iOS-Level Visual DNA Â· Apple SF + Gurbani Golden Touch
        ═══════════════════════════════════════════════════════════════ */
     :root {
       --yt-red: #FF0000;
@@ -109,7 +109,7 @@
       --clay-shadow-raised-dark: 0 12px 40px rgba(0,0,0,0.35), 0 6px 20px rgba(0,0,0,0.18),
                                   inset 0 1px 2px rgba(255,255,255,0.06), inset 0 -1px 2px rgba(0,0,0,0.3);
 
-      /* ── Light theme ── */
+      /* â”€â”€ Light theme â”€â”€ */
       --bg-primary:    #FFFFFF;
       --bg-secondary:  #F2F2F7;   /* iOS system grouped bg */
       --bg-tertiary:   #E5E5EA;
@@ -4797,6 +4797,12 @@
     }
 
   </style>
+  <link rel="stylesheet" href="../css/theme-variables.css">
+  <link rel="stylesheet" href="../css/global-mini-player.css?v=5">
+    <link rel="stylesheet" href="../css/desktop-responsive.css?v=24">
+  <link rel="stylesheet" href="../css/coming-soon-modal.css">
+  <script src="../lib/desktop-sidebar.js" defer></script>
+  <script src="../lib/coming-soon-modal.js" defer></script>
 </head>
 <body>
 
@@ -4889,7 +4895,7 @@
 
   <div class="page-content">
     
-    <!-- ── HEADER ────────────────────────────────────────── -->
+    <!-- â”€â”€ HEADER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
     <header class="header">
       <button class="hdr-menu-btn" id="openDrawerBtn" title="Navigation Menu">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
@@ -4937,7 +4943,7 @@
 
   </div>
 
-  <!-- ── FULL-SCREEN SEARCH PANEL ──────────────── -->
+  <!-- â”€â”€ FULL-SCREEN SEARCH PANEL â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
   <div class="search-overlay-backdrop" id="searchOverlay">
     <div class="search-bar-header">
       <button class="hdr-btn" id="closeSearchBtn">
@@ -4954,7 +4960,7 @@
           placeholder="Search channels..."
           autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false"
         >
-        <button class="search-clear-btn" id="clearSearchFieldBtn">✕</button>
+        <button class="search-clear-btn" id="clearSearchFieldBtn">✍️•</button>
       </div>
       
       <button class="search-preset-pill" id="searchBtn" style="padding:8px 18px; border:none; background:var(--gold-gradient); color:#000; font-weight:700;">Find</button>
@@ -5004,7 +5010,7 @@
     </div>
   </div>
 
-  <!-- ── BOTTOM NAVIGATION BAR ─────────────────────────── -->
+  <!-- â”€â”€ BOTTOM NAVIGATION BAR â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
   <nav class="bottom-nav">
     <div class="nav-spring-dot" id="navSpringDot"></div>
     <button class="nav-tab-btn tap-ripple active" data-tab="home" id="navTabHome">
@@ -5041,10 +5047,10 @@
     </button>
   </nav>
 
-  <!-- ── TOAST NOTIFICATIONS ────────────────────────────── -->
+  <!-- â”€â”€ TOAST NOTIFICATIONS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
   <div class="toast" id="toast">Feed Refreshed</div>
 
-  <!-- ── WATCH DRAWER PLAYER SHEET ────────────────────── -->
+  <!-- â”€â”€ WATCH DRAWER PLAYER SHEET â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
   <div class="player-sheet-backdrop" id="playerBackdrop"></div>
   <div class="player-sheet" id="playerSheet">
     
@@ -5077,11 +5083,11 @@
       
       <!-- HUD tap seeks -->
       <div class="doubletap-seek-overlay left" id="doubleTapOverlayLeft">
-        <span class="doubletap-seek-icon">⏪</span>
+        <span class="doubletap-seek-icon">âª</span>
         <span class="doubletap-seek-text">10 SECONDS</span>
       </div>
       <div class="doubletap-seek-overlay right" id="doubleTapOverlayRight">
-        <span class="doubletap-seek-icon">⏩</span>
+        <span class="doubletap-seek-icon">â©</span>
         <span class="doubletap-seek-text">10 SECONDS</span>
       </div>
 
@@ -5164,7 +5170,7 @@
           </span>
           <span id="playerLiveViewerCount" style="font-size:12px; color:var(--text-secondary); font-weight:700;">Streaming Real-time</span>
           <button class="player-go-live-btn" id="playerGoLiveBtn">
-            ↩ Jump to Live <span id="playerLiveOffsetLabel" style="background:rgba(255,0,0,0.08); color:var(--yt-red); padding:1px 6px; border-radius:100px; margin-left:4px;">Live</span>
+            â†© Jump to Live <span id="playerLiveOffsetLabel" style="background:rgba(255,0,0,0.08); color:var(--yt-red); padding:1px 6px; border-radius:100px; margin-left:4px;">Live</span>
           </button>
         </div>
       </div>
@@ -5222,7 +5228,7 @@
         <div class="player-settings-card">
           <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-color); padding-bottom:10px;">
             <span class="player-settings-title">More Actions</span>
-            <button class="hdr-btn" id="closePlayerMoreActionsBtn" style="font-weight:700;">✕</button>
+            <button class="hdr-btn" id="closePlayerMoreActionsBtn" style="font-weight:700;">✍️•</button>
           </div>
           <button class="player-more-action-row" id="playerDislikeBtn">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm12-13h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-3"/></svg>
@@ -5236,7 +5242,7 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
             <span>Watch on YouTube</span>
           </button>
-          <button class="player-more-action-row" id="playerLearnVicharBtn" title="Learn Context & Vichar (Gurbani GPT)">
+          <button class="player-more-action-row" id="playerLearnVicharBtn" title="Learn Context & Vichar">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="12" cy="12" r="10"/>
               <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
@@ -5277,7 +5283,7 @@
       <div class="player-settings-card">
         <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-color); padding-bottom:10px;">
           <span class="player-settings-title">Playback Settings</span>
-          <button class="hdr-btn" id="closePlayerSettingsBtn" style="font-weight:700;">✕</button>
+          <button class="hdr-btn" id="closePlayerSettingsBtn" style="font-weight:700;">✍️•</button>
         </div>
         
         <div class="player-settings-row">
@@ -5845,7 +5851,7 @@
       return img;
     }
 
-    // ── WATCH HISTORY HELPERS ───────────────────────
+    // â”€â”€ WATCH HISTORY HELPERS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     function saveToWatchHistory(entry) {
       // entry: { videoId, title, channelName, channelThumbnail, isLive, watchedAt }
       State.watchHistory = State.watchHistory.filter(h => h.videoId !== entry.videoId);
@@ -5854,7 +5860,7 @@
       try { localStorage.setItem('sl_watchHistory', JSON.stringify(State.watchHistory)); } catch(e) {}
     }
 
-    // ── HAPTIC FEEDBACK ─────────────────────────────
+    // â”€â”€ HAPTIC FEEDBACK â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     function haptic(style = 'light') {
       try {
         if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Haptics) {
@@ -5947,7 +5953,7 @@
 
     let currentTheme = localStorage.getItem('sl_theme') || 'light';
 
-    /* ── USER REGISTRATION / PERSISTENCE ────────────────── */
+    /* â”€â”€ USER REGISTRATION / PERSISTENCE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     function getPersistentUserId() {
       let userId = localStorage.getItem('anhad_user_id');
       if (!userId) {
@@ -6015,7 +6021,7 @@
       }
     }
 
-    /* ── TOAST NOTIFICATIONS ─────────────────────────── */
+    /* â”€â”€ TOAST NOTIFICATIONS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     let toastTimeout = null;
     function showToast(message, duration = 3000) {
       const toast = $('toast');
@@ -6028,7 +6034,7 @@
       }, duration);
     }
 
-    /* ── SYSTEM AUTO THEME COORD ────────────────────── */
+    /* â”€â”€ SYSTEM AUTO THEME COORD â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     function applyTheme(theme) {
       currentTheme = theme;
       document.documentElement.dataset.theme = theme;
@@ -6063,7 +6069,7 @@
 
     applyTheme(localStorage.getItem('sl_theme') || 'light');
 
-    /* ── DRAWER NAV MENU & BELL NOTIFICATIONS CONTROLLERS ── */
+    /* â”€â”€ DRAWER NAV MENU & BELL NOTIFICATIONS CONTROLLERS â”€â”€ */
     $('openDrawerBtn').addEventListener('click', () => {
       // Hide mini player when drawer opens
       const playerSheet = $('playerSheet');
@@ -6232,7 +6238,7 @@
       $('notifContentList').innerHTML = `<div style="text-align:center; padding:30px; font-size:12.5px; color:var(--text-secondary);">No new notifications</div>`;
     });
 
-    /* ── TABS NAVIGATION CONTROLLERS ─────────────────── */
+    /* â”€â”€ TABS NAVIGATION CONTROLLERS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     document.querySelectorAll('.nav-tab-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         const tab = btn.getAttribute('data-tab');
@@ -6255,7 +6261,7 @@
       loadTabContent(tabId);
     }
 
-    // ── Update live count badge on nav ────────────────
+    // â”€â”€ Update live count badge on nav â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     function updateLiveNavBadge() {
       const liveCount = State.live.filter(c => c.isLive === 1 && c.videoId).length;
       // Find the Live tab button
@@ -6277,7 +6283,7 @@
       });
     }
 
-    // ── Inject upcoming live into notification popup ──
+    // â”€â”€ Inject upcoming live into notification popup â”€â”€
     function updateNotificationsPopup() {
       const list = $('notifContentList');
       if (!list) return;
@@ -6449,7 +6455,7 @@
       set(target, property, value) {
         const oldValue = target[property];
         target[property] = value;
-        console.log(`[State] ${property} changed:`, oldValue, '→', value);
+        console.log(`[State] ${property} changed:`, oldValue, 'â†’', value);
         return true;
       }
     });
@@ -6686,7 +6692,7 @@
       }
     }
 
-    /* ── DATA INTEGRATION & SYNC FLOWS ───────────────── */
+    /* â”€â”€ DATA INTEGRATION & SYNC FLOWS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     async function loadData() {
       try {
         const [liveRes, myChannelsRes, streamsRes] = await Promise.all([
@@ -6775,7 +6781,7 @@
         if (main && (!State.live || State.live.length === 0) && (!State.myChannels || State.myChannels.length === 0)) {
           main.innerHTML = `
             <div style="padding:40px 20px; text-align:center;">
-              <div style="font-size:48px; margin-bottom:16px;">⚠️</div>
+              <div style="font-size:48px; margin-bottom:16px;">âš ï¸</div>
               <div style="font-size:16px; font-weight:700; color:var(--text-primary); margin-bottom:8px;">Connection Failed</div>
               <div style="font-size:13px; color:var(--text-secondary); margin-bottom:16px;">Unable to connect to Sadhsangat Live servers. Please check your network connection.</div>
               <button onclick="window.location.reload()" style="background:var(--gold-gradient); border:none; padding:10px 20px; border-radius:30px; font-weight:600; color:#000; cursor:pointer;">Retry Connection</button>
@@ -6806,11 +6812,11 @@
         await loadData();
         showToast('✅ Feed Refreshed');
       } catch (e) {
-        showToast('⚠️ Sync failed');
+        showToast('âš ï¸ Sync failed');
       }
     }
 
-    /* ── SEARCH DIALOG LOGIC ──────────────────────────── */
+    /* â”€â”€ SEARCH DIALOG LOGIC â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     const searchOverlay = $('searchOverlay');
     $('openSearchBtn').addEventListener('click', () => {
       // Hide mini player when search opens
@@ -7038,8 +7044,8 @@
                       const _matchedKw     = _rejectKws.find(k => _nameLower.includes(k));
                       if (_matchedArtist || _matchedKw) {
                         const _term = _matchedArtist || _matchedKw;
-                        console.log(`[AI Validation] ❌ CLIENT PRE-CHECK blocked "${ch.channelName}" — matched "${_term}"`);
-                        showToast(`⚠️ "${ch.channelName}" is not suitable for Sadhsangat Live`);
+                        console.log(`[AI Validation] âŒ CLIENT PRE-CHECK blocked "${ch.channelName}" — matched "${_term}"`);
+                        showToast(`âš ï¸ "${ch.channelName}" is not suitable for Sadhsangat Live`);
                         btn.disabled = false;
                         btn.textContent = 'Add';
                         return;
@@ -7058,7 +7064,7 @@
                       const validateData = await readJsonResponse(validateRes, { isValid: false });
                       
                       if (!validateData.isValid) {
-                        showToast(`⚠️ ${validateData.reason || 'This channel is not appropriate for Sadhsangat Live'}`);
+                        showToast(`âš ï¸ ${validateData.reason || 'This channel is not appropriate for Sadhsangat Live'}`);
                         btn.disabled = false;
                         btn.textContent = 'Add';
                         return;
@@ -7079,7 +7085,7 @@
                       addSearchToHistory(query);
                       await loadData();
                     } catch (addErr) {
-                      showToast('⚠️ ' + addErr.message);
+                      showToast('âš ï¸ ' + addErr.message);
                       btn.disabled = false;
                       btn.textContent = 'Add';
                     }
@@ -7103,17 +7109,17 @@
               showMoreBtn.style.color = 'var(--gold-accent)';
               showMoreBtn.style.cursor = 'pointer';
               showMoreBtn.style.borderBottom = '1px solid var(--border-color)';
-              showMoreBtn.textContent = 'Show More Channels ∨';
+              showMoreBtn.textContent = 'Show More Channels âˆ¨';
               
               let isExpanded = false;
               showMoreBtn.addEventListener('click', () => {
                 isExpanded = !isExpanded;
                 if (isExpanded) {
                   renderChannelRows(true);
-                  showMoreBtn.textContent = 'Show Less Channels ∧';
+                  showMoreBtn.textContent = 'Show Less Channels âˆ§';
                 } else {
                   renderChannelRows(false);
-                  showMoreBtn.textContent = 'Show More Channels ∨';
+                  showMoreBtn.textContent = 'Show More Channels âˆ¨';
                 }
               });
               container.appendChild(showMoreBtn);
@@ -7193,7 +7199,7 @@
         
         $('previewCard').classList.add('visible');
       } catch (err) {
-        showToast('⚠️ ' + err.message);
+        showToast('âš ï¸ ' + err.message);
       } finally {
         $('searchBtn').disabled = false;
         $('searchBtn').textContent = 'Find';
@@ -7236,7 +7242,7 @@
 
         const del = CE('button');
         del.className = 'history-delete-btn';
-        del.innerHTML = '✕';
+        del.innerHTML = '✍️•';
         del.addEventListener('click', (e) => {
           e.stopPropagation();
           State.searchHistory = State.searchHistory.filter(item => item !== q);
@@ -7263,7 +7269,7 @@
       });
     });
 
-    /* ── DISPLAY RENDERING FLOWS ──────────────────────── */
+    /* â”€â”€ DISPLAY RENDERING FLOWS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     function renderWorkspace() {
       const main = $('mainContainer');
       main.innerHTML = '';
@@ -7286,7 +7292,7 @@
     function renderLiveTab(container) {
       container.appendChild(renderSubscriptionsCircleBar());
       
-      // ── SECTION A: LIVE NOW ──────────────────────
+      // â”€â”€ SECTION A: LIVE NOW â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
       const liveSec = CE('section');
       liveSec.className = 'channels-feed-section';
 
@@ -7335,7 +7341,7 @@
       liveSec.appendChild(subContainer);
       container.appendChild(liveSec);
 
-      // ── SECTION B: PREVIOUS LIVES (sorted newest-first) ─────────────
+      // â”€â”€ SECTION B: PREVIOUS LIVES (sorted newest-first) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
       const prevSec = CE('section');
       prevSec.className = 'channels-feed-section';
       const prevHdr = CE('div');
@@ -7444,9 +7450,9 @@
             <div class="prev-live-title">${item.title}</div>
             <div class="prev-live-meta">
               <span>${item.channelName}</span>
-              <span class="prev-live-dot-sep">•</span>
+              <span class="prev-live-dot-sep"> • </span>
               <span>${item.ago}</span>
-              ${item.views ? `<span class="prev-live-dot-sep">•</span><span>${item.views}</span>` : ''}
+              ${item.views ? `<span class="prev-live-dot-sep"> • </span><span>${item.views}</span>` : ''}
             </div>
           </div>
           <button class="prev-live-play-btn">
@@ -7634,7 +7640,7 @@
       dotsDiv.id = 'carouselDotsCentered';
       container.appendChild(dotsDiv);
 
-      // ── SECTION 1: LIVE NOW ─────────────────
+      // â”€â”€ SECTION 1: LIVE NOW â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
       const liveSection = CE('section');
       liveSection.className = 'channels-feed-section';
 
@@ -7686,8 +7692,8 @@
       }
       container.appendChild(liveSection);
 
-      // ── SECTION 2: CONTINUE WATCHING (Real watch history from localStorage) ──
-      // ── SECTION 2: CONTINUE WATCHING (Real watch history from localStorage) ──
+      // â”€â”€ SECTION 2: CONTINUE WATCHING (Real watch history from localStorage) â”€â”€
+      // â”€â”€ SECTION 2: CONTINUE WATCHING (Real watch history from localStorage) â”€â”€
       if (State.watchHistory && State.watchHistory.length > 0) {
         const continueSection = CE('section');
         const continueHeader = CE('div');
@@ -7757,7 +7763,7 @@
         container.appendChild(continueSection);
       }
 
-      // ── SECTION 2b: UPCOMING LIVE ─────────────────
+      // â”€â”€ SECTION 2b: UPCOMING LIVE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
       // Reuses .upcoming-card-row/.upcoming-calendar-block/.upcoming-notify-btn —
       // a fully-styled component that already existed in CSS but was never
       // wired to any real markup (only ever rendered as plain text rows in
@@ -7821,7 +7827,7 @@
         container.appendChild(upcomingSection);
       }
 
-      // ── SECTION 3: PREVIOUS LIVES ─────────────────
+      // â”€â”€ SECTION 3: PREVIOUS LIVES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
       const prevSection = CE('section');
       const prevHeader = CE('div');
       prevHeader.className = 'section-header-row';
@@ -7931,9 +7937,9 @@
             <div class="prev-live-title">${item.title}</div>
             <div class="prev-live-meta">
               <span>${item.channelName}</span>
-              <span class="prev-live-dot-sep">•</span>
+              <span class="prev-live-dot-sep"> • </span>
               <span>${item.ago}</span>
-              ${item.views ? `<span class="prev-live-dot-sep">•</span><span>${item.views}</span>` : ''}
+              ${item.views ? `<span class="prev-live-dot-sep"> • </span><span>${item.views}</span>` : ''}
             </div>
           </div>
           <button class="prev-live-play-btn">
@@ -8023,7 +8029,7 @@
         if (isLive) {
           const badge = CE('div');
           badge.className = 'hero-live-badge';
-          badge.innerHTML = '▶ LIVE';
+          badge.innerHTML = 'â–¶ LIVE';
           slide.appendChild(badge);
         }
 
@@ -8366,7 +8372,7 @@
             <div class="playlist-title">${ch.channelName}</div>
             <div class="playlist-meta">Browse Gurbani Playlists</div>
           </div>
-          <div style="color:var(--text-secondary); font-size:18px; font-weight:700;">›</div>
+          <div style="color:var(--text-secondary); font-size:18px; font-weight:700;">”º</div>
         `;
         row.addEventListener('click', () => {
           State.selectedChannelId = ch.channelId;
@@ -8387,8 +8393,8 @@
         const playlists = data.playlists || [];
         container.innerHTML = `
           <div style="padding: 12px 16px; border-bottom: 1px solid var(--border-color); display:flex; align-items:center; gap:8px;">
-            <button id="backToChListBtn" style="background:none; border:none; color:var(--gold-accent); font-weight:800; font-size:14px; cursor:pointer;">‹ Back</button>
-            <span style="font-size:14px; font-weight:800; color:var(--text-primary);">• ${ch.channelName} Playlists</span>
+            <button id="backToChListBtn" style="background:none; border:none; color:var(--gold-accent); font-weight:800; font-size:14px; cursor:pointer;">”¹ Back</button>
+            <span style="font-size:14px; font-weight:800; color:var(--text-primary);"> • ${ch.channelName} Playlists</span>
           </div>
         `;
 
@@ -8405,7 +8411,7 @@
                 <div class="playlist-title">${pl.title}</div>
                 <div class="playlist-meta">${pl.videoCount || '0'} Gurbani Tracks</div>
               </div>
-              <div style="color:var(--gold-accent); font-size:15px; font-weight:700;">▶</div>
+              <div style="color:var(--gold-accent); font-size:15px; font-weight:700;">â–¶</div>
             `;
             row.addEventListener('click', () => {
               window.open(`https://www.youtube.com/playlist?list=${pl.playlistId}`, '_blank', 'noopener');
@@ -8422,7 +8428,7 @@
       } catch (e) {
         container.innerHTML = `
           <div style="padding: 12px 16px;"><button id="backToChListBtn" style="background:none; border:none; color:var(--yt-red); font-weight:700;">Back</button></div>
-          <div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-heading">Could not load playlists</div></div>
+          <div class="empty-state"><div class="empty-icon">âš ï¸</div><div class="empty-heading">Could not load playlists</div></div>
         `;
         $('backToChListBtn').addEventListener('click', () => {
           State.selectedChannelId = 'all';
@@ -8466,10 +8472,10 @@
           Popular Channels
         </div>
         <div class="library-presets-grid">
-          <button class="library-preset-btn" data-query="PTC Simran">PTC Simran <span>➕</span></button>
-          <button class="library-preset-btn" data-query="Fateh TV">Fateh TV <span>➕</span></button>
-          <button class="library-preset-btn" data-query="PTC Gold">PTC Gold <span>➕</span></button>
-          <button class="library-preset-btn" data-query="Kirtan Pardhasa">Kirtan Pardhasa <span>➕</span></button>
+          <button class="library-preset-btn" data-query="PTC Simran">PTC Simran <span>âž•</span></button>
+          <button class="library-preset-btn" data-query="Fateh TV">Fateh TV <span>âž•</span></button>
+          <button class="library-preset-btn" data-query="PTC Gold">PTC Gold <span>âž•</span></button>
+          <button class="library-preset-btn" data-query="Kirtan Pardhasa">Kirtan Pardhasa <span>âž•</span></button>
         </div>
       `;
       presetsCard.querySelectorAll('.library-preset-btn').forEach(btn => {
@@ -8510,20 +8516,20 @@
 
           const upBtn = CE('button');
           upBtn.className = 'manager-arrow-btn';
-          upBtn.innerHTML = '▲';
+          upBtn.innerHTML = 'â–²';
           upBtn.addEventListener('click', () => moveChannel(ch.channelId, 'up'));
           actions.appendChild(upBtn);
 
           const downBtn = CE('button');
           downBtn.className = 'manager-arrow-btn';
-          downBtn.innerHTML = '▼';
+          downBtn.innerHTML = 'â–¼';
           downBtn.addEventListener('click', () => moveChannel(ch.channelId, 'down'));
           actions.appendChild(downBtn);
 
           if (ch.channelId !== 'UCYn6UEtQ771a_OWSiNBoG8w') { // Core PTC Simran protection
             const delBtn = CE('button');
             delBtn.className = 'manager-delete-btn';
-            delBtn.innerHTML = '✕';
+            delBtn.innerHTML = '✍️•';
             delBtn.addEventListener('click', () => {
               if (confirm(`Stop tracking "${ch.channelName}"?`)) deleteChannel(ch.channelId);
             });
@@ -8600,7 +8606,7 @@
       }
     }
 
-    /* ── REORDER & DELETION ACTIONS ───────────────────── */
+    /* â”€â”€ REORDER & DELETION ACTIONS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     async function moveChannel(channelId, direction) {
       const ids = State.myChannels.map(c => c.channelId);
       const idx = ids.indexOf(channelId);
@@ -8625,7 +8631,7 @@
         showToast('Display order updated');
         await loadData();
       } catch(err) {
-        showToast('⚠️ ' + err.message);
+        showToast('âš ï¸ ' + err.message);
       }
     }
 
@@ -8636,16 +8642,16 @@
         });
         const data = await readJsonResponse(res, {});
         if (!res.ok) throw new Error(data.error || 'Delete failed');
-        showToast('🗑️ Channel removed');
+        showToast('🗑ï¸ Channel removed');
         if (State.selectedChannelId === channelId) State.selectedChannelId = 'all';
         State.videos = [];
         await loadData();
       } catch (err) {
-        showToast('⚠️ ' + err.message);
+        showToast('âš ï¸ ' + err.message);
       }
     }
 
-    /* ── CREATING YOUTUBE CARDS LAYOUT ────────────────── */
+    /* â”€â”€ CREATING YOUTUBE CARDS LAYOUT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     function createYtVideoCard(v, isLiveCard = false, showChannelIndicator = false) {
       const card = CE('div');
       card.dataset.videoId = v.videoId;
@@ -8769,17 +8775,17 @@
             📺 ${v.channelName}
           </span>
           ${GOLD_CHECK_SVG}
-          <span>•</span>
+          <span> • </span>
           <span>${v.views || 'No views'}</span>
-          ${v.publishedTime ? '<span>•</span><span>' + v.publishedTime + '</span>' : ''}
+          ${v.publishedTime ? '<span> • </span><span>' + v.publishedTime + '</span>' : ''}
         `;
       } else {
         meta.innerHTML = `
           <span class="channel-name">${v.channelName}</span>
           ${GOLD_CHECK_SVG}
-          <span>•</span>
+          <span> • </span>
           <span>${v.views || 'No views'}</span>
-          ${v.publishedTime ? '<span>•</span><span>' + v.publishedTime + '</span>' : ''}
+          ${v.publishedTime ? '<span> • </span><span>' + v.publishedTime + '</span>' : ''}
         `;
       }
       
@@ -8825,7 +8831,7 @@
       return name.split(' ').map(x => x[0]).slice(0, 2).join('').toUpperCase();
     }
 
-    /* ── Dynamic Ambient Color Extraction ── */
+    /* â”€â”€ Dynamic Ambient Color Extraction â”€â”€ */
     function extractAmbientColor(videoId) {
       const playerSheet = $('playerSheet');
       if (!playerSheet) return;
@@ -8894,7 +8900,7 @@
           return;
         }
         if (!v.channelId) {
-          showToast('⚠️ Channel ID not available');
+          showToast('âš ï¸ Channel ID not available');
           return;
         }
         
@@ -8909,10 +8915,10 @@
             showToast(`🔔 Subscribed to ${v.channelName || 'Channel'}`);
             await loadData();
           } else {
-            showToast('⚠️ ' + (data.error || 'Failed to subscribe'));
+            showToast('âš ï¸ ' + (data.error || 'Failed to subscribe'));
           }
         } catch(err) {
-          showToast('⚠️ Error subscribing');
+          showToast('âš ï¸ Error subscribing');
         }
       });
       
@@ -8941,7 +8947,7 @@
       };
     }
 
-    /* ── WATCH PAGE SHEET PLAYER CONTROLLER ───────────── */
+    /* â”€â”€ WATCH PAGE SHEET PLAYER CONTROLLER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     function openPlayer(videoId, title, channelName, channelThumbnail, isLive = false) {
       State.currentPlaying = { videoId, title, channelName, channelThumbnail, isLive };
       State.currentTime = 0;
@@ -9011,7 +9017,7 @@
       window.dispatchEvent(new CustomEvent('sadhsangatPlayerOpened', { detail: { title, channelName } }));
     }
 
-    /* ── POPULATE UP NEXT / RECOMMENDED FEED ON WATCH PAGE ── */
+    /* â”€â”€ POPULATE UP NEXT / RECOMMENDED FEED ON WATCH PAGE â”€â”€ */
     function renderPlayerRelatedList(currentVideoId) {
       const container = $('playerRelatedList');
       if (!container) return;
@@ -9123,7 +9129,7 @@
       });
     }
 
-    /* ── INLINE CARD PLAYER FALLBACK ── */
+    /* â”€â”€ INLINE CARD PLAYER FALLBACK â”€â”€ */
     function playInline(card, videoId) {
       openPlayer(videoId, '', '', '', false);
     }
@@ -9154,7 +9160,7 @@
             updateSubscribeBtnState(null);
           }
         } else {
-          showToast(`➕ Adding ${name}...`);
+          showToast(`âž• Adding ${name}...`);
           const res = await fetchWithUser(`/api/sadhsangat/search?q=${encodeURIComponent(name)}`);
           const data = await readJsonResponse(res, { channels: [] });
           const found = (data.channels || []).find(c => c.channelName === name) || (data.channels || [])[0];
@@ -9169,11 +9175,11 @@
             await loadData();
             updateSubscribeBtnState(found);
           } else {
-            showToast('⚠️ Channel not found');
+            showToast('âš ï¸ Channel not found');
           }
         }
       } catch (e) {
-        showToast('⚠️ Action failed');
+        showToast('âš ï¸ Action failed');
       } finally {
         btn.disabled = false;
       }
@@ -9394,14 +9400,14 @@
       return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     }
 
-    /* ── PLAYER CONTROL ACTION BINDINGS ──────────────── */
+    /* â”€â”€ PLAYER CONTROL ACTION BINDINGS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     $('playerPlayPauseBtn').addEventListener('click', togglePlayPause);
     $('playerMiniPlayPauseBtn').addEventListener('click', (e) => {
       e.stopPropagation();
       togglePlayPause();
     });
 
-    /* ── YOUTUBE IFRAME COMMAND HELPER & POSTMESSAGE LISTENER ── */
+    /* â”€â”€ YOUTUBE IFRAME COMMAND HELPER & POSTMESSAGE LISTENER â”€â”€ */
     function postYtCommand(func, args = []) {
       const iframe = document.querySelector('#ytPlayerContainer iframe');
       if (iframe && iframe.contentWindow) {
@@ -9495,7 +9501,7 @@
           miniBtn.innerHTML = `<svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>`;
         }
         $('audioDiscSpin').classList.remove('playing');
-        showToast('⏸️ Paused');
+        showToast('â¸ï¸ Paused');
       } else {
         State.isPlaying = true;
         if (ytPlayer && ytPlayer.playVideo) { try { ytPlayer.playVideo(); } catch(e) {} }
@@ -9508,7 +9514,7 @@
           miniBtn.innerHTML = `<svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><rect x="5" y="4" width="4" height="16"/><rect x="15" y="4" width="4" height="16"/></svg>`;
         }
         $('audioDiscSpin').classList.add('playing');
-        showToast('▶️ Playing');
+        showToast('â–¶ï¸ Playing');
       }
     }
 
@@ -9529,7 +9535,7 @@
       postYtCommand('seekTo', [targetTime, true]);
 
       updateScrubberUI();
-      showToast(sec > 0 ? `⏩ +${sec}s` : `⏪ ${Math.abs(sec)}s`);
+      showToast(sec > 0 ? `â© +${sec}s` : `âª ${Math.abs(sec)}s`);
     }
 
     $('playerProgressBar').addEventListener('input', (e) => {
@@ -9662,7 +9668,7 @@
         window.wakeLock.release().then(() => { window.wakeLock = null; }).catch(() => {});
       }
       window.dispatchEvent(new CustomEvent('sadhsangatPlayerClosed'));
-      showToast('⏹️ Playback stopped');
+      showToast('â¹ï¸ Playback stopped');
     }
 
     function minimizePlayer() {
@@ -9718,7 +9724,7 @@
       }
     });
 
-    /* ── OPTIONS OVERLAYS ACTIONS ─────────────────────── */
+    /* â”€â”€ OPTIONS OVERLAYS ACTIONS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     $('playerLikeBtn').addEventListener('click', () => {
       State.likeState = !State.likeState;
       const btn = $('playerLikeBtn');
@@ -9728,7 +9734,7 @@
         btn.style.color = '#000';
         btn.style.borderColor = 'var(--gold-accent)';
         if (txt) txt.textContent = 'Liked';
-        showToast('❤️ Liked Gurbani Stream');
+        showToast('❤️ï¸ Liked Gurbani Stream');
       } else {
         btn.style.background = 'var(--bg-glass)';
         btn.style.color = 'var(--text-primary)';
@@ -9755,7 +9761,7 @@
       navigator.clipboard.writeText(url).then(() => {
         showToast('📋 Link copied to clipboard');
       }).catch(() => {
-        showToast('⚠️ Link: ' + url);
+        showToast('âš ï¸ Link: ' + url);
       });
     });
 
@@ -9765,20 +9771,16 @@
     });
 
     $('playerLearnVicharBtn').addEventListener('click', () => {
-      if (!State.currentPlaying || !State.currentPlaying.title) {
-        showToast('⚠️ No active Gurbani title found');
-        return;
+      if (window.AnhadComingSoon) {
+        window.AnhadComingSoon.show({
+          title: 'Deep Vichar',
+          gurmukhi: 'ਸ਼ਬਦ ਵਿਚਾਰ',
+          feature: 'Context & Reflection',
+          desc: 'A guided space for deeper context and reflection on what’s playing is on its way.'
+        });
+      } else {
+        showToast('✍️¨ Deep Vichar is coming soon!');
       }
-      let cleanTitle = State.currentPlaying.title;
-      cleanTitle = cleanTitle.replace(/^(live|streaming|non-stop)\s*\|\s*/gi, '');
-      cleanTitle = cleanTitle.replace(/\|.*$/g, '');
-      cleanTitle = cleanTitle.trim();
-      const url = `../GurbaniGPT/index.html?prompt=${encodeURIComponent(cleanTitle)}&deepVichar=true`;
-      showToast('✨ Retrieving Shabad context for deep Vichar...');
-      setTimeout(() => {
-        if (window.navigateTo) window.navigateTo(url);
-        else window.location.href = url;
-      }, 800);
     });
 
     $('playerSettingsPillBtn').addEventListener('click', () => {
@@ -9857,7 +9859,7 @@
           return;
         } catch(e) {}
       }
-      showToast('ℹ️ Picture-in-Picture: Tap YouTube player PiP icon');
+      showToast('â„¹ï¸ Picture-in-Picture: Tap YouTube player PiP icon');
     });
 
     $('playerFullscreenBtn').addEventListener('click', () => {
@@ -9866,7 +9868,7 @@
         document.exitFullscreen().catch(() => {});
       } else if (videoWrap && videoWrap.requestFullscreen) {
         videoWrap.requestFullscreen().catch(() => {
-          showToast('ℹ️ Tap YouTube player fullscreen button');
+          showToast('â„¹ï¸ Tap YouTube player fullscreen button');
         });
       }
     });
@@ -9879,7 +9881,7 @@
       }
     });
 
-    /* ── INIT DATA LOOP ─────────────────────────────── */
+    /* â”€â”€ INIT DATA LOOP â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     loadData();
     setInterval(loadData, 45 * 1000);
 
@@ -10051,10 +10053,10 @@
     <div class="ios-sheet-group">
       <div class="ios-sheet-title" id="iosMenuTitle">Video Options</div>
       <button class="ios-sheet-btn" id="iosMenuPlayNext">
-        <span>▶</span> Play Next in Queue
+        <span>â–¶</span> Play Next in Queue
       </button>
       <button class="ios-sheet-btn" id="iosMenuAddToPlaylist">
-        <span>➕</span> Add to Playlist
+        <span>âž•</span> Add to Playlist
       </button>
       <button class="ios-sheet-btn" id="iosMenuSubscribe">
         <span>🔔</span> Subscribe to Channel
@@ -10073,7 +10075,7 @@
     <div class="comments-drawer-handle"></div>
     <div class="comments-drawer-header">
       <span>Comments</span>
-      <button class="comments-close-btn" id="commentsCloseBtn">✕</button>
+      <button class="comments-close-btn" id="commentsCloseBtn">✍️•</button>
     </div>
     <div class="comments-drawer-body" id="commentsDrawerBody">
       <!-- Loaded dynamically via JS -->
@@ -10110,5 +10112,7 @@
       }
     })();
   </script>
+    <script src="../lib/overlay-player.js" defer></script>
 </body>
 </html>
+

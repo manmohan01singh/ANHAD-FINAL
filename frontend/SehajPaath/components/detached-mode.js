@@ -107,7 +107,7 @@ class DetachedReadingMode {
         this.exitDetachedMode();
 
         // Navigate to the original ang without detached source
-        window.location.href = `reader.html?ang=${originalAng}`;
+        window.location.href = `SehajPaath/reader.html?ang=${originalAng}`;
     }
 
     /**

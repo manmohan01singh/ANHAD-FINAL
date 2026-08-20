@@ -1,0 +1,237 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   ANHAD — SHARED "COMING SOON" MODAL (iOS 18 Glassmorphic Design)
+   Ultra-Luxury Golden Glass Card · Sacred Typography · Apple Spring Motion
+   ═══════════════════════════════════════════════════════════════════════ */
+
+#anhadComingSoonOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-critical, 9999);
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(24px) saturate(190%);
+  -webkit-backdrop-filter: blur(24px) saturate(190%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+#anhadComingSoonOverlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+#anhadComingSoonCard {
+  background: linear-gradient(165deg, rgba(255, 253, 248, 0.98) 0%, rgba(255, 248, 237, 0.95) 50%, rgba(254, 237, 206, 0.92) 100%);
+  border: 1.5px solid rgba(212, 148, 58, 0.45);
+  border-radius: 36px;
+  padding: 40px 32px 32px;
+  max-width: 420px;
+  width: 100%;
+  text-align: center;
+  box-shadow:
+    0 32px 96px rgba(0, 0, 0, 0.28),
+    0 12px 32px rgba(212, 148, 58, 0.2),
+    inset 0 1.5px 2px rgba(255, 255, 255, 0.95),
+    inset 0 -2px 8px rgba(212, 148, 58, 0.12);
+  transform: scale(0.88) translateY(28px);
+  transition: transform 0.42s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+#anhadComingSoonCard::before {
+  content: '';
+  position: absolute;
+  top: -60%;
+  left: -60%;
+  width: 220%;
+  height: 220%;
+  background: radial-gradient(circle at center, rgba(255, 215, 0, 0.18) 0%, rgba(212, 148, 58, 0.06) 40%, transparent 70%);
+  pointer-events: none;
+  animation: csRotateGlow 14s linear infinite;
+}
+
+@keyframes csRotateGlow {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+#anhadComingSoonOverlay.active #anhadComingSoonCard {
+  transform: scale(1) translateY(0);
+}
+
+.dark-mode #anhadComingSoonCard,
+[data-theme="dark"] #anhadComingSoonCard {
+  background: linear-gradient(165deg, rgba(32, 24, 14, 0.96) 0%, rgba(24, 18, 10, 0.98) 60%, rgba(16, 12, 7, 0.99) 100%);
+  border-color: rgba(247, 198, 52, 0.4);
+  box-shadow:
+    0 36px 110px rgba(0, 0, 0, 0.75),
+    0 14px 40px rgba(212, 148, 58, 0.18),
+    inset 0 1.5px 1.5px rgba(247, 198, 52, 0.35),
+    inset 0 -2px 8px rgba(0, 0, 0, 0.6);
+  color: #F5E6C8;
+}
+
+#anhadComingSoonCard .cs-badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  background: rgba(212, 148, 58, 0.14);
+  border: 1px solid rgba(212, 148, 58, 0.35);
+  border-radius: 24px;
+  margin-bottom: 18px;
+  backdrop-filter: blur(8px);
+}
+
+[data-theme="dark"] #anhadComingSoonCard .cs-badge-pill,
+.dark-mode #anhadComingSoonCard .cs-badge-pill {
+  background: rgba(247, 198, 52, 0.16);
+  border-color: rgba(247, 198, 52, 0.38);
+}
+
+#anhadComingSoonCard .cs-badge-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #D4943A;
+  box-shadow: 0 0 10px #D4943A, 0 0 4px #FFA500;
+  animation: csPulse 2s ease-in-out infinite;
+}
+
+@keyframes csPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.45; transform: scale(0.82); }
+}
+
+#anhadComingSoonCard .cs-badge-text {
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: #B87A24;
+}
+
+[data-theme="dark"] #anhadComingSoonCard .cs-badge-text,
+.dark-mode #anhadComingSoonCard .cs-badge-text {
+  color: #F7C634;
+}
+
+#anhadComingSoonCard .cs-ik-onkar {
+  font-family: var(--font-gurmukhi, 'Noto Sans Gurmukhi', sans-serif);
+  font-size: 48px;
+  line-height: 1;
+  font-weight: 800;
+  color: #D4943A;
+  text-shadow: 0 3px 14px rgba(212, 148, 58, 0.4);
+  margin-bottom: 10px;
+  transform: translateZ(0);
+}
+
+[data-theme="dark"] #anhadComingSoonCard .cs-ik-onkar,
+.dark-mode #anhadComingSoonCard .cs-ik-onkar {
+  color: #F7C634;
+  text-shadow: 0 3px 18px rgba(247, 198, 52, 0.5);
+}
+
+#anhadComingSoonCard .cs-title {
+  font-size: 2.1rem;
+  font-weight: 900;
+  color: #3A2304;
+  line-height: 1.15;
+  margin-bottom: 8px;
+  letter-spacing: -0.6px;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+}
+
+[data-theme="dark"] #anhadComingSoonCard .cs-title,
+.dark-mode #anhadComingSoonCard .cs-title {
+  color: #FFF2D1;
+  text-shadow: 0 2px 12px rgba(247, 198, 52, 0.25);
+}
+
+#anhadComingSoonCard .cs-gurmukhi-subtitle {
+  font-family: var(--font-gurmukhi, 'Noto Sans Gurmukhi', sans-serif);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #D4943A;
+  margin-bottom: 4px;
+  line-height: 1.4;
+}
+
+[data-theme="dark"] #anhadComingSoonCard .cs-gurmukhi-subtitle,
+.dark-mode #anhadComingSoonCard .cs-gurmukhi-subtitle {
+  color: #F7C634;
+}
+
+#anhadComingSoonCard .cs-feature {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #7A5310;
+  margin-bottom: 14px;
+  letter-spacing: -0.2px;
+}
+
+[data-theme="dark"] #anhadComingSoonCard .cs-feature,
+.dark-mode #anhadComingSoonCard .cs-feature {
+  color: #E2CA90;
+}
+
+#anhadComingSoonCard .cs-desc {
+  font-size: 0.92rem;
+  color: #6E531C;
+  line-height: 1.6;
+  margin-bottom: 28px;
+  font-weight: 500;
+  padding: 0 8px;
+}
+
+[data-theme="dark"] #anhadComingSoonCard .cs-desc,
+.dark-mode #anhadComingSoonCard .cs-desc {
+  color: #C8AF7E;
+}
+
+#anhadComingSoonCard .cs-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 38px;
+  background: linear-gradient(135deg, #FF9500 0%, #D4943A 50%, #B8860B 100%);
+  color: #FFFFFF;
+  border: none;
+  border-radius: 26px;
+  font-size: 1.02rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(212, 148, 58, 0.45), inset 0 1px 1.5px rgba(255, 255, 255, 0.5);
+  transition: transform 0.24s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease, filter 0.2s ease;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+#anhadComingSoonCard .cs-close:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 12px 32px rgba(212, 148, 58, 0.55);
+  filter: brightness(1.05);
+}
+
+#anhadComingSoonCard .cs-close:active {
+  transform: scale(0.96);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #anhadComingSoonOverlay,
+  #anhadComingSoonCard,
+  #anhadComingSoonCard::before,
+  #anhadComingSoonCard .cs-badge-dot {
+    transition: none !important;
+    animation: none !important;
+  }
+}

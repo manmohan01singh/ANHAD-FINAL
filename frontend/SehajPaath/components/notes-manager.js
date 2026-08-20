@@ -150,7 +150,7 @@ class NotesManager {
                 const card = el.closest('.note-card');
                 const note = this.notes.find(n => n.id === card.dataset.id);
                 if (note?.ang) {
-                    window.location.href = `reader.html?ang=${note.ang}`;
+                    window.location.href = `SehajPaath/reader.html?ang=${note.ang}`;
                 }
             });
         });

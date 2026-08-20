@@ -109,27 +109,6 @@
   transform: scale(0.97);
 }
 
-.campaign-card__dismiss {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  background: transparent;
-  border-radius: 50%;
-  font-size: 1.15rem;
-  line-height: 1;
-  color: var(--text-tertiary, #AEAEB2);
-  cursor: pointer;
-}
-
-.campaign-card__dismiss:active {
-  background: rgba(0, 0, 0, 0.05);
-}
 
 /* ── Dark mode ── */
 [data-theme="dark"] .campaign-card,
@@ -153,9 +132,200 @@ html.dark-mode .campaign-card__countdown {
   color: var(--campaign-accent, #D4AF37);
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   STATE B — the in-greeting announcement
+
+   Reuses .greeting__slide's exact vocabulary (index.html:1233-1275): opacity +
+   transform on `0.6s cubic-bezier(0.2,0.8,0.2,1)`, resting pose scale(0.6),
+   active pose scale(1). Nothing new is invented.
+
+   Both panes are position:absolute inside boxes whose size is already fixed —
+   #guruSlider is `height: 172px !important` and .greeting__text is sized by its
+   three in-flow lines — so arming the announcement cannot move a single pixel
+   of Home. Zero layout shift is a property of this CSS, not of the copy length.
+   Lives here rather than in index.html's inline <style> because Admin's Preview
+   links this file and must exercise the identical rules.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+#greetingAnnounce[hidden],
+#greetingAnnounceText[hidden] { display: none !important; }
+
+.greeting__announce {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 152px;   /* == .greeting__slide */
+  height: 152px;
+  z-index: 11;    /* above .greeting__slide--active (10) */
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, -50%) scale(0.6);
+  transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.greeting__announce-disc {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 10px;
+  box-sizing: border-box;
+  /* Same token the campaign badge uses, set from content.themeTokens. */
+  background: var(--campaign-badge-bg, linear-gradient(135deg, #8A6D3B 0%, #D4AF37 100%));
+  /* Ring copied from .greeting__guru-portrait so the disc reads as the same
+     object as the portraits it replaces. */
+  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.18), inset 0 0 0 1.5px rgba(255, 255, 255, 0.3);
+  color: #fff;
+}
+
+.greeting__announce-ik {
+  font-size: 2.4rem;
+  line-height: 1;
+}
+
+.greeting__announce-badge {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  max-width: 92%;
+  text-align: center;
+  line-height: 1.25;
+}
+
+.greeting__announce-text {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.94);
+  transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* So inset:0 resolves against the text block. No layout effect of its own. */
+.greeting__content .greeting__text { position: relative; }
+
+/* Line caps are load-bearing, not cosmetic: an absolutely-positioned pane is
+   not clipped by its parent and .greeting is overflow:visible, so an over-long
+   remote string would spill onto the portrait and the progress bar. The JS
+   clamps the strings as well — belt and braces. */
+.greeting__announce-title {
+  font-size: 1.4rem;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.3px;
+  color: var(--campaign-accent, #D4943A);
+  margin-bottom: 6px;
+  padding: 0 16px;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.greeting__announce-line {
+  font-size: 1.5rem;
+  line-height: 1.3;
+  padding: 0 16px;
+  margin-top: -2px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.greeting__announce-sub {
+  font-size: 0.9rem;
+  opacity: 0.8;
+  margin-top: 2px;
+  padding: 0 16px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ── The state flip. Two attributes; no classes, no JS-written styles. ───── */
+#guruSlider[data-campaign-state="b"] > .greeting__slider-track {
+  opacity: 0;
+  transform: scale(0.92);
+  pointer-events: none;
+  /* visibility is a perf measure only: stop compositing 11 portraits while
+     they are invisible. Delayed 0.6s on the way out so the fade still plays. */
+  visibility: hidden;
+  transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1),
+              opacity 0.6s cubic-bezier(0.2, 0.8, 0.2, 1),
+              visibility 0s linear 0.6s !important;
+}
+
+#guruSlider[data-campaign-state="b"] > .greeting__announce {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+#guruSlider[data-campaign-state="b"] ~ .greeting__text .greeting__announce-text {
+  opacity: 1;
+  transform: scale(1);
+}
+
+#guruSlider[data-campaign-state="b"] ~ .greeting__text > .greeting__salutation,
+#guruSlider[data-campaign-state="b"] ~ .greeting__text > .greeting__gurbani,
+#guruSlider[data-campaign-state="b"] ~ .greeting__text > .greeting__translation {
+  opacity: 0;
+  transition: opacity 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* ── Admin Preview ────────────────────────────────────────────────────────
+   The preview host loads only admin.css + this file, so .greeting__portrait-
+   slider has none of the sizing index.html gives it inline. Scope the fallback
+   to #campaignMount so it can never reach Home's real slider. */
+#campaignMount .greeting__portrait-slider {
+  position: relative;
+  height: 172px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#campaignMount .greeting__announce {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.greeting__announce-text--preview {
+  position: static;
+  opacity: 1;
+  transform: none;
+  margin-top: 12px;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .campaign-card__cta,
   .campaign-card__secondary {
     transition: none;
   }
+  /* The JS also slows the cadence and stops after one showing; this removes
+     the movement itself. */
+  .greeting__announce,
+  .greeting__announce-text,
+  #guruSlider[data-campaign-state] > .greeting__slider-track {
+    transition: none !important;
+  }
+  .greeting__announce { transform: translate(-50%, -50%) scale(1); }
+  .greeting__announce-text { transform: none; }
+}
+
+#guruSlider[data-campaign-motion="reduce"] .greeting__announce,
+#guruSlider[data-campaign-motion="reduce"] .greeting__announce-text,
+#guruSlider[data-campaign-motion="reduce"] > .greeting__slider-track {
+  transition: none !important;
 }
