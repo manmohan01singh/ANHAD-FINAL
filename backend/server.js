@@ -4686,23 +4686,17 @@ Reject if: music videos, vlogs, entertainment, gaming, news, politics, sports, t
 Approve if: devotional content, spiritual discourse, religious ceremonies, kirtan, bhajan, qawwali, gospel, meditation.`;
 
     try {
-        const response = await axios.post(CONFIG.GROQ_API_URL, {
-            model: 'llama-3.1-70b-versatile',
+        const aiResponse = await callGroqAI({
             messages: [
                 { role: 'system', content: 'You are a JSON API that validates spiritual content. Always respond with valid JSON only.' },
                 { role: 'user', content: validationPrompt }
             ],
             temperature: 0.2,
-            max_tokens: 250
-        }, {
-            headers: {
-                'Authorization': `Bearer ${CONFIG.GROQ_API_KEY}`,
-                'Content-Type': 'application/json'
-            },
+            maxTokens: 250,
             timeout: 15000
         });
 
-        const content = response.data.choices[0].message.content.trim();
+        const content = aiResponse.content.trim();
         const jsonMatch = content.match(/\{[\s\S]*\}/);
         if (!jsonMatch) {
             throw new Error('No JSON in response');
