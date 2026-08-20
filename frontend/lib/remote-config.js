@@ -18,6 +18,13 @@
 (function(window) {
   'use strict';
 
+  // Defensive re-entrancy guard, matching the pattern used by
+  // campaign-renderer.js and anhad-audio-singleton.js: if this file is ever
+  // double-included on one page, this stops a second RemoteConfigManager
+  // instance from spinning up its own permanent 15s poll + duplicate
+  // online/visibilitychange listeners alongside an orphaned first instance.
+  if (window.AnhadCampaigns) return;
+
   const CONFIG_CACHE_KEY = 'anhad_remote_config_cache_v1';
   const CONFIG_CACHE_TTL = 3600000; // 1 Hour — past this the cache is served but treated as stale
   // An admin toggle must reach open devices quickly, so poll while the app is

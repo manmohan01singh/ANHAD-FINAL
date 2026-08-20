@@ -40,7 +40,15 @@
 
   function toProxiedUrl(rawUrl) {
     if (!rawUrl) return rawUrl;
-    if (!IS_HTTPS_WEB && !IS_CAPACITOR) return rawUrl;
+    // Bypass the proxy whenever it isn't needed: on Capacitor there is no
+    // backend to serve /api/stream at all (it's bundled as an inert static
+    // file, not a running edge function), and cleartext http is allowed
+    // natively — so this must be an OR, not an AND. The previous `!IS_HTTPS_WEB
+    // && !IS_CAPACITOR` required BOTH to be true, which is impossible whenever
+    // IS_CAPACITOR is true, so native builds always fell through to the proxy
+    // path and every live stream 404'd (only the CDN-hosted playlist streams,
+    // whitelisted below, kept working on Android).
+    if (IS_CAPACITOR || !IS_HTTPS_WEB) return rawUrl;
     if (rawUrl.startsWith('/api/stream')) return rawUrl;
     if (isCorsCdnUrl(rawUrl)) return rawUrl;
     // Route external live streams through edge proxy so CORS Access-Control-Allow-Origin: * is present
