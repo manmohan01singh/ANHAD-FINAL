@@ -3357,7 +3357,13 @@
         <div class="practice-card__ring">
           <svg viewBox="0 0 60 60">
             <circle class="practice-card__ring-bg" cx="30" cy="30" r="26"/>
-            <circle class="practice-card__ring-fill" id="hukamRing" cx="30" cy="30" r="26" stroke-dasharray="163.4" stroke-dashoffset="0"/>
+            <!-- dashoffset 163.4 = empty, matching #nitnemRing and #sehajRing. It was
+                 hardcoded to 0 (a fully-drawn ring) and NOTHING ever updated it:
+                 UIController._setRing() is only ever called for nitnemRing and
+                 sehajRing, so this card rendered a permanent bright completion
+                 ring while its two siblings rendered empty ones — the odd-one-out
+                 glow. -->
+            <circle class="practice-card__ring-fill" id="hukamRing" cx="30" cy="30" r="26" stroke-dasharray="163.4" stroke-dashoffset="163.4"/>
           </svg>
           <div class="practice-card__ring-icon" aria-hidden="true"><span class="ios-emoji" role="img" aria-label="scroll">📜</span></div>
         </div>
