@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" data-theme="light" data-font="noto" data-display="padchhed" data-sacred-theme="royal-rose">
 <head>
     <!-- CRITICAL: Theme blocker - MUST run before paint -->
@@ -66,26 +66,19 @@
     }
     
     // Protect card contrast: align reader theme with effective theme
-    var readerTheme;
-    if (theme === 'auto') {
+    var readerTheme = localStorage.getItem('gurbani_reader_theme');
+    if (!readerTheme) {
       readerTheme = (effectiveTheme === 'dark') ? 'charcoal' : 'paper';
-    } else {
-      // Sync reader theme to match global theme (darkâ†’charcoal, lightâ†’paper)
-      readerTheme = localStorage.getItem('gurbani_reader_theme');
-      if (!readerTheme) {
-        readerTheme = (effectiveTheme === 'dark') ? 'charcoal' : 'paper';
-      }
     }
     
+    var isDark = (readerTheme === 'charcoal' || readerTheme === 'midnight');
     var sacredTheme = localStorage.getItem('gurbani_sacred_theme') || 'royal-rose';
     var html = document.documentElement;
-    html.setAttribute('data-theme', effectiveTheme);
+    html.setAttribute('data-theme', isDark ? 'dark' : 'light');
     html.setAttribute('data-theme-mode', theme);
     html.setAttribute('data-reader-theme', readerTheme);
     html.setAttribute('data-sacred-theme', sacredTheme);
-    html.style.colorScheme = effectiveTheme;
-    
-    var isDark = (effectiveTheme === 'dark');
+    html.style.colorScheme = isDark ? 'dark' : 'light';
     html.style.backgroundColor = isDark ? '#0D0D0F' : '#FAF8F5';
     
     if (isDark) {
@@ -96,6 +89,8 @@
     
     var observer = new MutationObserver(function() {
       if (document.body) {
+        document.body.setAttribute('data-reader-theme', readerTheme);
+        document.body.setAttribute('data-theme', isDark ? 'dark' : 'light');
         if (isDark) {
           document.body.classList.add('dark', 'dark-mode');
           document.body.style.backgroundColor = '#0D0D0F';
@@ -123,7 +118,7 @@
   <!-- Google Fonts for multi-script typography pairing -->
   <link href="https://fonts.googleapis.com/css2?family=Baloo+Paaji+2:wght@400;600;800&family=Cinzel+Decorative:wght@400;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500;600;700&family=Mukta+Mahee:wght@300;400;500;600;700&family=Noto+Sans+Gurmukhi:wght@300;400;500;600;700&family=Noto+Serif+Devanagari:wght@300;400;600;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Poppins:wght@300;400;500;600&family=Rozha+One&family=Yatra+One&display=optional" rel="stylesheet">
   
-  <link rel="stylesheet" href="shabad-reader.css?v=45">
+  <link rel="stylesheet" href="shabad-reader.css?v=46">
   
   <!-- Global Theme System -->
   <link rel="stylesheet" href="../css/theme-variables.css">
