@@ -50,7 +50,14 @@ const config: CapacitorConfig = {
             androidSpinnerStyle: 'small',
             spinnerColor: '#f7c634',
             androidSplashResourceName: 'splash',
-            androidScaleType: 'CENTER_CROP'
+            // CENTER_CROP was cropping into the logo on real device aspect
+            // ratios because the old splash art had almost no margin (see
+            // assets/splash.png, now regenerated with generous margin).
+            // CENTER_INSIDE guarantees the full image is always visible with
+            // no cropping, at the cost of possible letterboxing — invisible
+            // here since the splash art's own background already matches
+            // this backgroundColor.
+            androidScaleType: 'CENTER_INSIDE'
         },
 
         // Widget Data Bridge Plugin

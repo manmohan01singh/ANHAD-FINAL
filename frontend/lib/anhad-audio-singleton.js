@@ -254,7 +254,9 @@
   let pauseAnchor = null; // { timestamp, offset }
   let isTransitioning = false; // CRITICAL FIX: Prevent concurrent track transitions
   let connectionState = 'idle'; // 'idle' | 'connected' | 'reconnecting' | 'failed'
-  let liveReconnectAttempts = 0; // reset on any successful play; bounds the retry loop below
+  let liveReconnectAttempts = 0; // reset only once 'playing' confirms real recovery; bounds the retry loop below
+  let reconnectTimer = null; // the one pending scheduled reconnect attempt, if any
+  let reconnectCycleActive = false; // true from first failure until confirmed recovery — blocks the watchdog/online-listener from piling on a second, overlapping reconnect
   // "The user wants audio." Set when playback is requested, cleared only by an
   // explicit pause()/stop(). Survives errors, offline periods and exhausted
   // retries, so the 'online' handler knows whether an interrupted listen should
@@ -441,13 +443,22 @@
       this.audio.volume = 0.7;
 
       // HTML5 event listeners
-      const notifyStateChange = (playingState) => {
+      const notifyStateChange = (playingState, confirmed) => {
         isPlaying = playingState;
         isLoading = false;
-        if (playingState) {
-          // Confirmed playback flowing — any prior reconnect struggle is over.
+        if (playingState && confirmed) {
+          // Only 'playing' confirms data is actually flowing. 'play' fires as
+          // soon as .play() is accepted — often *before* the browser knows
+          // whether the source will load — so resetting the retry budget
+          // there let every reconnect attempt erase its own counter a moment
+          // before the matching 'error' could increment it, which is why the
+          // attempt counter was stuck announcing "#1" forever instead of
+          // counting up and eventually tripping the retry cap.
           connectionState = 'connected';
           liveReconnectAttempts = 0;
+          stallRecoveryAttempts = 0;
+          reconnectCycleActive = false;
+          if (reconnectTimer) { clearTimeout(reconnectTimer); reconnectTimer = null; }
         }
         emit('loading', { isLoading: false });
         emit('statechange', getPublicState());
@@ -455,9 +466,9 @@
         updateNativeMediaState();
       };
 
-      this.audio.addEventListener('play', () => notifyStateChange(true));
-      this.audio.addEventListener('playing', () => notifyStateChange(true));
-      this.audio.addEventListener('pause', () => notifyStateChange(false));
+      this.audio.addEventListener('play', () => notifyStateChange(true, false));
+      this.audio.addEventListener('playing', () => notifyStateChange(true, true));
+      this.audio.addEventListener('pause', () => notifyStateChange(false, false));
       this.audio.addEventListener('timeupdate', () => {
         persistState();
         // Dispatch UI timeupdate
@@ -576,26 +587,31 @@
           }, 2500);
         } else if (currentStream && STREAMS[currentStream]?.type === 'live') {
           // UNSTOPPABLE 24/7 AUTO-RECOVERY FOR LIVE STREAMS (Darbar Sahib, SikhNet, etc.)
-          // Never give up if user wants playback (wantsPlayback === true).
+          // Never give up if user wants playback (wantsPlayback === true) — per
+          // product spec this only ever stops on an explicit pause/stop, never
+          // on its own. A prior version called this.stop() past 5 attempts,
+          // which cleared wantsPlayback and silently killed playback intent the
+          // user never asked to end; now it just holds at the backoff ceiling.
           liveReconnectAttempts++;
+          reconnectCycleActive = true;
           connectionState = 'reconnecting';
           emit('statechange', getPublicState());
-          
-          // CRITICAL FIX: Stop after 5 failed attempts to prevent infinite loop
-          if (liveReconnectAttempts > 5) {
-            console.error(`[PlaybackQueueController] ❌ Stream "${currentStream}" failed after 5 attempts. Stopping auto-recovery.`);
-            this.stop();
+
+          // Past a handful of fast attempts, tell the UI once that we're
+          // struggling — not every cycle — while still retrying underneath.
+          if (liveReconnectAttempts === 6) {
             connectionState = 'failed';
             emit('statechange', getPublicState());
-            emit('error', { type: 'stream_failed', message: 'Unable to load stream after multiple attempts' });
-            return;
+            emit('error', { type: 'stream_failed', message: 'Still unable to reach the stream — will keep retrying automatically.' });
           }
-          
-          // Adaptive backoff: 2s -> 4s -> 8s -> 12s -> max 15s
+
+          // Adaptive backoff: 2s -> 4s -> 8s -> 12s -> 15s, then holds at 15s.
           const backoffMs = Math.min(2000 * Math.pow(1.5, Math.min(liveReconnectAttempts - 1, 6)), 15000);
           console.log(`[PlaybackQueueController] 🔄 Live stream auto-recovery attempt #${liveReconnectAttempts} in ${Math.round(backoffMs)}ms...`);
-          
-          setTimeout(() => {
+
+          clearTimeout(reconnectTimer);
+          reconnectTimer = setTimeout(() => {
+            reconnectTimer = null;
             if (currentStream && STREAMS[currentStream]?.type === 'live' && !isPlaying && wantsPlayback) {
               console.log('[PlaybackQueueController] 📡 Attempting live stream reconnection now...');
               playStream(currentStream);
@@ -626,11 +642,18 @@
           
           stallRecoveryAttempts++;
           if (stallRecoveryAttempts > MAX_STALL_RECOVERIES) {
-            console.error('[PlaybackQueueController] ❌ Stream stalled too many times. Stopping.');
-            this.stop();
+            // Stop re-arming this tight 6s loop; the error handler's own
+            // bounded backoff (or the network watchdog) takes over from here.
+            // Deliberately NOT calling stop(): that clears wantsPlayback and
+            // would silently end playback intent the user never asked to end
+            // — and as a plain `function attempt()` (not an arrow function),
+            // `this` here was never actually bound to PlaybackQueueController
+            // in the first place, so this call would have thrown instead of
+            // stopping anything.
+            console.error('[PlaybackQueueController] ❌ Stream stalled too many times in a row; backing off stall-recovery.');
             return;
           }
-          
+
           console.warn(`[PlaybackQueueController] ⚠️ Audio stream stalled/hung > 6s, auto-reconnecting stream (attempt ${stallRecoveryAttempts}/${MAX_STALL_RECOVERIES})...`);
           playStream(currentStream);
           armStallTimer();
@@ -1462,6 +1485,15 @@
   function recoverAfterReconnect(reason) {
     if (!wantsPlayback || !currentStream) return;
     if (isPlaying) return;
+    // A fast-path retry already owns recovery — let it run rather than
+    // resetting its budget and firing a second, overlapping playStream()
+    // call. Without this guard, this function (called from both the
+    // 6-second network watchdog below and the 'online' listener) raced the
+    // error handler's own backoff timer and reset liveReconnectAttempts back
+    // to 0 roughly every 6 seconds, which — independent of the 'play'/
+    // 'playing' event bug fixed above — was a second, equally sufficient
+    // cause of the attempt counter never advancing past #1.
+    if (reconnectCycleActive) return;
     // A fresh network is a fresh budget — otherwise one bad patch of signal
     // permanently poisons the session.
     liveReconnectAttempts = 0;

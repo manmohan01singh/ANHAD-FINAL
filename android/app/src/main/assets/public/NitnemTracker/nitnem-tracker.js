@@ -25,7 +25,17 @@ const CONFIG = {
         STREAK_DATA: 'anhad_streak_data',
         ACHIEVEMENTS: 'nitnemTracker_achievements',
         SELECTED_BANIS: 'nitnemTracker_selectedBanis',
-        THEME: 'nitnemTracker_theme'
+        THEME: 'nitnemTracker_theme',
+        // Real user-data keys that Export/Import/Reset previously omitted
+        // despite "Export All Data" / "Reset All Data" implying full coverage.
+        SELECTED_BANIS_HISTORY: 'nitnemTracker_selectedBanis_history',
+        NITNEM_PROGRESS: 'nitnemTracker_progress',
+        DAILY_GOALS: 'anhad_daily_goals',
+        NAAM_ABHYAS_HISTORY: 'naam_abhyas_history',
+        MY_POTHI_ORDER: 'anhad_my_pothi',
+        MY_POTHI_DATA: 'anhad_my_pothi_data',
+        MY_POTHI_COMPLETED: 'anhad_my_pothi_completed',
+        MY_POTHI_SNAPSHOTS: 'anhad_pothi_snapshots'
     },
 
     // Amritvela Time Slots (in hours, 24h format)
@@ -960,12 +970,23 @@ const StorageManager = {
     importData(jsonString) {
         try {
             const data = JSON.parse(jsonString);
+            let restoredCount = 0;
             Object.entries(data).forEach(([name, value]) => {
                 const key = CONFIG.STORAGE_KEYS[name];
                 if (key && value !== null) {
                     this.save(key, value);
+                    restoredCount++;
                 }
             });
+
+            // If nothing in the file matched a known key, this isn't an ANHAD
+            // backup (e.g. an incompatible/foreign JSON file) — report failure
+            // instead of a false-positive success with zero fields restored.
+            if (restoredCount === 0) {
+                console.error('Import error: no recognized ANHAD backup keys found in file');
+                return false;
+            }
+
             return true;
         } catch (error) {
             console.error('Import error:', error);
@@ -9454,44 +9475,24 @@ const ReportsManager = {
 
     /**
      * Generate comprehensive backup data including My Pothi
+     *
+     * Reuses StorageManager.exportData() — the same canonical, CONFIG.STORAGE_KEYS-based
+     * payload that Settings > Import Data reads — so a backup produced here can always be
+     * restored from there. Only cosmetic/metadata fields are layered on top; we intentionally
+     * do NOT hand-roll a second camelCase key scheme for the same underlying data (that
+     * divergence is what previously made these backups silently fail to import).
      */
     generateBackupData() {
         const today = Utils.getTodayString();
-        
-        // Core Nitnem Tracker data
-        const nitnemData = {
-            exportDate: today,
-            exportTimestamp: new Date().toISOString(),
-            appVersion: '2.0',
-            
-            // Main tracking data
-            amritvelaLog: StorageManager.load(CONFIG.STORAGE_KEYS.AMRITVELA_LOG, {}),
-            nitnemLog: StorageManager.load(CONFIG.STORAGE_KEYS.NITNEM_LOG, {}),
-            malaLog: StorageManager.load(CONFIG.STORAGE_KEYS.MALA_LOG, {}),
-            alarmLog: StorageManager.load(CONFIG.STORAGE_KEYS.ALARM_LOG, {}),
-            
-            // Configuration
-            selectedBanis: StorageManager.load(CONFIG.STORAGE_KEYS.SELECTED_BANIS, {}),
-            selectedBanisHistory: StorageManager.load('nitnemTracker_selectedBanis_history', {}),
-            settings: StorageManager.load(CONFIG.STORAGE_KEYS.SETTINGS, {}),
-            userData: StorageManager.load(CONFIG.STORAGE_KEYS.USER_DATA, {}),
-            
-            // Streak and achievements
-            streakData: StorageManager.load(CONFIG.STORAGE_KEYS.STREAK_DATA, {}),
-            achievements: StorageManager.load(CONFIG.STORAGE_KEYS.ACHIEVEMENTS, {}),
-            
-            // My Pothi data (CRITICAL: backup user's custom bani list)
-            myPothi: {
-                order: JSON.parse(localStorage.getItem('anhad_my_pothi') || '[]'),
-                data: JSON.parse(localStorage.getItem('anhad_my_pothi_data') || '[]'),
-                completed: JSON.parse(localStorage.getItem('anhad_my_pothi_completed') || '{}'),
-                snapshots: JSON.parse(localStorage.getItem('anhad_my_pothi_snapshots') || '{}')
-            },
-            
-            // Theme preference
-            theme: localStorage.getItem('anhad_theme') || 'light'
-        };
-        
+
+        // Canonical data payload (identical shape to StorageManager.exportData()).
+        const nitnemData = JSON.parse(StorageManager.exportData());
+
+        // Cosmetic/metadata fields for this backup file only.
+        nitnemData.exportDate = today;
+        nitnemData.exportTimestamp = new Date().toISOString();
+        nitnemData.appVersion = '2.0';
+
         return nitnemData;
     },
 

@@ -7044,8 +7044,8 @@
                       const _matchedKw     = _rejectKws.find(k => _nameLower.includes(k));
                       if (_matchedArtist || _matchedKw) {
                         const _term = _matchedArtist || _matchedKw;
-                        console.log(`[AI Validation] âŒ CLIENT PRE-CHECK blocked "${ch.channelName}" — matched "${_term}"`);
-                        showToast(`âš  "${ch.channelName}" is not suitable for Sadhsangat Live`);
+                        console.log(`[AI Validation] ❌ CLIENT PRE-CHECK blocked "${ch.channelName}" — matched "${_term}"`);
+                        showToast(`⚠️ "${ch.channelName}" is not suitable for Sadhsangat Live`);
                         btn.disabled = false;
                         btn.textContent = 'Add';
                         return;
@@ -7064,7 +7064,7 @@
                       const validateData = await readJsonResponse(validateRes, { isValid: false });
                       
                       if (!validateData.isValid) {
-                        showToast(`âš  ${validateData.reason || 'This channel is not appropriate for Sadhsangat Live'}`);
+                        showToast(`⚠️ ${validateData.reason || 'This channel is not appropriate for Sadhsangat Live'}`);
                         btn.disabled = false;
                         btn.textContent = 'Add';
                         return;
@@ -7085,7 +7085,7 @@
                       addSearchToHistory(query);
                       await loadData();
                     } catch (addErr) {
-                      showToast('âš  ' + addErr.message);
+                      showToast('⚠️ ' + addErr.message);
                       btn.disabled = false;
                       btn.textContent = 'Add';
                     }

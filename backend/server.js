@@ -486,15 +486,20 @@ const DEFAULT_CAMPAIGNS = {
       platforms: ['web', 'android', 'ios'],
       startDate: '2026-01-01T00:00:00.000Z',
       endDate: '2026-12-31T23:59:59.000Z',
-      // ON, matching SAFE_BUILTIN_CONFIG in frontend/lib/remote-config.js.
-      // The consumption layer is the in-greeting rotating announcement: it
-      // swaps in place of the Guru portraits inside their already-fixed 172px
-      // box and cycles back, taking no extra space and offering no dismiss
-      // control — so running it live is not the takeover the old dismissible
-      // card would have been.
+      // OFF, matching SAFE_BUILTIN_CONFIG in frontend/lib/remote-config.js.
+      // These two MUST be kept in sync: this object is the actual value
+      // served by GET /api/config/campaigns whenever nothing has been
+      // persisted via the admin PUT/PATCH routes yet (see
+      // backend/lib/config-store.js — read() returns null until an admin
+      // write happens, and getLiveCampaignConfig() falls back to this exact
+      // object). The frontend's SAFE_BUILTIN_CONFIG is only a last-resort for
+      // a device that has never reached this server at all, so editing it
+      // alone — as a previous fix attempt did — has no effect on any device
+      // that successfully fetches this endpoint, which is why the campaign
+      // kept showing after being "turned off".
       // NOTE: startDate/endDate above still span all of 2026. Narrow them to
-      // the real 40-day Chaliya window before release.
-      active: true,
+      // the real 40-day Chaliya window before turning this back on.
+      active: false,
       content: {
         badgeText: 'CHALIYA 2026',
         // Copy for the in-greeting announcement (State B). Kept short because it
@@ -3884,11 +3889,22 @@ const INSTANT_REJECT_ARTISTS = [
     'akshay kumar', 'salman khan', 'shah rukh khan', 'aamir khan',
 ];
 
-// Active Groq AI Models with automatic fallbacks
+// Active Groq AI Models with automatic fallbacks.
+// Groq deprecated llama-3.1-8b-instant AND llama-3.3-70b-versatile on the free/
+// developer tier on 2026-06-17, recommending openai/gpt-oss-20b and
+// openai/gpt-oss-120b (or qwen/qwen3.6-27b) respectively as replacements —
+// which is why channel validation started failing over to the "temporarily
+// unavailable" branch. mixtral-8x7b-32768 was deprecated earlier still. The
+// old models are kept at the tail of the list (harmless — a dead model just
+// fails fast and the loop moves on) in case a given account/tier still has
+// access to them.
 const GROQ_MODELS = [
+    'openai/gpt-oss-120b',
+    'meta-llama/llama-4-maverick-17b-128e-instruct',
+    'meta-llama/llama-4-scout-17b-16e-instruct',
+    'openai/gpt-oss-20b',
     'llama-3.3-70b-versatile',
     'llama-3.1-8b-instant',
-    'mixtral-8x7b-32768',
     'gemma2-9b-it'
 ];
 
@@ -4090,24 +4106,22 @@ Respond ONLY with valid JSON (no markdown, no explanation outside JSON):
 
         console.log(`[Channel Validation] 🤖 Calling AI for "${channelName}" (${sampleVideos.length} videos fetched)`);
 
-        const response = await axios.post(CONFIG.GROQ_API_URL, {
-            model: 'llama-3.1-70b-versatile',
+        // Was a standalone axios call hardcoded to the long-deprecated
+        // 'llama-3.1-70b-versatile' — every request failed straight to the
+        // catch block below ("Validation service temporarily unavailable"),
+        // which is why legitimate channels stopped being approved. Reuses the
+        // same callGroqAI() fallback chain the rest of this file already has,
+        // instead of a second, divergent copy of the same Groq-call logic.
+        const { content: rawContent, model: usedModel } = await callGroqAI({
             messages: [
                 { role: 'system', content: 'You are a JSON API. Always respond with valid JSON only. Never add markdown fences or text outside the JSON object.' },
                 { role: 'user', content: validationPrompt }
             ],
             temperature: 0.2,
-            max_tokens: 250
-        }, {
-            headers: {
-                'Authorization': `Bearer ${CONFIG.GROQ_API_KEY}`,
-                'Content-Type': 'application/json'
-            },
+            maxTokens: 250,
             timeout: 15000
         });
-
-        const rawContent = response.data.choices[0]?.message?.content || '';
-        console.log(`[Channel Validation] AI raw response for "${channelName}":`, rawContent.substring(0, 300));
+        console.log(`[Channel Validation] AI raw response for "${channelName}" (model: ${usedModel}):`, rawContent.substring(0, 300));
 
         let validationResult;
         try {
