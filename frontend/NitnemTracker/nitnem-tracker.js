@@ -2781,16 +2781,10 @@ const HeaderManager = {
      * Update streak display in header
      */
     updateStreakDisplay() {
-        // BUG FIX: this used to check UnifiedStats/AnhadStats first and
-        // StreakManager only as a last resort — backwards. StreakManager.state
-        // is recalculated fresh from the actual completion logs
-        // (recalculateStreak()) every time; UnifiedStats/AnhadStats trust
-        // whatever they were last told rather than re-deriving from the logs.
-        // That let this page show two different streak numbers on itself at
-        // once (this header pill vs. the page's own hero stat, which already
-        // read StreakManager directly) whenever the two hadn't been synced
-        // yet. StreakManager is checked first now — it's the more
-        // authoritative source, not the fallback.
+        if (typeof StreakManager !== 'undefined' && typeof StreakManager.recalculateStreak === 'function') {
+            StreakManager.recalculateStreak();
+        }
+
         let currentStreak = 0;
 
         if (typeof StreakManager !== 'undefined' && StreakManager.state) {
@@ -2807,8 +2801,14 @@ const HeaderManager = {
             currentStreak = streakData.currentStreak || streakData.current || 0;
         }
 
-        if (this.elements.headerStreakCount) {
-            this.elements.headerStreakCount.textContent = currentStreak;
+        const headerStreakEl = document.getElementById('headerStreakCount') || (this.elements && this.elements.headerStreakCount);
+        if (headerStreakEl) {
+            headerStreakEl.textContent = currentStreak;
+        }
+
+        const amritvelaEl = document.getElementById('amritvelaStreak');
+        if (amritvelaEl) {
+            amritvelaEl.textContent = currentStreak;
         }
 
         // Update flame animation if it exists in StreakManager

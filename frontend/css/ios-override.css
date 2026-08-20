@@ -2427,3 +2427,51 @@ html {
   top: 580px;
   right: -20px;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   YOUR PRACTICE CARDS — no outline ring, in any theme state
+
+   Three separate rules were fighting to put a border on these three cards:
+     :383/:395/:407   border: 3px solid rgba(255,255,255,.8)      (0,1,0)
+     :1377-1381       border: 1.5px solid var(--sky-card-border)  (0,2,0)
+     :1749/:1760/:1771 border: 1px solid rgba(<accent>,.22)       (0,3,0)  <- won by day
+
+   Two problems with that. First, the accent ring is simply not the intended
+   look — the cards are meant to read as soft claymorphism pillows, and the
+   outline flattens them into outlined chips.
+
+   Second, and worse, it was not even STABLE. --sky-card-border is one of the
+   eight --sky-card-* custom properties anhad-sky-bg.js sets INLINE on <html>,
+   and smooth-navigation.js clears them via clearTimeAdaptiveCardColors() when
+   you leave Home. With that variable gone, `border: 1.5px solid
+   var(--sky-card-border)` fails substitution and border-color falls back to
+   its initial value, currentColor — i.e. a hard ring in the text colour. So
+   which ring you saw depended on whether data-time-of-day and the sky
+   variables happened to be present, which is exactly why Home looked
+   different before and after a navigation.
+
+   Killing the border outright fixes the look AND removes the state
+   dependency, so all four time-of-day slots and both themes now render these
+   cards identically. The claymorphism box-shadows are deliberately left
+   alone — they are what gives the cards their depth.
+
+   Specificity is html + two attributes + class = (0,3,1), one higher than the
+   day rule it has to beat, and it is last in the file.
+   ═══════════════════════════════════════════════════════════════════════════ */
+html .practice-card--nitnem,
+html .practice-card--sehaj,
+html .practice-card--hukam,
+html[data-theme-mode] .practice-card--nitnem,
+html[data-theme-mode] .practice-card--sehaj,
+html[data-theme-mode] .practice-card--hukam,
+html[data-theme-mode][data-time-of-day] .practice-card--nitnem,
+html[data-theme-mode][data-time-of-day] .practice-card--sehaj,
+html[data-theme-mode][data-time-of-day] .practice-card--hukam,
+html[data-theme] .practice-card--nitnem,
+html[data-theme] .practice-card--sehaj,
+html[data-theme] .practice-card--hukam,
+html.dark-mode .practice-card--nitnem,
+html.dark-mode .practice-card--sehaj,
+html.dark-mode .practice-card--hukam {
+  border: none !important;
+}
