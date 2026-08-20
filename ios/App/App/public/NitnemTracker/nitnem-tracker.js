@@ -9613,15 +9613,20 @@ const ReportsManager = {
                 const a = document.createElement('a');
                 a.href = dataUri;
                 a.download = filename;
-                a.target = '_blank';
+                // REMOVED target="_blank" to prevent new window/tab opening
                 a.rel = 'noopener';
                 a.style.display = 'none';
                 document.body.appendChild(a);
-                a.click();
                 
+                // Use setTimeout to ensure DOM is ready before click
                 setTimeout(() => {
-                    if (a.parentNode) document.body.removeChild(a);
-                }, 300);
+                    a.click();
+                    
+                    // Clean up after download starts
+                    setTimeout(() => {
+                        if (a.parentNode) document.body.removeChild(a);
+                    }, 500);
+                }, 50);
 
                 Toast.success('Backup Saved!', 'File download started & copied to clipboard');
                 HapticManager.success();

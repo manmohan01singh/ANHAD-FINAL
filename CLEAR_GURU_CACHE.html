@@ -1,146 +1,278 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Clear Guru Image Cache</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clear Guru Event Cache - ANHAD</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 600px;
-            margin: 50px auto;
-            padding: 20px;
-            background: #f5f5f5;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
         .container {
             background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 24px;
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            text-align: center;
         }
-        h1 {
-            color: #333;
+
+        .icon {
+            font-size: 64px;
             margin-bottom: 20px;
+            animation: pulse 2s ease-in-out infinite;
         }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        h1 {
+            color: #2d3748;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        p {
+            color: #718096;
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+        .status {
+            background: #f7fafc;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 24px;
+            font-size: 14px;
+            color: #4a5568;
+            border: 2px solid #e2e8f0;
+        }
+
+        .status.success {
+            background: #f0fff4;
+            border-color: #9ae6b4;
+            color: #2f855a;
+        }
+
+        .status.error {
+            background: #fff5f5;
+            border-color: #fc8181;
+            color: #c53030;
+        }
+
         button {
-            background: #FF6B00;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            padding: 15px 30px;
+            padding: 16px 32px;
+            border-radius: 12px;
             font-size: 16px;
-            border-radius: 5px;
+            font-weight: 600;
             cursor: pointer;
-            margin: 10px 5px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            width: 100%;
+            margin-bottom: 12px;
         }
+
         button:hover {
-            background: #E55A00;
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(102, 126, 234, 0.4);
         }
-        .success {
-            background: #22C55E;
-            color: white;
-            padding: 15px;
-            border-radius: 5px;
-            margin-top: 20px;
-            display: none;
+
+        button:active {
+            transform: translateY(0);
         }
-        .info {
-            background: #EEF2FF;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            border-left: 4px solid #4F46E5;
+
+        button.secondary {
+            background: #e2e8f0;
+            color: #2d3748;
         }
-        code {
-            background: #f4f4f4;
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-family: monospace;
+
+        button.secondary:hover {
+            background: #cbd5e0;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .info-box {
+            background: #ebf8ff;
+            border-left: 4px solid #4299e1;
+            padding: 16px;
+            border-radius: 8px;
+            text-align: left;
+            margin-top: 24px;
+            font-size: 14px;
+            color: #2c5282;
+            line-height: 1.5;
+        }
+
+        .code {
+            background: #2d3748;
+            color: #48bb78;
+            padding: 12px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            margin-top: 12px;
+            text-align: left;
+            overflow-x: auto;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🔧 Clear Guru Image Cache</h1>
-        
-        <div class="info">
-            <strong>Problem:</strong> The app is showing Guru Arjan Dev Ji instead of Guru Granth Sahib Ji
-            <br><br>
-            <strong>Root Cause:</strong> Sept 13 event is cached in localStorage instead of Sept 12
-            <br><br>
-            <strong>Solution:</strong> Clear the cached event data
+        <div class="icon">🧹</div>
+        <h1>Clear Guru Event Cache</h1>
+        <p>This tool will clear the cached Gurpurab event data and force the app to fetch fresh data from the server.</p>
+
+        <div id="status" class="status">
+            Ready to clear cache...
         </div>
-        
-        <button onclick="clearCache()">Clear Event Cache</button>
-        <button onclick="clearAll()">Clear ALL Cache (Nuclear Option)</button>
-        
-        <div id="success" class="success"></div>
-        
-        <div style="margin-top: 20px;">
-            <h3>Cached Data:</h3>
-            <pre id="cacheData" style="background: #f4f4f4; padding: 15px; border-radius: 5px; overflow-x: auto; font-size: 12px;"></pre>
+
+        <button onclick="clearCache()">🗑️ Clear Event Cache</button>
+        <button class="secondary" onclick="checkCache()">🔍 Check Current Cache</button>
+
+        <div class="info-box">
+            <strong>📝 What This Does:</strong><br>
+            • Clears localStorage key: <code>anhad_cached_upcoming_gurpurab</code><br>
+            • Forces app to refetch event data from JSON<br>
+            • Fixes Guru image mismatch issues<br><br>
+            <strong>⚡ After Clearing:</strong><br>
+            Close this window and hard refresh your app:<br>
+            <strong>Ctrl + Shift + R</strong> (Windows/Linux)<br>
+            <strong>Cmd + Shift + R</strong> (Mac)
         </div>
+
+        <div id="cacheDisplay" class="code" style="display: none;"></div>
     </div>
-    
+
     <script>
-        function showCacheData() {
-            const cacheKeys = [
-                'anhad_cached_upcoming_gurpurab',
-                'gurpurab_events',
-                'next_gurpurab_cache',
-                'homepage_cache'
-            ];
-            
-            let output = '';
-            cacheKeys.forEach(key => {
-                const value = localStorage.getItem(key);
-                if (value) {
-                    output += `${key}:\n${JSON.stringify(JSON.parse(value), null, 2)}\n\n`;
-                }
-            });
-            
-            document.getElementById('cacheData').textContent = output || 'No cached event data found';
-        }
-        
         function clearCache() {
-            // Clear Gurpurab event caches
-            localStorage.removeItem('anhad_cached_upcoming_gurpurab');
-            localStorage.removeItem('gurpurab_events');
-            localStorage.removeItem('next_gurpurab_cache');
-            localStorage.removeItem('homepage_cache');
+            const statusEl = document.getElementById('status');
+            const cacheKey = 'anhad_cached_upcoming_gurpurab';
             
-            showSuccess('Event cache cleared! Reload the homepage to see Guru Granth Sahib Ji');
+            try {
+                // Check if cache exists
+                const cachedData = localStorage.getItem(cacheKey);
+                
+                if (cachedData) {
+                    // Clear the cache
+                    localStorage.removeItem(cacheKey);
+                    
+                    // Verify it's gone
+                    const stillExists = localStorage.getItem(cacheKey);
+                    
+                    if (stillExists === null) {
+                        statusEl.className = 'status success';
+                        statusEl.innerHTML = `
+                            ✅ <strong>Cache Cleared Successfully!</strong><br><br>
+                            Now close this window and hard refresh your app:<br>
+                            <strong>Ctrl + Shift + R</strong> (Windows/Linux)<br>
+                            <strong>Cmd + Shift + R</strong> (Mac)
+                        `;
+                        
+                        // Play success sound if available
+                        try {
+                            const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBjGH0fPTgjMGHm7A7+OZSA0PVqzn7KNXEA9Moe');
+                        } catch (e) {}
+                    } else {
+                        throw new Error('Cache still exists after removal');
+                    }
+                } else {
+                    statusEl.className = 'status';
+                    statusEl.innerHTML = `
+                        ℹ️ <strong>No Cache Found</strong><br><br>
+                        The event cache was already empty. Your app will fetch fresh data on next load.
+                    `;
+                }
+            } catch (error) {
+                statusEl.className = 'status error';
+                statusEl.innerHTML = `
+                    ❌ <strong>Error:</strong> ${error.message}<br><br>
+                    Try manually clearing in browser console:<br>
+                    <code>localStorage.removeItem('anhad_cached_upcoming_gurpurab')</code>
+                `;
+            }
         }
-        
-        function clearAll() {
-            // Nuclear option - clear all localStorage
-            const important = {
-                nitnemTracker_nitnemLog: localStorage.getItem('nitnemTracker_nitnemLog'),
-                nitnemTracker_amritvelaLog: localStorage.getItem('nitnemTracker_amritvelaLog'),
-                anhad_streak_data: localStorage.getItem('anhad_streak_data'),
-                anhad_my_pothi: localStorage.getItem('anhad_my_pothi')
-            };
+
+        function checkCache() {
+            const statusEl = document.getElementById('status');
+            const displayEl = document.getElementById('cacheDisplay');
+            const cacheKey = 'anhad_cached_upcoming_gurpurab';
             
-            localStorage.clear();
-            
-            // Restore important data
-            Object.entries(important).forEach(([key, value]) => {
-                if (value) localStorage.setItem(key, value);
-            });
-            
-            showSuccess('ALL cache cleared (except your Nitnem/streak data)! Reload the homepage.');
+            try {
+                const cachedData = localStorage.getItem(cacheKey);
+                
+                if (cachedData) {
+                    const parsed = JSON.parse(cachedData);
+                    
+                    statusEl.className = 'status';
+                    statusEl.innerHTML = `
+                        📦 <strong>Cache Found</strong><br><br>
+                        Cached Event: <strong>${parsed.events?.[0]?.name || 'Unknown'}</strong><br>
+                        Event ID: <code>${parsed.events?.[0]?.id || 'Unknown'}</code>
+                    `;
+                    
+                    displayEl.textContent = JSON.stringify(parsed, null, 2);
+                    displayEl.style.display = 'block';
+                } else {
+                    statusEl.className = 'status';
+                    statusEl.innerHTML = `
+                        ✨ <strong>No Cache Found</strong><br><br>
+                        Event cache is empty. App will fetch fresh data.
+                    `;
+                    displayEl.style.display = 'none';
+                }
+            } catch (error) {
+                statusEl.className = 'status error';
+                statusEl.innerHTML = `
+                    ❌ <strong>Error:</strong> ${error.message}
+                `;
+                displayEl.style.display = 'none';
+            }
         }
-        
-        function showSuccess(message) {
-            const successDiv = document.getElementById('success');
-            successDiv.textContent = '✅ ' + message;
-            successDiv.style.display = 'block';
-            showCacheData();
-            
+
+        // Auto-check cache on page load
+        window.addEventListener('load', () => {
             setTimeout(() => {
-                successDiv.style.display = 'none';
-            }, 5000);
-        }
-        
-        // Show cache on load
-        showCacheData();
+                const cacheKey = 'anhad_cached_upcoming_gurpurab';
+                const cachedData = localStorage.getItem(cacheKey);
+                
+                if (cachedData) {
+                    try {
+                        const parsed = JSON.parse(cachedData);
+                        document.getElementById('status').innerHTML = `
+                            ⚠️ <strong>Cache Detected</strong><br><br>
+                            Current: <strong>${parsed.events?.[0]?.name || 'Unknown'}</strong><br>
+                            ID: <code>${parsed.events?.[0]?.id || 'Unknown'}</code><br><br>
+                            Click "Clear Event Cache" to remove this.
+                        `;
+                    } catch (e) {
+                        document.getElementById('status').innerHTML = `
+                            ⚠️ <strong>Invalid Cache Detected</strong><br><br>
+                            Click "Clear Event Cache" to remove corrupted data.
+                        `;
+                    }
+                }
+            }, 100);
+        });
     </script>
 </body>
 </html>
