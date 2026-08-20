@@ -150,52 +150,120 @@ html.dark-mode .campaign-card__countdown {
 #greetingAnnounce[hidden],
 #greetingAnnounceText[hidden] { display: none !important; }
 
+/* The whole 172px box, so the halo and the pill can position against it. */
 .greeting__announce {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 152px;   /* == .greeting__slide */
-  height: 152px;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   z-index: 11;    /* above .greeting__slide--active (10) */
   opacity: 0;
   pointer-events: none;
-  transform: translate(-50%, -50%) scale(0.6);
-  transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transform: scale(0.72);
+  transition: opacity 0.6s cubic-bezier(0.2, 0.8, 0.2, 1),
+              transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* Soft gold aura behind the disc, matching the portrait slider's own ::before
+   glow so State B keeps the same halo the Guru portraits sit in. */
+.greeting__announce-halo {
+  position: absolute;
+  width: 196px;
+  height: 196px;
+  border-radius: 50%;
+  background: radial-gradient(circle,
+    var(--campaign-accent-glow, rgba(212, 175, 55, 0.34)) 0%,
+    rgba(212, 175, 55, 0) 68%);
+  filter: blur(2px);
+  pointer-events: none;
 }
 
 .greeting__announce-disc {
-  width: 100%;
-  height: 100%;
+  position: relative;
+  width: 148px;
+  height: 148px;
   border-radius: 50%;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  padding: 0 10px;
+  gap: 4px;
+  padding: 0 12px;
   box-sizing: border-box;
-  /* Same token the campaign badge uses, set from content.themeTokens. */
   background: var(--campaign-badge-bg, linear-gradient(135deg, #8A6D3B 0%, #D4AF37 100%));
   /* Ring copied from .greeting__guru-portrait so the disc reads as the same
-     object as the portraits it replaces. */
-  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.18), inset 0 0 0 1.5px rgba(255, 255, 255, 0.3);
+     kind of object as the portraits it replaces. */
+  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.20), inset 0 0 0 1.5px rgba(255, 255, 255, 0.34);
   color: #fff;
 }
 
+/* Real Amritvela artwork rather than a flat swatch — this is a Darbar Sahib
+   Amritvela photograph, the same asset the Amritvela hero card uses. */
+.greeting__announce-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 42%;
+}
+
+/* Legibility veil. The ੴ and the badge sit on a photograph, so they need a
+   guaranteed contrast floor rather than luck with whatever the image does. */
+.greeting__announce-veil {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(20, 12, 0, 0.18) 0%, rgba(20, 12, 0, 0.62) 100%),
+    radial-gradient(circle at 50% 38%, rgba(212, 175, 55, 0.26) 0%, rgba(0, 0, 0, 0) 70%);
+}
+
 .greeting__announce-ik {
-  font-size: 2.4rem;
+  position: relative;
+  font-size: 2.5rem;
   line-height: 1;
+  color: #FFF7E2;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.55);
 }
 
 .greeting__announce-badge {
-  font-size: 0.62rem;
-  font-weight: 700;
-  letter-spacing: 0.10em;
+  position: relative;
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  max-width: 92%;
+  max-width: 94%;
   text-align: center;
-  line-height: 1.25;
+  line-height: 1.3;
+  color: #FFE9A8;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6);
 }
+
+/* Small caption riding the bottom edge of the disc, the way the Gurpurab
+   card's day-count badge does. Used for the live-samagam line. */
+.greeting__announce-pill {
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: 96%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 0.56rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #3B2A00;
+  background: linear-gradient(135deg, #FFE9A8 0%, #F0C64E 100%);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.22);
+}
+
+.greeting__announce-pill[hidden] { display: none !important; }
 
 .greeting__announce-text {
   position: absolute;
@@ -219,12 +287,16 @@ html.dark-mode .campaign-card__countdown {
    remote string would spill onto the portrait and the progress bar. The JS
    clamps the strings as well — belt and braces. */
 .greeting__announce-title {
-  font-size: 1.4rem;
-  font-weight: 800;
+  /* Same display serif the rest of the app uses for sacred headings
+     (trendora-premium.css:2496), so State B does not read as a foreign
+     marketing font dropped into the greeting. */
+  font-family: 'Cinzel', 'Georgia', serif;
+  font-size: 1.32rem;
+  font-weight: 700;
   line-height: 1.2;
-  letter-spacing: -0.3px;
+  letter-spacing: 0.3px;
   color: var(--campaign-accent, #D4943A);
-  margin-bottom: 6px;
+  margin-bottom: 5px;
   padding: 0 16px;
   display: -webkit-box;
   -webkit-line-clamp: 1;
@@ -233,8 +305,9 @@ html.dark-mode .campaign-card__countdown {
 }
 
 .greeting__announce-line {
-  font-size: 1.5rem;
-  line-height: 1.3;
+  font-family: var(--font-gurmukhi, 'Noto Sans Gurmukhi', sans-serif);
+  font-size: 1.34rem;
+  line-height: 1.35;
   padding: 0 16px;
   margin-top: -2px;
   display: -webkit-box;
@@ -244,9 +317,11 @@ html.dark-mode .campaign-card__countdown {
 }
 
 .greeting__announce-sub {
-  font-size: 0.9rem;
-  opacity: 0.8;
-  margin-top: 2px;
+  font-size: 0.86rem;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  opacity: 0.82;
+  margin-top: 4px;
   padding: 0 16px;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -269,7 +344,7 @@ html.dark-mode .campaign-card__countdown {
 
 #guruSlider[data-campaign-state="b"] > .greeting__announce {
   opacity: 1;
-  transform: translate(-50%, -50%) scale(1);
+  transform: scale(1);
 }
 
 #guruSlider[data-campaign-state="b"] ~ .greeting__text .greeting__announce-text {
@@ -303,7 +378,7 @@ html.dark-mode .campaign-card__countdown {
 
 #campaignMount .greeting__announce {
   opacity: 1;
-  transform: translate(-50%, -50%) scale(1);
+  transform: scale(1);
 }
 
 .greeting__announce-text--preview {
@@ -325,7 +400,7 @@ html.dark-mode .campaign-card__countdown {
   #guruSlider[data-campaign-state] > .greeting__slider-track {
     transition: none !important;
   }
-  .greeting__announce { transform: translate(-50%, -50%) scale(1); }
+  .greeting__announce { transform: scale(1); }
   .greeting__announce-text { transform: none; }
 }
 

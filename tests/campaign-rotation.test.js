@@ -171,11 +171,12 @@ describe('campaign rotation', () => {
 
     expect(slider.getAttribute('data-campaign-state')).toBe('a');
 
-    vi.advanceTimersByTime(5000 * 4);            // 4 ticks -> State B
+    // Cadence is TICK_MS 4000, A_TICKS 3, B_TICKS 2 (a 20s cycle).
+    vi.advanceTimersByTime(4000 * 3);            // 3 ticks -> State B
     expect(slider.getAttribute('data-campaign-state')).toBe('b');
     expect(document.getElementById('greetingAnnounceBadge').textContent).toBe('CHALIYA 2026');
 
-    vi.advanceTimersByTime(5000 * 2);            // 2 more -> back to State A
+    vi.advanceTimersByTime(4000 * 2);            // 2 more -> back to State A
     expect(slider.getAttribute('data-campaign-state')).toBe('a');
 
     // PortraitSlider's rebuild guard is `track.children.length === 11`.
@@ -208,8 +209,8 @@ describe('campaign rotation', () => {
 
     expect(window.__anhadCampaignRotationTimer).toBeTruthy();
 
-    // Reduced cadence is 20s, and the B period is A_TICKS(4) + 1.
-    vi.advanceTimersByTime(20000 * 4);
+    // Reduced cadence is 20s per tick, and the B period is A_TICKS(3) + 1.
+    vi.advanceTimersByTime(20000 * 3);
     expect(document.getElementById('guruSlider').getAttribute('data-campaign-state')).toBe('b');
 
     // After that single showing the interval is cleared outright, so there is

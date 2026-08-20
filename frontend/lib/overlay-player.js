@@ -25,7 +25,43 @@
   let retryCount = 0;
   const MAX_RETRIES = 200;
 
+  /**
+   * Pages allowed to show the mini player: Home, Favorites, Insights.
+   *
+   * overlay-player.js is loaded by ~30 pages, and the only gate used to be
+   * "hide on the Gurbani Radio page" — so the player followed the user into
+   * every Nitnem bani, every reader, Settings, Notes, everywhere. It has no
+   * business floating over a Bani being read.
+   *
+   * These three are exactly smooth-navigation.js's isShellPage() set, which is
+   * not a coincidence: they are the browsing surfaces, and every other route is
+   * a full document load, so init() re-runs there and correctly bails.
+   */
+  function isMiniPlayerPage() {
+    try {
+      var p = window.location.pathname.toLowerCase();
+      // Strip .html FIRST, then the index segment, then any trailing slash:
+      //   /index.html            -> ''
+      //   /                      -> ''
+      //   /frontend/index.html   -> '/frontend'
+      //   /Favorites/favorites.html -> '/favorites/favorites'
+      //   /nitnem/index.html     -> '/nitnem'        (correctly not allowed)
+      var clean = p.replace(/\.html$/, '').replace(/\/index$/, '/').replace(/\/$/, '');
+      if (clean === '' || clean === '/frontend') return true;              // Home
+      if (/\/insights\/insights$/.test(clean)) return true;                // Learning
+      if (/\/favorites\/favorites$/.test(clean)) return true;              // Favorites
+      return false;
+    } catch (e) {
+      return false;
+    }
+  }
+
   function init() {
+    if (!isMiniPlayerPage()) {
+      console.log('[OverlayPlayer] Not a mini-player page, skipping UI');
+      return;
+    }
+
     console.log('[OverlayPlayer] Initializing thin UI wrapper...');
 
     if (!window.AnhadAudio) {
@@ -116,19 +152,25 @@
   }
 
   function handlePageChange() {
+    if (!miniPlayerEl) return;
+    // Belt and braces for the SPA path: those three pages swap without a
+    // document load, so init() does not re-run and cannot re-gate.
     const isPlayerPage = window.location.pathname.toLowerCase().includes('gurbani-radio');
-    if (miniPlayerEl) {
-      if (isPlayerPage) {
-        miniPlayerEl.style.display = 'none';
-        miniPlayerEl.classList.remove('gmp--visible');
-      } else {
-        updateUI();
-      }
+    if (isPlayerPage || !isMiniPlayerPage()) {
+      miniPlayerEl.style.display = 'none';
+      miniPlayerEl.classList.remove('gmp--visible');
+      return;
     }
+    updateUI();
   }
 
   function updateUI() {
     if (!miniPlayerEl || !window.AnhadAudio) return;
+    if (!isMiniPlayerPage()) {
+      miniPlayerEl.style.display = 'none';
+      miniPlayerEl.classList.remove('gmp--visible');
+      return;
+    }
 
     const state = window.AnhadAudio.getState();
     const currentPath = window.location.pathname.toLowerCase();

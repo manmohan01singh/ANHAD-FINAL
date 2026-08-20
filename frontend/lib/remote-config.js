@@ -72,11 +72,22 @@
           // Copy for the in-greeting rotating announcement (State B). Short by
           // necessity: it renders inside the 152px portrait disc and the
           // greeting text block, both of which are fixed-size boxes.
+          // Copy for the in-greeting announcement (State B). Kept short because
+          // it renders inside the 148px portrait disc and the greeting text box,
+          // both fixed-size; campaign-renderer.js clamps it as a backstop.
+          //
+          // The Gurmukhi line is Gurbani, not marketing copy: it is from Japji
+          // Sahib (pauri 4) — 'ਅੰਮ੍ਰਿਤ ਵੇਲਾ ਸਚੁ ਨਾਉ', 'in the ambrosial hours
+          // of Amritvela, meditate on the True Name' — which is the practice a
+          // Chaliya is built around, so it says something true about the
+          // campaign rather than decorating it.
           announce: {
             badge: 'CHALIYA 2026',
             title: 'Chaliya 2026',
-            line: 'ਪ੍ਰਕਾਸ਼ ਪੁਰਬ ਸ੍ਰੀ ਗੁਰੂ ਨਾਨਕ ਦੇਵ ਜੀ',
-            sub: 'Coming Soon — 40 days of Amritvela Simran'
+            line: 'ਅੰਮ੍ਰਿਤ ਵੇਲਾ ਸਚੁ ਨਾਉ',
+            sub: '40 days of Amritvela Simran — Coming Soon',
+            pill: 'AMRITVELA LIVE SAMAGAMS',
+            image: 'assets/Darbar-sahib-AMRITVELA.webp'
           },
           themeTokens: {
             accentGlow: 'rgba(212, 175, 55, 0.3)',

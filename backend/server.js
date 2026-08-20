@@ -497,13 +497,24 @@ const DEFAULT_CAMPAIGNS = {
       active: true,
       content: {
         badgeText: 'CHALIYA 2026',
-        // Copy for the in-greeting announcement (State B). Short by necessity:
-        // it renders inside the 152px portrait disc and the greeting text box.
+        // Copy for the in-greeting announcement (State B). Kept short because it
+        // renders inside the 148px portrait disc and the greeting text box, both
+        // fixed-size; campaign-renderer.js clamps it as a backstop.
+        //
+        // The Gurmukhi line is Gurbani, not marketing copy: Japji Sahib pauri 4,
+        // 'ਅੰਮ੍ਰਿਤ ਵੇਲਾ ਸਚੁ ਨਾਉ' — 'in the ambrosial hours of Amritvela,
+        // meditate on the True Name' — the practice a Chaliya is built around.
+        //
+        // Must stay in sync with SAFE_BUILTIN_CONFIG in
+        // frontend/lib/remote-config.js, or an offline device shows different
+        // wording from an online one.
         announce: {
           badge: 'CHALIYA 2026',
           title: 'Chaliya 2026',
-          line: 'ਪ੍ਰਕਾਸ਼ ਪੁਰਬ ਸ੍ਰੀ ਗੁਰੂ ਨਾਨਕ ਦੇਵ ਜੀ',
-          sub: 'Coming Soon — 40 days of Amritvela Simran'
+          line: 'ਅੰਮ੍ਰਿਤ ਵੇਲਾ ਸਚੁ ਨਾਉ',
+          sub: '40 days of Amritvela Simran — Coming Soon',
+          pill: 'AMRITVELA LIVE SAMAGAMS',
+          image: 'assets/Darbar-sahib-AMRITVELA.webp'
         },
         heroTitle: 'Chaliya Amritvela 2026',
         heroSubtitle: 'Join thousands in the annual 40-day Amritvela Simran Abhyaas',

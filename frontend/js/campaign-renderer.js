@@ -44,10 +44,13 @@
 
   const MOUNT_ID = 'campaignMount';
 
-  // Rotation cadence, in ticks. 4 ticks of Guru artwork, 2 of announcement.
-  const TICK_MS = 5000;
+  // Rotation cadence, in ticks: 3 ticks of Guru artwork (12s) then 2 of the
+  // announcement (8s), so the full cycle is 20s and the announcement comes
+  // round roughly three times a minute. Long enough to read comfortably,
+  // short enough that a user who glances at Home actually sees it.
+  const TICK_MS = 4000;
   const TICK_MS_REDUCED = 20000;
-  const A_TICKS = 4;
+  const A_TICKS = 3;
   const B_TICKS = 2;
   const REDUCED_MAX_B_VISITS = 1;
 
@@ -99,13 +102,25 @@
       badge: clampText(an.badge || c.badgeText || '', 22),
       title: clampText(an.title || c.heroTitle || (campaign && campaign.title) || '', 24),
       line: clampText(an.line || (c.banner && c.banner.text) || '', 40),
-      sub: clampText(an.sub || c.heroSubtitle || legacy.message || (campaign && campaign.subtitle) || '', 80)
+      sub: clampText(an.sub || c.heroSubtitle || legacy.message || (campaign && campaign.subtitle) || '', 80),
+      // Caption riding the bottom edge of the disc, e.g. a live-samagam line.
+      pill: clampText(an.pill || '', 28),
+      // Optional artwork override. Only same-origin relative paths and https
+      // are honoured — campaign content is authored remotely, so a javascript:
+      // or data: src must never reach an <img>.
+      image: (function () {
+        var u = an.image;
+        if (typeof u !== 'string' || !u) return '';
+        if (/^https:\/\//i.test(u)) return u;
+        if (/^[a-z][a-z0-9+.-]*:/i.test(u)) return '';
+        return u;
+      })()
     };
   }
 
   function signature(campaign) {
     const t = announceCopy(campaign);
-    return [campaign.id, t.badge, t.title, t.line, t.sub].join('|');
+    return [campaign.id, t.badge, t.title, t.line, t.sub, t.pill, t.image].join('|');
   }
 
   function applyThemeTokens(tokens) {
@@ -180,6 +195,14 @@
     set('greetingAnnounceTitle', copy.title);
     set('greetingAnnounceLine', copy.line);
     set('greetingAnnounceSub', copy.sub);
+    set('greetingAnnouncePill', copy.pill);
+
+    // Artwork: only swap when the config actually supplies one, so the shipped
+    // Amritvela photograph stays as the default rather than being blanked.
+    if (copy.image) {
+      const img = document.getElementById('greetingAnnounceImg');
+      if (img && img.getAttribute('src') !== copy.image) img.setAttribute('src', copy.image);
+    }
 
     art.hidden = false;
     txt.hidden = false;
