@@ -486,14 +486,25 @@ const DEFAULT_CAMPAIGNS = {
       platforms: ['web', 'android', 'ios'],
       startDate: '2026-01-01T00:00:00.000Z',
       endDate: '2026-12-31T23:59:59.000Z',
-      // Ships OFF, matching SAFE_BUILTIN_CONFIG in frontend/lib/remote-config.js.
-      // The dates above span all of 2026 and are placeholders, so leaving this
-      // true switched the Chaliya experience on for every user the moment the
-      // consumption layer landed. Turn it on — with the real 40-day window —
-      // from the admin screen, never from source.
-      active: false,
+      // ON, matching SAFE_BUILTIN_CONFIG in frontend/lib/remote-config.js.
+      // The consumption layer is the in-greeting rotating announcement: it
+      // swaps in place of the Guru portraits inside their already-fixed 172px
+      // box and cycles back, taking no extra space and offering no dismiss
+      // control — so running it live is not the takeover the old dismissible
+      // card would have been.
+      // NOTE: startDate/endDate above still span all of 2026. Narrow them to
+      // the real 40-day Chaliya window before release.
+      active: true,
       content: {
         badgeText: 'CHALIYA 2026',
+        // Copy for the in-greeting announcement (State B). Short by necessity:
+        // it renders inside the 152px portrait disc and the greeting text box.
+        announce: {
+          badge: 'CHALIYA 2026',
+          title: 'Chaliya 2026',
+          line: 'ਪ੍ਰਕਾਸ਼ ਪੁਰਬ ਸ੍ਰੀ ਗੁਰੂ ਨਾਨਕ ਦੇਵ ਜੀ',
+          sub: 'Coming Soon — 40 days of Amritvela Simran'
+        },
         heroTitle: 'Chaliya Amritvela 2026',
         heroSubtitle: 'Join thousands in the annual 40-day Amritvela Simran Abhyaas',
         ctaText: 'Join Amritvela',

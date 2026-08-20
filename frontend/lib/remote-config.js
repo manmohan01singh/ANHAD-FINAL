@@ -43,11 +43,13 @@
         platforms: ['web', 'android', 'ios'],
         startDate: '2026-01-01T00:00:00.000Z',
         endDate: '2026-12-31T23:59:59.000Z',
-        // Ships OFF. The dates above are placeholders spanning all of 2026, so
-        // leaving this true would switch the Chaliya experience on for every
-        // user the moment a consumption layer existed. Enable it — with the
-        // real 40-day window — from the admin screen, not from source.
-        active: false,
+        // ON. The consumption layer is now the in-greeting rotating
+        // announcement, which swaps in place of the Guru portraits and cycles
+        // back — it takes no extra space and has no dismiss control, so having
+        // it live is not the takeover the old dismissible card would have been.
+        // NOTE: startDate/endDate above still span all of 2026. Narrow them to
+        // the real 40-day Chaliya window before release.
+        active: true,
         content: {
           badgeText: 'CHALIYA 2026',
           heroTitle: 'Chaliya Amritvela 2026',

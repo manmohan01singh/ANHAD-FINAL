@@ -35,13 +35,27 @@ describe('Remote Configuration & Campaign Engine', () => {
     const config = manager.getConfig();
     expect(config.campaigns.some(c => c.id === 'chaliya-amritvela-2026')).toBe(true);
 
-    // ...but it ships with active:false. This assertion used to expect Chaliya
-    // to resolve as the ACTIVE campaign, which would have switched the whole
-    // Chaliya experience on for every user the moment the consumption layer
-    // landed — its date window is a placeholder spanning all of 2026. Shipping
-    // dark and enabling from the admin screen is the intended contract, so with
-    // no network and no cache there must be NO active campaign at all.
-    expect(manager.getActiveCampaign()).toBeNull();
+    // ...and it now ships ACTIVE. That reversed deliberately: the consumption
+    // layer used to be a dismissible card that took over its own slot on Home,
+    // so shipping it dark was the only safe default. It is now the in-greeting
+    // rotating announcement, which swaps in place of the Guru portraits inside
+    // their already-fixed 172px box and cycles back — no extra space, no
+    // dismiss control, nothing to take over. So an offline device with no
+    // cached response is expected to resolve Chaliya as the active campaign.
+    const active = manager.getActiveCampaign();
+    expect(active).not.toBeNull();
+    expect(active.id).toBe('chaliya-amritvela-2026');
+
+    // The announcement copy the rotator renders must be present, or State B
+    // would fade in to an empty disc.
+    expect(active.content.announce.badge).toBeTruthy();
+    expect(active.content.announce.title).toBeTruthy();
+
+    // Provenance must say builtin here — remote-config.js only reports
+    // 'remote'/'cache' once it has actually heard from the server, and
+    // campaign-renderer.js relies on that distinction to decide whether a null
+    // active campaign means "the owner switched it off" or "never connected".
+    expect(manager.getSource()).toBe('builtin');
 
     // Feature flags still resolve from the built-in defaults.
     expect(manager.isFeatureEnabled('enableVirtualLive')).toBe(true);

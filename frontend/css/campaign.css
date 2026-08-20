@@ -277,10 +277,15 @@ html.dark-mode .campaign-card__countdown {
   transform: scale(1);
 }
 
+/* !important is required, not decorative: #greetingTranslation carries an
+   INLINE style="...opacity: 0.8..." in index.html, and an inline declaration
+   beats any stylesheet rule that is not !important. Without it the translation
+   stayed at 0.8 and rendered straight through the announcement copy. */
 #guruSlider[data-campaign-state="b"] ~ .greeting__text > .greeting__salutation,
 #guruSlider[data-campaign-state="b"] ~ .greeting__text > .greeting__gurbani,
 #guruSlider[data-campaign-state="b"] ~ .greeting__text > .greeting__translation {
-  opacity: 0;
+  opacity: 0 !important;
+  pointer-events: none;
   transition: opacity 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
