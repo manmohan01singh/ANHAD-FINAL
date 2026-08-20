@@ -4799,7 +4799,7 @@
   </style>
   <link rel="stylesheet" href="../css/theme-variables.css">
   <link rel="stylesheet" href="../css/global-mini-player.css?v=5">
-    <link rel="stylesheet" href="../css/desktop-responsive.css?v=24">
+    <link rel="stylesheet" href="../css/desktop-responsive.css?v=25">
   <link rel="stylesheet" href="../css/coming-soon-modal.css">
   <script src="../lib/desktop-sidebar.js" defer></script>
   <script src="../lib/coming-soon-modal.js" defer></script>
@@ -6781,7 +6781,7 @@
         if (main && (!State.live || State.live.length === 0) && (!State.myChannels || State.myChannels.length === 0)) {
           main.innerHTML = `
             <div style="padding:40px 20px; text-align:center;">
-              <div style="font-size:48px; margin-bottom:16px;">âš ï¸</div>
+              <div style="font-size:48px; margin-bottom:16px;">âš </div>
               <div style="font-size:16px; font-weight:700; color:var(--text-primary); margin-bottom:8px;">Connection Failed</div>
               <div style="font-size:13px; color:var(--text-secondary); margin-bottom:16px;">Unable to connect to Sadhsangat Live servers. Please check your network connection.</div>
               <button onclick="window.location.reload()" style="background:var(--gold-gradient); border:none; padding:10px 20px; border-radius:30px; font-weight:600; color:#000; cursor:pointer;">Retry Connection</button>
@@ -6812,7 +6812,7 @@
         await loadData();
         showToast('✅ Feed Refreshed');
       } catch (e) {
-        showToast('âš ï¸ Sync failed');
+        showToast('âš  Sync failed');
       }
     }
 
@@ -7045,7 +7045,7 @@
                       if (_matchedArtist || _matchedKw) {
                         const _term = _matchedArtist || _matchedKw;
                         console.log(`[AI Validation] âŒ CLIENT PRE-CHECK blocked "${ch.channelName}" — matched "${_term}"`);
-                        showToast(`âš ï¸ "${ch.channelName}" is not suitable for Sadhsangat Live`);
+                        showToast(`âš  "${ch.channelName}" is not suitable for Sadhsangat Live`);
                         btn.disabled = false;
                         btn.textContent = 'Add';
                         return;
@@ -7064,7 +7064,7 @@
                       const validateData = await readJsonResponse(validateRes, { isValid: false });
                       
                       if (!validateData.isValid) {
-                        showToast(`âš ï¸ ${validateData.reason || 'This channel is not appropriate for Sadhsangat Live'}`);
+                        showToast(`âš  ${validateData.reason || 'This channel is not appropriate for Sadhsangat Live'}`);
                         btn.disabled = false;
                         btn.textContent = 'Add';
                         return;
@@ -7085,7 +7085,7 @@
                       addSearchToHistory(query);
                       await loadData();
                     } catch (addErr) {
-                      showToast('âš ï¸ ' + addErr.message);
+                      showToast('âš  ' + addErr.message);
                       btn.disabled = false;
                       btn.textContent = 'Add';
                     }
@@ -7199,7 +7199,7 @@
         
         $('previewCard').classList.add('visible');
       } catch (err) {
-        showToast('âš ï¸ ' + err.message);
+        showToast('âš  ' + err.message);
       } finally {
         $('searchBtn').disabled = false;
         $('searchBtn').textContent = 'Find';
@@ -8428,7 +8428,7 @@
       } catch (e) {
         container.innerHTML = `
           <div style="padding: 12px 16px;"><button id="backToChListBtn" style="background:none; border:none; color:var(--yt-red); font-weight:700;">Back</button></div>
-          <div class="empty-state"><div class="empty-icon">âš ï¸</div><div class="empty-heading">Could not load playlists</div></div>
+          <div class="empty-state"><div class="empty-icon">âš </div><div class="empty-heading">Could not load playlists</div></div>
         `;
         $('backToChListBtn').addEventListener('click', () => {
           State.selectedChannelId = 'all';
@@ -8631,7 +8631,7 @@
         showToast('Display order updated');
         await loadData();
       } catch(err) {
-        showToast('âš ï¸ ' + err.message);
+        showToast('âš  ' + err.message);
       }
     }
 
@@ -8642,12 +8642,12 @@
         });
         const data = await readJsonResponse(res, {});
         if (!res.ok) throw new Error(data.error || 'Delete failed');
-        showToast('🗑ï¸ Channel removed');
+        showToast('🗑 Channel removed');
         if (State.selectedChannelId === channelId) State.selectedChannelId = 'all';
         State.videos = [];
         await loadData();
       } catch (err) {
-        showToast('âš ï¸ ' + err.message);
+        showToast('âš  ' + err.message);
       }
     }
 
@@ -8900,7 +8900,7 @@
           return;
         }
         if (!v.channelId) {
-          showToast('âš ï¸ Channel ID not available');
+          showToast('âš  Channel ID not available');
           return;
         }
         
@@ -8915,10 +8915,10 @@
             showToast(`🔔 Subscribed to ${v.channelName || 'Channel'}`);
             await loadData();
           } else {
-            showToast('âš ï¸ ' + (data.error || 'Failed to subscribe'));
+            showToast('âš  ' + (data.error || 'Failed to subscribe'));
           }
         } catch(err) {
-          showToast('âš ï¸ Error subscribing');
+          showToast('âš  Error subscribing');
         }
       });
       
@@ -9175,11 +9175,11 @@
             await loadData();
             updateSubscribeBtnState(found);
           } else {
-            showToast('âš ï¸ Channel not found');
+            showToast('âš  Channel not found');
           }
         }
       } catch (e) {
-        showToast('âš ï¸ Action failed');
+        showToast('âš  Action failed');
       } finally {
         btn.disabled = false;
       }
@@ -9501,7 +9501,7 @@
           miniBtn.innerHTML = `<svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>`;
         }
         $('audioDiscSpin').classList.remove('playing');
-        showToast('â¸ï¸ Paused');
+        showToast('â¸ Paused');
       } else {
         State.isPlaying = true;
         if (ytPlayer && ytPlayer.playVideo) { try { ytPlayer.playVideo(); } catch(e) {} }
@@ -9514,7 +9514,7 @@
           miniBtn.innerHTML = `<svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><rect x="5" y="4" width="4" height="16"/><rect x="15" y="4" width="4" height="16"/></svg>`;
         }
         $('audioDiscSpin').classList.add('playing');
-        showToast('â–¶ï¸ Playing');
+        showToast('â–¶ Playing');
       }
     }
 
@@ -9668,7 +9668,7 @@
         window.wakeLock.release().then(() => { window.wakeLock = null; }).catch(() => {});
       }
       window.dispatchEvent(new CustomEvent('sadhsangatPlayerClosed'));
-      showToast('â¹ï¸ Playback stopped');
+      showToast('â¹ Playback stopped');
     }
 
     function minimizePlayer() {
@@ -9734,7 +9734,7 @@
         btn.style.color = '#000';
         btn.style.borderColor = 'var(--gold-accent)';
         if (txt) txt.textContent = 'Liked';
-        showToast('❤️ï¸ Liked Gurbani Stream');
+        showToast('❤️ Liked Gurbani Stream');
       } else {
         btn.style.background = 'var(--bg-glass)';
         btn.style.color = 'var(--text-primary)';
@@ -9761,7 +9761,7 @@
       navigator.clipboard.writeText(url).then(() => {
         showToast('📋 Link copied to clipboard');
       }).catch(() => {
-        showToast('âš ï¸ Link: ' + url);
+        showToast('âš  Link: ' + url);
       });
     });
 
@@ -9859,7 +9859,7 @@
           return;
         } catch(e) {}
       }
-      showToast('â„¹ï¸ Picture-in-Picture: Tap YouTube player PiP icon');
+      showToast('â„¹ Picture-in-Picture: Tap YouTube player PiP icon');
     });
 
     $('playerFullscreenBtn').addEventListener('click', () => {
@@ -9868,7 +9868,7 @@
         document.exitFullscreen().catch(() => {});
       } else if (videoWrap && videoWrap.requestFullscreen) {
         videoWrap.requestFullscreen().catch(() => {
-          showToast('â„¹ï¸ Tap YouTube player fullscreen button');
+          showToast('â„¹ Tap YouTube player fullscreen button');
         });
       }
     });
