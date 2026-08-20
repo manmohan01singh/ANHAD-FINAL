@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pa">
 <head>
       <!-- CRITICAL: Theme blocker - MUST run before paint -->
@@ -78,9 +78,12 @@
     
     <!-- Global Theme System -->
     <link rel="stylesheet" href="../css/theme-variables.css">
+    <link rel="stylesheet" href="../css/global-mini-player.css?v=5">
+    <link rel="stylesheet" href="../css/desktop-responsive.css?v=26">
     <script src="../lib/global-theme.js"></script>
     
     <!-- Navigation Libraries -->
+    <script src="../lib/desktop-sidebar.js" defer></script>
     <script src="../lib/smart-back.js"></script>
     <script src="../lib/page-lifecycle.js"></script>
     <script src="../lib/smooth-navigation.js"></script>
@@ -256,7 +259,7 @@
                         <span>Settings</span>
                     </button>
                 </div>
-                <button class="close-actions-btn" id="closeActionsBtn">✕</button>
+                <button class="close-actions-btn" id="closeActionsBtn">✍️•</button>
             </div>
         </div>
 
@@ -266,7 +269,7 @@
             <div class="settings-content">
                 <div class="settings-header">
                     <h2>⚙️ Reader Settings</h2>
-                    <button class="close-settings-btn" id="closeSettingsBtn">✕</button>
+                    <button class="close-settings-btn" id="closeSettingsBtn">✍️•</button>
                 </div>
                 
                 <div class="settings-body">
@@ -367,7 +370,7 @@
         <div class="search-modal-content">
             <div class="search-modal-header">
                 <h3>🔍 Go to Ang</h3>
-                <button class="close-search-btn" id="closeSearchBtn">✕</button>
+                <button class="close-search-btn" id="closeSearchBtn">✍️•</button>
             </div>
             <div class="search-modal-body">
                 <input type="number" id="goToAngInput" class="ang-input" placeholder="Enter Ang (1-1430)" min="1" max="1430" autocomplete="off">
@@ -388,7 +391,7 @@
         <div class="download-modal-content">
             <div class="download-modal-header">
                 <h3>📥 Download Angs</h3>
-                <button class="close-download-btn" id="closeDownloadBtn">✕</button>
+                <button class="close-download-btn" id="closeDownloadBtn">✍️•</button>
             </div>
             <div class="download-modal-body">
                 <p class="download-info">Download 5 Angs for offline reading (current + next 4)</p>
@@ -429,5 +432,7 @@
     <script src="../lib/capacitor-notifications-global.js"></script>
     <script src="../lib/anhad-widget-bridge.js"></script>
     <script src="../lib/anhad-audio-singleton.js?v=2.1.5"></script>
+    <script src="../lib/overlay-player.js" defer></script>
 </body>
 </html>
+

@@ -43,11 +43,13 @@
         platforms: ['web', 'android', 'ios'],
         startDate: '2026-01-01T00:00:00.000Z',
         endDate: '2026-12-31T23:59:59.000Z',
-        // Ships OFF. The dates above are placeholders spanning all of 2026, so
-        // leaving this true would switch the Chaliya experience on for every
-        // user the moment a consumption layer existed. Enable it — with the
-        // real 40-day window — from the admin screen, not from source.
-        active: false,
+        // ON. The consumption layer is now the in-greeting rotating
+        // announcement, which swaps in place of the Guru portraits and cycles
+        // back — it takes no extra space and has no dismiss control, so having
+        // it live is not the takeover the old dismissible card would have been.
+        // NOTE: startDate/endDate above still span all of 2026. Narrow them to
+        // the real 40-day Chaliya window before release.
+        active: true,
         content: {
           badgeText: 'CHALIYA 2026',
           heroTitle: 'Chaliya Amritvela 2026',
@@ -66,6 +68,20 @@
             text: 'ੴ Annual Chaliya 2026 — Amritvela Trust',
             link: 'GurbaniRadio/gurbani-radio.html?stream=amritvela',
             accentColor: '#D4AF37'
+          },
+          // Copy for the in-greeting rotating announcement (State B). Short by
+          // necessity: it renders inside the 152px portrait disc and the
+          // greeting text block, both of which are fixed-size boxes.
+          // Copy for the in-greeting announcement (State B). Kept short because
+          // it renders inside the 148px portrait disc and the greeting text box,
+          // both fixed-size; campaign-renderer.js clamps it as a backstop.
+          announce: {
+            badge: 'CHALIYA 2026',
+            title: 'Chaliya Coming Soon',
+            line: '',
+            sub: '',
+            pill: '',
+            image: 'assets/Darbar-sahib-AMRITVELA.webp'
           },
           themeTokens: {
             accentGlow: 'rgba(212, 175, 55, 0.3)',
@@ -91,6 +107,14 @@
   class RemoteConfigManager {
     constructor() {
       this.cacheIsStale = false;
+      // Where this.config actually came from: 'remote' | 'cache' | 'builtin'.
+      // Consumers need this to distinguish an authoritative "nothing is
+      // active" (the owner switched a campaign off) from "this device has
+      // never heard from the server". Only the latter may fall back to the
+      // built-in — otherwise a deliberately disabled campaign resurrects
+      // itself on every offline device. loadCachedConfig() sets 'cache' on a
+      // hit; assigning 'builtin' first makes the miss path correct.
+      this.source = 'builtin';
       this.config = this.loadCachedConfig() || SAFE_BUILTIN_CONFIG;
       this.isOnline = navigator.onLine !== false;
       this._pollTimer = null;
@@ -158,6 +182,7 @@
           // the idle deferral. The TTL constant was previously declared and
           // never read, which made a cached config effectively immortal.
           this.cacheIsStale = (Date.now() - parsed.timestamp) > CONFIG_CACHE_TTL;
+          this.source = 'cache';
           return parsed.data;
         }
       } catch (e) {
@@ -199,6 +224,7 @@
           this._lastPayload = payload;
           this.config = data;
           this.cacheIsStale = false;
+          this.source = 'remote';
           this.saveCachedConfig(data);
           if (changed) this.notifyCampaignChange();
         }
@@ -257,6 +283,15 @@
 
     getConfig() {
       return this.config;
+    }
+
+    /**
+     * 'remote' | 'cache' | 'builtin' — the provenance of the current config.
+     * See the note in the constructor for why callers must branch on this
+     * rather than treating a null active campaign as "no config".
+     */
+    getSource() {
+      return this.source;
     }
   }
 

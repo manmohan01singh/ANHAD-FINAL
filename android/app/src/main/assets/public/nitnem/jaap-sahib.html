@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <!-- CRITICAL: Theme blocker - MUST run before paint -->
@@ -73,9 +73,11 @@
   
   <!-- Global Theme System -->
   <link rel="stylesheet" href="../css/theme-variables.css">
+  <link rel="stylesheet" href="../css/global-mini-player.css?v=5">
+    <link rel="stylesheet" href="../css/desktop-responsive.css?v=26">
     
-  
   <!-- Navigation Libraries -->
+  <script src="../lib/desktop-sidebar.js" defer></script>
   <script src="../lib/smart-back.js"></script>
   <script src="../lib/page-lifecycle.js"></script>
   <script src="../lib/smooth-navigation.js"></script>
@@ -424,7 +426,7 @@
 
         // Update stats
         const baniName = data.baniInfo?.unicode || 'ਜਾਪੁ ਸਾਹਿਬ';
-        statsBar.innerHTML = `✓ ${escapeHtml(baniName)} • ${data.verses.length} verses • ਸ੍ਰੀ ਦਸਮ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ`;
+        statsBar.innerHTML = `✍️“ ${escapeHtml(baniName)} • ${data.verses.length} verses • ਸ੍ਰੀ ਦਸਮ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ`;
         statsBar.classList.add('visible');
 
         // Render verses
@@ -458,9 +460,9 @@
       verses.forEach((verseData, index) => {
         const verse = verseData.verse || verseData;
 
-        // ─────────────────────────────────────────────────────────────
+        // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         // EXTRACT GURMUKHI (Unicode)
-        // ─────────────────────────────────────────────────────────────
+        // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         let gurmukhi = '';
         if (verse.verse) {
           if (typeof verse.verse === 'string') {
@@ -472,9 +474,9 @@
           gurmukhi = verse.unicode || verse.gurmukhi || '';
         }
 
-        // ─────────────────────────────────────────────────────────────
+        // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         // EXTRACT TRANSLITERATION
-        // ─────────────────────────────────────────────────────────────
+        // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         let transliteration = '';
         const translit = verseData.transliteration || verse.transliteration;
         if (translit) {
@@ -485,9 +487,9 @@
           }
         }
 
-        // ─────────────────────────────────────────────────────────────
+        // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         // EXTRACT ENGLISH TRANSLATION
-        // ─────────────────────────────────────────────────────────────
+        // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         let englishTranslation = '';
         const translation = verseData.translation || verse.translation;
         if (translation) {
@@ -505,9 +507,9 @@
           }
         }
 
-        // ─────────────────────────────────────────────────────────────
+        // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         // EXTRACT PUNJABI TRANSLATION (Unicode)
-        // ─────────────────────────────────────────────────────────────
+        // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         let punjabiTranslation = '';
         if (translation?.pu) {
           const pu = translation.pu;
@@ -529,9 +531,9 @@
           }
         }
 
-        // ─────────────────────────────────────────────────────────────
+        // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         // SECTION HEADERS (Chhant, Savaiyya, Dohra, etc.)
-        // ─────────────────────────────────────────────────────────────
+        // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         const header = verse.header || verseData.header;
         if (header && header !== currentHeader) {
           currentHeader = header;
@@ -569,9 +571,9 @@
           versesContainer.appendChild(sectionHeader);
         }
 
-        // ─────────────────────────────────────────────────────────────
+        // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         // CREATE VERSE ELEMENT
-        // ─────────────────────────────────────────────────────────────
+        // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         const verseEl = document.createElement('div');
         verseEl.className = 'verse';
         verseEl.setAttribute('data-verse-id', verse.verseId || verseData.verseId || index);
@@ -586,7 +588,7 @@
         versesContainer.appendChild(verseEl);
       });
 
-      console.log(`✓ Rendered ${verses.length} verses`);
+      console.log(`✍️“ Rendered ${verses.length} verses`);
     }
 
     // ═══════════════════════════════════════════════════════════════
@@ -745,5 +747,7 @@
     <script src="../lib/capacitor-notifications-global.js"></script>
     <script src="../lib/anhad-widget-bridge.js"></script>
     <script src="../lib/anhad-audio-singleton.js?v=2.1.5"></script>
+    <script src="../lib/overlay-player.js" defer></script>
 </body>
 </html>
+

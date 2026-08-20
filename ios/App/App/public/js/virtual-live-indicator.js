@@ -3,12 +3,12 @@
  * ANHAD VIRTUAL LIVE INDICATOR — YouTube-style DVR badge
  *
  * Features:
- *   • "● LIVE" badge when at live edge  (offset ≤ 5s)
- *   • "−5m 30s" label when user has scrubbed back
- *   • Clicking badge snaps back to live via AnhadAudio.jumpToLive()
- *   • Auto-shows "● LIVE" button after 10s of pause
- *   • Progress bar shows user position relative to live edge
- *   • Works on both Amritvela Kirtan and Waheguru Simran streams
+ *  • "● LIVE" badge when at live edge  (offset ≤ 5s)
+ *  • "−5m 30s" label when user has scrubbed back
+ *  • Clicking badge snaps back to live via AnhadAudio.jumpToLive()
+ *  • Auto-shows "● LIVE" button after 10s of pause
+ *  • Progress bar shows user position relative to live edge
+ *  • Works on both Amritvela Kirtan and Waheguru Simran streams
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 

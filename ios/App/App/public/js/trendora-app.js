@@ -90,6 +90,33 @@
   // ═══════════════════════════════════════════════════════════════════════════
   // § 4. NAVIGATION — Page Transitions (No White Flash)
   // ═══════════════════════════════════════════════════════════════════════════
+  /**
+   * Element-scoped bind guard.
+   *
+   * smooth-navigation.js replaces #app.innerHTML wholesale on every SPA
+   * arrival, so a FRESH node legitimately needs re-binding even though every
+   * window-level flag in this realm still says "initialized". Keying the guard
+   * on the NODE makes it reset exactly when it should: a new node has no
+   * expando, a surviving node keeps its binding.
+   *
+   * An expando, deliberately NOT dataset. smooth-navigation.js:217 does
+   * cachePage(currentActiveUrl, document.documentElement.outerHTML) — it
+   * serializes the LIVE DOM into PAGE_CACHE. A dataset write becomes a real
+   * attribute, is baked into that cached HTML, and gets replayed onto a
+   * brand-new node later, convincing mount() it was already bound and
+   * reintroducing the exact bug this guards against. Expandos never serialize.
+   *
+   * Same shape as the existing slider._anhadSliderBound below,
+   * homepage-data.js' el._navBound, and anhad-core.js' btn._anhadBackWired.
+   */
+  function bindOnce(el, key) {
+    if (!el) return false;
+    const k = '__anhadBound_' + key;
+    if (el[k]) return false;
+    el[k] = true;
+    return true;
+  }
+
   const Navigation = {
     _exitTimer: null,
     _safetyTimer: null,
@@ -122,6 +149,10 @@
     bindCard(elementId, path) {
       const el = document.getElementById(elementId);
       if (!el) return;
+      // Per-node guard: mount() runs on EVERY Home entry, but a node that
+      // survived the entry (hard load, bfcache restore) must not collect a
+      // second click/keydown pair.
+      if (!bindOnce(el, 'nav')) return;
       el.addEventListener('click', (e) => {
         if (e.target.closest('button[data-action]') || e.target.closest('a[href]')) return;
         e.preventDefault();
@@ -138,13 +169,22 @@
     }
   };
 
-  // Module-level (not inside any function) listener registrations below —
-  // this whole file is one IIFE that re-executes on every non-cached SPA
-  // arrival at Home (no longer a SHELL_SCRIPTS entry), so anything
-  // registered here at the IIFE's own top level would otherwise stack a
-  // fresh duplicate on every revisit. { once: true } (below) does NOT save
-  // this — SPA navigation uses history.pushState, which never fires
-  // 'pagehide', so these accumulate indefinitely instead of self-removing.
+  // Module-level (not inside any function) listener registrations below.
+  //
+  // CORRECTION: an earlier version of this comment claimed the file is 'no
+  // longer a SHELL_SCRIPTS entry' and re-executes on every SPA arrival. That
+  // is wrong, and believing it is what hid the Home-lifecycle bug for so long.
+  // trendora-app.js IS listed in smooth-navigation.js's SHELL_SCRIPTS (:261),
+  // and its <script> tag sits OUTSIDE #app (index.html:3504) so the innerHTML
+  // swap never removes it — meaning executePageScripts() finds it already
+  // loaded and skips it, and this IIFE runs ONCE per realm on the ordinary
+  // path. App.init() is never re-entered; App.mount() is what runs per arrival.
+  //
+  // The guard below is still required, because the skip is conditional on
+  // isScriptAlreadyLoaded(): arriving at Home from a HARD-REFRESHED Insights,
+  // where this file was never loaded, does inject and execute it a second time
+  // in the same realm. { once: true } does NOT substitute for the guard — SPA
+  // navigation uses history.pushState, which never fires 'pagehide'.
   // Confirmed via real-browser testing: anhad_page_changed's listener count
   // grew 8->14 across 6 Home<->Insights cycles, meaning a single dispatched
   // event was firing refreshAll() that many times over.
@@ -152,6 +192,13 @@
   window.__anhadTrendoraModuleListenersBound = true;
 
   if (!_trendoraModuleListenersAlreadyBound) {
+  // NOT { once: true }. Every non-shell link out of Home (Nitnem, Gurbani
+  // Radio, Sehaj Paath, Hukamnama) is a full document navigation, so
+  // smooth-navigation.js's runPageCleanup() never fires for it — pagehide is
+  // the only teardown hook on that path, and it has to keep working for the
+  // whole session. { once: true } removed itself after the first departure,
+  // which is also why pagehide firing on a backgrounded mobile PWA silently
+  // disarmed it for good.
   window.addEventListener('pagehide', () => {
     if (Navigation._exitTimer) {
       clearTimeout(Navigation._exitTimer);
@@ -161,7 +208,9 @@
       clearTimeout(Navigation._safetyTimer);
       Navigation._safetyTimer = null;
     }
-  }, { once: true });
+    // Only tear down Home's own timers/observers, never another page's.
+    try { if (isOnHome()) App.unmount(); } catch (e) {}
+  });
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -856,11 +905,30 @@
     },
 
     async updateHukamCard() {
-      const statusEl = document.getElementById('hukamStatus');
-      // Show date initially
-      if (statusEl) statusEl.textContent = DataManager.getHukamDate();
+      // Claimed BEFORE the await. smooth-navigation.js can replace
+      // #app.innerHTML while this fetch is in flight (trivially reproducible on
+      // a slow connection), and the old code captured statusEl up here and
+      // wrote to it afterwards — landing the result on a detached node while
+      // the live Hukamnama card kept its shipped placeholder text. That is one
+      // of the ways the Practice cards came back looking wrong.
+      const epoch = window.__anhadNavEpoch || 0;
+      let statusEl = document.getElementById('hukamStatus');
+
+      // Show date initially, and clear any styling a previous BaniDB hit left
+      // behind — these three were set on success and never reset, so a later
+      // fallback to the plain date rendered in 10px Gurmukhi.
+      if (statusEl) {
+        statusEl.textContent = DataManager.getHukamDate();
+        statusEl.className = 'practice-card__status';
+        statusEl.style.fontFamily = '';
+        statusEl.style.fontSize = '';
+        statusEl.style.lineHeight = '';
+      }
+
       // Then try to load and show first line from BaniDB
       const preview = await DataManager.getHukamnamaPreview();
+      if ((window.__anhadNavEpoch || 0) !== epoch) return; // navigated away mid-fetch
+      statusEl = document.getElementById('hukamStatus');     // re-resolve: may be a new node
       if (preview && preview.firstLine && statusEl) {
         const truncated = preview.firstLine.length > 30 ? preview.firstLine.substring(0, 30) + '…' : preview.firstLine;
         statusEl.textContent = truncated;
@@ -884,10 +952,19 @@
         return;
       }
 
-      // Clear any existing rotation interval
-      if (card && card._rotationInterval) {
-        clearInterval(card._rotationInterval);
-        card._rotationInterval = null;
+      // Clear any existing rotation interval.
+      //
+      // Tracked on window, NOT as card._rotationInterval. The handle used to
+      // live on the #eventCard node while the cleanup re-queried
+      // getElementById('eventCard') — which, after smooth-navigation.js
+      // replaces #app.innerHTML, returns the NEW node whose property is
+      // undefined. The old detached node's interval was therefore never
+      // cleared and kept firing for the life of the realm, driving
+      // PortraitSlider.setGuruById() from a dead card, once more per Home
+      // visit. Same trap CarouselController._autoTimer was fixed for.
+      if (window.__anhadEventCardRotation) {
+        clearInterval(window.__anhadEventCardRotation);
+        window.__anhadEventCardRotation = null;
       }
 
       if (!card) return;
@@ -1002,7 +1079,7 @@
           titleEl.style.transition = 'opacity 0.5s ease, transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)';
         }
 
-        card._rotationInterval = setInterval(() => {
+        window.__anhadEventCardRotation = setInterval(() => {
           currentIndex = (currentIndex + 1) % events.length;
 
           if (titleEl) {
@@ -1541,11 +1618,14 @@
     },
 
     async updateHukamHeroCard() {
+      // Same detached-node hazard as updateHukamCard above — see the note there.
+      const epoch = window.__anhadNavEpoch || 0;
+      if (!document.getElementById('heroHukamTitle')) return;
+      const preview = await DataManager.getHukamnamaPreview();
+      if ((window.__anhadNavEpoch || 0) !== epoch) return; // navigated away mid-fetch
       const titleEl = document.getElementById('heroHukamTitle');
       const subtitleEl = document.getElementById('heroHukamSubtitle');
-      if (!titleEl) return;
-      const preview = await DataManager.getHukamnamaPreview();
-      if (preview && preview.firstLine) {
+      if (titleEl && preview && preview.firstLine) {
         const truncated = preview.firstLine.length > 50 ? preview.firstLine.substring(0, 50) + '…' : preview.firstLine;
         titleEl.textContent = truncated;
         titleEl.style.fontFamily = 'var(--font-gurmukhi)';
@@ -1660,13 +1740,10 @@
         this._apply(getIsDark(savedTheme));
       }
 
-      // Listen for custom theme change events
-      window.addEventListener('themechange', (e) => {
-        UIController.updateHeroCardImages();
-      });
-
-      // Toggle button
-      document.getElementById('themeToggle')?.addEventListener('click', () => {
+      // Toggle button — element-scoped. #app is replaced wholesale on every
+      // SPA arrival, so this must re-bind against the fresh node each mount.
+      const toggleEl = document.getElementById('themeToggle');
+      if (bindOnce(toggleEl, 'themeToggle')) toggleEl.addEventListener('click', () => {
         if (window.AnhadTheme) {
           window.AnhadTheme.toggle();
         } else {
@@ -1676,6 +1753,17 @@
           this._apply(newTheme === 'dark');
           window.dispatchEvent(new CustomEvent('themechange', { detail: { theme: newTheme } }));
         }
+      });
+
+      // ── Realm-scoped from here down ──────────────────────────────────────
+      // window/document outlive every #app swap, so everything below must bind
+      // exactly once per JS realm however many times Home is mounted.
+      if (window.__anhadThemeControllerRealmBound) return;
+      window.__anhadThemeControllerRealmBound = true;
+
+      // Listen for custom theme change events
+      window.addEventListener('themechange', (e) => {
+        UIController.updateHeroCardImages();
       });
 
       // Listen for storage changes (other tabs)
@@ -1767,6 +1855,11 @@
     init() {
       const track = document.getElementById('heroTrack');
       const dots = document.querySelectorAll('.hero-carousel__dot');
+      // Per-node guard for the element listeners below. The auto-advance timer
+      // is guarded separately on window (see the note at its clearInterval),
+      // because it must be re-armed against the live nodes on every mount even
+      // when the track itself survived.
+      const trackIsNew = bindOnce(track, 'carousel');
       if (!track || !dots.length) return;
 
       let current = 0;
@@ -1797,7 +1890,7 @@
 
       // PERF: Throttled scroll handler using rAF to prevent 100+ events/sec
       let scrollTicking = false;
-      track.addEventListener('scroll', () => {
+      if (trackIsNew) track.addEventListener('scroll', () => {
         if (!scrollTicking) {
           scrollTicking = true;
           requestAnimationFrame(() => {
@@ -1812,21 +1905,22 @@
       }, { passive: true });
 
       dots.forEach((dot, i) => {
+        if (!bindOnce(dot, 'carouselDot')) return;
         dot.addEventListener('click', () => {
           track.scrollLeft = scrollTargetFor(i);
         });
       });
 
       // Auto-advance every 7 seconds.
-      // Tracked on window, NOT this._autoTimer: CarouselController is a
-      // const object literal inside trendora-app.js's top-level IIFE, which
-      // re-executes fresh (new object, new closure) on every non-cached SPA
-      // arrival at Home — the same trap App._isInitialized had (see its own
-      // comment above). A per-object property is reset to undefined by that
-      // fresh declaration every time, so it can never actually see the
-      // previous execution's interval to clear it — confirmed via real-
-      // browser tracing: this leaked one growing interval per Home revisit
-      // even with the (ineffective) this._autoTimer guard in place.
+      // Tracked on window, NOT this._autoTimer. Two reasons, both real:
+      // (1) init() now runs on every mount(), so the previous mount's interval
+      //     must be visible here to be cleared;
+      // (2) this IIFE can execute a second time in one realm (arriving at Home
+      //     from a hard-refreshed Insights re-injects the file), handing us a
+      //     fresh object literal whose _autoTimer is undefined — so a
+      //     per-object property could never see the earlier interval.
+      // Confirmed via real-browser tracing: this leaked one growing interval
+      // per Home revisit while the ineffective this._autoTimer guard was used.
       if (window.__anhadCarouselAutoTimer) clearInterval(window.__anhadCarouselAutoTimer);
       window.__anhadCarouselAutoTimer = setInterval(() => {
         if (this._paused) return;
@@ -1836,10 +1930,12 @@
       }, 7000);
 
       // Pause on touch
-      track.addEventListener('touchstart', () => { this._paused = true; }, { passive: true });
-      track.addEventListener('touchend', () => {
-        setTimeout(() => { this._paused = false; }, 10000);
-      }, { passive: true });
+      if (trackIsNew) {
+        track.addEventListener('touchstart', () => { this._paused = true; }, { passive: true });
+        track.addEventListener('touchend', () => {
+          setTimeout(() => { this._paused = false; }, 10000);
+        }, { passive: true });
+      }
     }
   };
 
@@ -1909,33 +2005,19 @@
     },
 
     init() {
-      // FIX: Guard against duplicate listener binding on re-init
-      if (this._initialized) {
-        console.log('[AudioSync] Already initialized, skipping re-bind');
-        return;
-      }
-      this._initialized = true;
-      
-      // ══ CAPACITOR OPTIMIZATION: Listen for cached page restore ══
-      // When user returns to home from cache, ONLY sync UI state
-      // Do NOT re-initialize audio engine or mini-player
-      window.addEventListener('anhad_page_restored', (e) => {
-        if (e.detail.fromCache) {
-          console.log('[AudioSync] ⚡ Cached page restored, syncing UI only');
-          // Quick UI sync without heavy initialization
-          if (window.AnhadAudio) {
-            const state = window.AnhadAudio.getState();
-            if (state.isPlaying) {
-              this._sync({ isPlaying: true, stream: state.currentStream || 'darbar' });
-            }
-          }
-        }
-      });
-      
+      // Split deliberately. The old guard here was `this._initialized`, an
+      // object property — and because trendora-app.js is in SHELL_SCRIPTS
+      // (smooth-navigation.js:261) this IIFE runs once per realm, so that flag
+      // stayed true forever. Every SPA return to Home therefore found it set
+      // and skipped the whole method, leaving the freshly-swapped
+      // #heroPlayBtn1..4 and #miniPlayerPlayBtn with no handlers at all.
+      // Element bindings now re-run per mount behind per-node guards; only the
+      // window listeners below are realm-scoped.
+
       // Both hero play buttons - trigger mini player directly instead of navigating
       ['heroPlayBtn1', 'heroPlayBtn2', 'heroPlayBtn3', 'heroPlayBtn4'].forEach(id => {
         const btn = document.getElementById(id);
-        if (!btn) return;
+        if (!bindOnce(btn, 'heroPlay')) return;
         btn.addEventListener('click', (e) => {
           e.stopPropagation();
           e.preventDefault();
@@ -1968,7 +2050,8 @@
       });
 
       // Mini player - use AnhadAudio singleton
-      document.getElementById('miniPlayerPlayBtn')?.addEventListener('click', (e) => {
+      const miniBtn = document.getElementById('miniPlayerPlayBtn');
+      if (bindOnce(miniBtn, 'miniPlay')) miniBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         e.preventDefault();
         if (window.AnhadAudio) {
@@ -1976,11 +2059,26 @@
         }
       });
 
-      window.addEventListener('anhadAudioStateChange', (e) => this._sync(e.detail));
+      // Realm-scoped: one state-change subscription per realm, not per mount.
+      if (!window.__anhadAudioSyncRealmBound) {
+        window.__anhadAudioSyncRealmBound = true;
+        window.addEventListener('anhadAudioStateChange', (e) => this._sync(e.detail));
+        // ══ CAPACITOR OPTIMIZATION: cached page restore — sync UI state only,
+        // never re-initialize the audio engine or mini player.
+        window.addEventListener('anhad_page_restored', (e) => {
+          if (e && e.detail && e.detail.fromCache && window.AnhadAudio) {
+            console.log('[AudioSync] ⚡ Cached page restored, syncing UI only');
+            const st = window.AnhadAudio.getState();
+            if (st.isPlaying) this._sync({ isPlaying: true, stream: st.currentStream || 'darbar' });
+          }
+        });
+      }
 
-      // Check initial state using AnhadAudio singleton
-      // REDUCED delay from 800ms to 300ms for faster initial sync
-      setTimeout(() => {
+      // Check initial state using AnhadAudio singleton.
+      // Tracked on window, not a local: mount() may run again before this
+      // fires, and two in-flight copies would both write the player UI.
+      if (window.__anhadAudioSyncTimer) clearTimeout(window.__anhadAudioSyncTimer);
+      window.__anhadAudioSyncTimer = setTimeout(() => {
         if (window.AnhadAudio) {
           const state = window.AnhadAudio.getState();
           if (state.isPlaying) {
@@ -2121,20 +2219,28 @@
         return;
       }
 
-      // Capture native prompt (Android/Chrome)
-      window.addEventListener('beforeinstallprompt', (e) => {
-        console.log('[PWA] Native beforeinstallprompt event fired');
-        e.preventDefault();
-        this._deferredPrompt = e;
-        this._showBanner();
-      });
+      // Realm-scoped: these two live on window and outlive every #app swap,
+      // so they must bind once per realm however many times Home is mounted.
+      // The DOM bindings below use .onclick assignment, which is inherently
+      // idempotent, so they are safe to re-run on every mount.
+      if (!window.__anhadInstallRealmBound) {
+        window.__anhadInstallRealmBound = true;
 
-      // Handle successful install
-      window.addEventListener('appinstalled', () => {
-        console.log('[PWA] App installed successfully');
-        Store.set(KEYS.PWA_INSTALLED, true);
-        this._hideBanner();
-      });
+        // Capture native prompt (Android/Chrome)
+        window.addEventListener('beforeinstallprompt', (e) => {
+          console.log('[PWA] Native beforeinstallprompt event fired');
+          e.preventDefault();
+          this._deferredPrompt = e;
+          this._showBanner();
+        });
+
+        // Handle successful install
+        window.addEventListener('appinstalled', () => {
+          console.log('[PWA] App installed successfully');
+          Store.set(KEYS.PWA_INSTALLED, true);
+          this._hideBanner();
+        });
+      }
 
       // Bind actions
       if (installCta) {
@@ -2152,8 +2258,11 @@
         };
       }
 
-      // Fallback for iOS/Safari: show after delay if not dismissed and no prompt yet
-      setTimeout(() => {
+      // Fallback for iOS/Safari: show after delay if not dismissed and no prompt yet.
+      // Tracked on window: mount() can run again inside the 5s window, and two
+      // in-flight copies would both call _showBanner().
+      if (window.__anhadInstallFallbackTimer) clearTimeout(window.__anhadInstallFallbackTimer);
+      window.__anhadInstallFallbackTimer = setTimeout(() => {
         if (!this._isStandalone() && !this._deferredPrompt) {
           const dismissed = Store.get(KEYS.INSTALL_DISMISSED);
           if (!dismissed || (Date.now() - parseInt(dismissed)) > INSTALL_COOLDOWN_MS) {
@@ -2268,11 +2377,19 @@
   // § 11. SCHEDULER — Efficient Timers (Not 6 Runaway Intervals)
   // ═══════════════════════════════════════════════════════════════════════════
   const Scheduler = {
-    _intervals: [],
+    // Held on window for the same reason as ScrollHeader._observer above: a
+    // second execution of this IIFE would otherwise get a fresh empty array and
+    // be unable to see — let alone clear — the previous execution's timers.
+    get _intervals() {
+      if (!window.__anhadSchedulerIntervals) window.__anhadSchedulerIntervals = [];
+      return window.__anhadSchedulerIntervals;
+    },
+    set _intervals(v) { window.__anhadSchedulerIntervals = v; },
     _visible: true,
 
     init() {
-      // FIX: Clean up existing intervals before re-init to prevent memory leaks
+      // Everything in here is realm-scoped (window/document listeners plus one
+      // interval), so it belongs to App.initOnce() and never to a mount.
       if (this._intervals.length > 0) {
         console.log('[Scheduler] Cleaning up', this._intervals.length, 'existing intervals');
         this.destroy();
@@ -2310,11 +2427,11 @@
         // Close any stuck sheets
         SheetController.closeAll();
 
+        // Deliberately no refreshAll() here any more: App's own pageshow hook
+        // drives the full mount() on a bfcache restore, and running both meant
+        // two rebuilds per restore.
         if (e.persisted) {
-          Store.clearCache();
-          UIController.refreshAll();
-          // Greeting.update() removed - now handled by gurpurab event system
-          console.log('[Scheduler] ✅ Recovered from bfcache');
+          console.log('[Scheduler] ✅ Recovered from bfcache (visual state reset)');
         }
       });
 
@@ -2359,7 +2476,13 @@
 
   // ═ SCROLL HEADER ═
   const ScrollHeader = {
-    _observer: null,
+    // Held on window, not as an object property: this file's IIFE can execute a
+    // second time in one realm (arriving at Home from a hard-refreshed Insights
+    // re-injects it — smooth-navigation.js:1081-1091), which would hand us a
+    // fresh object whose _observer is undefined, orphaning the previous one
+    // against a detached .greeting. Same trap as CarouselController._autoTimer.
+    get _observer() { return window.__anhadScrollHeaderObserver || null; },
+    set _observer(v) { window.__anhadScrollHeaderObserver = v; },
 
     init() {
       const greeting = document.querySelector('.greeting');
@@ -2396,35 +2519,107 @@
   };
 
   // ═ APP ORCHESTRATOR ═
+  // ═══════════════════════════════════════════════════════════════════════════
+  // APP LIFECYCLE — initOnce() / mount() / unmount()
+  //
+  // The split exists because Home has THREE entry paths that used to
+  // initialize differently:
+  //   (a) hard load       -> boot()
+  //   (b) SPA arrival     -> refreshHomeForSpa(), via __anhadPageInit and the
+  //                          anhad_page_changed event
+  //   (c) Back / bfcache  -> pageshow
+  //
+  // What made (b) and (c) wrong: smooth-navigation.js replaces #app.innerHTML
+  // wholesale (:716), destroying every node and every addEventListener on it —
+  // while this file IS in SHELL_SCRIPTS (:261) and its <script> tag lives
+  // OUTSIDE #app (index.html:3504), so it is never re-injected and this IIFE
+  // never re-runs. App.init() was therefore never re-entered at all, and the
+  // only thing still running on arrival was refreshAll(), which repaints data
+  // but binds nothing. Result: the Practice cards and the Gurbani Radio hero
+  // cards came back inert, and only a full reload (a new realm) fixed it.
+  //
+  // The rule for adding code here:
+  //   binds a window/document listener, or owns a realm singleton -> initOnce()
+  //   touches anything inside #app                                -> mount()
+  // Anything in mount() MUST be safe to run again. Element listeners use the
+  // per-node bindOnce() guard; timers use the clear-then-set-on-window idiom.
+  // ═══════════════════════════════════════════════════════════════════════════
   const App = {
+    // Kept as a shim so any existing caller keeps working.
     init() {
-      // FIX: Guard against duplicate init() calls from SPA page changes.
-      // Checked on window, NOT a plain object property: this whole file is a
-      // top-level IIFE (see line 2), and trendora-app.js is no longer in
-      // smooth-navigation.js's SHELL_SCRIPTS, so the script tag itself
-      // re-executes (fresh IIFE invocation, fresh App object literal) on
-      // every non-cached SPA arrival at Home. A plain `this._isInitialized`
-      // is reset to false by that fresh declaration every time and would
-      // never actually short-circuit past the very first script execution —
-      // window is the only thing that actually persists across re-runs.
-      if (window.__anhadAppInitialized) {
-        console.log('[App] Already initialized, running refreshAll() only');
-        requestAnimationFrame(() => UIController.refreshAll());
-        return;
-      }
-      window.__anhadAppInitialized = true;
+      this.initOnce();
+      this.mount();
+    },
 
-      // CRITICAL: Reset body overflow in case it was stuck from previous session
-      document.body.style.overflow = '';
-      document.documentElement.style.overflow = '';
+    // ── REALM-SCOPED. Runs exactly once per JS realm. ───────────────────────
+    initOnce() {
+      if (window.__anhadAppInitOnce) return;
+      window.__anhadAppInitOnce = true;
 
-      // Close any stuck sheets from previous session
-      SheetController.closeAll();
+      Scheduler.init();
 
-      ThemeController.init();
-      CarouselController.init();
-      PortraitSlider.init();
-      this._bindNavigation();
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') SheetController.closeAll();
+      });
+
+      // Entry path (c). A bfcache restore runs no applyNewContent(), so the
+      // nav epoch never moves and refreshHomeForSpa() would suppress itself —
+      // bump it here so the arrival registers as real.
+      //
+      // The probe is DOM truth, not e.persisted alone: the Capacitor WebView
+      // does not reliably set persisted, and #heroCard1's bind expando says
+      // directly whether the live DOM is currently wired up. On an ordinary
+      // first load boot() has already mounted and claimed the epoch, so this
+      // correctly does nothing rather than double-mounting.
+      window.addEventListener('pageshow', (e) => {
+        try {
+          if (!isOnHome()) return;
+          const hero = document.getElementById('heroCard1');
+          const bound = !!(hero && hero.__anhadBound_nav);
+          // window.__anhadHomeMounted is the authority, not the expando alone:
+          // pagehide fires when a mobile PWA is merely backgrounded, so
+          // unmount() has already stopped this page's timers while every node
+          // is still bound. Probing the expando by itself would conclude
+          // "nothing to do" and leave the carousel and campaign rotation dead
+          // for the rest of the visit.
+          if (!e.persisted && bound && window.__anhadHomeMounted) return;
+          window.__anhadNavEpoch = (window.__anhadNavEpoch || 0) + 1;
+          refreshHomeForSpa();
+        } catch (err) {
+          console.warn('[App] pageshow remount failed', err);
+        }
+      });
+    },
+
+    // ── PER-MOUNT. Runs on EVERY entry to Home. Must stay re-runnable. ──────
+    mount() {
+      // Each step is isolated. mount() now runs on EVERY arrival rather than
+      // once per session, so a single throw part-way down would otherwise
+      // starve everything after it — including _bindNavigation(), which is the
+      // whole reason this method exists. One failing widget must not be able
+      // to hand the user an inert Home again.
+      const step = (label, fn) => {
+        try { fn(); }
+        catch (err) { console.warn('[App] mount step failed: ' + label, err); }
+      };
+
+      // Bindings first, deliberately: they are the P0 fix, they are cheap, and
+      // nothing below them is a prerequisite. Data repaint can fail and the
+      // page is still fully usable; the reverse is not true.
+      step('bindNavigation', () => this._bindNavigation());
+      step('bindSheets', () => this._bindSheets());
+
+      // Reset state a previous page (or a stuck sheet) may have left behind.
+      step('resetChrome', () => {
+        document.body.style.overflow = '';
+        document.documentElement.style.overflow = '';
+        SheetController.closeAll();
+        this._restoreHomeShellElements();
+      });
+
+      step('theme', () => ThemeController.init());
+      step('carousel', () => CarouselController.init());
+      step('portraitSlider', () => PortraitSlider.init());
 
       // PERF: Split UI updates and run them sequentially to yield the main thread.
       const criticalUpdates = [
@@ -2448,7 +2643,7 @@
       let criticalIndex = 0;
       const runNextCritical = () => {
         if (criticalIndex < criticalUpdates.length) {
-          criticalUpdates[criticalIndex]();
+          step('criticalUpdate#' + criticalIndex, criticalUpdates[criticalIndex]);
           criticalIndex++;
           requestAnimationFrame(runNextCritical);
         } else {
@@ -2465,7 +2660,7 @@
       let deferredIndex = 0;
       const runNextDeferred = () => {
         if (deferredIndex < deferredUpdates.length) {
-          deferredUpdates[deferredIndex]();
+          step('deferredUpdate#' + deferredIndex, deferredUpdates[deferredIndex]);
           deferredIndex++;
           if (deferredIndex < deferredUpdates.length) {
             if ('requestIdleCallback' in window) {
@@ -2478,25 +2673,93 @@
       };
 
       // Start the update chain
-      requestAnimationFrame(runNextCritical);
+      step('startUpdateChain', () => requestAnimationFrame(runNextCritical));
 
       // PERF: Defer API fetch with requestIdleCallback
-      if ('requestIdleCallback' in window) {
-        requestIdleCallback(() => UIController.updateHukamHeroCard(), { timeout: 2000 });
-      } else {
-        setTimeout(() => UIController.updateHukamHeroCard(), 1000);
-      }
+      step('hukamHeroCard', () => {
+        if ('requestIdleCallback' in window) {
+          requestIdleCallback(() => UIController.updateHukamHeroCard(), { timeout: 2000 });
+        } else {
+          setTimeout(() => UIController.updateHukamHeroCard(), 1000);
+        }
+      });
 
-      AudioSync.init();
-      InstallController.init();
-      Scheduler.init();
-      ScrollHeader.init();
-      ScrollReveal.init();
-      this._initNavIndicator();
-      this._bindSheets();
+      step('audioSync', () => AudioSync.init());
+      step('install', () => InstallController.init());
+      step('scrollHeader', () => ScrollHeader.init());
+      step('scrollReveal', () => ScrollReveal.init());
+      step('navIndicator', () => this._initNavIndicator());
 
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') SheetController.closeAll();
+      // Ambient campaign announcement inside the greeting (campaign-renderer.js).
+      // Owns exactly one realm-scoped timer, so this is safe on every mount.
+      step('campaign', () => {
+        if (window.AnhadCampaignRenderer && window.AnhadCampaignRenderer.update) {
+          window.AnhadCampaignRenderer.update();
+        }
+      });
+
+      // Read by the pageshow probe in initOnce() to tell "already live" from
+      // "unmounted and never remounted".
+      window.__anhadHomeMounted = true;
+    },
+
+    // ── TEARDOWN. Runs when leaving Home, from both departure paths. ────────
+    // Deliberately does NOT clear __anhadAppInitOnce or Scheduler's intervals:
+    // those are realm-scoped and must survive so initOnce() stays a no-op.
+    unmount() {
+      window.__anhadHomeMounted = false;
+
+      const stopTimer = (key, clear) => {
+        try {
+          if (window[key]) { clear(window[key]); window[key] = null; }
+        } catch (e) {}
+      };
+      stopTimer('__anhadEventCardRotation', clearInterval);
+      stopTimer('__anhadCarouselAutoTimer', clearInterval);
+      stopTimer('__anhadInstallFallbackTimer', clearTimeout);
+      stopTimer('__anhadAudioSyncTimer', clearTimeout);
+
+      try {
+        (window.__anhadOverlayRemoveTimers || []).forEach(id => clearTimeout(id));
+        window.__anhadOverlayRemoveTimers = [];
+      } catch (e) {}
+
+      try {
+        if (window.__anhadScrollHeaderObserver) {
+          window.__anhadScrollHeaderObserver.disconnect();
+          window.__anhadScrollHeaderObserver = null;
+        }
+      } catch (e) {}
+
+      try {
+        if (window.AnhadCampaignRenderer && window.AnhadCampaignRenderer.stopRotation) {
+          window.AnhadCampaignRenderer.stopRotation();
+        }
+      } catch (e) {}
+
+      try { SheetController.closeAll(); } catch (e) {}
+      try { Navigation._clearTimers(); } catch (e) {}
+
+      document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
+      const appEl = document.querySelector('.app');
+      if (appEl) appEl.classList.remove('app--exiting');
+    },
+
+    // smooth-navigation.js:560-573 force-hides a list of out-of-app elements on
+    // every swap with inline display/visibility/opacity/pointer-events, and never
+    // restores them — so Home's own decorative layers stayed dead for the rest of
+    // the session after a single navigation away. Restore only the Home-owned
+    // decorative subset; deliberately NOT .welcome-screen / .ultra-loader /
+    // .skeleton-container, which are meant to stay hidden once dismissed.
+    _restoreHomeShellElements() {
+      ['.bg-orbs', '.ikonkar-background', '#ikonkarBackground', '.bg-effects'].forEach(sel => {
+        document.querySelectorAll(sel).forEach(el => {
+          el.style.display = '';
+          el.style.visibility = '';
+          el.style.opacity = '';
+          el.style.pointerEvents = '';
+        });
       });
     },
 
@@ -2543,19 +2806,25 @@
       // this used to have in homepage-data.js.
     },
 
+    // Called from mount(), so every binding here needs the per-node guard:
+    // these three ids live inside #app and are fresh nodes on every arrival.
     _bindSheets() {
+      const bind = (id, key, fn) => {
+        const el = document.getElementById(id);
+        if (bindOnce(el, key)) el.addEventListener('click', fn);
+      };
 
-      document.getElementById('radioSheetCancel')?.addEventListener('click', () => {
+      bind('radioSheetCancel', 'sheetCancel', () => {
         SheetController.close('radioSheet');
       });
 
       // Radio sheet options
-      document.getElementById('optionDarbar')?.addEventListener('click', () => {
+      bind('optionDarbar', 'sheetDarbar', () => {
         SheetController.close('radioSheet');
         Navigation.navigateTo(NAV_PATHS.gurbaniRadio);
       });
 
-      document.getElementById('optionAmritvela')?.addEventListener('click', () => {
+      bind('optionAmritvela', 'sheetAmritvela', () => {
         SheetController.close('radioSheet');
         Navigation.navigateTo(NAV_PATHS.gurbaniRadioAlt);
       });
@@ -2630,8 +2899,12 @@
       // Claimed only once the work actually runs, so a frame dropped while
       // backgrounded cannot mark the arrival handled without repopulating.
       window.__anhadHomeHandledEpoch = epoch;
-      try { UIController.refreshAll(); }
-      catch (err) { console.warn('[Trendora] refreshAll failed', err); }
+      // The whole point of the lifecycle fix: this used to be refreshAll()
+      // alone, which repaints data but binds nothing — so after the #app swap
+      // every card came back inert. mount() rebinds against the live DOM and
+      // calls refreshAll() itself. initOnce() is a no-op after the first call.
+      try { App.initOnce(); App.mount(); }
+      catch (err) { console.warn('[Trendora] Home mount failed', err); }
     });
   };
 
@@ -2676,6 +2949,26 @@
       : refreshHomeForSpa;
   });
 
+  // Teardown half of the lifecycle. smooth-navigation.js has read
+  // window.__anhadPageCleanup since it was written (runPageCleanup(), :332-350)
+  // but nothing in the codebase ever registered a handler, so leaving Home
+  // never released anything. Composes rather than overwrites, exactly like the
+  // __anhadPageInit registration above; runPageCleanup() de-dupes by function
+  // identity, so registering all four Home keys still yields one call.
+  window.__anhadPageCleanup = window.__anhadPageCleanup || {};
+  const _homeCleanup = () => {
+    try { App.unmount(); } catch (e) { console.warn('[Trendora] Home unmount failed', e); }
+  };
+  ['/', '/index.html', '/frontend/', '/frontend/index.html'].forEach(p => {
+    const existing = window.__anhadPageCleanup[p];
+    window.__anhadPageCleanup[p] = (existing && existing !== _homeCleanup)
+      ? () => {
+          try { existing(); } catch (e) { console.warn('[Trendora] chained cleanup failed', e); }
+          _homeCleanup();
+        }
+      : _homeCleanup;
+  });
+
   const boot = () => {
     try {
       App.init();
@@ -2704,7 +2997,13 @@
   // ═══════════════════════════════════════════════════════════════════════════
   if (window.innerWidth >= 1024) {
     const removeOverlays = () => {
-      // Inject CSS
+      // Inject CSS once per document. This used to append unconditionally on
+      // every call — including the two delayed re-runs below and every later
+      // invocation — so duplicate #hero-overlay-remover nodes accumulated.
+      if (document.getElementById('hero-overlay-remover')) {
+        applyOverlayInlineStyles();
+        return;
+      }
       const style = document.createElement('style');
       style.id = 'hero-overlay-remover';
       style.textContent = `
@@ -2725,18 +3024,25 @@
         }
       `;
       document.head.appendChild(style);
+      applyOverlayInlineStyles();
+    };
 
-      // Directly modify elements
+    // Per-node guarded: cssText += on an already-processed node appends the
+    // same declarations again and grows the style attribute without bound.
+    function applyOverlayInlineStyles() {
       document.querySelectorAll('.hero-card__image-wrapper').forEach(el => {
+        if (!bindOnce(el, 'heroWrapStyle')) return;
         el.style.cssText += '; position: relative; overflow: hidden; border-radius: 16px;';
       });
       document.querySelectorAll('.hero-card__image').forEach(el => {
+        if (!bindOnce(el, 'heroImgStyle')) return;
         el.style.cssText += '; mask-image: none; -webkit-mask-image: none; filter: none;';
       });
       document.querySelectorAll('.hero-card__overlay').forEach(el => {
+        if (!bindOnce(el, 'heroOverlayStyle')) return;
         el.style.cssText += '; background: transparent;';
       });
-    };
+    }
 
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', removeOverlays);
@@ -2744,9 +3050,18 @@
       removeOverlays();
     }
 
-    // Also run after a short delay to catch any dynamically added elements
-    setTimeout(removeOverlays, 500);
-    setTimeout(removeOverlays, 1000);
+    // Also run after a short delay to catch any dynamically added elements.
+    // Tracked on window so App.unmount() can cancel them when Home is left
+    // before they fire, instead of letting them run against the next page.
+    window.__anhadOverlayRemoveTimers = window.__anhadOverlayRemoveTimers || [];
+    window.__anhadOverlayRemoveTimers.push(setTimeout(removeOverlays, 500));
+    window.__anhadOverlayRemoveTimers.push(setTimeout(removeOverlays, 1000));
+
+    // The hero nodes are replaced on every SPA arrival, so the inline styles
+    // (and their per-node guards) have to be reapplied to the new ones.
+    window.addEventListener('anhad_page_changed', () => {
+      if (window.innerWidth >= 1024) removeOverlays();
+    });
   }
 
   // NOTE: the anhad_page_changed listener and the __anhadPageInit registration

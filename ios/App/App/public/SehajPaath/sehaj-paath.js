@@ -665,7 +665,7 @@ class SehajPaathApp {
 
     openReader(ang = null) {
         const targetAng = ang || this.state.currentPaath?.currentAng || 1;
-        if (window.navigateTo) window.navigateTo(`reader.html?ang=${targetAng}`); else window.location.href = `reader.html?ang=${targetAng}`;
+        if (window.navigateTo) window.navigateTo(`SehajPaath/reader.html?ang=${targetAng}`); else window.location.href = `SehajPaath/reader.html?ang=${targetAng}`;
     }
 
     /**
@@ -675,7 +675,7 @@ class SehajPaathApp {
      * @param {string} source - The source: 'random', 'search', 'bookmark', 'hukamnama'
      */
     openReaderDetached(ang, source = 'random') {
-        if (window.navigateTo) window.navigateTo(`reader.html?ang=${ang}&source=${source}`); else window.location.href = `reader.html?ang=${ang}&source=${source}`;
+        if (window.navigateTo) window.navigateTo(`SehajPaath/reader.html?ang=${ang}&source=${source}`); else window.location.href = `SehajPaath/reader.html?ang=${ang}&source=${source}`;
     }
 
     onAngSliderChange(e) {

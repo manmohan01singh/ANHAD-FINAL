@@ -2781,16 +2781,10 @@ const HeaderManager = {
      * Update streak display in header
      */
     updateStreakDisplay() {
-        // BUG FIX: this used to check UnifiedStats/AnhadStats first and
-        // StreakManager only as a last resort — backwards. StreakManager.state
-        // is recalculated fresh from the actual completion logs
-        // (recalculateStreak()) every time; UnifiedStats/AnhadStats trust
-        // whatever they were last told rather than re-deriving from the logs.
-        // That let this page show two different streak numbers on itself at
-        // once (this header pill vs. the page's own hero stat, which already
-        // read StreakManager directly) whenever the two hadn't been synced
-        // yet. StreakManager is checked first now — it's the more
-        // authoritative source, not the fallback.
+        if (typeof StreakManager !== 'undefined' && typeof StreakManager.recalculateStreak === 'function') {
+            StreakManager.recalculateStreak();
+        }
+
         let currentStreak = 0;
 
         if (typeof StreakManager !== 'undefined' && StreakManager.state) {
@@ -2807,8 +2801,14 @@ const HeaderManager = {
             currentStreak = streakData.currentStreak || streakData.current || 0;
         }
 
-        if (this.elements.headerStreakCount) {
-            this.elements.headerStreakCount.textContent = currentStreak;
+        const headerStreakEl = document.getElementById('headerStreakCount') || (this.elements && this.elements.headerStreakCount);
+        if (headerStreakEl) {
+            headerStreakEl.textContent = currentStreak;
+        }
+
+        const amritvelaEl = document.getElementById('amritvelaStreak');
+        if (amritvelaEl) {
+            amritvelaEl.textContent = currentStreak;
         }
 
         // Update flame animation if it exists in StreakManager
@@ -4228,7 +4228,7 @@ const NitnemManager = {
                     <span class="bani-name-english">${group.nameEnglish}</span>
                 </div>
                 <span class="bani-duration">${group.duration}</span>
-                <button class="bani-vichar-btn" data-bani-name="${group.nameEnglish}" aria-label="Deep Vichar in Gurbani GPT" title="Deep Vichar in Gurbani GPT">
+                <button class="bani-vichar-btn" data-bani-name="${group.nameEnglish}" aria-label="Deep Vichar" title="Deep Vichar">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
                         <circle cx="12" cy="12" r="10"/>
                         <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
@@ -4257,9 +4257,14 @@ const NitnemManager = {
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 const name = btn.dataset.baniName;
-                const url = `../GurbaniGPT/index.html?prompt=${encodeURIComponent(name)}&deepVichar=true`;
-                if (window.navigateTo) window.navigateTo(url);
-                else window.location.href = url;
+                if (window.AnhadComingSoon) {
+                    window.AnhadComingSoon.show({
+                        title: 'Deep Vichar',
+                        gurmukhi: 'ਸ਼ਬਦ ਵਿਚਾਰ',
+                        feature: name || '',
+                        desc: 'A guided space for deeper reflection on this Bani is on its way.'
+                    });
+                }
             });
         });
 
@@ -9613,15 +9618,20 @@ const ReportsManager = {
                 const a = document.createElement('a');
                 a.href = dataUri;
                 a.download = filename;
-                a.target = '_blank';
+                // REMOVED target="_blank" to prevent new window/tab opening
                 a.rel = 'noopener';
                 a.style.display = 'none';
                 document.body.appendChild(a);
-                a.click();
                 
+                // Use setTimeout to ensure DOM is ready before click
                 setTimeout(() => {
-                    if (a.parentNode) document.body.removeChild(a);
-                }, 300);
+                    a.click();
+                    
+                    // Clean up after download starts
+                    setTimeout(() => {
+                        if (a.parentNode) document.body.removeChild(a);
+                    }, 500);
+                }, 50);
 
                 Toast.success('Backup Saved!', 'File download started & copied to clipboard');
                 HapticManager.success();
@@ -12111,8 +12121,8 @@ const PremiumUXManager = {
             let quoteIdx = 0;
             setInterval(() => {
                 quoteIdx = (quoteIdx + 1) % quotes.length;
-                txt.textContent = quotes[quoteIdx] + "   •   ";
-                clone.textContent = quotes[quoteIdx] + "   •   ";
+                txt.textContent = quotes[quoteIdx] + " • ";
+                clone.textContent = quotes[quoteIdx] + " • ";
             }, 30000); // Change text when it loops approximately
         }
     }

@@ -3611,6 +3611,14 @@ a:active {
   animation: fadeSlideUp 0.5s var(--ease-ios-spring) both;
 }
 
+/* Revisit within the same session: reveal instantly, no entrance animation.
+   Set by js/scroll-engine.js in place of an inline `style.animation = none`,
+   which stuck to every card permanently because nothing ever cleared it. */
+.anhad-reveal-instant,
+.anhad-reveal-instant.scroll-revealed {
+  animation: none !important;
+}
+
 .quick-card:nth-child(1).scroll-revealed {
   animation-delay: 0ms;
 }

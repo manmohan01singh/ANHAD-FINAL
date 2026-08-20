@@ -1,1289 +1,1540 @@
 /* ═══════════════════════════════════════════════════════════════════════════════
-   ANHAD — DESKTOP RESPONSIVE OPTIMIZATION
-   Transforms mobile-first app into fully responsive desktop experience
+   ANHAD — PRODUCTION DESKTOP & LAPTOP DESIGN SYSTEM & RESPONSIVE ENGINE v6.0
+   Pixel-Perfect Optical Symmetry · Luxury Apple macOS/iOS Glass & Claymorphism
+   Zero Impact on Mobile (< 1024px) · Engineered for 1024px, 1280px, 1366px, 1440px, 1536px, 1920px+ (4K)
    ═══════════════════════════════════════════════════════════════════════════════ */
 
-/* ───────────────────────────────────────────────────────────────────────────────
-   DESKTOP BREAKPOINT VARIABLES
-   ─────────────────────────────────────────────────────────────────────────────── */
-:root {
-  /* Desktop layout overrides */
-  --desktop-max-width: 1400px;
-  --desktop-content-width: 1200px;
-  --desktop-sidebar-width: 280px;
-  --desktop-header-height: 72px;
-  --desktop-bottom-spacing: 24px;
-  
-  /* Responsive typography scale for desktop */
-  --desktop-text-jumbo: 3.5rem;
-  --desktop-text-large-title: 2.5rem;
-  --desktop-text-title-1: 2rem;
-  --desktop-text-title-2: 1.5rem;
-}
-
-/* ───────────────────────────────────────────────────────────────────────────────
-   DISABLE MOBILE LOCKS ON DESKTOP
-   ─────────────────────────────────────────────────────────────────────────────── */
-
-/* Remove portrait lock on desktop screens */
 @media screen and (min-width: 1024px) {
-  /* Disable mobile-lock.css rotation */
-  @media screen and (orientation: landscape) {
-    body {
-      transform: none !important;
-      transform-origin: unset !important;
-      width: 100% !important;
-      height: 100% !important;
-      overflow: visible !important;
-      position: relative !important;
-      display: block !important;
-    }
+  :root {
+    --desktop-sidebar-width: 260px;
+    --desktop-content-max: 1240px;
+    --desktop-reader-max: 880px;
+    --desktop-grid-gap: 24px;
+    --desktop-radius-sm: 12px;
+    --desktop-radius-md: 18px;
+    --desktop-radius-lg: 22px;
+    --desktop-radius-xl: 28px;
     
-    body::before,
-    body::after {
-      display: none !important;
-    }
+    /* Sacred Luxury Gold & Surface Tokens */
+    --gold-primary: #D4943A;
+    --gold-glow: rgba(212, 148, 58, 0.25);
+    --gold-halo: rgba(212, 148, 58, 0.12);
+    --gold-gradient: linear-gradient(135deg, #E6A84B 0%, #C48228 100%);
+    --gold-subtle-bg: rgba(212, 148, 58, 0.08);
+    
+    /* Apple Spring & Motion Curves */
+    --ease-apple: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
   }
-  
-  /* Remove viewport restrictions */
-  html, body {
-    overflow-x: visible !important;
-    max-width: none !important;
-    width: 100% !important;
-  }
-  
-  /* Override max-width constraints */
-  .app, main, #app {
-    max-width: var(--desktop-max-width) !important;
-    margin: 0 auto !important;
-    padding-left: 24px !important;
-    padding-right: 24px !important;
-  }
-  
-  /* Reset mobile font-size lock */
+
+  /* ─────────────────────────────────────────────────────────────────────────────
+     1. DOCUMENT RESET & ZERO-BLUR DESKTOP BACKGROUND
+     ───────────────────────────────────────────────────────────────────────────── */
   html {
     font-size: 16px !important;
     -webkit-text-size-adjust: auto !important;
     text-size-adjust: auto !important;
+    scroll-behavior: smooth;
+    background-color: #FAF8F5 !important;
   }
-}
 
-/* ───────────────────────────────────────────────────────────────────────────────
-   TABLET BREAKPOINT (768px - 1023px)
-   ─────────────────────────────────────────────────────────────────────────────── */
-@media screen and (min-width: 768px) and (max-width: 1023px) {
-  :root {
-    --max-width: 100% !important;
+  html.dark-mode,
+  [data-theme="dark"] {
+    background-color: #0D0D0F !important;
   }
-  
-  .app {
-    max-width: 100% !important;
-    padding-left: 32px !important;
-    padding-right: 32px !important;
-  }
-  
-  /* Widen hero carousel */
-  .hero-carousel__track {
-    gap: 20px;
-  }
-  
-  .hero-card {
-    min-width: 320px;
-  }
-  
-  /* Grid layouts for practice cards */
-  .practice-grid {
-    display: grid !important;
-    grid-template-columns: repeat(3, 1fr) !important;
-    gap: 20px !important;
-  }
-  
-  /* Quick cards in 2 columns */
-  .quick-card {
-    width: calc(50% - 10px) !important;
-    display: inline-flex !important;
-    margin-right: 20px !important;
-    margin-bottom: 16px !important;
-  }
-  
-  .quick-card:nth-child(2n) {
-    margin-right: 0 !important;
-  }
-}
 
-/* ───────────────────────────────────────────────────────────────────────────────
-   DESKTOP BREAKPOINT (1024px+)
-   ─────────────────────────────────────────────────────────────────────────────── */
-@media screen and (min-width: 1024px) {
-  
-  /* ═════════════════════════════════════════════════════════════════════════════
-     BACKGROUND IMAGE — REMOVED to prevent visible bar beside header
-     ═════════════════════════════════════════════════════════════════════════════ */
-  
-  /* Dark overlay for text readability - REMOVED to prevent visible bar beside header */
-  
-  /* ═════════════════════════════════════════════════════════════════════════════
-     LAYOUT TRANSFORMATION — Sidebar + Main Content
-     ═════════════════════════════════════════════════════════════════════════════ */
+  html, body {
+    overflow-x: hidden !important;
+    max-width: none !important;
+    width: 100% !important;
+    min-height: 100vh;
+  }
+
   body {
     display: flex !important;
     flex-direction: row !important;
-    min-height: 100vh;
-    background: transparent !important;
-  }
-  
-  /* Hide bottom navigation on desktop */
-  .bottom-nav {
-    display: none !important;
-  }
-  
-  /* ═════════════════════════════════════════════════════════════════════════════
-     SIDEBAR — LIGHT MODE (Default)
-     ═════════════════════════════════════════════════════════════════════════════ */
-  .desktop-sidebar {
-    display: flex !important;
-    flex-direction: column;
-    width: var(--desktop-sidebar-width);
-    height: 100vh;
-    position: fixed;
-    left: 0;
-    top: 0;
-    background: linear-gradient(180deg, 
-      rgba(255, 255, 255, 0.98) 0%, 
-      rgba(248, 250, 252, 0.99) 100%) !important;
-    border-right: 1px solid rgba(0,0,0,0.06);
-    z-index: 1000;
-    padding: 32px 20px 180px 20px; /* Increased bottom padding to prevent overlap with pinned footer */
-    overflow-y: auto; /* Enable scrollbar if content overflows */
-    scrollbar-width: thin; /* Thin clean scrollbar */
+    background: #FAF8F5 !important;
+    color: var(--text-primary, #1C1C1E);
+    margin: 0 !important;
+    padding: 0 !important;
+    position: relative !important;
   }
 
-  .desktop-sidebar::-webkit-scrollbar {
-    width: 6px;
+  html.dark-mode body,
+  [data-theme="dark"] body {
+    background: #0D0D0F !important;
+    color: var(--text-primary, #F5F5F7);
   }
-  .desktop-sidebar::-webkit-scrollbar-thumb {
-    background: rgba(0, 0, 0, 0.08);
-    border-radius: 3px;
+
+  /* Completely suppress all background pseudo-elements and blur overlays on desktop */
+  html body::before,
+  body::before,
+  html body.dark-mode::before,
+  body.dark-mode::before,
+  html body::after,
+  body::after,
+  html body.dark-mode::after,
+  body.dark-mode::after,
+  #anhadBgTransitionContainer,
+  .anhad-bg-container,
+  .anhad-bg-fade-layer,
+  .ikonkar-background,
+  #ikonkarBackground,
+  .bg-orbs,
+  .day-orbs-container,
+  .greeting-orb {
+    content: none !important;
+    display: none !important;
+    background: none !important;
+    background-image: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
   }
-  html.dark-mode .desktop-sidebar::-webkit-scrollbar-thumb,
-  [data-theme="dark"] .desktop-sidebar::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.08);
+
+  /* Hide mobile bars, tabs, and banners */
+  .bottom-nav,
+  .tab-bar,
+  .floating-tab-bar,
+  .nav-glass,
+  .mobile-bottom-bar,
+  .install-app-btn,
+  .install-banner,
+  .hero-carousel__dots,
+  .radio-pill-nav {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
   }
-  
-  .desktop-sidebar__brand-text {
-    color: #1a1a1f;
-    font-weight: 700;
-    font-size: 1.25rem;
-    letter-spacing: -0.5px;
+
+  /* ─────────────────────────────────────────────────────────────────────────────
+     2. UNIVERSAL DESKTOP SIDEBAR (.desktop-sidebar)
+     ───────────────────────────────────────────────────────────────────────────── */
+  .desktop-sidebar {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    width: var(--desktop-sidebar-width) !important;
+    height: 100vh !important;
+    position: fixed !important;
+    left: 0 !important;
+    top: 0 !important;
+    z-index: 1000 !important;
+    background: rgba(255, 255, 255, 0.92) !important;
+    backdrop-filter: blur(28px) saturate(190%) !important;
+    -webkit-backdrop-filter: blur(28px) saturate(190%) !important;
+    border-right: 1px solid rgba(0, 0, 0, 0.08) !important;
+    padding: 20px 14px 16px 14px !important;
+    box-sizing: border-box !important;
+    user-select: none;
+    flex-shrink: 0 !important;
   }
-  
-  .desktop-sidebar__item {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    padding: 14px 16px;
-    border-radius: 12px;
-    color: rgba(0,0,0,0.65);
-    text-decoration: none;
-    font-size: 0.95rem;
-    font-weight: 500;
-    transition: background-color 0.2s ease, color 0.2s ease;
-    position: relative;
-  }
-  
-  .desktop-sidebar__item::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 3px;
-    height: 0;
-    background: #D4943A;
-    border-radius: 0 3px 3px 0;
-    transition: height 0.2s ease;
-  }
-  
-  .desktop-sidebar__item:hover {
-    background: rgba(0,0,0,0.04);
-    color: rgba(0,0,0,0.9);
-  }
-  
-  .desktop-sidebar__item--active {
-    background: rgba(212, 148, 58, 0.1) !important;
-    color: #B47A1F !important;
-    font-weight: 600;
-  }
-  
-  .desktop-sidebar__item--active::before {
-    height: 24px;
-  }
-  
-  /* ═════════════════════════════════════════════════════════════════════════════
-     SIDEBAR — DARK MODE
-     ═════════════════════════════════════════════════════════════════════════════ */
+
   html.dark-mode .desktop-sidebar,
   [data-theme="dark"] .desktop-sidebar {
-    background: linear-gradient(180deg,
-      rgba(15, 15, 15, 0.95) 0%,
-      rgba(20, 20, 25, 0.95) 100%) !important;
-    border-right: 1px solid rgba(255,255,255,0.08);
+    background: rgba(18, 18, 22, 0.94) !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
   }
-  
-  html.dark-mode .desktop-sidebar__brand-text,
-  [data-theme="dark"] .desktop-sidebar__brand-text {
-    color: #fff;
+
+  .desktop-sidebar__header {
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    flex-shrink: 0;
   }
-  
-  html.dark-mode .desktop-sidebar__item,
-  [data-theme="dark"] .desktop-sidebar__item {
-    color: rgba(255,255,255,0.65);
+  html.dark-mode .desktop-sidebar__header,
+  [data-theme="dark"] .desktop-sidebar__header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   }
-  
-  html.dark-mode .desktop-sidebar__item:hover,
-  [data-theme="dark"] .desktop-sidebar__item:hover {
-    background: rgba(255,255,255,0.05);
-    color: rgba(255,255,255,0.9);
-  }
-  
-  html.dark-mode .desktop-sidebar__item--active,
-  [data-theme="dark"] .desktop-sidebar__item--active {
-    background: rgba(212, 148, 58, 0.15) !important;
-    color: #D4943A !important;
-  }
-  
-  /* Main content area with sidebar offset */
-  .app, main, #app {
-    margin-left: var(--desktop-sidebar-width) !important;
-    width: calc(100% - var(--desktop-sidebar-width)) !important;
-    max-width: none !important;
-    padding: 32px 48px 48px !important;
-    min-height: 100vh;
-    padding-bottom: 24px !important;
-    background: transparent !important;
-  }
-  
-  /* ═════════════════════════════════════════════════════════════════════════════
-     SIDEBAR NAVIGATION STYLES
-     ═════════════════════════════════════════════════════════════════════════════ */
+
   .desktop-sidebar__brand {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 0 12px 24px;
-    border-bottom: 1px solid rgba(0,0,0,0.06);
-    margin-bottom: 16px;
+    gap: 10px;
+    text-decoration: none;
+    padding: 4px 6px;
+    border-radius: var(--desktop-radius-md);
+    transition: transform 0.2s var(--ease-spring);
   }
-  
+  .desktop-sidebar__brand:hover {
+    transform: scale(1.02);
+  }
+
+  .desktop-sidebar__logo-wrapper {
+    position: relative;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, rgba(212, 148, 58, 0.2), rgba(212, 148, 58, 0.05));
+    border: 1px solid rgba(212, 148, 58, 0.3);
+    overflow: hidden;
+    flex-shrink: 0;
+  }
   .desktop-sidebar__logo {
-    width: 44px;
+    width: 26px;
+    height: 26px;
+    object-fit: contain;
   }
-  
-  .desktop-sidebar__brand-text {
-    color: #fff;
+
+  .desktop-sidebar__brand-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0px;
+  }
+  .desktop-sidebar__brand-name {
+    font-size: 1.1rem;
+    font-weight: 800;
+    letter-spacing: 0.8px;
+    color: #1a1a1f;
+  }
+  html.dark-mode .desktop-sidebar__brand-name,
+  [data-theme="dark"] .desktop-sidebar__brand-name {
+    color: #FFFFFF;
+  }
+  .desktop-sidebar__brand-gurmukhi {
+    font-family: 'Noto Sans Gurmukhi', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--gold-primary);
+  }
+
+  .desktop-sidebar__status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 8px;
+    margin-top: 8px;
+    margin-left: 6px;
+    background: rgba(52, 199, 89, 0.12);
+    border: 1px solid rgba(52, 199, 89, 0.25);
+    border-radius: 20px;
+  }
+  .desktop-sidebar__status-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #34C759;
+    box-shadow: 0 0 6px #34C759;
+  }
+  .desktop-sidebar__status-text {
+    font-size: 0.65rem;
     font-weight: 700;
-    font-size: 1.25rem;
-    letter-spacing: -0.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #248A3D;
   }
-  
+  html.dark-mode .desktop-sidebar__status-text,
+  [data-theme="dark"] .desktop-sidebar__status-text {
+    color: #34C759;
+  }
+
+  .desktop-sidebar__nav-scroll {
+    flex: 1 1 auto !important;
+    overflow-y: auto !important;
+    min-height: 0 !important;
+    margin-bottom: 8px !important;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0,0,0,0.1) transparent;
+    padding-right: 2px;
+  }
+  html.dark-mode .desktop-sidebar__nav-scroll,
+  [data-theme="dark"] .desktop-sidebar__nav-scroll {
+    scrollbar-color: rgba(255,255,255,0.1) transparent;
+  }
+
+  .desktop-sidebar__section-title {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: rgba(0, 0, 0, 0.4);
+    padding: 8px 8px 4px 8px;
+  }
+  html.dark-mode .desktop-sidebar__section-title,
+  [data-theme="dark"] .desktop-sidebar__section-title {
+    color: rgba(255, 255, 255, 0.35);
+  }
+
   .desktop-sidebar__nav {
     display: flex;
     flex-direction: column;
-    gap: 4px;
-    flex: 1;
+    gap: 2px;
   }
-  
-  .desktop-sidebar__item {
+
+  .desktop-sidebar__link {
     display: flex;
     align-items: center;
-    gap: 14px;
-    padding: 14px 16px;
-    border-radius: 12px;
-    color: rgba(255,255,255,0.65);
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: var(--desktop-radius-md);
+    color: rgba(0, 0, 0, 0.72);
     text-decoration: none;
-    font-size: 0.95rem;
+    font-size: 0.88rem;
     font-weight: 500;
-    transition: background-color 0.2s ease, color 0.2s ease;
+    transition: background-color 0.2s var(--ease-apple), color 0.2s var(--ease-apple), transform 0.2s var(--ease-spring);
     position: relative;
   }
-  
-  .desktop-sidebar__item::before {
+  html.dark-mode .desktop-sidebar__link,
+  [data-theme="dark"] .desktop-sidebar__link {
+    color: rgba(255, 255, 255, 0.75);
+  }
+
+  .desktop-sidebar__link:hover {
+    background: rgba(0, 0, 0, 0.05);
+    color: #000000;
+    transform: translateX(3px);
+  }
+  html.dark-mode .desktop-sidebar__link:hover,
+  [data-theme="dark"] .desktop-sidebar__link:hover {
+    background: rgba(255, 255, 255, 0.07);
+    color: #FFFFFF;
+  }
+
+  .desktop-sidebar__link--active {
+    background: linear-gradient(90deg, rgba(212, 148, 58, 0.16) 0%, rgba(212, 148, 58, 0.04) 100%) !important;
+    color: #B47A1F !important;
+    font-weight: 700 !important;
+  }
+  html.dark-mode .desktop-sidebar__link--active,
+  [data-theme="dark"] .desktop-sidebar__link--active {
+    background: linear-gradient(90deg, rgba(212, 148, 58, 0.25) 0%, rgba(212, 148, 58, 0.06) 100%) !important;
+    color: #FFB347 !important;
+  }
+
+  .desktop-sidebar__link--active::before {
     content: '';
     position: absolute;
     left: 0;
     top: 50%;
     transform: translateY(-50%);
-    width: 3px;
-    height: 0;
-    background: #D4943A;
-    border-radius: 0 3px 3px 0;
-    transition: height 0.2s ease;
-  }
-  
-  .desktop-sidebar__item:hover {
-    background: rgba(255,255,255,0.05);
-    color: rgba(255,255,255,0.9);
-    color: var(--accent);
-    font-weight: 600;
-  }
-  
-  .desktop-sidebar__link .ios-emoji {
-    font-size: 1.25rem;
-    width: 28px;
-    text-align: center;
-  }
-  
-  /* ═════════════════════════════════════════════════════════════════════════════
-     SIDEBAR FOOTER — CALENDAR & DARK MODE
-     ═════════════════════════════════════════════════════════════════════════════ */
-  .desktop-sidebar__footer {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    padding: 16px 20px;
-    border-top: 1px solid rgba(0,0,0,0.06);
-    background: transparent;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-  
-  .sidebar-bottom-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-  }
-  
-  .sidebar-calendar-link,
-  .sidebar-theme-toggle {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 12px;
-    border-radius: 10px;
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: rgba(0,0,0,0.7);
-    background: rgba(0,0,0,0.03);
-    transition: background-color 0.2s ease, color 0.2s ease;
-    cursor: pointer;
-    border: none;
-    text-decoration: none;
-  }
-  
-  .sidebar-calendar-link:hover,
-  .sidebar-theme-toggle:hover {
-    background: rgba(212, 148, 58, 0.1);
-    color: #D4943A;
-  }
-  
-  .sidebar-calendar-link svg,
-  .sidebar-theme-toggle svg {
-    width: 18px;
+    width: 3.5px;
     height: 18px;
-  }
-  
-  /* Dark mode sidebar footer */
-  html.dark-mode .desktop-sidebar__footer,
-  [data-theme="dark"] .desktop-sidebar__footer {
-    border-top: 1px solid rgba(255,255,255,0.08);
-  }
-  
-  html.dark-mode .sidebar-calendar-link,
-  html.dark-mode .sidebar-theme-toggle,
-  [data-theme="dark"] .sidebar-calendar-link,
-  [data-theme="dark"] .sidebar-theme-toggle {
-    color: rgba(255,255,255,0.7);
-    background: rgba(255,255,255,0.05);
-  }
-  
-  html.dark-mode .sidebar-calendar-link:hover,
-  html.dark-mode .sidebar-theme-toggle:hover,
-  [data-theme="dark"] .sidebar-calendar-link:hover,
-  [data-theme="dark"] .sidebar-theme-toggle:hover {
-    background: rgba(212, 148, 58, 0.15);
-    color: #D4943A;
-  }
-  
-  /* ═════════════════════════════════════════════════════════════════════════════
-     HEADER — LIGHT MODE (Default)
-     Scoped to .home-header (see trendora-premium.css's header section for
-     why — same file-never-removed-from-<head> mechanism, same bare
-     .header/.header__title/.header__btn collision with other pages).
-     ═════════════════════════════════════════════════════════════════════════════ */
-  .header.home-header {
-    position: sticky;
-    top: 0;
-    background: transparent !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-    border-radius: 0;
-    margin: 0 0 40px 0;
-    padding: 20px 0 !important;
-    border: none !important;
-    box-shadow: none !important;
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    opacity: 1 !important;
+    background: var(--gold-primary);
+    border-radius: 0 4px 4px 0;
+    box-shadow: 0 0 8px var(--gold-primary);
   }
 
-  html.dark-mode .home-header,
-  [data-theme="dark"] .home-header {
-    background: transparent !important;
-    opacity: 1 !important;
-  }
-
-  .home-header .header__title {
-    color: rgba(0, 0, 0, 0.5) !important;
-    font-size: 0.875rem !important;
-    font-weight: 600 !important;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    text-shadow: none;
-  }
-
-  .home-header .header__btn {
-    width: 44px;
-    height: 44px;
-    border-radius: 12px;
-    background: rgba(0, 0, 0, 0.04);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(0, 0, 0, 0.08);
+  .desktop-sidebar__link-icon {
+    font-size: 1.05rem;
+    width: 22px;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background-color 0.2s ease, color 0.2s ease;
   }
 
-  .home-header .header__btn:hover {
-    background: rgba(0, 0, 0, 0.08);
-    transform: translateY(-2px);
+  .desktop-sidebar__link-text {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
-  .home-header.header--compact {
-    background: rgba(255, 255, 255, 0.9) !important;
-    backdrop-filter: blur(20px) saturate(150%) !important;
-    -webkit-backdrop-filter: blur(20px) saturate(150%) !important;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
-    padding: 16px 24px !important;
-    margin: 16px;
-    border-radius: 16px;
+  .desktop-sidebar__badge {
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.06);
+    color: rgba(0, 0, 0, 0.55);
   }
-
-  .home-header.header--compact .header__title {
-    color: rgba(0, 0, 0, 0.7) !important;
-  }
-
-  /* ═════════════════════════════════════════════════════════════════════════════
-     HEADER — DARK MODE
-     ═════════════════════════════════════════════════════════════════════════════ */
-  html.dark-mode .home-header .header__title,
-  [data-theme="dark"] .home-header .header__title {
-    color: rgba(255, 255, 255, 0.5) !important;
-  }
-
-  html.dark-mode .home-header .header__btn,
-  [data-theme="dark"] .home-header .header__btn {
+  html.dark-mode .desktop-sidebar__badge,
+  [data-theme="dark"] .desktop-sidebar__badge {
     background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.55);
+  }
+  .desktop-sidebar__badge--gold {
+    background: rgba(212, 148, 58, 0.18) !important;
+    color: #B47A1F !important;
+  }
+  html.dark-mode .desktop-sidebar__badge--gold,
+  [data-theme="dark"] .desktop-sidebar__badge--gold {
+    color: #FFB347 !important;
+  }
+  .desktop-sidebar__badge--live {
+    background: rgba(255, 59, 48, 0.18) !important;
+    color: #FF3B30 !important;
   }
 
-  html.dark-mode .home-header .header__btn:hover,
-  [data-theme="dark"] .home-header .header__btn:hover {
-    background: rgba(255, 255, 255, 0.15);
-  }
-
-  html.dark-mode .home-header.header--compact,
-  [data-theme="dark"] .home-header.header--compact {
-    background: rgba(25, 28, 35, 0.9) !important;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
-  }
-
-  html.dark-mode .home-header.header--compact .header__title,
-  [data-theme="dark"] .home-header.header--compact .header__title {
-    color: rgba(255, 255, 255, 0.8) !important;
-  }
-
-  /* Hide mobile back button on desktop */
-  .home-header .header__btn[href*="ios-homepage"] {
-    display: none !important;
-  }
-  
-  /* ═════════════════════════════════════════════════════════════════════════════
-     HERO CAROUSEL — DESKTOP ENHANCEMENT WITH WOW FACTOR
-     ═════════════════════════════════════════════════════════════════════════════ */
-  .hero-carousel {
-    margin-bottom: 48px;
-    width: 100%;
-  }
-  
-  .hero-carousel__track {
-    position: relative !important;
-    display: grid !important;
-    grid-template-columns: repeat(3, 1fr) !important;
-    gap: 24px;
-    overflow-x: visible !important;
-    scroll-snap-type: none !important;
-  }
-  
-  .hero-card {
-    min-width: auto !important;
-    max-width: none !important;
+  .desktop-sidebar__footer {
+    flex-shrink: 0 !important;
+    padding-top: 10px;
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+    display: flex;
+    align-items: center;
+    gap: 4px !important;
     width: 100% !important;
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12) !important;
-    transition: background-color 0.3s ease, color 0.3s ease;
-    position: relative;
-    border: none !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
   }
-  
-  .hero-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.18) !important;
+  html.dark-mode .desktop-sidebar__footer,
+  [data-theme="dark"] .desktop-sidebar__footer {
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
   }
-  
-  .hero-card__image-wrapper {
-    aspect-ratio: 16/9;
-    overflow: hidden;
-    position: relative;
+
+  .desktop-sidebar__footer-action {
+    flex: 1 1 0% !important;
+    min-width: 0 !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 3px !important;
+    padding: 7px 2px !important;
+    font-size: 0.72rem !important;
+    font-weight: 600;
+    border-radius: var(--desktop-radius-sm);
+    background: rgba(0, 0, 0, 0.04);
+    color: rgba(0, 0, 0, 0.75);
+    text-decoration: none;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    box-sizing: border-box !important;
+  }
+  html.dark-mode .desktop-sidebar__footer-action,
+  [data-theme="dark"] .desktop-sidebar__footer-action {
+    background: rgba(255, 255, 255, 0.06);
+    color: rgba(255, 255, 255, 0.8);
+  }
+  .desktop-sidebar__footer-action:hover {
+    background: var(--gold-subtle-bg);
+    color: var(--gold-primary);
+  }
+
+  .desktop-sidebar__theme-toggle {
+    flex: 0 0 32px !important;
+    width: 32px !important;
+    height: 32px !important;
+    padding: 0 !important;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--desktop-radius-sm);
+    box-sizing: border-box !important;
+  }
+
+  /* ─────────────────────────────────────────────────────────────────────────────
+     3. MAIN APP CONTAINER — ALL PAGE SELECTORS
+     Covers every page's unique wrapper so sidebar offset is universal.
+     ───────────────────────────────────────────────────────────────────────────── */
+  .app,
+  main.app,
+  #app,
+  main#app,
+  .app-container,
+  .notes-app,
+  .settings-page,
+  .journey-container,
+  body > .app,
+  body > main,
+  /* ── Hukamnama page: #mainScroll wraps both hero + main.gurbani-section */
+  body > #mainScroll,
+  #mainScroll,
+  /* ── Sadhsangat Live: .page-content wraps the full page */
+  .page-content,
+  /* ── Gurbani Khoj, Shabad Reader */
+  .khoj-app,
+  .shabad-app,
+  /* ── Nitnem pages */
+  .nitnem-app,
+  .bani-app,
+  /* ── Dashboard */
+  .dashboard-app,
+  .dashboard-container,
+  /* ── Calendar */
+  .calendar-app,
+  .calendar-container,
+  /* ── Profile, Journey */
+  .profile-app,
+  /* ── Generic content wrappers */
+  .page-wrapper,
+  .content-wrapper,
+  main.gurbani-section,
+  main#hukamContent {
+    display: block !important;
+    position: relative !important;
+    margin-left: var(--desktop-sidebar-width) !important;
+    width: calc(100% - var(--desktop-sidebar-width)) !important;
+    max-width: var(--desktop-content-max) !important;
+    margin-right: auto !important;
+    padding: 32px 48px 100px 48px !important;
+    min-height: 100vh !important;
+    box-sizing: border-box !important;
+    background: transparent !important;
+    box-shadow: none !important;
     border-radius: 0 !important;
   }
-  
-  .hero-card__image-wrapper::after {
-    display: none !important;
+
+  /* Hukamnama: gurbani-section is INSIDE mainScroll, don't double-pad */
+  #mainScroll main.gurbani-section,
+  #mainScroll > section.hero {
+    margin-left: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+    min-height: unset !important;
   }
-  
-  .hero-card__image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center;
-    display: block;
+
+  /* Sadhsangat: mainContainer is INSIDE page-content, don't double-indent */
+  .page-content > main,
+  .page-content > #mainContainer,
+  #mainContainer {
+    margin-left: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+    min-height: unset !important;
   }
-  
-  .hero-card__content {
-    padding: 14px !important;
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 2;
+
+  /* Sadhsangat header inside page-content: no extra offset */
+  .page-content > header.header,
+  .page-content header {
+    margin-left: 0 !important;
+    width: 100% !important;
   }
-  
-  .hero-card__title {
-    color: #fff !important;
-    font-size: 1.125rem !important;
-    font-weight: 600 !important;
-    margin: 0 0 4px 0;
-  }
-  
-  .hero-card__subtitle {
-    color: rgba(255,255,255,0.8) !important;
-    font-size: 0.75rem;
-    margin: 0;
-  }
-  
-  .hero-card__badge {
-    position: absolute;
-    top: 12px;
-    left: 12px;
-    padding: 4px 10px;
-    border-radius: 20px;
-    font-size: 0.65rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    z-index: 2;
-  }
-  
-  .hero-card__badge--live {
-    background: rgba(239, 68, 68, 0.9);
-    color: #fff;
-  }
-  
-  .hero-card__badge--curated {
-    background: rgba(212, 148, 58, 0.9);
-    color: #fff;
-  }
-  
-  .hero-card__image-wrapper {
-    aspect-ratio: 16/9;
-    overflow: hidden;
-  }
-  
-  .hero-card__image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-  }
-  
-  .hero-card__title {
-    font-size: 1.125rem !important;
-    font-weight: 700;
-  }
-  
-  .hero-card__overlay {
+
+
+  /* ─────────────────────────────────────────────────────────────────────────────
+     4. HOMEPAGE HEADER (.home-header)
+     ───────────────────────────────────────────────────────────────────────────── */
+  .home-header,
+  .header.home-header {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding: 0 0 20px 0 !important;
+    margin-bottom: 28px !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06) !important;
     background: transparent !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: auto !important;
+    box-sizing: border-box !important;
   }
-  
-  .hero-card__play-btn {
-    width: 36px !important;
-    height: 36px !important;
-    background: rgba(212, 148, 58, 0.95) !important;
-    transition: background-color 0.3s ease, color 0.3s ease;
+  html.dark-mode .home-header,
+  html.dark-mode .header.home-header,
+  [data-theme="dark"] .home-header,
+  [data-theme="dark"] .header.home-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
   }
-  
-  .hero-card__play-btn:hover {
-    transform: scale(1.1);
-    background: #D4943A !important;
+
+  .home-header .header__left,
+  .home-header .header__right {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    background: none !important;
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
   }
-  
-  /* ═════════════════════════════════════════════════════════════════════════════
-     GREETING — LIGHT MODE (Default)
-     ═════════════════════════════════════════════════════════════════════════════ */
+
+  .home-header .header__btn {
+    width: 42px !important;
+    height: 42px !important;
+    border-radius: 12px !important;
+    background: rgba(0, 0, 0, 0.04) !important;
+    border: 1px solid rgba(0, 0, 0, 0.06) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    transition: all 0.2s var(--ease-spring) !important;
+  }
+  html.dark-mode .home-header .header__btn,
+  [data-theme="dark"] .home-header .header__btn {
+    background: rgba(255, 255, 255, 0.06) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  }
+  .home-header .header__btn:hover {
+    transform: translateY(-2px) !important;
+    background: var(--gold-subtle-bg) !important;
+    border-color: rgba(212, 148, 58, 0.3) !important;
+  }
+
+  /* ─────────────────────────────────────────────────────────────────────────────
+     5. GREETING & PROGRESS BAR
+     ───────────────────────────────────────────────────────────────────────────── */
   .greeting {
-    margin-bottom: 48px;
-    text-align: center;
+    text-align: center !important;
+    margin: 0 auto 32px auto !important;
+    max-width: 900px !important;
+    width: 100% !important;
   }
-  
+
+  .greeting__content {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+  }
+
+  .greeting__portrait-slider {
+    max-width: 140px !important;
+    margin: 0 auto 16px auto !important;
+  }
+
   .greeting__salutation {
-    font-size: 2.5rem !important;
-    font-weight: 300;
+    font-size: 1.35rem !important;
+    font-weight: 400 !important;
+    letter-spacing: 4px !important;
+    text-transform: uppercase !important;
+    margin-bottom: 10px !important;
     color: rgba(0, 0, 0, 0.8) !important;
-    letter-spacing: 4px;
-    text-transform: uppercase;
-    margin-bottom: 24px;
   }
-  
-  .greeting__gurbani {
-    font-family: 'MFJashan', 'Noto Sans Gurmukhi', sans-serif !important;
-    font-size: 2rem;
-    color: #D4943A !important;
-    font-weight: normal;
-    max-width: 700px;
-    margin: 0 auto 16px;
-    line-height: 1.5;
-    letter-spacing: 1px;
-  }
-  
-  .greeting__translation {
-    font-size: 1rem;
-    color: rgba(0, 0, 0, 0.6) !important;
-    font-style: italic;
-    max-width: 600px;
-    margin: 0 auto 32px;
-    line-height: 1.7;
-  }
-  
-  /* ═════════════════════════════════════════════════════════════════════════════
-     GREETING — DARK MODE
-     ═════════════════════════════════════════════════════════════════════════════ */
   html.dark-mode .greeting__salutation,
   [data-theme="dark"] .greeting__salutation {
-    color: rgba(255, 255, 255, 0.9) !important;
+    color: rgba(255, 255, 255, 0.85) !important;
   }
-  
-  html.dark-mode .greeting__gurbani,
-  [data-theme="dark"] .greeting__gurbani {
-    color: #D4943A !important;
+
+  .greeting__gurbani {
+    font-family: 'Noto Sans Gurmukhi', 'MFJashan', sans-serif !important;
+    font-size: clamp(1.5rem, 2vw, 2.1rem) !important;
+    font-weight: 600 !important;
+    color: var(--gold-primary) !important;
+    line-height: 1.6 !important;
+    margin-bottom: 10px !important;
   }
-  
+
+  .greeting__translation {
+    font-size: 1.05rem !important;
+    font-style: italic !important;
+    line-height: 1.6 !important;
+    color: rgba(0, 0, 0, 0.6) !important;
+    max-width: 700px !important;
+    margin: 0 auto !important;
+  }
   html.dark-mode .greeting__translation,
   [data-theme="dark"] .greeting__translation {
-    color: rgba(255, 255, 255, 0.65) !important;
-  }
-  
-  /* ═════════════════════════════════════════════════════════════════════════════
-     PRACTICE CARDS — LIGHT MODE (Default)
-     ═════════════════════════════════════════════════════════════════════════════ */
-  .practice-grid {
-    display: grid !important;
-    grid-template-columns: repeat(3, 1fr) !important;
-    gap: 20px !important;
-    margin-bottom: 48px;
-  }
-  
-  .practice-card {
-    padding: 24px !important;
-    border-radius: 16px !important;
-    background: rgba(255, 255, 255, 0.9) !important;
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06) !important;
-    transition: background-color 0.2s ease, color 0.2s ease;
-  }
-  
-  .practice-card:hover {
-    transform: translateY(-2px);
-    background: #fff !important;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1) !important;
-    border-color: rgba(0, 0, 0, 0.12);
-  }
-  
-  .practice-card__title {
-    font-size: 1.125rem !important;
-    font-weight: 600;
-    color: rgba(0, 0, 0, 0.85) !important;
-    margin: 16px 0 8px;
-  }
-  
-  .practice-card__status {
-    font-size: 0.875rem !important;
-    color: rgba(0, 0, 0, 0.55) !important;
-  }
-  
-  /* ═════════════════════════════════════════════════════════════════════════════
-     PRACTICE CARDS — DARK MODE
-     ═════════════════════════════════════════════════════════════════════════════ */
-  html.dark-mode .practice-card,
-  [data-theme="dark"] .practice-card {
-    background: rgba(40, 40, 45, 0.7) !important;
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3) !important;
-  }
-  
-  html.dark-mode .practice-card:hover,
-  [data-theme="dark"] .practice-card:hover {
-    background: rgba(50, 50, 55, 0.8) !important;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
-    border-color: rgba(255, 255, 255, 0.1);
-  }
-  
-  html.dark-mode .practice-card__title,
-  [data-theme="dark"] .practice-card__title {
-    color: rgba(255, 255, 255, 0.95) !important;
-  }
-  
-  html.dark-mode .practice-card__status,
-  [data-theme="dark"] .practice-card__status {
     color: rgba(255, 255, 255, 0.6) !important;
   }
-  
-  .practice-card__ring {
-    width: 64px;
-    height: 64px;
-  }
-  
-  .practice-card__ring svg {
-    width: 72px;
-    height: 72px;
-  }
-  
-  /* ═════════════════════════════════════════════════════════════════════════════
-     QUICK ACCESS — DESKTOP 2-COLUMN GRID (FIXED)
-     ═════════════════════════════════════════════════════════════════════════════ */
-  /* ═════════════════════════════════════════════════════════════════════════════
-     SECTION HEADERS — LIGHT MODE (Default)
-     ═════════════════════════════════════════════════════════════════════════════ */
-  .section-header {
-    margin-bottom: 28px !important;
-    width: 100%;
-  }
-  
-  .section-header__title {
-    font-size: 0.875rem !important;
-    font-weight: 600;
-    color: rgba(0, 0, 0, 0.5) !important;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-  }
-  
-  /* ═════════════════════════════════════════════════════════════════════════════
-     SECTION HEADERS — DARK MODE
-     ═════════════════════════════════════════════════════════════════════════════ */
-  html.dark-mode .section-header__title,
-  [data-theme="dark"] .section-header__title {
-    color: rgba(255, 255, 255, 0.5) !important;
-  }
-  
-  /* Clear any floats before Quick Access section */
-  .section-header:has(+ .quick-card)::before {
-    content: '';
-    display: table;
-    clear: both;
-  }
-  
-  /* ═════════════════════════════════════════════════════════════════════════════
-     QUICK CARDS — LIGHT MODE (Default)
-     ═════════════════════════════════════════════════════════════════════════════ */
-  .quick-card {
-    display: flex !important;
-    width: calc(50% - 12px) !important;
-    float: left !important;
-    margin-right: 24px !important;
-    margin-bottom: 24px !important;
-    padding: 20px !important;
-    border-radius: 16px !important;
-    clear: none !important;
-    box-shadow: none !important;
-    transition: background-color 0.2s ease, color 0.2s ease;
-    background: rgba(255, 255, 255, 0.9) !important;
-    border: 1px solid rgba(0, 0, 0, 0.08);
-  }
-  
-  .quick-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
-    background: #fff !important;
-    border-color: rgba(0, 0, 0, 0.12);
-  }
-  
-  /* Notes card - full width (5th card) */
-  .quick-card:nth-child(5),
-  .quick-card--notes,
-  .quick-card[data-card="notes"] {
-    width: 100% !important;
-    margin-right: 0 !important;
-    clear: both !important;
-    float: none !important;
-  }
-  
-  .quick-card__title {
-    font-size: 1.125rem !important;
-    color: rgba(0, 0, 0, 0.85) !important;
-    font-weight: 600;
-  }
-  
-  .quick-card__subtitle {
-    color: rgba(0, 0, 0, 0.55) !important;
-    font-size: 0.875rem;
-  }
-  
-  /* ═════════════════════════════════════════════════════════════════════════════
-     QUICK CARDS — DARK MODE
-     ═════════════════════════════════════════════════════════════════════════════ */
-  html.dark-mode .quick-card,
-  [data-theme="dark"] .quick-card {
-    background: rgba(40, 40, 45, 0.6) !important;
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3) !important;
-  }
-  
-  html.dark-mode .quick-card:hover,
-  [data-theme="dark"] .quick-card:hover {
-    background: rgba(50, 50, 55, 0.7) !important;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
-    border-color: rgba(255, 255, 255, 0.1);
-  }
-  
-  html.dark-mode .quick-card__title,
-  [data-theme="dark"] .quick-card__title {
-    color: rgba(255, 255, 255, 0.95) !important;
-  }
-  
-  html.dark-mode .quick-card__subtitle,
-  [data-theme="dark"] .quick-card__subtitle {
-    color: rgba(255, 255, 255, 0.6) !important;
-  }
-  
-  .quick-card:nth-child(even) {
-    margin-right: 0 !important;
-    float: right !important;
-  }
-  
-  .quick-card:nth-child(odd) {
-    clear: left !important;
-  }
-  
-  .quick-card__title {
-    font-size: 1.125rem !important;
-  }
-  
-  /* Clear after quick cards - IMPORTANT for event card */
-  .quick-card:last-of-type::after {
-    content: '';
-    display: table;
-    clear: both;
-  }
-  
-  .quick-card:last-of-type {
-    margin-bottom: 48px !important;
-  }
-  
-  /* ═════════════════════════════════════════════════════════════════════════════
-     EVENT CARD — EXTREME PILLOW CLAYMORPHISM (Desktop)
-     ═════════════════════════════════════════════════════════════════════════════ */
-  .event-card {
-    clear: both !important;
-    float: none !important;
-    max-width: 100%;
-    width: 100%;
-    margin: 32px 0 48px 0;
-    border-radius: 32px !important;
-    padding: 32px !important;
-    background: linear-gradient(160deg, #FFFCF8 0%, #FFF8EE 25%, #FFF2E0 50%, #FFE8C8 75%, #FFECB3 100%) !important;
-    border: 2px solid rgba(212, 148, 58, 0.15) !important;
-    box-shadow:
-      24px 24px 80px rgba(0, 0, 0, 0.12),
-      -12px -12px 50px rgba(255, 255, 255, 1),
-      0 0 60px rgba(212, 148, 58, 0.15),
-      inset 8px 8px 20px rgba(255, 255, 255, 0.95),
-      inset 4px 4px 12px rgba(255, 255, 255, 0.8),
-      inset -8px -8px 20px rgba(212, 148, 58, 0.12),
-      inset -4px -4px 12px rgba(139, 90, 43, 0.06),
-      0 0 0 2px rgba(255, 255, 255, 0.6),
-      0 0 0 4px rgba(212, 148, 58, 0.1) !important;
-    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) !important, opacity 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
-    position: relative;
-    overflow: hidden;
-  }
 
-  /* Glossy highlight overlay for pillow effect */
-  .event-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 45%;
-    background: linear-gradient(180deg,
-      rgba(255, 255, 255, 0.7) 0%,
-      rgba(255, 255, 255, 0.3) 50%,
-      transparent 100%);
-    border-radius: 30px 30px 0 0;
-    pointer-events: none;
-    z-index: 1;
-  }
-
-  .event-card:hover {
-    transform: translateY(-4px) scale(1.02) !important;
-    box-shadow:
-      30px 30px 100px rgba(0, 0, 0, 0.15),
-      -15px -15px 60px rgba(255, 255, 255, 1),
-      0 0 80px rgba(212, 148, 58, 0.2),
-      inset 10px 10px 24px rgba(255, 255, 255, 0.98),
-      inset 5px 5px 15px rgba(255, 255, 255, 0.85),
-      inset -10px -10px 24px rgba(212, 148, 58, 0.15),
-      inset -5px -5px 15px rgba(139, 90, 43, 0.08),
-      0 0 0 2px rgba(255, 255, 255, 0.7),
-      0 0 0 5px rgba(212, 148, 58, 0.15) !important;
-  }
-  
-  .event-card__title {
-    font-size: 1.5rem !important;
-    font-weight: 700;
-    color: rgba(0, 0, 0, 0.85) !important;
-    margin: 0 0 8px 0;
-  }
-  
-  .event-card__eyebrow {
-    color: #B47A1F !important;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    font-size: 0.75rem !important;
-    margin-bottom: 12px;
-  }
-  
-  .event-card__description {
-    color: rgba(0, 0, 0, 0.6) !important;
-    font-size: 0.95rem;
-    line-height: 1.6;
-  }
-  
-  /* ═════════════════════════════════════════════════════════════════════════════
-     EVENT CARD — DARK MODE
-     ═════════════════════════════════════════════════════════════════════════════ */
-  html.dark-mode .event-card,
-  [data-theme="dark"] .event-card {
-    background: rgba(40, 40, 45, 0.7) !important;
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3) !important;
-  }
-  
-  html.dark-mode .event-card:hover,
-  [data-theme="dark"] .event-card:hover {
-    background: rgba(50, 50, 55, 0.8) !important;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4) !important;
-    border-color: rgba(212, 148, 58, 0.15);
-  }
-  
-  html.dark-mode .event-card__title,
-  [data-theme="dark"] .event-card__title {
-    color: rgba(255, 255, 255, 0.95) !important;
-  }
-  
-  html.dark-mode .event-card__eyebrow,
-  [data-theme="dark"] .event-card__eyebrow {
-    color: #D4943A !important;
-  }
-  
-  html.dark-mode .event-card__description,
-  [data-theme="dark"] .event-card__description {
-    color: rgba(255, 255, 255, 0.7) !important;
-  }
-  
-  /* ═════════════════════════════════════════════════════════════════════════════
-     MINI PLAYER — DESKTOP: MOVE TO SIDEBAR BOTTOM
-     ═════════════════════════════════════════════════════════════════════════════ */
-  .mini-player,
-  .gmp {
-    position: fixed !important;
-    left: 12px !important;
-    right: auto !important;
-    bottom: 60px !important;
-    width: calc(var(--desktop-sidebar-width) - 24px) !important;
-    max-width: none !important;
-    border-radius: 12px !important;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15) !important;
-    backdrop-filter: blur(16px) saturate(180%);
-    -webkit-backdrop-filter: blur(16px) saturate(180%);
-    background: rgba(255, 255, 255, 0.92) !important;
-    z-index: var(--z-mini-player, 300);
-    padding: 10px 12px !important;
-    min-height: 60px !important;
-  }
-  
-  /* Mini player dark mode */
-  html.dark-mode .mini-player,
-  html.dark-mode .gmp,
-  [data-theme="dark"] .mini-player,
-  [data-theme="dark"] .gmp {
-    background: rgba(30, 30, 35, 0.92) !important;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
-  }
-  
-  /* ═════════════════════════════════════════════════════════════════════════════
-     PROGRESS BAR — LIGHT MODE (Default)
-     ═════════════════════════════════════════════════════════════════════════════ */
   .progress-inline {
     width: 100% !important;
     max-width: 100% !important;
-    margin: 0 0 40px 0;
-    background: rgba(0, 0, 0, 0.06) !important;
-    border-radius: 100px !important;
-    height: 8px !important;
-    overflow: hidden;
-    position: relative;
+    margin: 0 0 36px 0 !important;
+    padding: 14px 24px !important;
+    border-radius: 18px !important;
+    background: rgba(255, 255, 255, 0.9) !important;
+    border: 1px solid rgba(0, 0, 0, 0.08) !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 16px !important;
+    box-sizing: border-box !important;
   }
-  
-  .progress-inline__bar {
-    height: 100% !important;
-    background: linear-gradient(90deg, #D4943A 0%, #E8B86D 100%) !important;
-    border-radius: 100px !important;
-    transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-  }
-  
-  .progress-inline__label {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 12px;
-    color: rgba(0, 0, 0, 0.6) !important;
-    font-size: 0.875rem;
-    font-weight: 500;
-  }
-  
-  .progress-inline__label strong {
-    color: rgba(0, 0, 0, 0.85) !important;
-    font-weight: 600;
-  }
-  
-  /* ═════════════════════════════════════════════════════════════════════════════
-     PROGRESS BAR — DARK MODE
-     ═════════════════════════════════════════════════════════════════════════════ */
   html.dark-mode .progress-inline,
   [data-theme="dark"] .progress-inline {
-    background: rgba(255, 255, 255, 0.1) !important;
+    background: rgba(28, 28, 32, 0.88) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25) !important;
   }
-  
+
+  .progress-inline__bar {
+    flex: 1 !important;
+    height: 8px !important;
+    border-radius: 6px !important;
+    background: rgba(0, 0, 0, 0.08) !important;
+  }
   html.dark-mode .progress-inline__bar,
   [data-theme="dark"] .progress-inline__bar {
-    box-shadow: 0 0 12px rgba(212, 148, 58, 0.4);
+    background: rgba(255, 255, 255, 0.12) !important;
   }
-  
-  html.dark-mode .progress-inline__label,
-  [data-theme="dark"] .progress-inline__label {
-    color: rgba(255, 255, 255, 0.7) !important;
+
+  .progress-inline__fill {
+    height: 100% !important;
+    border-radius: 6px !important;
+    background: var(--gold-gradient) !important;
   }
-  
-  html.dark-mode .progress-inline__label strong,
-  [data-theme="dark"] .progress-inline__label strong {
-    color: rgba(255, 255, 255, 0.95) !important;
+
+  /* ─────────────────────────────────────────────────────────────────────────────
+     6. HERO CAROUSEL (4 CARDS SYMMETRIC GRID)
+     ───────────────────────────────────────────────────────────────────────────── */
+  .hero-carousel {
+    margin: 0 0 44px 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
   }
-  
-  /* ═════════════════════════════════════════════════════════════════════════════
-     INSTALL BUTTON — HIDE ON DESKTOP
+
+  .hero-carousel__track {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 20px !important;
+    overflow: visible !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    transform: none !important;
+    box-sizing: border-box !important;
+  }
+
+  .hero-card {
+    min-width: 0 !important;
+    max-width: none !important;
+    width: 100% !important;
+    flex: none !important;
+    border-radius: var(--desktop-radius-lg) !important;
+    overflow: hidden !important;
+    background: rgba(255, 255, 255, 0.92) !important;
+    border: 1px solid rgba(0, 0, 0, 0.08) !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06) !important;
+    transition: transform 0.35s var(--ease-spring), box-shadow 0.35s var(--ease-apple) !important;
+    position: relative !important;
+    box-sizing: border-box !important;
+  }
+  html.dark-mode .hero-card,
+  [data-theme="dark"] .hero-card {
+    background: rgba(28, 28, 32, 0.92) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35) !important;
+  }
+
+  .hero-card:hover {
+    transform: translateY(-6px) scale(1.01) !important;
+    box-shadow: 0 16px 36px rgba(212, 148, 58, 0.2) !important;
+    border-color: rgba(212, 148, 58, 0.4) !important;
+  }
+
+  .hero-card__image-wrapper {
+    aspect-ratio: 16/10 !important;
+    width: 100% !important;
+    height: auto !important;
+    overflow: hidden !important;
+    position: relative !important;
+  }
+
+  .hero-card__image {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    transition: transform 0.6s var(--ease-apple) !important;
+    filter: none !important;
+  }
+  .hero-card:hover .hero-card__image {
+    transform: scale(1.05) !important;
+  }
+
+  .hero-card__overlay {
+    position: absolute !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    padding: 14px 16px !important;
+    background: linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.45) 60%, transparent 100%) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    z-index: 2 !important;
+  }
+
+  .hero-card__overlay-info {
+    flex: 1 !important;
+    color: #FFFFFF !important;
+    min-width: 0;
+  }
+
+  .hero-card__title {
+    font-size: 1.05rem !important;
+    font-weight: 700 !important;
+    color: #FFFFFF !important;
+    margin-bottom: 2px !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .hero-card__subtitle {
+    font-size: 0.78rem !important;
+    color: rgba(255, 255, 255, 0.8) !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .hero-card__play-btn {
+    width: 42px !important;
+    height: 42px !important;
+    border-radius: 50% !important;
+    background: var(--gold-gradient) !important;
+    color: #FFFFFF !important;
+    border: none !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    box-shadow: 0 4px 14px rgba(212, 148, 58, 0.4) !important;
+    transition: transform 0.25s var(--ease-spring) !important;
+    flex-shrink: 0 !important;
+    margin-left: 10px !important;
+  }
+  .hero-card__play-btn:hover {
+    transform: scale(1.1) !important;
+  }
+
+  /* ─────────────────────────────────────────────────────────────────────────────
+     7. UPCOMING GURPURAB EVENT CARD (Centered Full-Width)
+     ───────────────────────────────────────────────────────────────────────────── */
+  .event-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 32px 0 44px 0 !important;
+    padding: 32px 40px !important;
+    border-radius: var(--desktop-radius-xl) !important;
+    background: linear-gradient(145deg, #FFFDF8 0%, #FFF5E6 50%, #FFECD0 100%) !important;
+    border: 2px solid rgba(212, 148, 58, 0.3) !important;
+    box-shadow: 0 16px 44px rgba(212, 148, 58, 0.14) !important;
+    position: relative !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+  }
+  html.dark-mode .event-card,
+  [data-theme="dark"] .event-card {
+    background: linear-gradient(145deg, #241E15 0%, #2E2519 50%, #382C1B 100%) !important;
+    border: 2px solid rgba(212, 148, 58, 0.35) !important;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.45) !important;
+  }
+
+  .event-card__main {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 32px !important;
+    width: 100% !important;
+  }
+
+  .event-card__info {
+    flex: 1 !important;
+  }
+
+  .event-card__title {
+    font-size: 1.7rem !important;
+    font-weight: 800 !important;
+    margin: 6px 0 !important;
+    color: #1a1a1f !important;
+  }
+  html.dark-mode .event-card__title,
+  [data-theme="dark"] .event-card__title {
+    color: #FFFFFF !important;
+  }
+
+  .event-card__guru-img-wrapper {
+    width: 130px !important;
+    height: 130px !important;
+    border-radius: 50% !important;
+    border: 3px solid rgba(212, 148, 58, 0.4) !important;
+    box-shadow: 0 8px 24px rgba(212, 148, 58, 0.25) !important;
+    overflow: hidden !important;
+    flex-shrink: 0 !important;
+  }
+
+  /* ─────────────────────────────────────────────────────────────────────────────
+     8. YOUR PRACTICE GRID (3 COLUMNS)
+     ───────────────────────────────────────────────────────────────────────────── */
+  .section-header {
+    margin: 36px 0 18px 0 !important;
+    width: 100% !important;
+  }
+  .section-header__title {
+    font-size: 1.35rem !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.2px !important;
+  }
+
+  .practice-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: var(--desktop-grid-gap) !important;
+    margin-bottom: 44px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .practice-card {
+    padding: 28px 24px !important;
+    border-radius: var(--desktop-radius-lg) !important;
+    background: rgba(255, 255, 255, 0.92) !important;
+    border: 1px solid rgba(0, 0, 0, 0.08) !important;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05) !important;
+    transition: all 0.3s var(--ease-spring) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    cursor: pointer !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+  }
+  html.dark-mode .practice-card,
+  [data-theme="dark"] .practice-card {
+    background: rgba(28, 28, 32, 0.88) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3) !important;
+  }
+  .practice-card:hover {
+    transform: translateY(-5px) !important;
+    box-shadow: 0 14px 32px rgba(212, 148, 58, 0.16) !important;
+    border-color: rgba(212, 148, 58, 0.35) !important;
+  }
+
+  .practice-card__ring {
+    width: 78px !important;
+    height: 78px !important;
+    margin-bottom: 14px !important;
+  }
+
+  .practice-card__title {
+    font-size: 1.25rem !important;
+    font-weight: 700 !important;
+    margin-bottom: 6px !important;
+  }
+
+  .practice-card__status {
+    font-size: 0.88rem !important;
+    color: var(--text-secondary, #8E8E93) !important;
+  }
+
+  /* ─────────────────────────────────────────────────────────────────────────────
+     9. QUICK ACCESS GRID (4 COLUMNS)
+     ───────────────────────────────────────────────────────────────────────────── */
+  .quick-access-grid {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 18px !important;
+    margin-bottom: 48px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .quick-card {
+    display: flex !important;
+    align-items: center !important;
+    gap: 14px !important;
+    width: 100% !important;
+    float: none !important;
+    margin: 0 !important;
+    padding: 18px 20px !important;
+    border-radius: var(--desktop-radius-md) !important;
+    background: rgba(255, 255, 255, 0.92) !important;
+    border: 1px solid rgba(0, 0, 0, 0.08) !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04) !important;
+    transition: all 0.25s var(--ease-spring) !important;
+    cursor: pointer !important;
+    box-sizing: border-box !important;
+  }
+  html.dark-mode .quick-card,
+  [data-theme="dark"] .quick-card {
+    background: rgba(28, 28, 32, 0.88) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25) !important;
+  }
+  .quick-card:hover {
+    transform: translateY(-3px) scale(1.02) !important;
+    background: #FFFFFF !important;
+    box-shadow: 0 10px 26px rgba(212, 148, 58, 0.16) !important;
+    border-color: rgba(212, 148, 58, 0.35) !important;
+  }
+  html.dark-mode .quick-card:hover,
+  [data-theme="dark"] .quick-card:hover {
+    background: rgba(36, 36, 42, 0.95) !important;
+  }
+
+  .quick-card__icon {
+    font-size: 1.4rem !important;
+    width: 36px !important;
+    height: 36px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-shrink: 0 !important;
+  }
+
+  .quick-card__title {
+    font-size: 1rem !important;
+    font-weight: 700 !important;
+    margin-bottom: 2px !important;
+  }
+
+  .quick-card__subtitle {
+    font-size: 0.8rem !important;
+    color: var(--text-secondary, #8E8E93) !important;
+  }
+
+  /* ─────────────────────────────────────────────────────────────────────────────
+     10. GURBANI RADIO STUDIO LAYOUT
+     ───────────────────────────────────────────────────────────────────────────── */
+  #radioApp,
+  .radio-page-container {
+    max-width: 1100px !important;
+    margin: 0 auto !important;
+    height: auto !important;
+    min-height: 100vh !important;
+    overflow-y: auto !important;
+    padding: 24px 32px 80px 32px !important;
+  }
+
+  #radioApp .gr-nav {
+    max-width: 600px !important;
+    margin: 0 auto 20px auto !important;
+  }
+
+  #radioApp .gr-tabs {
+    max-width: 480px !important;
+    margin: 0 auto 24px auto !important;
+  }
+
+  #radioApp .gr-card-wrapper {
+    max-width: 460px !important;
+    margin: 0 auto 20px auto !important;
+  }
+
+  #radioApp .gr-card {
+    max-width: 460px !important;
+    margin: 0 auto !important;
+    padding: 24px !important;
+    border-radius: var(--desktop-radius-xl) !important;
+    box-shadow: 0 12px 36px rgba(0,0,0,0.08) !important;
+  }
+
+  #radioApp .gr-card-media {
+    max-height: 280px !important;
+    aspect-ratio: 16/10 !important;
+    border-radius: 18px !important;
+  }
+
+  #radioApp .gr-listening-banner {
+    max-width: 480px !important;
+    margin: 0 auto 16px auto !important;
+  }
+
+  #radioApp .gr-controls-section {
+    max-width: 480px !important;
+    margin: 0 auto !important;
+  }
+
+  /* ─────────────────────────────────────────────────────────────────────────────
+     11. NITNEM & BANI READERS — FULLSCREEN IMMERSIVE READER (NO SIDEBAR)
      ═════════════════════════════════════════════════════════════════════════════ */
-  .install-app-btn,
-  .install-banner {
+  body.reader-no-sidebar .desktop-sidebar,
+  .reader-app ~ .desktop-sidebar,
+  .reader-container ~ .desktop-sidebar {
     display: none !important;
   }
-  
-  /* ═════════════════════════════════════════════════════════════════════════════
-     DARK MODE DESKTOP ADJUSTMENTS
-     ═════════════════════════════════════════════════════════════════════════════ */
-  html.dark-mode .desktop-sidebar,
-  [data-theme="dark"] .desktop-sidebar {
-    background: linear-gradient(180deg,
-      rgba(255, 255, 255, 0.95) 0%,
-      rgba(248, 250, 252, 0.95) 100%);
-    border-right-color: rgba(255,255,255,0.08);
+
+  .reader-app,
+  #readerApp,
+  .reader-container,
+  #readerContainer,
+  body.reader-no-sidebar .app,
+  body.reader-no-sidebar main {
+    display: block !important;
+    margin-left: 0 !important;
+    width: 100% !important;
+    max-width: none !important;
+    min-height: 100vh !important;
+    padding: 0 !important;
+    background: transparent !important;
+    box-sizing: border-box !important;
+    position: relative !important;
   }
-  
-  html.dark-mode .home-header,
-  [data-theme="dark"] .home-header {
+
+  /* Universal Sticky Top Bar for Readers — Full Width without Sidebar */
+  .reader-sticky-top-bar,
+  #readerStickyTopBar,
+  .reader-header#readerHeader {
+    left: 0 !important;
+    width: 100% !important;
+    right: 0 !important;
+    top: 0 !important;
+    position: fixed !important;
+    z-index: 120 !important;
+    background: rgba(250, 248, 245, 0.94) !important;
+    backdrop-filter: blur(24px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
+    box-sizing: border-box !important;
+  }
+
+  html.dark-mode .reader-sticky-top-bar,
+  html.dark-mode #readerStickyTopBar,
+  html.dark-mode .reader-header#readerHeader,
+  [data-theme="dark"] .reader-sticky-top-bar,
+  [data-theme="dark"] #readerStickyTopBar,
+  [data-theme="dark"] .reader-header#readerHeader {
+    background: rgba(13, 13, 15, 0.94) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  }
+
+  /* Centered containers inside reader sticky top bar */
+  .reader-sticky-top-bar .reader-header,
+  .reader-sticky-top-bar .reader-toggles,
+  .reader-header .header-content {
+    max-width: var(--desktop-reader-max) !important;
+    margin: 0 auto !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .reader-content,
+  .gurbani-content,
+  .bani-content {
+    max-width: var(--desktop-reader-max) !important;
+    margin: 0 auto !important;
+    width: 100% !important;
+    padding: 130px 24px 120px 24px !important;
+    box-sizing: border-box !important;
+  }
+
+  .bani-top-sticky-bar {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 100 !important;
+    max-width: var(--desktop-reader-max) !important;
+    margin: 0 auto 24px auto !important;
+    width: 100% !important;
+    background: rgba(250, 248, 245, 0.92) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border-radius: var(--desktop-radius-md) !important;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.04) !important;
+    padding: 12px 16px !important;
+    box-sizing: border-box !important;
+  }
+  html.dark-mode .bani-top-sticky-bar,
+  [data-theme="dark"] .bani-top-sticky-bar {
+    background: rgba(13, 13, 15, 0.92) !important;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.3) !important;
+  }
+
+  .bani-header {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    margin-bottom: 12px !important;
+  }
+
+  .bani-controls {
+    display: flex !important;
+    justify-content: center !important;
+    gap: 12px !important;
+  }
+
+  .verses-container {
+    max-width: var(--desktop-reader-max) !important;
+    margin: 0 auto !important;
+    width: 100% !important;
+    padding: 0 0 80px 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  .verse-container,
+  .verse-card,
+  .bani-line-card {
+    max-width: 100% !important;
+    margin: 0 auto 20px auto !important;
+    padding: 26px 36px !important;
+    border-radius: var(--desktop-radius-lg) !important;
+    background: rgba(255, 255, 255, 0.94) !important;
+    border: 1px solid rgba(0, 0, 0, 0.07) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03) !important;
+    text-align: center !important;
+    box-sizing: border-box !important;
+    transition: transform 0.2s var(--ease-apple), box-shadow 0.2s ease !important;
+  }
+  .verse-container:hover,
+  .verse-card:hover,
+  .bani-line-card:hover {
+    box-shadow: 0 8px 28px rgba(212, 148, 58, 0.08) !important;
+  }
+  html.dark-mode .verse-container,
+  html.dark-mode .verse-card,
+  html.dark-mode .bani-line-card,
+  [data-theme="dark"] .verse-container,
+  [data-theme="dark"] .verse-card,
+  [data-theme="dark"] .bani-line-card {
+    background: rgba(24, 24, 28, 0.9) !important;
+    border: 1px solid rgba(255, 255, 255, 0.07) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.28) !important;
+  }
+  html.dark-mode .verse-container:hover,
+  html.dark-mode .verse-card:hover,
+  html.dark-mode .bani-line-card:hover,
+  [data-theme="dark"] .verse-container:hover,
+  [data-theme="dark"] .verse-card:hover,
+  [data-theme="dark"] .bani-line-card:hover {
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45) !important;
+  }
+
+  .larivaar-line,
+  .gurmukhi-text,
+  .bani-verse__gurmukhi {
+    font-size: clamp(1.4rem, 1.8vw, 1.95rem) !important;
+    line-height: 2.3 !important;
+    margin-bottom: 14px !important;
+    letter-spacing: 0.01em !important;
+  }
+
+  .english-translation,
+  .punjabi-translation,
+  .bani-verse__translation {
+    font-size: 1.05rem !important;
+    line-height: 1.75 !important;
+    color: rgba(0, 0, 0, 0.72) !important;
+  }
+  html.dark-mode .english-translation,
+  html.dark-mode .punjabi-translation,
+  html.dark-mode .bani-verse__translation,
+  [data-theme="dark"] .english-translation,
+  [data-theme="dark"] .punjabi-translation,
+  [data-theme="dark"] .bani-verse__translation {
+    color: rgba(255, 255, 255, 0.72) !important;
+  }
+
+  /* Universal Loading Overlays & Skeletons on Desktop */
+  .loading-overlay,
+  #loadingOverlay {
+    left: 0 !important;
+    width: 100% !important;
+    right: 0 !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    position: fixed !important;
+    z-index: 950 !important;
+    background: #FAF8F5 !important;
+  }
+  html.dark-mode .loading-overlay,
+  html.dark-mode #loadingOverlay,
+  [data-theme="dark"] .loading-overlay,
+  [data-theme="dark"] #loadingOverlay {
+    background: #0D0D0F !important;
+  }
+
+  .loading-content {
+    text-align: center;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  .loading-ik {
+    font-family: var(--font-gurmukhi, 'Noto Sans Gurmukhi', sans-serif);
+    font-size: 4.5rem;
+    color: var(--gold-primary, #D4943A);
+    text-shadow: 0 0 24px rgba(212, 148, 58, 0.4);
+    animation: csPulse 2s ease-in-out infinite;
+  }
+
+  /* Skeleton Loading Container on Desktop */
+  .skeleton-container,
+  #skeletonContainer,
+  #skeletonLoader {
+    max-width: var(--desktop-reader-max) !important;
+    margin: 0 auto !important;
+    width: 100% !important;
+    padding: 32px 24px !important;
+    box-sizing: border-box !important;
+  }
+
+  .skeleton-verse {
+    background: rgba(0, 0, 0, 0.04) !important;
+    border-radius: var(--desktop-radius-lg) !important;
+    padding: 24px 32px !important;
+    margin-bottom: 20px !important;
+  }
+  html.dark-mode .skeleton-verse,
+  [data-theme="dark"] .skeleton-verse {
+    background: rgba(255, 255, 255, 0.04) !important;
+  }
+
+  /* Floating bars on Desktop Reader */
+  .floating-controls-bar,
+  #floatingControlsBar,
+  .reading-progress-bar,
+  #readingProgressBar,
+  .reader-progress {
+    left: 0 !important;
+    width: 100% !important;
+    right: 0 !important;
+  }
+
+  /* Desktop Centered Settings Sheet & Modals */
+  .settings-drawer,
+  .reader-sheet,
+  #settingsSheet,
+  #themeSheet,
+  #fontModal {
+    position: fixed !important;
+    left: 50% !important;
+    transform: translateX(-50%) translateY(100%) !important;
+    width: 90% !important;
+    max-width: 640px !important;
+    border-radius: 28px !important;
+    bottom: 32px !important;
+    max-height: 85vh !important;
+    z-index: 1000 !important;
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(212, 148, 58, 0.25) !important;
+    transition: transform 0.4s var(--ease-apple), opacity 0.3s ease !important;
+    overflow: hidden !important;
+    background: #FFFFFF !important;
+  }
+
+  .settings-drawer.visible,
+  .reader-sheet.visible {
+    transform: translateX(-50%) translateY(0) !important;
+  }
+
+  html.dark-mode .settings-drawer,
+  [data-theme="dark"] .settings-drawer,
+  html.dark-mode .reader-sheet,
+  [data-theme="dark"] .reader-sheet,
+  html.dark-mode #settingsSheet,
+  [data-theme="dark"] #settingsSheet {
+    background: #1C1C1E !important;
+    border: 1px solid rgba(247, 198, 52, 0.3) !important;
+    box-shadow: 0 32px 90px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(247, 198, 52, 0.2) !important;
+  }
+
+  /* High-Contrast Settings Labels */
+  .setting-label,
+  .setting-title,
+  .setting-row span {
+    color: #1C1C1E !important;
+    font-weight: 600 !important;
+  }
+  .setting-desc {
+    color: #6C6C70 !important;
+  }
+  .setting-section-title {
+    color: #8E8E93 !important;
+  }
+  .setting-card {
+    background: #F2F2F7 !important;
+    border: 1px solid rgba(0, 0, 0, 0.08) !important;
+    border-radius: 16px !important;
+  }
+
+  html.dark-mode .setting-label,
+  html.dark-mode .setting-title,
+  html.dark-mode .setting-row span,
+  [data-theme="dark"] .setting-label,
+  [data-theme="dark"] .setting-title,
+  [data-theme="dark"] .setting-row span {
+    color: #F5F5F7 !important;
+  }
+  html.dark-mode .setting-desc,
+  [data-theme="dark"] .setting-desc {
+    color: #98989D !important;
+  }
+  html.dark-mode .setting-section-title,
+  [data-theme="dark"] .setting-section-title {
+    color: #8E8E93 !important;
+  }
+  html.dark-mode .setting-card,
+  [data-theme="dark"] .setting-card {
+    background: #2C2C2E !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  }
+
+  /* ─────────────────────────────────────────────────────────────────────────────
+     12. SUBPAGES (Dashboard, Nitnem Hub, Hukamnama, Khoj, Notes, Favorites)
+     ───────────────────────────────────────────────────────────────────────────── */
+  .dashboard-top-section {
+    display: grid !important;
+    grid-template-columns: 360px 1fr !important;
+    gap: var(--desktop-grid-gap) !important;
+    margin-bottom: 36px !important;
+    width: 100% !important;
+  }
+  .streak-hero {
+    padding: 36px 24px !important;
+    border-radius: var(--desktop-radius-xl) !important;
+  }
+  .stats-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 18px !important;
+  }
+
+  .bani-grid,
+  .nitnem-hub-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 20px !important;
+    margin-top: 24px !important;
+    width: 100% !important;
+  }
+
+  .hukamnama-card,
+  .hukam-content {
+    max-width: 920px !important;
+    margin: 0 auto 48px auto !important;
+    padding: 36px 44px !important;
+    border-radius: var(--desktop-radius-xl) !important;
+    box-sizing: border-box !important;
+  }
+
+  .khoj-search-bar {
+    max-width: 820px !important;
+    margin: 0 auto 32px auto !important;
+    width: 100% !important;
+  }
+  .khoj-results-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 20px !important;
+    width: 100% !important;
+  }
+
+  .notes-list,
+  .favorites-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 20px !important;
+    width: 100% !important;
+  }
+
+  /* ─────────────────────────────────────────────────────────────────────────────
+     12-B. SEHAJ PAATH HUB PAGE DESKTOP CENTERING
+     ───────────────────────────────────────────────────────────────────────────── */
+  .paath-card,
+  .card.paath-card {
+    max-width: 720px !important;
+    margin: 0 auto 32px auto !important;
+    padding: 36px 40px !important;
+    border-radius: var(--desktop-radius-xl) !important;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.06) !important;
+    box-sizing: border-box !important;
+  }
+
+  /* ─────────────────────────────────────────────────────────────────────────────
+     13. MINI PLAYER DOCKED FOR DESKTOP
+     ───────────────────────────────────────────────────────────────────────────── */
+  .gmp,
+  #gmp,
+  .anhad-mini-player,
+  #anhadMiniPlayer,
+  .global-mini-player {
+    left: calc(var(--desktop-sidebar-width) + 32px) !important;
+    right: 32px !important;
+    width: auto !important;
+    max-width: 1000px !important;
+    margin: 0 auto !important;
+    bottom: 24px !important;
+    border-radius: var(--desktop-radius-lg) !important;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.25) !important;
+  }
+
+  /* ─────────────────────────────────────────────────────────────────────────────
+     14-A. HUKAMNAMA PAGE — DESKTOP CENTERING
+     The Hukamnama page wraps content in #mainScroll, which should occupy the
+     space to the right of the fixed sidebar.
+     ───────────────────────────────────────────────────────────────────────────── */
+  body #mainScroll {
+    margin-left: var(--desktop-sidebar-width) !important;
+    width: calc(100% - var(--desktop-sidebar-width)) !important;
+    max-width: none !important;
+    padding: 0 !important;
+    overflow-y: auto;
+    min-height: 100vh;
+  }
+
+  /* The hero and gurbani-section INSIDE mainScroll: centered column */
+  body #mainScroll .hero {
+    padding: 48px 0 32px 0 !important;
+    max-width: 800px !important;
+    margin: 0 auto !important;
+    text-align: center;
+  }
+
+  body #mainScroll main.gurbani-section,
+  body #mainScroll #hukamContent {
+    max-width: 800px !important;
+    margin: 0 auto !important;
+    padding: 0 48px 120px 48px !important;
+  }
+
+  /* ─────────────────────────────────────────────────────────────────────────────
+     14-B. SADHSANGAT LIVE — DESKTOP LAYOUT (YouTube-style)
+     ───────────────────────────────────────────────────────────────────────────── */
+  body .page-content {
+    margin-left: var(--desktop-sidebar-width) !important;
+    width: calc(100% - var(--desktop-sidebar-width)) !important;
+    max-width: none !important;
+    padding: 0 !important;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
     background: transparent;
-    border-color: rgba(255,255,255,0.08);
+  }
+
+  /* Sadhsangat header pinned full-width within page-content */
+  body .page-content > header.header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    width: 100% !important;
+    margin: 0 !important;
+  }
+
+  /* Main container full-width within page-content */
+  body .page-content > main#mainContainer,
+  body .page-content > main {
+    flex: 1;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 24px 32px !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Player sheet (the video overlay) — stays at full width */
+  body .page-content .player-sheet {
+    left: var(--desktop-sidebar-width) !important;
+    width: calc(100% - var(--desktop-sidebar-width)) !important;
+  }
+
+} /* end @media (min-width: 1024px) */
+
+/* ───────────────────────────────────────────────────────────────────────────────
+   15. COMPACT DESKTOP & LAPTOP (1024px – 1279px)
+   ─────────────────────────────────────────────────────────────────────────────── */
+@media screen and (min-width: 1024px) and (max-width: 1279px) {
+  :root {
+    --desktop-sidebar-width: 240px;
+    --desktop-content-max: 1020px;
+  }
+
+  .hero-carousel__track {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 18px !important;
+  }
+
+  .quick-access-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 16px !important;
   }
 }
 
 /* ───────────────────────────────────────────────────────────────────────────────
-   LARGE DESKTOP (1440px+)
+   16. WIDE DESKTOP & TV SCREENS (1440px – 4K)
    ─────────────────────────────────────────────────────────────────────────────── */
 @media screen and (min-width: 1440px) {
   :root {
-    --desktop-sidebar-width: 320px;
+    --desktop-sidebar-width: 280px;
+    --desktop-content-max: 1440px;
   }
-  
-  .app, main, #app {
-    padding: 40px 64px 64px !important;
-  }
-  
-  .hero-card {
-    min-width: 340px;
-    max-width: 380px;
-  }
-  
-  /* 4-column practice grid on large screens */
-  .practice-grid {
-    grid-template-columns: repeat(3, 1fr) !important;
-    gap: 32px !important;
-  }
-}
 
-/* ───────────────────────────────────────────────────────────────────────────────
-   SHEET/OVERLAY ADJUSTMENTS FOR DESKTOP
-   ─────────────────────────────────────────────────────────────────────────────── */
-@media screen and (min-width: 1024px) {
-  .sheet {
-    max-width: 500px;
-    left: 50% !important;
-    transform: translateX(-50%) !important;
-    border-radius: 24px 24px 0 0 !important;
+  .hero-carousel__track {
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 24px !important;
   }
-  
-  .sheet-overlay {
-    background: rgba(0,0,0,0.4) !important;
-  }
-}
 
-/* ───────────────────────────────────────────────────────────────────────────────
-   HIDE DESKTOP SIDEBAR ON MOBILE/TABLET
-   ─────────────────────────────────────────────────────────────────────────────── */
-.desktop-sidebar {
-  display: none;
-}
-
-/* ═════════════════════════════════════════════════════════════════════════════
-   ULTRA-AGGRESSIVE BACKGROUND OVERRIDE — Maximum Specificity
-   ═════════════════════════════════════════════════════════════════════════════ */
-@media screen and (min-width: 1024px) {
-  /* Target body with maximum specificity */
-  html body,
-  html > body,
-  body#app-body,
-  body.app-loaded,
-  body:not(.mobile) {
-    background: transparent !important;
-    background-color: transparent !important;
-  }
-  
-  /* ═════════════════════════════════════════════════════════════════════════════
-     BACKGROUND — LIGHT MODE (Default)
-     ═════════════════════════════════════════════════════════════════════════════ */
-  html > body::before,
-  body::before {
-    content: "" !important;
-    display: block !important;
-    position: fixed !important;
-    top: -100vh !important;
-    left: 0 !important;
-    right: 0 !important;
-    width: 100vw !important;
-    height: 300vh !important;
-    background: url('assets/darbar-sahib-bg.png') center center / cover no-repeat fixed !important;
-    background-image: url('assets/darbar-sahib-bg.png') !important;
-    background-position: center center !important;
-    background-size: cover !important;
-    background-repeat: no-repeat !important;
-    background-attachment: fixed !important;
-    filter: blur(3px) brightness(1.0) saturate(1.0) !important;
-    transform: scale(1.05) !important;
-    z-index: -9999 !important;
-    opacity: 1 !important;
-    visibility: visible !important;
-    pointer-events: none !important;
-  }
-  
-  html > body::after,
-  body::after {
-    content: "" !important;
-    display: none !important;
-  }
-  
-  /* ═════════════════════════════════════════════════════════════════════════════
-     BACKGROUND — DARK MODE
-     ═════════════════════════════════════════════════════════════════════════════ */
-  html.dark-mode > body::before,
-  [data-theme="dark"] > body::before {
-    filter: blur(3px) brightness(0.55) saturate(0.9) !important;
-  }
-  
-  html.dark-mode > body::after,
-  [data-theme="dark"] > body::after {
-    display: none !important;
-  }
-}
-
-/* ═════════════════════════════════════════════════════════════════════════════
-   QUICK ACCESS GRID — Proper 2-Column Layout & Header Alignment
-   ═════════════════════════════════════════════════════════════════════════════ */
-@media screen and (min-width: 1024px) {
-  /* Quick Access header left-aligned */
-  .quick-access-header {
-    text-align: left !important;
-    justify-content: flex-start !important;
-    align-items: flex-start !important;
-  }
-  
-  .quick-access-header .section-header__title {
-    text-align: left !important;
-    margin-left: 0 !important;
-    padding-left: 0 !important;
-  }
-  
-  /* Quick Access cards 2-column grid */
   .quick-access-grid {
-    display: grid !important;
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 16px !important;
-    width: 100% !important;
-    margin-bottom: 24px !important;
-  }
-  
-  .quick-access-grid .quick-card {
-    width: 100% !important;
-    margin: 0 !important;
-    display: flex !important;
-  }
-}
-
-/* Tablet breakpoint */
-@media screen and (min-width: 768px) and (max-width: 1023px) {
-  .quick-access-grid {
-    display: grid !important;
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 16px !important;
-  }
-  
-  .quick-access-grid .quick-card {
-    width: 100% !important;
-    margin: 0 !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 20px !important;
   }
 }

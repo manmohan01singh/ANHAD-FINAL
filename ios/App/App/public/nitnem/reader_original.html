@@ -69,7 +69,8 @@
     <!-- Styles -->
     <link rel="stylesheet" href="css/fonts.css">
     <link rel="stylesheet" href="css/reader.css">
-    
+    <link rel="stylesheet" href="../css/global-mini-player.css?v=4">
+
     <!-- Global Theme System -->
     <script src="../lib/global-theme.js"></script>
     
@@ -97,14 +98,14 @@
     <!-- Loading -->
     <div class="loading-overlay" id="loadingOverlay">
         <div class="loading-content">
-            <div class="loading-ik">a��</div>
+            <div class="loading-ik">a</div>
             <p id="loadingText">Loading...</p>
         </div>
     </div>
 
     <!-- Error State -->
     <div class="error-state" id="errorState" style="display: none;">
-        <div class="error-icon">G��n+�</div>
+        <div class="error-icon">Gn+</div>
         <h2>Unable to Load</h2>
         <p id="errorMessage">Something went wrong</p>
         <button class="error-btn" id="retryBtn">Try Again</button>
@@ -132,7 +133,7 @@
             </a>
 
             <div class="reader-title" id="readerTitle">
-                <span class="reader-gurmukhi">a��a��a�� a��a�� a��a�+a��a�� a��a��</span>
+                <span class="reader-gurmukhi">aaa aa aa+aa aa</span>
                 <span class="reader-english">Bani</span>
             </div>
 
@@ -158,10 +159,10 @@
 
         <!-- Display Toggles (Hide on scroll) -->
         <nav class="reader-toggles">
-            <button class="toggle-btn active" id="toggleGurmukhi">a��a��a��a��a��a��a��</button>
+            <button class="toggle-btn active" id="toggleGurmukhi">aaaaaaa</button>
             <button class="toggle-btn" id="toggleRoman">Roman</button>
             <button class="toggle-btn" id="toggleEnglish">English</button>
-            <button class="toggle-btn" id="togglePunjabi">a��a��a��a�+a��a��</button>
+            <button class="toggle-btn" id="togglePunjabi">aaaa+aa</button>
         </nav>
 
         <!-- Progress Text -->
@@ -184,15 +185,15 @@
 
             <!-- End Card -->
             <div class="reader-end" id="readerEnd" style="display: none;">
-                <div class="end-khanda">G��</div>
-                <h2 class="end-gurmukhi">a��a�+a��a�+a��a��a��a�� a��a�� a��a�+ a��a�+a��a�+a�+ a��a�+a��a�+a��a��a��a�� a��a�� a��a�� a��a��a��a�+</h2>
+                <div class="end-khanda">G</div>
+                <h2 class="end-gurmukhi">aa+aa+aaaa aa aa+ aa+aa+a+ aa+aa+aaaa aa aa aaaa+</h2>
                 <p class="end-english">The Khalsa belongs to God, Victory belongs to God</p>
                 
                 <!-- Next Bani in My Pothi (shown only when from=pothi) -->
                 <div class="next-bani-container" id="nextBaniContainer" style="display: none;">
                     <div class="next-bani-label">Next in My Pothi</div>
                     <a href="#" class="next-bani-btn" id="nextBaniBtn">
-                        <span class="next-bani-icon" id="nextBaniIcon">G��</span>
+                        <span class="next-bani-icon" id="nextBaniIcon">G</span>
                         <span class="next-bani-name" id="nextBaniName">Next Bani</span>
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
                     </a>
@@ -226,7 +227,7 @@
         </button>
 
         <div class="settings-header">
-            <h2>a�+a��a��a�+a��a��</h2>
+            <h2>a+aaa+aa</h2>
             <span class="settings-subtitle">Reading Preferences</span>
         </div>
 
@@ -470,7 +471,7 @@
                 <div class="setting-card">
                     <!-- Preview -->
                     <div class="font-preview" id="fontPreview">
-                        <span class="font-preview-text">a�� a�+a��a�+ a��a�+a��a��</span>
+                        <span class="font-preview-text">a a+aa+ aa+aa</span>
                     </div>
                     <div class="setting-divider"></div>
                     <div class="setting-row">
@@ -528,7 +529,7 @@
                 <div class="setting-card">
                     <button class="setting-action" id="resetBtn">
                         <div class="action-info">
-                            <span class="action-icon">=���</span>
+                            <span class="action-icon">=</span>
                             <div class="action-text">
                                 <span class="action-label">Reset Settings</span>
                                 <span class="action-desc">Restore defaults</span>
@@ -578,18 +579,18 @@
     document.addEventListener('DOMContentLoaded', function() {
         'use strict';
         
-        console.log('G�� Initializing dynamic orb effects...');
+        console.log('G Initializing dynamic orb effects...');
         
         const orb1 = document.querySelector('.orb-1');
         const orb2 = document.querySelector('.orb-2');
         const orb3 = document.querySelector('.orb-3');
         
         if (!orb1 || !orb2) {
-            console.warn('G��n+� Orbs not found in DOM');
+            console.warn('Gn+ Orbs not found in DOM');
             return;
         }
         
-        console.log('G�� Orbs found:', { orb1, orb2, orb3 });
+        console.log('G Orbs found:', { orb1, orb2, orb3 });
         
         // Sacred color palettes for scroll journey - REDDISH/PINK THEME (no green)
         const darkThemeColors = [
@@ -688,7 +689,7 @@
         
         // Initial call
         updateOrbs();
-        console.log('G�� Orb scroll effects initialized!');
+        console.log('G Orb scroll effects initialized!');
     });
     </script>
     <!-- Global Alarm/Notification Engine + Back Button + Widget Bridge -->

@@ -1,6 +1,6 @@
 /**
- * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
- * ANHAD â€” Smart Back Navigation v2.0
+ * ═══════════════════════════════════════════════════════════════════════════════
+ * ANHAD — Smart Back Navigation v2.0
  * 
  * Universal, state-preserving back navigation:
  * 1. Tracks referrer for every page â†’ knows where user came FROM
@@ -8,7 +8,7 @@
  * 3. Uses history.back() when referrer exists, fallback URL otherwise
  * 4. Auto-wires all common back-button selectors across the entire app
  * 5. Integrates with bfcache (pageshow) for instant restore
- * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+ * ═══════════════════════════════════════════════════════════════════════════════
  */
 (function() {
   'use strict';
@@ -165,7 +165,7 @@
    * CRITICAL: ALWAYS set session flags before going to index.html so
    * welcome-check.js NEVER redirects to the splash screen.
    *
-   * @param {string} [fallbackUrl] â€” URL to go to if no history
+   * @param {string} [fallbackUrl] — URL to go to if no history
    */
   window.anhadGoBack = function(fallbackUrl) {
     // Always ensure session is marked so index.html never triggers splash
@@ -330,7 +330,7 @@
           fallback = el.getAttribute('href');
         }
 
-        // Only remove conflicting onclick handlers â€” preserve session-flag setters
+        // Only remove conflicting onclick handlers — preserve session-flag setters
         if (el.hasAttribute('onclick')) {
           var oc = el.getAttribute('onclick');
           if (!oc.includes('anhadGoBack') && !oc.includes('anhad_welcome')) {
@@ -395,7 +395,7 @@
   // Handle bfcache restoration (back/forward cache)
   window.addEventListener('pageshow', function(event) {
     if (event.persisted) {
-      // Page was restored from bfcache â€” scroll is already correct
+      // Page was restored from bfcache — scroll is already correct
       // Just re-wire in case DOM changed
       autoWire();
     }

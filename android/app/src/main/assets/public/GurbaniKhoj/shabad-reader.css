@@ -575,17 +575,20 @@ html, body {
     box-shadow: none !important;
 }
 
-/* Highlighted verse Gurmukhi & words — Rich Golden Tint */
+/* Highlighted verse Gurmukhi & words — Rich Golden Tint, Clean without glow in light mode */
 .shabad-line.highlighted .gurmukhi,
 .shabad-line.highlighted .g-word {
     color: #b87a18 !important;
     font-weight: 700 !important;
+    text-shadow: none !important;
+    filter: none !important;
 }
 
 /* Highlighted verse other scripts */
 .shabad-line.highlighted .hindi-gurbani {
     color: #b87a18 !important;
     font-weight: 700 !important;
+    text-shadow: none !important;
 }
 
 /* Highlighted verse translations */
@@ -595,11 +598,35 @@ html, body {
     font-weight: 500;
 }
 
-/* Dark mode highlighted pankti — Clean Transparent Background with Glowing Gold Indicator */
-[data-theme="dark"] .shabad-line.highlighted,
+/* Explicit Light Mode Rules - NO GLOW, NO NEON, CLEAN PURE ACCENT COLOR (No reload required) */
+[data-reader-theme="paper"] .shabad-line.highlighted,
+[data-reader-theme="white"] .shabad-line.highlighted,
+[data-theme="light"] .shabad-line.highlighted {
+    background: transparent !important;
+    border-left: 3.5px solid #c8913a !important;
+    box-shadow: none !important;
+}
+
+[data-reader-theme="paper"] .shabad-line.highlighted .gurmukhi,
+[data-reader-theme="paper"] .shabad-line.highlighted .g-word,
+[data-reader-theme="paper"] .shabad-line.highlighted .hindi-gurbani,
+[data-reader-theme="white"] .shabad-line.highlighted .gurmukhi,
+[data-reader-theme="white"] .shabad-line.highlighted .g-word,
+[data-reader-theme="white"] .shabad-line.highlighted .hindi-gurbani,
+[data-theme="light"] .shabad-line.highlighted .gurmukhi,
+[data-theme="light"] .shabad-line.highlighted .g-word,
+[data-theme="light"] .shabad-line.highlighted .hindi-gurbani {
+    color: #b87a18 !important;
+    text-shadow: none !important;
+    box-shadow: none !important;
+    filter: none !important;
+    font-weight: 700 !important;
+}
+
+/* Dark mode highlighted pankti — ONLY in active Dark/Charcoal/Midnight themes */
+html[data-theme="dark"]:not([data-reader-theme="paper"]):not([data-reader-theme="white"]) .shabad-line.highlighted,
 [data-reader-theme="charcoal"] .shabad-line.highlighted,
-[data-reader-theme="midnight"] .shabad-line.highlighted,
-body.dark-mode .shabad-line.highlighted {
+[data-reader-theme="midnight"] .shabad-line.highlighted {
     background: transparent !important;
     border-left: 3.5px solid #ffd54f !important;
     border-radius: 0 !important;
@@ -607,23 +634,20 @@ body.dark-mode .shabad-line.highlighted {
     padding: 10px 0 10px 16px !important;
 }
 
-[data-theme="dark"] .shabad-line.highlighted .gurmukhi,
-[data-theme="dark"] .shabad-line.highlighted .g-word,
+html[data-theme="dark"]:not([data-reader-theme="paper"]):not([data-reader-theme="white"]) .shabad-line.highlighted .gurmukhi,
+html[data-theme="dark"]:not([data-reader-theme="paper"]):not([data-reader-theme="white"]) .shabad-line.highlighted .g-word,
 [data-reader-theme="charcoal"] .shabad-line.highlighted .gurmukhi,
 [data-reader-theme="charcoal"] .shabad-line.highlighted .g-word,
 [data-reader-theme="midnight"] .shabad-line.highlighted .gurmukhi,
-[data-reader-theme="midnight"] .shabad-line.highlighted .g-word,
-body.dark-mode .shabad-line.highlighted .gurmukhi,
-body.dark-mode .shabad-line.highlighted .g-word {
+[data-reader-theme="midnight"] .shabad-line.highlighted .g-word {
     color: #ffe082 !important; /* Luminous Warm Gold */
     font-weight: 700 !important;
     text-shadow: 0 0 14px rgba(255, 224, 130, 0.45) !important;
 }
 
-[data-theme="dark"] .shabad-line.highlighted .hindi-gurbani,
+html[data-theme="dark"]:not([data-reader-theme="paper"]):not([data-reader-theme="white"]) .shabad-line.highlighted .hindi-gurbani,
 [data-reader-theme="charcoal"] .shabad-line.highlighted .hindi-gurbani,
-[data-reader-theme="midnight"] .shabad-line.highlighted .hindi-gurbani,
-body.dark-mode .shabad-line.highlighted .hindi-gurbani {
+[data-reader-theme="midnight"] .shabad-line.highlighted .hindi-gurbani {
     color: #ffe082 !important;
     font-weight: 700 !important;
 }
@@ -1652,11 +1676,11 @@ html[data-font="gurbani-akhar"] {
     font-weight: 800;
 }
 
-/* Dark mode highlight text colors — GUARANTEE 100% CONTRAST BRIGHT GOLD IN ALL DARK THEMES */
-[data-theme="dark"] .shabad-line.highlighted .gurmukhi,
-[data-theme="dark"] .shabad-line.highlighted .g-word,
-[data-theme="dark"] [data-sacred-theme] .shabad-line.highlighted .gurmukhi,
-[data-theme="dark"] [data-sacred-theme] .shabad-line.highlighted .g-word,
+/* Dark mode highlight text colors — ONLY WHEN ACTIVELY IN DARK THEMES */
+html[data-theme="dark"]:not([data-reader-theme="paper"]):not([data-reader-theme="white"]) .shabad-line.highlighted .gurmukhi,
+html[data-theme="dark"]:not([data-reader-theme="paper"]):not([data-reader-theme="white"]) .shabad-line.highlighted .g-word,
+html[data-theme="dark"]:not([data-reader-theme="paper"]):not([data-reader-theme="white"]) [data-sacred-theme] .shabad-line.highlighted .gurmukhi,
+html[data-theme="dark"]:not([data-reader-theme="paper"]):not([data-reader-theme="white"]) [data-sacred-theme] .shabad-line.highlighted .g-word,
 [data-reader-theme="charcoal"] .shabad-line.highlighted .gurmukhi,
 [data-reader-theme="charcoal"] .shabad-line.highlighted .g-word,
 [data-reader-theme="charcoal"] [data-sacred-theme] .shabad-line.highlighted .gurmukhi,
@@ -1664,9 +1688,7 @@ html[data-font="gurbani-akhar"] {
 [data-reader-theme="midnight"] .shabad-line.highlighted .gurmukhi,
 [data-reader-theme="midnight"] .shabad-line.highlighted .g-word,
 [data-reader-theme="midnight"] [data-sacred-theme] .shabad-line.highlighted .gurmukhi,
-[data-reader-theme="midnight"] [data-sacred-theme] .shabad-line.highlighted .g-word,
-body.dark-mode .shabad-line.highlighted .gurmukhi,
-body.dark-mode .shabad-line.highlighted .g-word {
+[data-reader-theme="midnight"] [data-sacred-theme] .shabad-line.highlighted .g-word {
     color: #ffd54f !important;
     font-weight: 700 !important;
     text-shadow: 0 0 12px rgba(255, 213, 79, 0.4) !important;

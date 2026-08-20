@@ -66,26 +66,19 @@
     }
     
     // Protect card contrast: align reader theme with effective theme
-    var readerTheme;
-    if (theme === 'auto') {
+    var readerTheme = localStorage.getItem('gurbani_reader_theme');
+    if (!readerTheme) {
       readerTheme = (effectiveTheme === 'dark') ? 'charcoal' : 'paper';
-    } else {
-      // Sync reader theme to match global theme (dark→charcoal, light→paper)
-      readerTheme = localStorage.getItem('gurbani_reader_theme');
-      if (!readerTheme) {
-        readerTheme = (effectiveTheme === 'dark') ? 'charcoal' : 'paper';
-      }
     }
     
+    var isDark = (readerTheme === 'charcoal' || readerTheme === 'midnight');
     var sacredTheme = localStorage.getItem('gurbani_sacred_theme') || 'royal-rose';
     var html = document.documentElement;
-    html.setAttribute('data-theme', effectiveTheme);
+    html.setAttribute('data-theme', isDark ? 'dark' : 'light');
     html.setAttribute('data-theme-mode', theme);
     html.setAttribute('data-reader-theme', readerTheme);
     html.setAttribute('data-sacred-theme', sacredTheme);
-    html.style.colorScheme = effectiveTheme;
-    
-    var isDark = (effectiveTheme === 'dark');
+    html.style.colorScheme = isDark ? 'dark' : 'light';
     html.style.backgroundColor = isDark ? '#0D0D0F' : '#FAF8F5';
     
     if (isDark) {
@@ -96,6 +89,8 @@
     
     var observer = new MutationObserver(function() {
       if (document.body) {
+        document.body.setAttribute('data-reader-theme', readerTheme);
+        document.body.setAttribute('data-theme', isDark ? 'dark' : 'light');
         if (isDark) {
           document.body.classList.add('dark', 'dark-mode');
           document.body.style.backgroundColor = '#0D0D0F';
@@ -123,13 +118,16 @@
   <!-- Google Fonts for multi-script typography pairing -->
   <link href="https://fonts.googleapis.com/css2?family=Baloo+Paaji+2:wght@400;600;800&family=Cinzel+Decorative:wght@400;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500;600;700&family=Mukta+Mahee:wght@300;400;500;600;700&family=Noto+Sans+Gurmukhi:wght@300;400;500;600;700&family=Noto+Serif+Devanagari:wght@300;400;600;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Poppins:wght@300;400;500;600&family=Rozha+One&family=Yatra+One&display=optional" rel="stylesheet">
   
-  <link rel="stylesheet" href="shabad-reader.css?v=45">
+  <link rel="stylesheet" href="shabad-reader.css?v=46">
   
   <!-- Global Theme System -->
   <link rel="stylesheet" href="../css/theme-variables.css">
+  <link rel="stylesheet" href="../css/global-mini-player.css?v=5">
+    <link rel="stylesheet" href="../css/desktop-responsive.css?v=26">
   <script src="../lib/global-theme.js"></script>
   
   <!-- Navigation Libraries -->
+  <script src="../lib/desktop-sidebar.js" defer></script>
   <script src="../lib/smart-back.js"></script>
   <script src="../lib/page-lifecycle.js"></script>
   <script src="../lib/smooth-navigation.js"></script>
@@ -301,7 +299,7 @@
                         <div class="ios-segmented-control" id="lineSpacingSegmented">
                             <button class="segment-btn active" data-spacing="1.2" title="Tight"><span>⁝</span></button>
                             <button class="segment-btn" data-spacing="1.5" title="Normal"><span>≡</span></button>
-                            <button class="segment-btn" data-spacing="2.0" title="Loose"><span>⁞</span></button>
+                            <button class="segment-btn" data-spacing="2.0" title="Loose"><span>âž</span></button>
                         </div>
                     </div>
                     <!-- Text Alignment -->
@@ -428,7 +426,7 @@
 
     <!-- Keyboard Shortcut Hint -->
     <div class="kbd-hint" id="kbdHint">
-        <kbd>F</kbd> Focus &nbsp;·&nbsp; <kbd>Space</kbd> Scroll &nbsp;·&nbsp; <kbd>P</kbd> <kbd>N</kbd> Prev/Next
+        <kbd>F</kbd> Focus &nbsp;Â·&nbsp; <kbd>Space</kbd> Scroll &nbsp;Â·&nbsp; <kbd>P</kbd> <kbd>N</kbd> Prev/Next
     </div>
 
     <!-- ═══════════════════════════════════════════════════════════
@@ -471,6 +469,7 @@
     <!-- Global Engine -->
     <script src="../lib/capacitor-notifications-global.js"></script>
     <script src="../lib/anhad-audio-singleton.js?v=2.1.5"></script>
+    <script src="../lib/overlay-player.js" defer></script>
 
     <!-- ═══════════════════════════════════════════════════════════
          SACRED THEME SWITCHER LOGIC
@@ -487,7 +486,7 @@
             'royal-rose':       '🌹 Royal Rose',
             'lotus-grace':      '🪷 Lotus Grace',
             'golden-marigold':  '🌼 Golden Marigold',
-            'blue-blossom':     '❄️ Blue Blossom',
+            'blue-blossom':     'â„ Blue Blossom',
         };
 
         function updateSacredThemeAssets(themeName) {
@@ -589,3 +588,4 @@
     </script>
 </body>
 </html>
+

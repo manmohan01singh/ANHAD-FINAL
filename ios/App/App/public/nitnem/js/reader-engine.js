@@ -658,8 +658,8 @@
     function cleanupCorruptedText(text) {
         if (!text) return '';
         
-        // Remove replacement characters (�) and other common corruption
-        text = text.replace(/�+/g, '');
+        // Remove replacement characters () and other common corruption
+        text = text.replace(/+/g, '');
         
         // Fix common Gurmukhi encoding issues
         const fixMap = {

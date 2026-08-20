@@ -155,11 +155,15 @@
   function setState(s) {
     const el = slider();
     if (!el) return;
-    el.setAttribute('data-campaign-state', s);
+    // MODIFIED: Never set state to 'b' — keep portraits always visible (state 'a')
+    // Only toggle the text pane
+    el.setAttribute('data-campaign-state', 'a');
     const showing = s === 'b' ? 'false' : 'true';
     const art = artPane();
     const txt = textPane();
-    if (art) art.setAttribute('aria-hidden', showing);
+    // Art pane (campaign disc) stays hidden always
+    if (art) art.setAttribute('aria-hidden', 'true');
+    // Text pane toggles normally to show campaign message
     if (txt) txt.setAttribute('aria-hidden', showing);
   }
 

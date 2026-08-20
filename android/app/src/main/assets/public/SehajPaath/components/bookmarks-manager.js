@@ -340,7 +340,7 @@ class BookmarksManager {
         container.querySelectorAll('.bookmark-info').forEach(el => {
             el.addEventListener('click', () => {
                 const ang = parseInt(el.dataset.ang);
-                window.location.href = `reader.html?ang=${ang}`;
+                window.location.href = `SehajPaath/reader.html?ang=${ang}`;
             });
         });
 

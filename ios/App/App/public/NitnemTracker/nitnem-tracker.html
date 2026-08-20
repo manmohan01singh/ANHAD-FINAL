@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -98,13 +98,18 @@
     
     <!-- Global Theme System -->
     <link rel="stylesheet" href="../css/theme-variables.css">
+    <link rel="stylesheet" href="../css/global-mini-player.css?v=5">
+    <link rel="stylesheet" href="../css/desktop-responsive.css?v=26">
+    <link rel="stylesheet" href="../css/coming-soon-modal.css">
     <!-- ANHAD Sky CSS is home-page only — not needed here -->
     <script src="../lib/global-theme.js"></script>
     <script src="../js/scroll-engine.js"></script>
+    <script src="../lib/desktop-sidebar.js" defer></script>
+    <script src="../lib/coming-soon-modal.js" defer></script>
     <script src="../lib/smart-back.js"></script>
     <script src="../lib/page-lifecycle.js"></script>
     <script src="../lib/audio-preload.js"></script>
-  <script src="../lib/audio-coordinator.js"></script>
+    <script src="../lib/audio-coordinator.js"></script>
     <script src="../lib/smooth-navigation.js"></script>
     
     <script src="../js/anhad-core.js" defer></script>
@@ -647,7 +652,7 @@
                 <div class="alarm-collapsed-summary" id="alarmCollapsedSummary">
                     <span class="alarm-summary-stat" id="alarmSummaryRate">0%</span>
                     <span class="alarm-summary-label">Obedience Rate</span>
-                    <span class="alarm-summary-divider">·</span>
+                    <span class="alarm-summary-divider">Â·</span>
                     <span class="alarm-summary-stat" id="alarmSummaryResponded">0</span>
                     <span class="alarm-summary-label">Responded</span>
                 </div>
@@ -833,7 +838,7 @@
                                 <span class="achievement-desc">All daily banis</span>
                             </div>
                             <div class="achievement-card locked" data-achievement="month-streak">
-                                <div class="achievement-icon">⭐</div>
+                                <div class="achievement-icon">â­</div>
                                 <span class="achievement-name">Month Master</span>
                                 <span class="achievement-desc">30 Day Streak</span>
                             </div>
@@ -1103,7 +1108,7 @@
 
                         <div class="bani-category" data-category="dasam-granth">
                             <div class="category-header">
-                                <span class="category-icon">⚔️</span>
+                                <span class="category-icon">âš”</span>
                                 <span class="category-name">Dasam Granth</span>
                                 <svg class="category-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                     stroke-width="2">
@@ -1117,7 +1122,7 @@
 
                         <div class="bani-category" data-category="other">
                             <div class="category-header">
-                                <span class="category-icon">✨</span>
+                                <span class="category-icon">✍️¨</span>
                                 <span class="category-name">Other Banis</span>
                                 <svg class="category-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                     stroke-width="2">
@@ -1387,7 +1392,7 @@
                 <div class="modal-handle"></div>
                 <div class="penalty-modal-header">
                     <div class="penalty-modal-icon-wrap info-wrap">
-                        <span class="penalty-modal-icon">🛡️</span>
+                        <span class="penalty-modal-icon">🛡</span>
                     </div>
                     <h2 class="penalty-modal-title">Streak Saver System</h2>
                     <p class="penalty-modal-subtitle">What does it do?</p>
@@ -1491,6 +1496,8 @@
     <script src="../lib/capacitor-notifications-global.js"></script>
     <script src="../lib/anhad-widget-bridge.js"></script>
     <script src="../lib/anhad-audio-singleton.js?v=2.1.5"></script>
+    <script src="../lib/overlay-player.js" defer></script>
 </body>
 
 </html>
+

@@ -196,16 +196,20 @@ const ReaderTheme = {
     set(theme, saveGlobal = false) {
         State.readerTheme = theme;
         document.documentElement.setAttribute('data-reader-theme', theme);
+        document.body.setAttribute('data-reader-theme', theme);
         localStorage.setItem('gurbani_reader_theme', theme);
 
-        // Sync dark mode class
+        // Sync dark mode class on both html and body
         const isDark = (theme === 'charcoal' || theme === 'midnight');
         document.documentElement.dataset.theme = isDark ? 'dark' : 'light';
         document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+        document.body.setAttribute('data-theme', isDark ? 'dark' : 'light');
         if (isDark) {
             document.documentElement.classList.add('dark', 'dark-mode');
+            document.body.classList.add('dark-mode');
         } else {
             document.documentElement.classList.remove('dark', 'dark-mode');
+            document.body.classList.remove('dark-mode');
         }
 
         if (saveGlobal) {

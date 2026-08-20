@@ -5,13 +5,13 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  * 
  * Strategy:
- *   • Starts automatically when app is used
- *   • Downloads in small batches (10 Angs at a time) 
- *   • Respects API rate limits (200ms delay between batches)
- *   • Can be paused/resumed
- *   • Resumes from where it left off (even across app restarts)
- *   • Shows optional progress UI
- *   • Does NOT block the user — runs entirely in background
+ *  • Starts automatically when app is used
+ *  • Downloads in small batches (10 Angs at a time) 
+ *  • Respects API rate limits (200ms delay between batches)
+ *  • Can be paused/resumed
+ *  • Resumes from where it left off (even across app restarts)
+ *  • Shows optional progress UI
+ *  • Does NOT block the user — runs entirely in background
  * 
  * @version 1.0.0
  * ═══════════════════════════════════════════════════════════════════════════════

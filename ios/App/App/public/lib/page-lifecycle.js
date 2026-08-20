@@ -153,11 +153,7 @@
     console.log('[PageLifecycle] ⚡ Quick recover for cached SPA return');
   }
   
-  // Expose recovery methods globally
-  window.AnhadPageLifecycle = {
-    recover: function() { recoverPageState(false); },
-    quickRecover: quickRecover
-  };
+
 
   /**
    * Pre-cache cleanup — called on pagehide BEFORE the browser stores
@@ -180,8 +176,13 @@
   }
 
   // ─── GLOBAL EXPOSURE for other scripts ───
+  // Single assignment. There used to be two of these — an earlier one exposing
+  // { recover, quickRecover } and this one exposing { recover, clean } — and
+  // because this one ran second it silently overwrote the first, leaving
+  // AnhadPageLifecycle.quickRecover permanently undefined for every caller.
   window.AnhadPageLifecycle = {
     recover: function () { recoverPageState(false); },
+    quickRecover: quickRecover,
     clean: cleanBeforeCache
   };
 

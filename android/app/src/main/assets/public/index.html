@@ -330,7 +330,6 @@
   <!-- PERF: Removed aggressive prefetch links — SPA engine handles viewport-based prefetch -->
 
   <link rel="stylesheet" href="css/global-mini-player.css?v=4" media="print" onload="this.media='all'">
-  <link rel="stylesheet" href="css/desktop-responsive.css?v=11" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="./css/anhad-core.css?v=5">
   
   <!-- Image caching strategy -->
@@ -339,6 +338,7 @@
 
   <script src="js/scroll-engine.js" defer></script>
   <script src="./js/anhad-core.js" defer></script>
+  <script src="lib/desktop-sidebar.js" defer></script>
   
   <!-- CRITICAL: SPA Navigation MUST load early to intercept clicks -->
   <script src="lib/smooth-navigation.js?v=3" defer></script>
@@ -452,7 +452,7 @@
   <!-- ANHAD: Animated Sky Background (Auto Mode) -->
   <link rel="stylesheet" href="css/anhad-sky-bg.css?v=2">
   <link rel="stylesheet" href="css/scroll-engine.css">
-  <link rel="stylesheet" href="css/campaign.css?v=1">
+  <link rel="stylesheet" href="css/campaign.css?v=2">
 
   <!-- CRITICAL: ANHAD Adaptive Title - Changes with background -->
   <style id="anhad-header-title-override">
@@ -875,85 +875,204 @@
       touch-action: pan-x pan-y !important; /* Allow both horizontal tracking and vertical page scrolling */
       -webkit-overflow-scrolling: touch;
     }
-    /* Coming Soon popup styles */
+    /* Coming Soon popup styles — Chaliya 2026 iOS 18 Glass Experience */
     #anhadComingSoonOverlay {
       position: fixed;
       inset: 0;
-      z-index: var(--z-critical, 900);
-      background: rgba(0,0,0,0.45);
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
+      z-index: var(--z-critical, 9999);
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(24px) saturate(190%);
+      -webkit-backdrop-filter: blur(24px) saturate(190%);
       display: flex;
       align-items: center;
       justify-content: center;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.3s ease;
+      transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      padding: 24px;
+      box-sizing: border-box;
     }
     #anhadComingSoonOverlay.active {
       opacity: 1;
       pointer-events: auto;
     }
     #anhadComingSoonCard {
-      background: linear-gradient(145deg, rgba(255,250,240,0.98) 0%, rgba(255,240,210,0.98) 100%);
-      border: 1.5px solid rgba(212,148,58,0.3);
-      border-radius: 28px;
-      padding: 36px 32px 28px;
-      max-width: 320px;
-      width: calc(100% - 48px);
+      background: linear-gradient(165deg, rgba(255, 253, 248, 0.98) 0%, rgba(255, 248, 237, 0.95) 50%, rgba(254, 237, 206, 0.92) 100%);
+      border: 1.5px solid rgba(212, 148, 58, 0.45);
+      border-radius: 36px;
+      padding: 40px 32px 32px;
+      max-width: 420px;
+      width: 100%;
       text-align: center;
-      box-shadow: 0 24px 64px rgba(0,0,0,0.18), 0 0 0 1px rgba(255,255,255,0.5) inset;
-      transform: scale(0.88) translateY(20px);
-      transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+      box-shadow: 
+        0 32px 96px rgba(0, 0, 0, 0.28),
+        0 12px 32px rgba(212, 148, 58, 0.2),
+        inset 0 1.5px 2px rgba(255, 255, 255, 0.95),
+        inset 0 -2px 8px rgba(212, 148, 58, 0.12);
+      transform: scale(0.88) translateY(28px);
+      transition: transform 0.42s cubic-bezier(0.34, 1.56, 0.64, 1);
+      position: relative;
+      overflow: hidden;
+      box-sizing: border-box;
+    }
+    #anhadComingSoonCard::before {
+      content: '';
+      position: absolute;
+      top: -60%;
+      left: -60%;
+      width: 220%;
+      height: 220%;
+      background: radial-gradient(circle at center, rgba(255, 215, 0, 0.18) 0%, rgba(212, 148, 58, 0.06) 40%, transparent 70%);
+      pointer-events: none;
+      animation: csRotateGlow 14s linear infinite;
+    }
+    @keyframes csRotateGlow {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
     #anhadComingSoonOverlay.active #anhadComingSoonCard {
       transform: scale(1) translateY(0);
     }
-    .dark-mode #anhadComingSoonCard {
-      background: linear-gradient(145deg, rgba(28,24,18,0.98) 0%, rgba(40,30,15,0.98) 100%);
-      border-color: rgba(212,148,58,0.4);
-      color: #F5DFA0;
+    .dark-mode #anhadComingSoonCard,
+    [data-theme="dark"] #anhadComingSoonCard {
+      background: linear-gradient(165deg, rgba(32, 24, 14, 0.96) 0%, rgba(24, 18, 10, 0.98) 60%, rgba(16, 12, 7, 0.99) 100%);
+      border-color: rgba(247, 198, 52, 0.4);
+      box-shadow: 
+        0 36px 110px rgba(0, 0, 0, 0.75),
+        0 14px 40px rgba(212, 148, 58, 0.18),
+        inset 0 1.5px 1.5px rgba(247, 198, 52, 0.35),
+        inset 0 -2px 8px rgba(0, 0, 0, 0.6);
+      color: #F5E6C8;
     }
-    #anhadComingSoonCard .cs-icon { font-size: 52px; margin-bottom: 12px; display: block; }
-    #anhadComingSoonCard .cs-title {
-      font-size: 1.5rem;
+    #anhadComingSoonCard .cs-badge-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      background: rgba(212, 148, 58, 0.14);
+      border: 1px solid rgba(212, 148, 58, 0.35);
+      border-radius: 24px;
+      margin-bottom: 18px;
+      backdrop-filter: blur(8px);
+    }
+    [data-theme="dark"] #anhadComingSoonCard .cs-badge-pill,
+    .dark-mode #anhadComingSoonCard .cs-badge-pill {
+      background: rgba(247, 198, 52, 0.16);
+      border-color: rgba(247, 198, 52, 0.38);
+    }
+    #anhadComingSoonCard .cs-badge-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #D4943A;
+      box-shadow: 0 0 10px #D4943A, 0 0 4px #FFA500;
+      animation: csPulse 2s ease-in-out infinite;
+    }
+    @keyframes csPulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.45; transform: scale(0.82); }
+    }
+    #anhadComingSoonCard .cs-badge-text {
+      font-size: 0.76rem;
       font-weight: 800;
-      color: #72500A;
-      margin-bottom: 6px;
-      letter-spacing: -0.3px;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: #B87A24;
     }
-    .dark-mode #anhadComingSoonCard .cs-title { color: #FFD566; }
-    #anhadComingSoonCard .cs-feature {
-      font-size: 1.1rem;
+    [data-theme="dark"] #anhadComingSoonCard .cs-badge-text,
+    .dark-mode #anhadComingSoonCard .cs-badge-text {
+      color: #F7C634;
+    }
+    #anhadComingSoonCard .cs-ik-onkar {
+      font-family: var(--font-gurmukhi, 'Noto Sans Gurmukhi', sans-serif);
+      font-size: 48px;
+      line-height: 1;
+      font-weight: 800;
+      color: #D4943A;
+      text-shadow: 0 3px 14px rgba(212, 148, 58, 0.4);
+      margin-bottom: 10px;
+      transform: translateZ(0);
+    }
+    [data-theme="dark"] #anhadComingSoonCard .cs-ik-onkar,
+    .dark-mode #anhadComingSoonCard .cs-ik-onkar {
+      color: #F7C634;
+      text-shadow: 0 3px 18px rgba(247, 198, 52, 0.5);
+    }
+    #anhadComingSoonCard .cs-title {
+      font-size: 2.1rem;
+      font-weight: 900;
+      color: #3A2304;
+      line-height: 1.15;
+      margin-bottom: 8px;
+      letter-spacing: -0.6px;
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+    }
+    [data-theme="dark"] #anhadComingSoonCard .cs-title,
+    .dark-mode #anhadComingSoonCard .cs-title {
+      color: #FFF2D1;
+      text-shadow: 0 2px 12px rgba(247, 198, 52, 0.25);
+    }
+    #anhadComingSoonCard .cs-gurmukhi-subtitle {
+      font-family: var(--font-gurmukhi, 'Noto Sans Gurmukhi', sans-serif);
+      font-size: 1.15rem;
       font-weight: 700;
       color: #D4943A;
-      margin-bottom: 8px;
+      margin-bottom: 4px;
+      line-height: 1.4;
+    }
+    [data-theme="dark"] #anhadComingSoonCard .cs-gurmukhi-subtitle,
+    .dark-mode #anhadComingSoonCard .cs-gurmukhi-subtitle {
+      color: #F7C634;
+    }
+    #anhadComingSoonCard .cs-feature {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #7A5310;
+      margin-bottom: 14px;
+      letter-spacing: -0.2px;
+    }
+    [data-theme="dark"] #anhadComingSoonCard .cs-feature,
+    .dark-mode #anhadComingSoonCard .cs-feature {
+      color: #E2CA90;
     }
     #anhadComingSoonCard .cs-desc {
-      font-size: 0.85rem;
-      color: #8B6914;
-      opacity: 0.8;
-      line-height: 1.5;
-      margin-bottom: 20px;
+      font-size: 0.92rem;
+      color: #6E531C;
+      line-height: 1.6;
+      margin-bottom: 28px;
+      font-weight: 500;
+      padding: 0 8px;
     }
-    .dark-mode #anhadComingSoonCard .cs-desc { color: #C9A84C; }
+    [data-theme="dark"] #anhadComingSoonCard .cs-desc,
+    .dark-mode #anhadComingSoonCard .cs-desc {
+      color: #C8AF7E;
+    }
     #anhadComingSoonCard .cs-close {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      padding: 10px 24px;
-      background: linear-gradient(135deg, #D4943A 0%, #B8860B 100%);
-      color: #fff;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px 38px;
+      background: linear-gradient(135deg, #FF9500 0%, #D4943A 50%, #B8860B 100%);
+      color: #FFFFFF;
       border: none;
-      border-radius: 20px;
-      font-size: 0.85rem;
+      border-radius: 26px;
+      font-size: 1.02rem;
       font-weight: 700;
       cursor: pointer;
-      box-shadow: 0 4px 14px rgba(212,148,58,0.4);
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 8px 24px rgba(212, 148, 58, 0.45), inset 0 1px 1.5px rgba(255, 255, 255, 0.5);
+      transition: transform 0.24s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease, filter 0.2s ease;
+      user-select: none;
+      -webkit-user-select: none;
     }
-    #anhadComingSoonCard .cs-close:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(212,148,58,0.5); }
-    #anhadComingSoonCard .cs-close:active { transform: scale(0.95); }
+    #anhadComingSoonCard .cs-close:hover {
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: 0 12px 32px rgba(212, 148, 58, 0.55);
+      filter: brightness(1.05);
+    }
+    #anhadComingSoonCard .cs-close:active {
+      transform: scale(0.96);
+    }
   </style>
 
 
@@ -1121,7 +1240,11 @@
       justify-content: center !important;
       width: 100% !important;
       height: 100% !important;
-      transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) !important;
+      /* opacity is in the list so the campaign announcement (State B, see
+         css/campaign.css) can cross-fade the whole track out as one unit.
+         Same duration and easing as the transform, so the two stay in step. */
+      transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1),
+                  opacity 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) !important;
       will-change: transform !important;
     }
 
@@ -2105,6 +2228,22 @@
       color: #FFD700 !important;
       text-shadow: 0 1px 2px rgba(0,0,0,0.3) !important;
     }
+
+    /* DESKTOP: pin the badge to the image's top-left corner, out of normal
+       flow — at 4-column widths (1024-1440px) the in-flow badge (pulled up
+       via a negative margin) sat close enough to the bottom title/subtitle
+       overlay that they visually collided. Absolute positioning removes any
+       flow interaction between the two regardless of card width. Mobile
+       (single-card carousel, always wide) is untouched. */
+    @media screen and (min-width: 1024px) {
+      .hero-card__badge {
+        position: absolute !important;
+        top: 12px !important;
+        left: 12px !important;
+        margin-top: 0 !important;
+        z-index: 12 !important;
+      }
+    }
   </style>
   <style>
     /* ═══════════════════════════════════════════════════════════════════════════
@@ -2172,88 +2311,35 @@
     }
     @media screen and (min-width: 1024px) {
       html {
-        background: transparent !important;
+        background: #FAF8F5 !important;
+      }
+      html.dark-mode,
+      [data-theme="dark"] {
+        background: #0D0D0F !important;
       }
       body {
-        background: transparent !important;
+        background: #FAF8F5 !important;
         position: relative !important;
       }
+      html.dark-mode body,
+      [data-theme="dark"] body {
+        background: #0D0D0F !important;
+      }
       
-      /* Override trendora-premium.css body::before with MAXIMUM specificity - Subtle blur */
-      html body::before {
-        content: '' !important;
-        position: fixed !important;
-        top: 0 !important;
-        left: 0 !important;
-        right: 0 !important;
-        bottom: 0 !important;
-        width: 100vw !important;
-        height: 100vh !important;
-        z-index: -10000 !important;
-        background-image: var(--dynamic-bg-url, url('assets/homepage-hero/darbar-sahib-day-1.png')) !important;
-        background-size: cover !important;
-        background-position: center !important;
-        background-repeat: no-repeat !important;
-        filter: blur(3px) brightness(1.0) saturate(1.0) !important;
-        transform: scale(1.05) !important;
-        opacity: 1 !important;
-        visibility: visible !important;
-        display: block !important;
-      }
-
-      html.theme-changing,
-      html.theme-changing *,
-      html.theme-changing *::before,
-      html.theme-changing *::after {
-        transition: none !important;
-        animation: none !important;
-      }
-
+      /* Eliminate all noisy background pseudo-elements on desktop */
+      html body::before,
+      body::before,
       html body.dark-mode::before,
-      body.dark-mode::before {
-        display: block !important;
-        filter: blur(3px) brightness(0.65) saturate(0.9) !important;
-        opacity: 1 !important;
-      }
-      
-      /* Override trendora-premium.css body::after - REMOVE FADE/GRADIENT */
-      html body::after {
-        content: '' !important;
-        display: none !important;
-      }
-      
+      body.dark-mode::before,
+      html body::after,
+      body::after,
       html body.dark-mode::after,
       body.dark-mode::after {
+        content: none !important;
         display: none !important;
+        background: none !important;
+        background-image: none !important;
       }
-      
-      /* Override trendora-premium.css body::after with MAXIMUM specificity */
-      html body::after {
-        content: '' !important;
-        position: fixed !important;
-        top: 0 !important;
-        left: 0 !important;
-        right: 0 !important;
-        bottom: 0 !important;
-        width: 100vw !important;
-        height: 100vh !important;
-        z-index: -9999 !important;
-        background: linear-gradient(180deg,
-          rgba(255, 255, 255, 0.72) 0%,
-          rgba(248, 250, 252, 0.77) 100%) !important;
-        pointer-events: none !important;
-        opacity: 1 !important;
-        display: block !important;
-      }
-
-      /* Dark mode desktop background */
-      html body.dark-mode::after,
-      body.dark-mode::after {
-        background: linear-gradient(180deg,
-          #000000 0%,
-          #111111 100%) !important;
-      }
-      
       /* Main content colors */
       .app, main, #app {
         background: transparent !important;
@@ -2656,6 +2742,9 @@
       background: transparent !important;
     }
   </style>
+
+  <!-- AUTHORITATIVE DESKTOP RESPONSIVE & SYMMETRY ENGINE (Last in <head> for priority) -->
+  <link rel="stylesheet" href="css/desktop-responsive.css?v=26">
 </head>
 
 <body>
@@ -2665,64 +2754,98 @@
   <!-- ANTI-FLASH: Desktop sidebar must be hidden inline before any external CSS
        loads. desktop-responsive.css is loaded async (media=print) and arrives
        AFTER first paint, causing the raw sidebar HTML to flash on mobile. -->
-  <aside class="desktop-sidebar" aria-label="Desktop Navigation" id="desktopSidebar"
-         style="display:none">
-    <div class="desktop-sidebar__brand">
-      <img decoding="async" src="assets/app-logo.webp" alt="" aria-hidden="true" class="desktop-sidebar__logo">
-      <div>
-        <div class="desktop-sidebar__title">ANHAD</div>
-        <span class="desktop-sidebar__gurmukhi">ਅਨਹਦ</span>
+  <aside class="desktop-sidebar" aria-label="Desktop Navigation" id="desktopSidebar">
+    <div class="desktop-sidebar__header">
+      <a href="index.html" class="desktop-sidebar__brand">
+        <div class="desktop-sidebar__logo-wrapper">
+          <img decoding="async" src="assets/app-logo.webp" alt="ANHAD" class="desktop-sidebar__logo">
+        </div>
+        <div class="desktop-sidebar__brand-meta">
+          <span class="desktop-sidebar__brand-name">ANHAD</span>
+          <span class="desktop-sidebar__brand-gurmukhi">ਅਨਹਦ ਬਾਣੀ</span>
+        </div>
+      </a>
+      <div class="desktop-sidebar__status-pill">
+        <span class="desktop-sidebar__status-dot"></span>
+        <span class="desktop-sidebar__status-text">Darbar Sahib Live</span>
       </div>
     </div>
     
-    <nav class="desktop-sidebar__nav" aria-label="Main Menu">
-      <a href="/index.html" class="desktop-sidebar__link desktop-sidebar__link--active">
-        <span class="ios-emoji" role="img" aria-label="home">🏠</span>
-        Home
-      </a>
-      <a href="Insights/insights.html" class="desktop-sidebar__link">
-        <span class="ios-emoji" role="img" aria-label="learning">📚</span>
-        Learning
-      </a>
-      <a href="Favorites/favorites.html" class="desktop-sidebar__link">
-        <span class="ios-emoji" role="img" aria-label="favorites">❤️</span>
-        Favorites
-      </a>
-      <a href="sadhsangat-live/index.html" class="desktop-sidebar__link">
-        <img src="assets/app-logo.webp" alt="" aria-hidden="true" width="22" height="22" loading="lazy" decoding="async" style="width:22px;height:22px;border-radius:6px;object-fit:cover;flex-shrink:0;">
-        Sadhsangat
-      </a>
-      <a href="nitnem/index.html" class="desktop-sidebar__link">
-        <span class="ios-emoji" role="img" aria-label="prayer">📿</span>
-        Nitnem
-      </a>
-      <a href="SehajPaath/sehaj-paath.html" class="desktop-sidebar__link">
-        <span class="ios-emoji" role="img" aria-label="book">📖</span>
-        Sehaj Paath
-      </a>
-      <a href="Hukamnama/daily-hukamnama.html" class="desktop-sidebar__link">
-        <span class="ios-emoji" role="img" aria-label="scroll">📜</span>
-        Hukamnama
-      </a>
-    </nav>
+    <div class="desktop-sidebar__nav-scroll">
+      <div class="desktop-sidebar__section-title">Navigation</div>
+      <nav class="desktop-sidebar__nav" aria-label="Main Menu">
+        <a href="index.html" class="desktop-sidebar__link desktop-sidebar__link--active" data-route="home">
+          <span class="desktop-sidebar__link-icon"><span class="ios-emoji">🏠</span></span>
+          <span class="desktop-sidebar__link-text">Home</span>
+        </a>
+        <a href="Hukamnama/daily-hukamnama.html" class="desktop-sidebar__link" data-route="hukamnama">
+          <span class="desktop-sidebar__link-icon"><span class="ios-emoji">📜</span></span>
+          <span class="desktop-sidebar__link-text">Daily Hukamnama</span>
+          <span class="desktop-sidebar__badge desktop-sidebar__badge--gold">Today</span>
+        </a>
+        <a href="nitnem/index.html" class="desktop-sidebar__link" data-route="nitnem">
+          <span class="desktop-sidebar__link-icon"><span class="ios-emoji">📿</span></span>
+          <span class="desktop-sidebar__link-text">Nitnem Hub</span>
+          <span class="desktop-sidebar__badge">8 Banis</span>
+        </a>
+        <a href="GurbaniRadio/gurbani-radio.html" class="desktop-sidebar__link" data-route="radio">
+          <span class="desktop-sidebar__link-icon"><span class="ios-emoji">📻</span></span>
+          <span class="desktop-sidebar__link-text">Gurbani Radio</span>
+          <span class="desktop-sidebar__badge desktop-sidebar__badge--live">LIVE</span>
+        </a>
+        <a href="GurbaniKhoj/gurbani-khoj.html" class="desktop-sidebar__link" data-route="khoj">
+          <span class="desktop-sidebar__link-icon"><span class="ios-emoji">🔍</span></span>
+          <span class="desktop-sidebar__link-text">Gurbani Khoj</span>
+        </a>
+        <a href="SehajPaath/sehaj-paath.html" class="desktop-sidebar__link" data-route="sehaj">
+          <span class="desktop-sidebar__link-icon"><span class="ios-emoji">📖</span></span>
+          <span class="desktop-sidebar__link-text">Sehaj Paath</span>
+        </a>
+        <a href="NaamAbhyas/naam-abhyas.html" class="desktop-sidebar__link" data-route="naam">
+          <span class="desktop-sidebar__link-icon"><span class="ios-emoji">🙏</span></span>
+          <span class="desktop-sidebar__link-text">Naam Abhyas</span>
+        </a>
+        <a href="sadhsangat-live/index.html" class="desktop-sidebar__link" data-route="sadhsangat">
+          <span class="desktop-sidebar__link-icon"><span class="ios-emoji">📡</span></span>
+          <span class="desktop-sidebar__link-text">Sadhsangat Live</span>
+        </a>
+        <a href="Dashboard/dashboard.html" class="desktop-sidebar__link" data-route="dashboard">
+          <span class="desktop-sidebar__link-icon"><span class="ios-emoji">📊</span></span>
+          <span class="desktop-sidebar__link-text">Dashboard</span>
+        </a>
+        <a href="NitnemTracker/nitnem-tracker.html" class="desktop-sidebar__link" data-route="tracker">
+          <span class="desktop-sidebar__link-icon"><span class="ios-emoji">🔥</span></span>
+          <span class="desktop-sidebar__link-text">Nitnem Tracker</span>
+        </a>
+        <a href="Favorites/favorites.html" class="desktop-sidebar__link" data-route="favorites">
+          <span class="desktop-sidebar__link-icon"><span class="ios-emoji">❤️</span></span>
+          <span class="desktop-sidebar__link-text">Favorites</span>
+        </a>
+        <a href="Notes/notes.html" class="desktop-sidebar__link" data-route="notes">
+          <span class="desktop-sidebar__link-icon"><span class="ios-emoji">📝</span></span>
+          <span class="desktop-sidebar__link-text">Spiritual Notes</span>
+        </a>
+        <a href="Insights/insights.html" class="desktop-sidebar__link" data-route="learning">
+          <span class="desktop-sidebar__link-icon"><span class="ios-emoji">📚</span></span>
+          <span class="desktop-sidebar__link-text">Learning & Library</span>
+        </a>
+      </nav>
+    </div>
     
     <div class="desktop-sidebar__footer">
-      <a href="Calendar/GurpurabCalendar-ios.html" class="desktop-sidebar__link">
-        <span class="ios-emoji" role="img" aria-label="calendar">📅</span>
-        Calendar
+      <a href="Calendar/GurpurabCalendar-ios.html" class="desktop-sidebar__footer-action" title="Gurpurab Calendar">
+        <span class="ios-emoji">📅</span>
+        <span>Calendar</span>
       </a>
-      <a href="sadhsangat-live/index.html" class="desktop-sidebar__link">
-        <img src="assets/app-logo.webp" alt="" aria-hidden="true" width="22" height="22" loading="lazy" decoding="async" style="width:22px;height:22px;border-radius:6px;object-fit:cover;flex-shrink:0;">
-        Sadhsangat Live
+      <a href="Settings/index.html" class="desktop-sidebar__footer-action" title="Settings">
+        <span class="ios-emoji">⚙️</span>
+        <span>Settings</span>
       </a>
+      <button class="desktop-sidebar__footer-action desktop-sidebar__theme-toggle" id="desktopThemeToggle" aria-label="Toggle Theme" title="Toggle Theme">
+        <span class="ios-emoji" id="desktopThemeIcon">🌙</span>
+      </button>
     </div>
   </aside>
-  <script>
-    // Show sidebar only on desktop — replaces the async CSS we can't rely on for first paint
-    if (window.innerWidth >= 1024) {
-      document.getElementById('desktopSidebar').style.display = '';
-    }
-  </script>
 
   <!-- PERF: Mobile/reduce-motion detection — add classes before first paint -->
   <script>
@@ -2867,10 +2990,36 @@
       </style>
       
       <div class="greeting__content">
-        <!-- Portrait Slider for immersive experience -->
-        <div class="greeting__portrait-slider" id="guruSlider">
+        <!-- Portrait Slider for immersive experience.
+             data-campaign-state is the ONLY attribute js/campaign-renderer.js
+             writes here. It ships as "a" so every fresh load and every SPA
+             restore starts dormant. -->
+        <div class="greeting__portrait-slider" id="guruSlider" data-campaign-state="a">
           <div class="greeting__slider-track" id="guruSliderTrack">
             <!-- Slides will be injected by trendora-app.js -->
+          </div>
+
+          <!-- CAMPAIGN STATE B (artwork). Deliberately a SIBLING of the track,
+               not a child: PortraitSlider.init() guards its rebuild on
+               `track.children.length === this._gurus.length`, so a 12th child
+               would fail that check on every SPA arrival and re-trigger the
+               blank-then-repopulate regression the guard exists to prevent.
+               Deliberately NOT class .greeting__slide either — PortraitSlider
+               .update() does a document-wide querySelectorAll('.greeting__slide')
+               and would stamp coverflow classes onto it.
+               position:absolute inside a box already fixed at 172px means it
+               contributes zero height: this is the "acquires no new space"
+               guarantee, and it holds regardless of how long the copy is. -->
+          <div class="greeting__announce" id="greetingAnnounce" hidden aria-hidden="true">
+            <span class="greeting__announce-halo" aria-hidden="true"></span>
+            <div class="greeting__announce-disc">
+              <img class="greeting__announce-img" id="greetingAnnounceImg" alt="" aria-hidden="true"
+                   decoding="async" loading="lazy" src="assets/Darbar-sahib-AMRITVELA.webp">
+              <span class="greeting__announce-veil" aria-hidden="true"></span>
+              <span class="greeting__announce-ik" aria-hidden="true">ੴ</span>
+              <span class="greeting__announce-badge" id="greetingAnnounceBadge"></span>
+            </div>
+            <span class="greeting__announce-pill" id="greetingAnnouncePill" hidden></span>
           </div>
         </div>
         
@@ -2879,6 +3028,18 @@
           <div class="greeting__salutation" id="greetingSalutation">&nbsp;</div>
           <div class="greeting__gurbani" id="greetingGurbani" lang="pa">&nbsp;</div>
           <div class="greeting__translation" id="greetingTranslation" style="font-size: 0.9rem; opacity: 0.8; margin-top: 2px;">&nbsp;</div>
+
+          <!-- CAMPAIGN STATE B (text). inset:0 overlay on the SAME box, so
+               .greeting__text's height is always exactly State A's height and
+               everything below the greeting stays byte-identical in both
+               states. The renderer never writes to the three nodes above —
+               PortraitSlider._syncText() is their sole writer and keeps
+               updating them invisibly while State B is showing. -->
+          <div class="greeting__announce-text" id="greetingAnnounceText" hidden aria-hidden="true">
+            <div class="greeting__announce-title" id="greetingAnnounceTitle"></div>
+            <div class="greeting__announce-line" id="greetingAnnounceLine" lang="pa"></div>
+            <div class="greeting__announce-sub" id="greetingAnnounceSub"></div>
+          </div>
         </div>
       </div>
     </section>
@@ -3201,7 +3362,13 @@
         <div class="practice-card__ring">
           <svg viewBox="0 0 60 60">
             <circle class="practice-card__ring-bg" cx="30" cy="30" r="26"/>
-            <circle class="practice-card__ring-fill" id="hukamRing" cx="30" cy="30" r="26" stroke-dasharray="163.4" stroke-dashoffset="0"/>
+            <!-- dashoffset 163.4 = empty, matching #nitnemRing and #sehajRing. It was
+                 hardcoded to 0 (a fully-drawn ring) and NOTHING ever updated it:
+                 UIController._setRing() is only ever called for nitnemRing and
+                 sehajRing, so this card rendered a permanent bright completion
+                 ring while its two siblings rendered empty ones — the odd-one-out
+                 glow. -->
+            <circle class="practice-card__ring-fill" id="hukamRing" cx="30" cy="30" r="26" stroke-dasharray="163.4" stroke-dashoffset="163.4"/>
           </svg>
           <div class="practice-card__ring-icon" aria-hidden="true"><span class="ios-emoji" role="img" aria-label="scroll">📜</span></div>
         </div>
@@ -3297,15 +3464,15 @@
       <svg class="quick-card__chevron" aria-hidden="true"><use href="#icon-chevron-right"/></svg>
     </article>
 
-    <!-- 🙏 Gurbani GPT — Coming Soon -->
-    <article class="quick-card quick-card--purple ios-haptic" id="gurbaniGptCard" aria-label="Gurbani GPT" role="button" tabindex="0">
+    <!-- 🙏 Chaliya 2026 — Coming Soon -->
+    <article class="quick-card quick-card--gold ios-haptic" id="chaliya2026Card" aria-label="Chaliya 2026" role="button" tabindex="0">
       <div class="quick-card__icon" aria-hidden="true"><span class="ios-emoji" role="img" aria-label="prayer beads">📿</span></div>
       <div class="quick-card__content">
-        <div class="quick-card__title">Gurbani GPT</div>
-        <div class="quick-card__subtitle">Naam, Simran &amp; spiritual guidance</div>
+        <div class="quick-card__title">Chaliya 2026</div>
+        <div class="quick-card__subtitle">Parkash Purab Guru Nanak Dev Ji</div>
       </div>
       <div class="quick-card__meta">
-        <span class="quick-card__meta-value" style="color: #9b59b6; font-weight: 700; font-size: 11px;">Coming Soon</span>
+        <span class="quick-card__meta-value" style="color: #D4943A; font-weight: 700; font-size: 11px;">Coming Soon</span>
       </div>
       <svg class="quick-card__chevron" aria-hidden="true"><use href="#icon-chevron-right"/></svg>
     </article>
@@ -3372,13 +3539,13 @@
        SCRIPTS — PERFORMANCE OPTIMIZED
        
        PERF STRATEGY:
-       • fetch-utils, page-lifecycle, unified-stats, capacitor, storage: small
+      • fetch-utils, page-lifecycle, unified-stats, capacitor, storage: small
          utility scripts that are kept deferred (fast parse)
-       • audio-coordinator + overlay-player: deferred (small, sets up API stubs)
-       • anhad-audio-singleton.js (97KB): DEMAND-LOADED on first play interaction
+      • audio-coordinator + overlay-player: deferred (small, sets up API stubs)
+      • anhad-audio-singleton.js (97KB): DEMAND-LOADED on first play interaction
          — parsed only when the user actually taps a play button
-       • smooth-navigation.js (45KB): IDLE waterfall — not needed until first nav
-       • audio-coordinator stays deferred so it can expose the AnhadAudio stub
+      • smooth-navigation.js (45KB): IDLE waterfall — not needed until first nav
+      • audio-coordinator stays deferred so it can expose the AnhadAudio stub
   ════════════════════════════════════════════════════════════════════════ -->
   <!-- DEFERRED: Small utilities only, fast parse -->
   <script src="lib/fetch-utils.js" defer></script>
@@ -3393,7 +3560,7 @@
   <script src="lib/overlay-player.js" defer></script>
   <script src="lib/remote-config.js?v=4.0.5" defer></script>
   <!-- Consumes window.AnhadCampaigns; must load after the resolver above. -->
-  <script src="js/campaign-renderer.js?v=1" defer></script>
+  <script src="js/campaign-renderer.js?v=2" defer></script>
   
   <!-- Core UI logic -->
   <script src="js/trendora-app.js?v=4.0.4" defer></script>
@@ -3732,22 +3899,27 @@
   </script>
 
   <!-- ═══════════════════════════════════════
-       COMING SOON OVERLAY — Gurbani GPT
+       COMING SOON OVERLAY — Chaliya 2026
   ═══════════════════════════════════════ -->
-  <div id="anhadComingSoonOverlay" role="dialog" aria-modal="true" aria-label="Coming Soon" aria-hidden="true">
+  <div id="anhadComingSoonOverlay" role="dialog" aria-modal="true" aria-label="Chaliya 2026 Coming Soon" aria-hidden="true">
     <div id="anhadComingSoonCard">
-      <span class="cs-icon">🌟</span>
-      <div class="cs-feature">Gurbani GPT</div>
-      <div class="cs-title">Coming Soon</div>
-      <div class="cs-desc">We're crafting a deeply spiritual AI experience rooted in Gurbani wisdom.<br>Stay tuned — something beautiful is on the way. 🙏</div>
-      <button class="cs-close" id="anhadComingSoonClose">Got it &nbsp;✓</button>
+      <div class="cs-badge-pill">
+        <span class="cs-badge-dot"></span>
+        <span class="cs-badge-text">COMING SOON</span>
+      </div>
+      <div class="cs-ik-onkar">ੴ</div>
+      <div class="cs-title">Chaliya 2026</div>
+      <div class="cs-gurmukhi-subtitle">ਪ੍ਰਕਾਸ਼ ਪੁਰਬ ਸ੍ਰੀ ਗੁਰੂ ਨਾਨਕ ਦੇਵ ਜੀ</div>
+      <div class="cs-feature">Parkash Purab Guru Nanak Dev Ji</div>
+      <div class="cs-desc">40 Days of Divine Naam Simran &amp; Nitnem Practice.<br>Stay tuned for this sacred journey! 🙏</div>
+      <button class="cs-close ios-haptic" id="anhadComingSoonClose">ਵਾਹਿਗੁਰੂ &nbsp;✓</button>
     </div>
   </div>
 
   <script>
-    // ── GURBANI GPT: Coming Soon popup ──
+    // ── Chaliya 2026: Coming Soon popup ──
     (function() {
-      var card = document.getElementById('gurbaniGptCard');
+      var card = document.getElementById('chaliya2026Card');
       var overlay = document.getElementById('anhadComingSoonOverlay');
       var closeBtn = document.getElementById('anhadComingSoonClose');
 
@@ -3788,10 +3960,6 @@
         if (e.key === 'Escape' && overlay && overlay.classList.contains('active')) hideComingSoon();
       };
       document.addEventListener('keydown', window.anhadComingSoonEscHandler);
-      // Disabled duplicate listener
-      if (false) document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && overlay && overlay.classList.contains('active')) hideComingSoon();
-      });
     })();
 
 

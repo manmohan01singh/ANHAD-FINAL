@@ -972,9 +972,9 @@ body.has-results .main-content {
 
 /* ═══ ARCH DOME — The main visual of voice page ═══════════════
    Full-screen arch drawn with CSS/SVG, just like the reference:
-   • Outer arch outline (off-white cream rounded frame)
-   • Inner secondary arch line (dashed lighter)
-   • Two hanging lanterns from top corners of arch
+  • Outer arch outline (off-white cream rounded frame)
+  • Inner secondary arch line (dashed lighter)
+  • Two hanging lanterns from top corners of arch
    ═══════════════════════════════════════════════════════════ */
 .voice-arch-decor {
     position: absolute;
@@ -2226,7 +2226,7 @@ body.has-results .main-content {
     stroke: url(#offlineRingGrad);
     stroke-width: 7;
     stroke-linecap: round;
-    stroke-dasharray: 326.7; /* 2p � 52 */
+    stroke-dasharray: 326.7; /* 2p  52 */
     stroke-dashoffset: 326.7; /* fully hidden = 0% */
     transition: stroke-dashoffset 0.4s ease, stroke 0.3s ease;
 }
@@ -2318,7 +2318,7 @@ body.has-results .main-content {
     stroke: url(#crestGrad);
     stroke-width: 4;
     stroke-linecap: round;
-    stroke-dasharray: 163.4;    /* 2p � 26 */
+    stroke-dasharray: 163.4;    /* 2p  26 */
     stroke-dashoffset: 163.4;   /* 0% filled */
     transition: stroke-dashoffset 0.5s ease;
 }
@@ -2450,7 +2450,7 @@ body.has-results .main-content {
     stroke: url(#osrGrad);
     stroke-width: 10;
     stroke-linecap: round;
-    stroke-dasharray: 364.4;    /* 2p � 58 */
+    stroke-dasharray: 364.4;    /* 2p  58 */
     stroke-dashoffset: 364.4;
     transition: stroke-dashoffset 0.6s ease;
 }

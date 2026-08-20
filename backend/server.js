@@ -3884,6 +3884,42 @@ const INSTANT_REJECT_ARTISTS = [
     'akshay kumar', 'salman khan', 'shah rukh khan', 'aamir khan',
 ];
 
+// Active Groq AI Models with automatic fallbacks
+const GROQ_MODELS = [
+    'llama-3.3-70b-versatile',
+    'llama-3.1-8b-instant',
+    'mixtral-8x7b-32768',
+    'gemma2-9b-it'
+];
+
+async function callGroqAI({ messages, temperature = 0.2, maxTokens = 500, timeout = 15000 }) {
+    let lastError = null;
+    for (const model of GROQ_MODELS) {
+        try {
+            const response = await axios.post(CONFIG.GROQ_API_URL, {
+                model,
+                messages,
+                temperature,
+                max_tokens: maxTokens
+            }, {
+                headers: {
+                    'Authorization': `Bearer ${CONFIG.GROQ_API_KEY}`,
+                    'Content-Type': 'application/json'
+                },
+                timeout
+            });
+            const content = response.data.choices[0]?.message?.content || '';
+            if (content) {
+                return { content, model };
+            }
+        } catch (err) {
+            console.warn(`[Groq AI] Model "${model}" failed (${err.response?.status || err.message}), trying next model...`);
+            lastError = err;
+        }
+    }
+    throw lastError || new Error('All Groq AI models failed');
+}
+
 // ── Layer 2: Obviously SPIRITUAL content → instant approve ──────────
 const INSTANT_APPROVE_KEYWORDS = [
     // Gurbani / Sikh
@@ -4055,7 +4091,7 @@ Respond ONLY with valid JSON (no markdown, no explanation outside JSON):
         console.log(`[Channel Validation] 🤖 Calling AI for "${channelName}" (${sampleVideos.length} videos fetched)`);
 
         const response = await axios.post(CONFIG.GROQ_API_URL, {
-            model: 'llama-3.3-70b-versatile',
+            model: 'llama-3.1-70b-versatile',
             messages: [
                 { role: 'system', content: 'You are a JSON API. Always respond with valid JSON only. Never add markdown fences or text outside the JSON object.' },
                 { role: 'user', content: validationPrompt }
@@ -4255,23 +4291,17 @@ Respond ONLY with valid JSON (no markdown explanation or formatting blocks):
 
     try {
         console.log(`[Video Validation] Calling AI to evaluate ${batchToEvaluate.length} videos...`);
-        const response = await axios.post(CONFIG.GROQ_API_URL, {
-            model: 'llama-3.3-70b-versatile',
+        const aiResponse = await callGroqAI({
             messages: [
                 { role: 'system', content: 'You are a JSON API. Always respond with valid JSON only. Never add markdown fences or text outside the JSON object.' },
                 { role: 'user', content: prompt }
             ],
             temperature: 0.1,
-            max_tokens: 1000
-        }, {
-            headers: {
-                'Authorization': `Bearer ${CONFIG.GROQ_API_KEY}`,
-                'Content-Type': 'application/json'
-            },
+            maxTokens: 1000,
             timeout: 20000
         });
 
-        const rawContent = response.data.choices[0]?.message?.content || '';
+        const rawContent = aiResponse.content;
         const jsonMatch = rawContent.match(/{[\s\S]*}/);
         const jsonStr = jsonMatch ? jsonMatch[0] : rawContent;
         const result = JSON.parse(jsonStr);
@@ -4657,7 +4687,7 @@ Approve if: devotional content, spiritual discourse, religious ceremonies, kirta
 
     try {
         const response = await axios.post(CONFIG.GROQ_API_URL, {
-            model: 'llama-3.3-70b-versatile',
+            model: 'llama-3.1-70b-versatile',
             messages: [
                 { role: 'system', content: 'You are a JSON API that validates spiritual content. Always respond with valid JSON only.' },
                 { role: 'user', content: validationPrompt }

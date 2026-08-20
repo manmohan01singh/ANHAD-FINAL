@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
     <!-- CRITICAL: Theme blocker - MUST run before paint -->
@@ -91,11 +91,14 @@
   <link rel="stylesheet" href="../css/anhad-core.css">
   <link rel="stylesheet" href="../css/theme-variables.css">
   <link rel="stylesheet" href="gurpurab-calendar-ios.css?v=2">
+  <link rel="stylesheet" href="../css/global-mini-player.css?v=5">
+    <link rel="stylesheet" href="../css/desktop-responsive.css?v=26">
 
   <!-- Global Theme System -->
   <script src="../lib/global-theme.js"></script>
   
   <!-- Navigation Libraries -->
+  <script src="../lib/desktop-sidebar.js" defer></script>
   <script src="../lib/smart-back.js"></script>
   <script src="../lib/page-lifecycle.js"></script>
   <script src="../lib/smooth-navigation.js"></script>
@@ -125,7 +128,7 @@
       </div>
       <div class="loader-icon">☬</div>
       <div class="loader-text">Gurpurab Calendar</div>
-      <div class="loader-sub">Loading sacred dates…</div>
+      <div class="loader-sub">Loading sacred dates”¦</div>
     </div>
   </div>
 
@@ -213,7 +216,7 @@
     <section class="section upcoming-section">
       <div class="section-header">
         <div class="section-header-inner">
-          <span class="section-icon">✨</span>
+          <span class="section-icon">✍️¨</span>
           <span class="section-title" id="upcomingTitle">Upcoming</span>
         </div>
         <div class="section-header-line"></div>
@@ -231,5 +234,7 @@
     <script src="../lib/capacitor-notifications-global.js"></script>
     <script src="../lib/anhad-widget-bridge.js"></script>
     <script src="../lib/anhad-audio-singleton.js?v=2.1.5"></script>
+    <script src="../lib/overlay-player.js" defer></script>
 </body>
 </html>
+
