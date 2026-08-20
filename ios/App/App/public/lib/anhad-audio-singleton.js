@@ -1221,12 +1221,19 @@
 
     // Web MediaSession for lock screen controls (PWA)
     if ('mediaSession' in navigator) {
-      const artworkUrl = getDynamicCoverAsset(currentStream, true); // true = for notification (use app logo)
       navigator.mediaSession.metadata = new MediaMetadata({
         title: title,
         artist: artist,
         album: 'ANHAD',
-        artwork: [{ src: artworkUrl, sizes: '512x512', type: 'image/png' }]
+        artwork: [
+          { src: resolveAsset('app-logo-96.png'), sizes: '96x96', type: 'image/png' },
+          { src: resolveAsset('icon-128x128.png'), sizes: '128x128', type: 'image/png' },
+          { src: resolveAsset('icon-192x192.png'), sizes: '192x192', type: 'image/png' },
+          { src: resolveAsset('icon-256x256.png'), sizes: '256x256', type: 'image/png' },
+          { src: resolveAsset('app-logo-384.png'), sizes: '384x384', type: 'image/png' },
+          { src: resolveAsset('icon-512x512.png'), sizes: '512x512', type: 'image/png' },
+          { src: resolveAsset('icon-1024x1024.png'), sizes: '1024x1024', type: 'image/png' }
+        ]
       });
       navigator.mediaSession.playbackState = 'playing';
       navigator.mediaSession.setActionHandler('play', () => resume());

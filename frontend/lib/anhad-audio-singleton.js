@@ -581,6 +581,16 @@
           connectionState = 'reconnecting';
           emit('statechange', getPublicState());
           
+          // CRITICAL FIX: Stop after 5 failed attempts to prevent infinite loop
+          if (liveReconnectAttempts > 5) {
+            console.error(`[PlaybackQueueController] ❌ Stream "${currentStream}" failed after 5 attempts. Stopping auto-recovery.`);
+            this.stop();
+            connectionState = 'failed';
+            emit('statechange', getPublicState());
+            emit('error', { type: 'stream_failed', message: 'Unable to load stream after multiple attempts' });
+            return;
+          }
+          
           // Adaptive backoff: 2s -> 4s -> 8s -> 12s -> max 15s
           const backoffMs = Math.min(2000 * Math.pow(1.5, Math.min(liveReconnectAttempts - 1, 6)), 15000);
           console.log(`[PlaybackQueueController] 🔄 Live stream auto-recovery attempt #${liveReconnectAttempts} in ${Math.round(backoffMs)}ms...`);
@@ -596,6 +606,9 @@
 
       // RAPID STALL & BUFFER WATCHDOG (6 seconds instead of 15 seconds)
       let stallRecoveryTimer = null;
+      let stallRecoveryAttempts = 0;
+      const MAX_STALL_RECOVERIES = 3;
+      
       const clearStallTimer = () => {
         if (stallRecoveryTimer) {
           clearTimeout(stallRecoveryTimer);
@@ -611,7 +624,14 @@
           if (!wantsPlayback) return;
           if (!navigator.onLine) return;
           
-          console.warn('[PlaybackQueueController] ⚠️ Audio stream stalled/hung > 6s, auto-reconnecting stream...');
+          stallRecoveryAttempts++;
+          if (stallRecoveryAttempts > MAX_STALL_RECOVERIES) {
+            console.error('[PlaybackQueueController] ❌ Stream stalled too many times. Stopping.');
+            this.stop();
+            return;
+          }
+          
+          console.warn(`[PlaybackQueueController] ⚠️ Audio stream stalled/hung > 6s, auto-reconnecting stream (attempt ${stallRecoveryAttempts}/${MAX_STALL_RECOVERIES})...`);
           playStream(currentStream);
           armStallTimer();
         }, 6000);
