@@ -424,9 +424,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <!-- PRELOAD: Audio engine (97KB) — fetch early so it's cached before first tap -->
   <link rel="preload" href="lib/anhad-audio-singleton.js?v=2.2.0" as="script">
-  <!-- CRITICAL FONTS: Inter + Noto Sans Gurmukhi (used in all text) -->
-  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Gurmukhi:wght@400;500;600;700&display=optional" onload="this.onload=null;this.rel='stylesheet'">
-  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Gurmukhi:wght@400;500;600;700&display=optional" rel="stylesheet"></noscript>
+  <!-- CRITICAL FONTS: Inter + Noto Sans Gurmukhi + Marcellus (used in all text & header) -->
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Marcellus&family=Noto+Sans+Gurmukhi:wght@400;500;600;700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Marcellus&family=Noto+Sans+Gurmukhi:wght@400;500;600;700&display=swap" rel="stylesheet"></noscript>
   <!-- DECORATIVE FONTS: Loaded lazily after first paint -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display+SC:wght@400;700;900&family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;500;600;700&display=optional" media="print" onload="this.media='all'">
   
@@ -451,8 +451,6 @@
 
   <!-- CRITICAL: ANHAD Adaptive Title - Changes with background -->
   <style id="anhad-header-title-override">
-    /* Import Marcellus font from Google Fonts */
-    @import url('https://fonts.googleapis.com/css2?family=Marcellus&display=swap');
     
     /* HEADER WITH PERFECT CENTERING & FULL NOTCH CLEARANCE
        Scoped to .home-header (added to Home's own <header> tag) — this used

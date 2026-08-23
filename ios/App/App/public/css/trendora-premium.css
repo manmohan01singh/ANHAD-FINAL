@@ -574,8 +574,7 @@ a:active {
   position: sticky;
   top: 0;
   z-index: var(--z-sticky);
-  transition: backdrop-filter var(--duration-normal) var(--ease-smooth),
-    opacity var(--duration-normal) var(--ease-smooth);
+  transition: opacity var(--duration-normal) var(--ease-smooth);
   background: transparent !important;
   pointer-events: auto !important;
 }
@@ -2296,13 +2295,13 @@ a:active {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  background: rgba(255, 255, 255, 0.82);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(255, 255, 255, 0.88);
   box-shadow: none;
   border: 0.5px solid rgba(255, 255, 255, 0.9);
   position: relative;
   z-index: 1;
+  transform: translateZ(0);
+  backface-visibility: hidden;
   transition: transform var(--duration-fast) var(--ease-spring);
 }
 

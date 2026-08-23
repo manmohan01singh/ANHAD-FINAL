@@ -1952,7 +1952,7 @@
       // per Home revisit while the ineffective this._autoTimer guard was used.
       if (window.__anhadCarouselAutoTimer) clearInterval(window.__anhadCarouselAutoTimer);
       window.__anhadCarouselAutoTimer = setInterval(() => {
-        if (this._paused) return;
+        if (this._paused || document.hidden) return;
         current = (current + 1) % totalSlides;
         track.scrollLeft = scrollTargetFor(current);
         dots.forEach((d, i) => d.classList.toggle('hero-carousel__dot--active', i === current));
