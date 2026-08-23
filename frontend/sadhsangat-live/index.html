@@ -383,17 +383,10 @@
       opacity: 1;
     }
 
-    /* Subtle background noise texture for depth */
+    /* PERF: Noise texture removed — SVG feTurbulence filter on fixed element
+       causes full-screen GPU rasterization on every scroll frame. */
     .noise-bg::after {
-      content: '';
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 99999;
-      opacity: 0.015;
-      background-image: url("data:image/svg+xml,<svg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
-      background-repeat: repeat;
-      background-size: 256px 256px;
+      display: none !important;
     }
 
     /* Section divider with gold accent */
@@ -2168,24 +2161,14 @@
       position: absolute;
       inset: 0;
       border-radius: 4px;
-      background: linear-gradient(135deg, rgba(212,160,58,0.08) 0%, transparent 40%, transparent 60%, rgba(212,160,58,0.04) 100%);
+      background: linear-gradient(135deg, rgba(212,160,58,0.06) 0%, transparent 40%, transparent 60%, rgba(212,160,58,0.03) 100%);
       pointer-events: none;
       z-index: 2;
     }
-    /* Animated light sweep across video */
+    /* PERF: Removed rotating conic-gradient animation — was creating a GPU
+       compositing layer that forced repaint on every animation frame */
     .player-video-viewport::after {
-      content: '';
-      position: absolute;
-      top: -100%; left: -100%;
-      width: 300%; height: 300%;
-      background: conic-gradient(from 0deg at 50% 50%, transparent 0%, rgba(212,160,58,0.015) 25%, transparent 50%, rgba(212,160,58,0.01) 75%, transparent 100%);
-      animation: viewport-shine 8s linear infinite;
-      pointer-events: none;
-      z-index: 1;
-    }
-    @keyframes viewport-shine {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+      display: none !important;
     }
     #ytPlayerContainer {
       width: 100%;
@@ -2348,7 +2331,7 @@
       100% { transform: scaleY(1.2); opacity: 1; }
     }
 
-    /* Scroll Area Watch Details — glass transparent for blurred bg to show through */
+    /* Scroll Area Watch Details */
     .player-scroll-content {
       flex: 1;
       overflow-y: auto;
@@ -2356,8 +2339,8 @@
       background: transparent;
       z-index: 9;
       position: relative;
-      -webkit-mask-image: linear-gradient(to bottom, black 90%, transparent 100%);
-      mask-image: linear-gradient(to bottom, black 90%, transparent 100%);
+      /* PERF: mask-image on scrolling container forces GPU repaint every scroll frame — removed */
+      -webkit-overflow-scrolling: touch;
     }
     .player-scroll-content::before {
       content: '';

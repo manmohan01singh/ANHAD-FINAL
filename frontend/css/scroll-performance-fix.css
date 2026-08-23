@@ -191,3 +191,79 @@ body.scrolling .event-card {
 body.scrolling * {
   animation-play-state: paused !important;
 }
+
+/* ═══ DARK & DYNAMIC MODE SCROLL RENDERING OVERRIDES ═══
+   Light theme is smooth. Dark/Dynamic suffer from these specific GPU paths.
+   We surgically eliminate the expensive operations only in dark/dynamic context. */
+
+/* 1. No text-shadow glows in dark/dynamic mode — these cause per-frame repaint */
+html.dark-mode .greeting__salutation,
+html.dark-mode .greeting__gurbani,
+html.dark-mode .greeting__translation,
+html.dark-mode .section-eyebrow,
+html.dark-mode .practice-card__title,
+html.dark-mode .quick-card__label,
+[data-theme-mode="auto"] .greeting__salutation,
+[data-theme-mode="auto"] .greeting__gurbani,
+[data-theme-mode="auto"] .greeting__translation {
+  text-shadow: none !important;
+}
+
+/* 2. Simplify practice-card in dark mode — remove multi-layer inset box-shadows */
+html.dark-mode .practice-card {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3) !important;
+}
+html.dark-mode .practice-card::before {
+  display: none !important;
+}
+
+/* 3. Contain all cards as isolated paint regions — prevents scroll-triggered global repaint */
+.quick-card, .practice-card, .event-card, .hero-card, .glass-card, .clay-card {
+  contain: layout style paint;
+  isolation: isolate;
+}
+
+/* 4. Dynamic theme — simplify card backgrounds, avoid multi-stop gradients during scroll */
+[data-theme-mode="auto"][data-time-of-day="night"] .quick-card,
+[data-theme-mode="auto"][data-time-of-day="night"] .practice-card {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3) !important;
+  filter: none !important;
+}
+
+/* 5. No backdrop-filter on any element inside the main scrollable area.
+   Only fixed/sticky elements need blur — scroll content never should. */
+.app .card-glass,
+.app .glass-card {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  background: var(--bg-secondary) !important;
+}
+
+/* 6. Header backdrop-filter: reduce in dark/dynamic mode */
+html.dark-mode .header--compact,
+[data-theme-mode="auto"] .header--compact {
+  backdrop-filter: blur(16px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(160%) !important;
+}
+
+/* 7. Force GPU layers on nav and header — keeps them on separate compositor layer */
+.bottom-nav, .bottom-nav__wrapper, .home-header, .header {
+  transform: translateZ(0);
+  will-change: auto;
+  backface-visibility: hidden;
+}
+
+/* 8. Greeting icons — GPU-promote to avoid being repainted during scroll */
+.greeting__guru-portrait, .greeting__text {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  contain: layout style paint;
+}
+
+/* 9. Emoji icons disappear fix — force paint layer stability */
+.ios-emoji, .ios-emoji--nav, .quick-card__icon {
+  transform: translateZ(0) !important;
+  backface-visibility: hidden !important;
+  will-change: auto !important;
+  contain: layout paint;
+}

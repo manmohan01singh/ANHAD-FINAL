@@ -41,31 +41,33 @@ body::before {
 
 .anhad-bg-fade-layer {
   position: absolute;
-  inset: -20px;
+  inset: 0;
   background-size: cover;
   background-position: center top;
   background-repeat: no-repeat;
-  filter: blur(3px) brightness(1.0);
-  transform: scale(1.05);
+  /* PERF: NO filter blur — this was the #1 scroll rendering killer.
+     filter on fixed/composited elements forces full-screen GPU rasterization
+     on every scroll frame in dark/dynamic mode. Scale handles edge hiding. */
+  transform: scale(1.08) translateZ(0);
   will-change: opacity;
   opacity: 0;
-  /* INSTANT transition - changed from 1.2s to 0.01s for immediate background change */
   transition: opacity 0.01s ease-in-out;
+  backface-visibility: hidden;
 }
 
 .anhad-bg-fade-layer.active {
   opacity: 1;
 }
 
-/* In dark mode (manual dark theme), make it slightly darker and warmer */
+/* In dark mode (manual dark theme), make it slightly darker — NO blur filter */
 html.dark-mode:not([data-theme-mode="auto"]) .anhad-bg-fade-layer,
 [data-theme="dark"] .anhad-bg-fade-layer {
-  filter: blur(3px) brightness(0.65) saturate(0.9);
+  filter: brightness(0.65) saturate(0.9);
 }
 
-/* In auto mode at night, apply subtle darkening - less than manual dark mode */
+/* In auto mode at night */
 html[data-theme-mode="auto"][data-time-of-day="night"] .anhad-bg-fade-layer {
-  filter: blur(3px) brightness(1.0) saturate(1.0) !important;
+  filter: brightness(1.0) saturate(1.0) !important;
 }
 
 /* ── MAIN APP CONTAINER ── */
