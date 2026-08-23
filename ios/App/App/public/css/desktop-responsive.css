@@ -1,4 +1,4 @@
-/* ═══════════════════════════════════════════════════════════════════════════════
+﻿/* ═══════════════════════════════════════════════════════════════════════════════
    ANHAD — PRODUCTION DESKTOP & LAPTOP DESIGN SYSTEM & RESPONSIVE ENGINE v6.0
    Pixel-Perfect Optical Symmetry · Luxury Apple macOS/iOS Glass & Claymorphism
    Zero Impact on Mobile (< 1024px) · Engineered for 1024px, 1280px, 1366px, 1440px, 1536px, 1920px+ (4K)
@@ -2175,7 +2175,7 @@
       grid-template-columns: repeat(3, 1fr) !important;
     }
   }
-
+@media screen and (min-width: 1024px) {
   /* ─────────────────────────────────────────────────────────────────────────────
      15. CHALIYA SAHIB 2026 MODAL — DESKTOP COMPACT & CENTERED LUXURY
      ───────────────────────────────────────────────────────────────────────────── */
@@ -2651,3 +2651,4 @@
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5) !important;
   }
 }
+
