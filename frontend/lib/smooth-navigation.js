@@ -500,12 +500,14 @@
         return;
       }
 
+      const isTabRoute = url.includes('insights') || url.includes('favorites') || url.includes('sadhsangat') || isHomeUrl(url);
+
       loaderTimeout = setTimeout(() => {
-        if (!transitionFinished && !options.isBack) {
+        if (!transitionFinished && !options.isBack && !isTabRoute) {
           loader.classList.add('visible');
           document.body.classList.add('page-loading');
         }
-      }, 120);
+      }, 700);
 
       const response = await fetch(fetchUrl);
       if (!response.ok) throw new Error(`HTTP ${response.status} for ${fetchUrl}`);
@@ -1422,7 +1424,8 @@
     setTimeout(() => {
       const shellPages = [
         'Insights/insights.html',
-        'Favorites/favorites.html'
+        'Favorites/favorites.html',
+        'sadhsangat-live/index.html'
       ];
       shellPages.forEach(url => {
         try {
@@ -1430,7 +1433,7 @@
           prefetchPage(absolute);
         } catch (e) {}
       });
-    }, 1500);
+    }, 100);
   }
 
   if (document.readyState === 'loading') {

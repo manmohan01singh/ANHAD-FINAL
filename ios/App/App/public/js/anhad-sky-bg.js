@@ -223,29 +223,16 @@
     if (el.src === newAbsolute) return; // already correct
 
     const preload = new Image();
-    // Runs exactly once. For an image already in the memory cache, `complete`
-    // is true synchronously AND the browser still queues a real load event —
-    // so the manual call below plus that event ran the whole
-    // opacity-0 → src → 500ms fade sequence twice in a row on the same
-    // element. That double crossfade is the reported "two-time flash".
     let done = false;
     const doSwap = () => {
       if (done) return;
       done = true;
-      // Old image visible → quick opacity-0 → src swap → fade in
-      el.style.transition = 'opacity 0s';
-      el.style.opacity = '0';
-      requestAnimationFrame(() => {
-        el.src = newSrc;
-        el.style.transition = 'opacity 0.5s ease';
-        requestAnimationFrame(() => { el.style.opacity = '1'; });
-      });
+      el.src = newSrc;
     };
     preload.onload = doSwap;
     preload.onerror = () => {
       if (done) return;
       done = true;
-      // Fallback: just set src directly without fade
       el.src = newSrc;
     };
     preload.src = newSrc;
