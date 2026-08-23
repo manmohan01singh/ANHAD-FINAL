@@ -173,7 +173,10 @@
   function initSidebar() {
     if (window.innerWidth < 1024) {
       var existing = document.getElementById(SIDEBAR_ID);
-      if (existing) existing.style.display = 'none';
+      if (existing) existing.remove();
+      var expandBtn = document.getElementById('desktopSidebarExpandBtn');
+      if (expandBtn) expandBtn.remove();
+      document.body.classList.remove('sidebar-collapsed');
       return;
     }
 

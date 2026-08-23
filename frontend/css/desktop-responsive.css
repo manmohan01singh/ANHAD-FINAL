@@ -1,8 +1,29 @@
-﻿/* ═══════════════════════════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════════════════════════════
    ANHAD — PRODUCTION DESKTOP & LAPTOP DESIGN SYSTEM & RESPONSIVE ENGINE v6.0
    Pixel-Perfect Optical Symmetry · Luxury Apple macOS/iOS Glass & Claymorphism
    Zero Impact on Mobile (< 1024px) · Engineered for 1024px, 1280px, 1366px, 1440px, 1536px, 1920px+ (4K)
    ═══════════════════════════════════════════════════════════════════════════════ */
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   0. STRICT MOBILE ISOLATION (< 1024px) — PRESERVE ALL MOBILE TABS & HIDE DESKTOP SIDEBAR
+   ───────────────────────────────────────────────────────────────────────────── */
+@media screen and (max-width: 1023px) {
+  .desktop-sidebar,
+  #desktopSidebar,
+  .desktop-sidebar__expand-btn,
+  #desktopSidebarExpandBtn,
+  .desktop-sidebar__collapse-btn,
+  #desktopThemeToggle {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    opacity: 0 !important;
+    position: absolute !important;
+    z-index: -9999 !important;
+  }
+}
 
 @media screen and (min-width: 1024px) {
   :root {
@@ -2078,8 +2099,9 @@
   }
 }
 
+@media screen and (min-width: 1024px) {
   /* ─────────────────────────────────────────────────────────────────────────────
-     ADDITIONAL RESPONSIVE OVERRIDES FOR SADHSANGAT & NITNEM
+     ADDITIONAL RESPONSIVE OVERRIDES FOR SADHSANGAT & NITNEM (DESKTOP ONLY)
      ───────────────────────────────────────────────────────────────────────────── */
 
   /* Force proper content width for all pages */
@@ -2123,17 +2145,6 @@
     margin-bottom: 40px !important;
   }
 
-  /* Ensure proper overflow handling */
-  * {
-    max-width: 100% !important;
-  }
-
-  /* Exception for sidebar */
-  .desktop-sidebar,
-  .desktop-sidebar * {
-    max-width: unset !important;
-  }
-
   /* Fix for floating elements */
   .floating-player,
   .mini-player {
@@ -2142,6 +2153,7 @@
     right: 20px !important;
     z-index: 9999 !important;
   }
+}
 
   /* Nitnem: Better grid at smaller desktop sizes */
   @media screen and (min-width: 1024px) and (max-width: 1280px) {
