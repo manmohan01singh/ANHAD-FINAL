@@ -2051,10 +2051,26 @@
     box-sizing: border-box !important;
   }
 
-  /* Player sheet (the video overlay) — stays at full width */
-  body .page-content .player-sheet {
-    left: var(--desktop-sidebar-width) !important;
-    width: calc(100% - var(--desktop-sidebar-width)) !important;
+  /* Player sheet (the video overlay) — elegant centered floating sheet on desktop */
+  body .page-content .player-sheet,
+  .player-sheet {
+    position: fixed !important;
+    top: 4vh !important;
+    bottom: auto !important;
+    left: calc(var(--desktop-sidebar-width, 260px) + (100vw - var(--desktop-sidebar-width, 260px)) / 2) !important;
+    transform: translateX(-50%) translateY(105vh) !important;
+    width: 90% !important;
+    max-width: 760px !important;
+    height: 92vh !important;
+    max-height: 860px !important;
+    border-radius: 28px !important;
+    border: 1px solid rgba(212, 148, 58, 0.3) !important;
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.5), 0 4px 20px rgba(212, 148, 58, 0.15) !important;
+    z-index: 2500 !important;
+  }
+  body .page-content .player-sheet.open,
+  .player-sheet.open {
+    transform: translateX(-50%) translateY(0) !important;
   }
 
 } /* end @media (min-width: 1024px) */
