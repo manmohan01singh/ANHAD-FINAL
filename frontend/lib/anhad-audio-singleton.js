@@ -26,9 +26,27 @@
   // ── HTTPS proxy for HTTP Icecast streams ──
   // On HTTPS web (Vercel), browsers block http:// audio (mixed content).
   // We proxy via /api/stream?url=... edge function.
-  // On Capacitor (Android/iOS), http is allowed via usesCleartextTraffic.
-  const IS_CAPACITOR = !!(window.Capacitor && window.Capacitor.isNative);
-  const IS_HTTPS_WEB  = !IS_CAPACITOR && location.protocol === 'https:';
+  // On Capacitor (Android/iOS), direct audio is allowed via usesCleartextTraffic.
+  function isCapacitorNative() {
+    try {
+      if (typeof window === 'undefined') return false;
+      if (window.Capacitor) {
+        if (typeof window.Capacitor.isNativePlatform === 'function' && window.Capacitor.isNativePlatform()) {
+          return true;
+        }
+        if (typeof window.Capacitor.getPlatform === 'function' && window.Capacitor.getPlatform() !== 'web') {
+          return true;
+        }
+        if (window.Capacitor.isNative === true || window.Capacitor.isNativePlatform === true) {
+          return true;
+        }
+      }
+      if (window.location && (window.location.protocol === 'capacitor:' || window.location.protocol === 'ionic:')) {
+        return true;
+      }
+    } catch (e) {}
+    return false;
+  }
 
   function isCorsCdnUrl(rawUrl) {
     if (!rawUrl) return false;
@@ -40,15 +58,8 @@
 
   function toProxiedUrl(rawUrl) {
     if (!rawUrl) return rawUrl;
-    // Bypass the proxy whenever it isn't needed: on Capacitor there is no
-    // backend to serve /api/stream at all (it's bundled as an inert static
-    // file, not a running edge function), and cleartext http is allowed
-    // natively — so this must be an OR, not an AND. The previous `!IS_HTTPS_WEB
-    // && !IS_CAPACITOR` required BOTH to be true, which is impossible whenever
-    // IS_CAPACITOR is true, so native builds always fell through to the proxy
-    // path and every live stream 404'd (only the CDN-hosted playlist streams,
-    // whitelisted below, kept working on Android).
-    if (IS_CAPACITOR || !IS_HTTPS_WEB) return rawUrl;
+    // Bypass the proxy on Capacitor (no backend server locally) or on non-HTTPS web
+    if (isCapacitorNative() || (typeof location !== 'undefined' && location.protocol !== 'https:')) return rawUrl;
     if (rawUrl.startsWith('/api/stream')) return rawUrl;
     if (isCorsCdnUrl(rawUrl)) return rawUrl;
     // Route external live streams through edge proxy so CORS Access-Control-Allow-Origin: * is present

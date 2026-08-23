@@ -16,6 +16,18 @@
 (function() {
   'use strict';
 
+  // Defensive re-entrancy guard: this file is loaded via a plain <script src>
+  // on every page (no module dedup), and at least two pages accidentally
+  // double-include it. Without this, the whole IIFE below runs twice on
+  // those pages — two MutationObservers, two IntersectionObservers, two sets
+  // of document-level click/mouseover/touchstart interceptors, two popstate
+  // handlers, two independent PAGE_CACHE/prefetch timers, and two closure-
+  // scoped navInFlight flags that can't see each other and can race into
+  // concurrent DOM swaps. Matches the guard pattern already used by
+  // overlay-player.js and campaign-renderer.js.
+  if (window.__anhadSmoothNavInit) return;
+  window.__anhadSmoothNavInit = true;
+
   const NAV_DEBUG = false;
 
   const MAIN_TARGET_ID = 'app';

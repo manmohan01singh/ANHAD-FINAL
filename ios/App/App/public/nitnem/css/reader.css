@@ -8,14 +8,14 @@
    FONTS & VARIABLES
    ══════════════════════════════════════════════════ */
 :root {
-    --font-gurmukhi: 'Noto Sans Gurmukhi', sans-serif;
+    --font-gurmukhi: 'RiyastiHastlikhat', 'PGMuskan', 'Noto Sans Gurmukhi', 'Gurmukhi MN', 'AnmolLipi', sans-serif;
     --font-primary: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
 
     /* Dynamic Sizes */
-    --gurmukhi-size: 28px;
-    --roman-size: 17px;
-    --translation-size: 15px;
-    --line-spacing: 1.8;
+    --gurmukhi-size: 32px;
+    --roman-size: 18px;
+    --translation-size: 16px;
+    --line-spacing: 2.2;
     --font-weight: 500;
 
     /* iOS System Timing */
@@ -661,16 +661,16 @@ body {
     animation-delay: 0.25s;
 }
 
-/* Gurmukhi Text - MFJashan as default */
+/* Gurmukhi Text - Premium fonts like Hukamnama */
 .verse-gurmukhi {
-    font-family: var(--font-gurmukhi, 'MFJashan', 'Noto Sans Gurmukhi', sans-serif);
-    font-size: var(--gurmukhi-size);
+    font-family: 'RiyastiHastlikhat', 'PGMuskan', 'Noto Sans Gurmukhi', 'Gurmukhi MN', 'AnmolLipi', sans-serif;
+    font-size: calc(var(--gurmukhi-size) * 1.15);
     font-weight: normal;
-    line-height: var(--line-spacing);
+    line-height: 2.2;
     color: var(--gurmukhi-text-color, var(--text-primary));
-    margin-bottom: 8px;
+    margin-bottom: 12px;
     transition: font-family 0.3s, font-size 0.3s;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.02em;
     /* CRITICAL FIX: Add word wrapping for Larivaar mode */
     word-wrap: break-word;
     overflow-wrap: break-word;
@@ -738,36 +738,37 @@ body {
 
 /* Apply font size and weight from CSS variables */
 .verse-gurmukhi {
-    font-size: var(--gurmukhi-size) !important;
+    font-size: calc(var(--gurmukhi-size) * 1.15) !important;
     font-weight: var(--font-weight) !important;
+    line-height: 2.2 !important;
 }
 
 /* Roman Transliteration */
 .verse-roman {
-    font-size: var(--roman-size);
+    font-size: calc(var(--roman-size) * 1.05);
     font-style: italic;
-    line-height: 1.7;
+    line-height: 1.8;
     color: var(--translit-text-color, var(--text-secondary));
-    margin-bottom: 6px;
+    margin-bottom: 8px;
 }
 
 /* English Translation */
 .verse-english {
-    font-size: var(--translation-size);
-    line-height: 1.7;
+    font-size: calc(var(--translation-size) * 1.05);
+    line-height: 1.8;
     color: var(--translation-text-color, var(--text-tertiary));
-    margin-top: 8px;
-    padding-top: 8px;
+    margin-top: 12px;
+    padding-top: 12px;
     border-top: 0.5px solid var(--separator);
 }
 
 /* Punjabi Translation */
 .verse-punjabi {
     font-family: var(--font-gurmukhi);
-    font-size: var(--translation-size);
+    font-size: calc(var(--translation-size) * 1.05);
     line-height: 1.8;
     color: var(--translation-text-color, var(--text-tertiary));
-    margin-top: 6px;
+    margin-top: 8px;
 }
 
 /* Hidden states */

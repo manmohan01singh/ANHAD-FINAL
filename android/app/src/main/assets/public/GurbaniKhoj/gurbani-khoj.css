@@ -182,7 +182,9 @@ body.has-results .filter-btn {
    SEARCH BAR
    ═══════════════════════════════════════════════════════════ */
 .search-section {
-    padding: calc(var(--nav-h) + var(--safe-top) + 10px) 16px 0;
+    padding: calc(var(--nav-h) + var(--safe-top) + 20px) 16px 0;
+    position: relative;
+    z-index: 1;
 }
 
 .search-bar-thin {

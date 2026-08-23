@@ -417,11 +417,6 @@
   
   <!-- Clean static shadow prevention handled via css/no-shadows.css -->
 
-  <!-- REMOVED: Broken inline script that tried to access document.body in <head> -->
-  <!-- theme-loaded is now set by the MutationObserver in the first theme IIFE above -->
-
-  <!-- PERF: Removed duplicate theme-apply block — already handled by first theme IIFE above -->
-
   <!-- Preloads — Critical Resources -->
   <!-- PERF: Only preload fonts used above-the-fold -->
   <link rel="preload" href="nitnem/g-fonts/pg_serif_s.ttf" as="font" type="font/ttf" crossorigin>
@@ -447,8 +442,8 @@
   <link rel="stylesheet" href="css/gurpurab-special-mode.css" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="css/install-button.css" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="css/mobile-accessibility.css" media="print" onload="this.media='all'">
-  <link rel="stylesheet" href="css/ios-override.css?v=8" media="print" onload="this.media='all'">
-  <link rel="stylesheet" href="css/hero-clean-desktop.css" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="css/ios-override.css?v=10">
+  <link rel="stylesheet" href="css/hero-clean-desktop.css">
   <!-- ANHAD: Animated Sky Background (Auto Mode) -->
   <link rel="stylesheet" href="css/anhad-sky-bg.css?v=2">
   <link rel="stylesheet" href="css/scroll-engine.css">
@@ -875,21 +870,21 @@
       touch-action: pan-x pan-y !important; /* Allow both horizontal tracking and vertical page scrolling */
       -webkit-overflow-scrolling: touch;
     }
-    /* Coming Soon popup styles — Chaliya 2026 iOS 18 Glass Experience */
+    /* Coming Soon popup styles — Chaliya 2026 Ultimate Luxury Sacred Experience */
     #anhadComingSoonOverlay {
       position: fixed;
       inset: 0;
       z-index: var(--z-critical, 9999);
-      background: rgba(0, 0, 0, 0.65);
-      backdrop-filter: blur(24px) saturate(190%);
-      -webkit-backdrop-filter: blur(24px) saturate(190%);
+      background: rgba(0, 0, 0, 0.72);
+      backdrop-filter: blur(28px) saturate(200%);
+      -webkit-backdrop-filter: blur(28px) saturate(200%);
       display: flex;
       align-items: center;
       justify-content: center;
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-      padding: 24px;
+      padding: 20px;
       box-sizing: border-box;
     }
     #anhadComingSoonOverlay.active {
@@ -897,17 +892,17 @@
       pointer-events: auto;
     }
     #anhadComingSoonCard {
-      background: linear-gradient(165deg, rgba(255, 253, 248, 0.98) 0%, rgba(255, 248, 237, 0.95) 50%, rgba(254, 237, 206, 0.92) 100%);
-      border: 1.5px solid rgba(212, 148, 58, 0.45);
-      border-radius: 36px;
-      padding: 40px 32px 32px;
-      max-width: 420px;
+      background: linear-gradient(155deg, rgba(255, 253, 248, 0.98) 0%, rgba(255, 246, 232, 0.96) 50%, rgba(254, 235, 200, 0.94) 100%);
+      border: 1.5px solid rgba(212, 148, 58, 0.4);
+      border-radius: 32px;
+      padding: 36px 30px 28px;
+      max-width: 500px;
       width: 100%;
       text-align: center;
       box-shadow: 
-        0 32px 96px rgba(0, 0, 0, 0.28),
-        0 12px 32px rgba(212, 148, 58, 0.2),
-        inset 0 1.5px 2px rgba(255, 255, 255, 0.95),
+        0 36px 110px rgba(0, 0, 0, 0.35),
+        0 14px 40px rgba(212, 148, 58, 0.22),
+        inset 0 2px 4px rgba(255, 255, 255, 0.98),
         inset 0 -2px 8px rgba(212, 148, 58, 0.12);
       transform: scale(0.88) translateY(28px);
       transition: transform 0.42s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -922,7 +917,7 @@
       left: -60%;
       width: 220%;
       height: 220%;
-      background: radial-gradient(circle at center, rgba(255, 215, 0, 0.18) 0%, rgba(212, 148, 58, 0.06) 40%, transparent 70%);
+      background: radial-gradient(circle at center, rgba(255, 215, 0, 0.22) 0%, rgba(212, 148, 58, 0.08) 40%, transparent 70%);
       pointer-events: none;
       animation: csRotateGlow 14s linear infinite;
     }
@@ -935,15 +930,45 @@
     }
     .dark-mode #anhadComingSoonCard,
     [data-theme="dark"] #anhadComingSoonCard {
-      background: linear-gradient(165deg, rgba(32, 24, 14, 0.96) 0%, rgba(24, 18, 10, 0.98) 60%, rgba(16, 12, 7, 0.99) 100%);
+      background: linear-gradient(155deg, rgba(32, 24, 14, 0.97) 0%, rgba(22, 16, 9, 0.98) 60%, rgba(14, 10, 6, 0.99) 100%);
       border-color: rgba(247, 198, 52, 0.4);
       box-shadow: 
-        0 36px 110px rgba(0, 0, 0, 0.75),
-        0 14px 40px rgba(212, 148, 58, 0.18),
-        inset 0 1.5px 1.5px rgba(247, 198, 52, 0.35),
-        inset 0 -2px 8px rgba(0, 0, 0, 0.6);
+        0 40px 120px rgba(0, 0, 0, 0.85),
+        0 14px 44px rgba(212, 148, 58, 0.2),
+        inset 0 1.5px 2px rgba(247, 198, 52, 0.35),
+        inset 0 -2px 8px rgba(0, 0, 0, 0.7);
       color: #F5E6C8;
     }
+
+    .cs-top-close-btn {
+      position: absolute;
+      top: 16px;
+      right: 18px;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.06);
+      border: 1px solid rgba(212, 148, 58, 0.2);
+      color: var(--text-primary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      font-weight: 700;
+      transition: all 0.2s ease;
+      z-index: 10;
+    }
+    .cs-top-close-btn:hover {
+      background: rgba(212, 148, 58, 0.2);
+      transform: scale(1.1);
+    }
+    html.dark-mode .cs-top-close-btn,
+    [data-theme="dark"] .cs-top-close-btn {
+      background: rgba(255, 255, 255, 0.08);
+      color: #FFFFFF;
+    }
+
     #anhadComingSoonCard .cs-badge-pill {
       display: inline-flex;
       align-items: center;
@@ -952,7 +977,7 @@
       background: rgba(212, 148, 58, 0.14);
       border: 1px solid rgba(212, 148, 58, 0.35);
       border-radius: 24px;
-      margin-bottom: 18px;
+      margin-bottom: 12px;
       backdrop-filter: blur(8px);
     }
     [data-theme="dark"] #anhadComingSoonCard .cs-badge-pill,
@@ -968,12 +993,8 @@
       box-shadow: 0 0 10px #D4943A, 0 0 4px #FFA500;
       animation: csPulse 2s ease-in-out infinite;
     }
-    @keyframes csPulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.45; transform: scale(0.82); }
-    }
     #anhadComingSoonCard .cs-badge-text {
-      font-size: 0.76rem;
+      font-size: 0.74rem;
       font-weight: 800;
       letter-spacing: 1.2px;
       text-transform: uppercase;
@@ -985,93 +1006,179 @@
     }
     #anhadComingSoonCard .cs-ik-onkar {
       font-family: var(--font-gurmukhi, 'Noto Sans Gurmukhi', sans-serif);
-      font-size: 48px;
+      font-size: 46px;
       line-height: 1;
       font-weight: 800;
       color: #D4943A;
-      text-shadow: 0 3px 14px rgba(212, 148, 58, 0.4);
-      margin-bottom: 10px;
-      transform: translateZ(0);
-    }
-    [data-theme="dark"] #anhadComingSoonCard .cs-ik-onkar,
-    .dark-mode #anhadComingSoonCard .cs-ik-onkar {
-      color: #F7C634;
-      text-shadow: 0 3px 18px rgba(247, 198, 52, 0.5);
+      text-shadow: 0 3px 16px rgba(212, 148, 58, 0.45);
+      margin-bottom: 8px;
     }
     #anhadComingSoonCard .cs-title {
-      font-size: 2.1rem;
+      font-size: 1.85rem;
       font-weight: 900;
       color: #3A2304;
-      line-height: 1.15;
-      margin-bottom: 8px;
-      letter-spacing: -0.6px;
-      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+      line-height: 1.2;
+      margin-bottom: 4px;
+      letter-spacing: -0.4px;
     }
     [data-theme="dark"] #anhadComingSoonCard .cs-title,
     .dark-mode #anhadComingSoonCard .cs-title {
       color: #FFF2D1;
-      text-shadow: 0 2px 12px rgba(247, 198, 52, 0.25);
     }
     #anhadComingSoonCard .cs-gurmukhi-subtitle {
       font-family: var(--font-gurmukhi, 'Noto Sans Gurmukhi', sans-serif);
-      font-size: 1.15rem;
+      font-size: 1.1rem;
       font-weight: 700;
       color: #D4943A;
-      margin-bottom: 4px;
-      line-height: 1.4;
-    }
-    [data-theme="dark"] #anhadComingSoonCard .cs-gurmukhi-subtitle,
-    .dark-mode #anhadComingSoonCard .cs-gurmukhi-subtitle {
-      color: #F7C634;
+      margin-bottom: 2px;
     }
     #anhadComingSoonCard .cs-feature {
-      font-size: 1rem;
-      font-weight: 700;
+      font-size: 0.92rem;
+      font-weight: 600;
       color: #7A5310;
-      margin-bottom: 14px;
-      letter-spacing: -0.2px;
+      margin-bottom: 18px;
     }
     [data-theme="dark"] #anhadComingSoonCard .cs-feature,
     .dark-mode #anhadComingSoonCard .cs-feature {
       color: #E2CA90;
     }
-    #anhadComingSoonCard .cs-desc {
+
+    /* 3-Pillar Sadhana Cards Grid */
+    .cs-pillars-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 18px;
+      width: 100%;
+    }
+    .cs-pillar-card {
+      padding: 12px 8px;
+      border-radius: 16px;
+      background: rgba(212, 148, 58, 0.08);
+      border: 1px solid rgba(212, 148, 58, 0.2);
+      text-align: center;
+      transition: transform 0.2s ease;
+    }
+    .cs-pillar-card:hover {
+      transform: translateY(-2px);
+      background: rgba(212, 148, 58, 0.14);
+    }
+    html.dark-mode .cs-pillar-card,
+    [data-theme="dark"] .cs-pillar-card {
+      background: rgba(255, 255, 255, 0.04);
+      border-color: rgba(212, 148, 58, 0.22);
+    }
+    .cs-pillar-icon {
+      font-size: 1.4rem;
+      margin-bottom: 4px;
+    }
+    .cs-pillar-title {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 2px;
+    }
+    .cs-pillar-desc {
+      font-size: 0.68rem;
+      color: var(--text-secondary);
+      line-height: 1.2;
+    }
+
+    /* Milestones Bar */
+    .cs-milestones-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      background: rgba(212, 148, 58, 0.06);
+      border: 1px solid rgba(212, 148, 58, 0.16);
+      border-radius: 16px;
+      margin-bottom: 22px;
+    }
+    .cs-milestone-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+    .cs-step-num {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--gold-primary, #D4943A);
+      color: #FFFFFF;
+      font-size: 0.72rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .cs-step-label {
+      font-size: 0.68rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+    .cs-milestone-line {
+      flex: 1;
+      height: 2px;
+      background: rgba(212, 148, 58, 0.25);
+      margin: 0 8px 14px 8px;
+    }
+
+    /* Actions Row */
+    .cs-actions-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      width: 100%;
+    }
+    .cs-notify-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 12px 18px;
+      background: linear-gradient(135deg, #FF9500 0%, #D4943A 100%);
+      color: #FFFFFF;
+      border: none;
+      border-radius: 22px;
       font-size: 0.92rem;
-      color: #6E531C;
-      line-height: 1.6;
-      margin-bottom: 28px;
-      font-weight: 500;
-      padding: 0 8px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(212, 148, 58, 0.35);
+      transition: all 0.2s ease;
     }
-    [data-theme="dark"] #anhadComingSoonCard .cs-desc,
-    .dark-mode #anhadComingSoonCard .cs-desc {
-      color: #C8AF7E;
+    .cs-notify-btn:hover {
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 8px 26px rgba(212, 148, 58, 0.45);
     }
+    .cs-notify-btn.joined {
+      background: linear-gradient(135deg, #34C759 0%, #28A745 100%);
+      box-shadow: 0 6px 20px rgba(52, 199, 89, 0.35);
+    }
+
     #anhadComingSoonCard .cs-close {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
-      padding: 14px 38px;
-      background: linear-gradient(135deg, #FF9500 0%, #D4943A 50%, #B8860B 100%);
-      color: #FFFFFF;
-      border: none;
-      border-radius: 26px;
-      font-size: 1.02rem;
+      padding: 12px 22px;
+      background: rgba(0, 0, 0, 0.06);
+      border: 1px solid rgba(212, 148, 58, 0.25);
+      color: var(--text-primary);
+      border-radius: 22px;
+      font-size: 0.92rem;
       font-weight: 700;
       cursor: pointer;
-      box-shadow: 0 8px 24px rgba(212, 148, 58, 0.45), inset 0 1px 1.5px rgba(255, 255, 255, 0.5);
-      transition: transform 0.24s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease, filter 0.2s ease;
-      user-select: none;
-      -webkit-user-select: none;
+      transition: all 0.2s ease;
     }
     #anhadComingSoonCard .cs-close:hover {
-      transform: translateY(-2px) scale(1.03);
-      box-shadow: 0 12px 32px rgba(212, 148, 58, 0.55);
-      filter: brightness(1.05);
+      background: rgba(212, 148, 58, 0.15);
+      transform: translateY(-1px);
     }
-    #anhadComingSoonCard .cs-close:active {
-      transform: scale(0.96);
+    html.dark-mode #anhadComingSoonCard .cs-close,
+    [data-theme="dark"] #anhadComingSoonCard .cs-close {
+      background: rgba(255, 255, 255, 0.08);
+      color: #FFFFFF;
     }
   </style>
 
@@ -2756,15 +2863,23 @@
        AFTER first paint, causing the raw sidebar HTML to flash on mobile. -->
   <aside class="desktop-sidebar" aria-label="Desktop Navigation" id="desktopSidebar">
     <div class="desktop-sidebar__header">
-      <a href="index.html" class="desktop-sidebar__brand">
-        <div class="desktop-sidebar__logo-wrapper">
-          <img decoding="async" src="assets/app-logo.webp" alt="ANHAD" class="desktop-sidebar__logo">
-        </div>
-        <div class="desktop-sidebar__brand-meta">
-          <span class="desktop-sidebar__brand-name">ANHAD</span>
-          <span class="desktop-sidebar__brand-gurmukhi">ਅਨਹਦ ਬਾਣੀ</span>
-        </div>
-      </a>
+      <div class="desktop-sidebar__header-top">
+        <a href="index.html" class="desktop-sidebar__brand">
+          <div class="desktop-sidebar__logo-wrapper">
+            <img decoding="async" src="assets/app-logo.webp" alt="ANHAD" class="desktop-sidebar__logo">
+          </div>
+          <div class="desktop-sidebar__brand-meta">
+            <span class="desktop-sidebar__brand-name">ANHAD</span>
+            <span class="desktop-sidebar__brand-gurmukhi">ਅਨਹਦ ਬਾਣੀ</span>
+          </div>
+        </a>
+        <button type="button" class="desktop-sidebar__collapse-btn" id="desktopSidebarCollapseBtn" aria-label="Collapse Sidebar" title="Collapse Sidebar (Ctrl+B)">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="9" y1="3" x2="9" y2="21"></line>
+          </svg>
+        </button>
+      </div>
       <div class="desktop-sidebar__status-pill">
         <span class="desktop-sidebar__status-dot"></span>
         <span class="desktop-sidebar__status-text">Darbar Sahib Live</span>
@@ -2808,10 +2923,7 @@
         <a href="sadhsangat-live/index.html" class="desktop-sidebar__link" data-route="sadhsangat">
           <span class="desktop-sidebar__link-icon"><span class="ios-emoji">📡</span></span>
           <span class="desktop-sidebar__link-text">Sadhsangat Live</span>
-        </a>
-        <a href="Dashboard/dashboard.html" class="desktop-sidebar__link" data-route="dashboard">
-          <span class="desktop-sidebar__link-icon"><span class="ios-emoji">📊</span></span>
-          <span class="desktop-sidebar__link-text">Dashboard</span>
+          <span class="desktop-sidebar__badge">HD</span>
         </a>
         <a href="NitnemTracker/nitnem-tracker.html" class="desktop-sidebar__link" data-route="tracker">
           <span class="desktop-sidebar__link-icon"><span class="ios-emoji">🔥</span></span>
@@ -2846,6 +2958,13 @@
       </button>
     </div>
   </aside>
+  <button type="button" class="desktop-sidebar__expand-btn" id="desktopSidebarExpandBtn" aria-label="Expand Sidebar" title="Expand Sidebar (Ctrl+B)">
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+      <line x1="9" y1="3" x2="9" y2="21"></line>
+      <polyline points="14 9 17 12 14 15"></polyline>
+    </svg>
+  </button>
 
   <!-- PERF: Mobile/reduce-motion detection — add classes before first paint -->
   <script>
@@ -2999,17 +3118,6 @@
             <!-- Slides will be injected by trendora-app.js -->
           </div>
 
-          <!-- CAMPAIGN STATE B (artwork). Deliberately a SIBLING of the track,
-               not a child: PortraitSlider.init() guards its rebuild on
-               `track.children.length === this._gurus.length`, so a 12th child
-               would fail that check on every SPA arrival and re-trigger the
-               blank-then-repopulate regression the guard exists to prevent.
-               Deliberately NOT class .greeting__slide either — PortraitSlider
-               .update() does a document-wide querySelectorAll('.greeting__slide')
-               and would stamp coverflow classes onto it.
-               position:absolute inside a box already fixed at 172px means it
-               contributes zero height: this is the "acquires no new space"
-               guarantee, and it holds regardless of how long the copy is. -->
           <div class="greeting__announce" id="greetingAnnounce" hidden aria-hidden="true">
             <span class="greeting__announce-halo" aria-hidden="true"></span>
             <div class="greeting__announce-disc">
@@ -3029,12 +3137,6 @@
           <div class="greeting__gurbani" id="greetingGurbani" lang="pa">&nbsp;</div>
           <div class="greeting__translation" id="greetingTranslation" style="font-size: 0.9rem; opacity: 0.8; margin-top: 2px;">&nbsp;</div>
 
-          <!-- CAMPAIGN STATE B (text). inset:0 overlay on the SAME box, so
-               .greeting__text's height is always exactly State A's height and
-               everything below the greeting stays byte-identical in both
-               states. The renderer never writes to the three nodes above —
-               PortraitSlider._syncText() is their sole writer and keeps
-               updating them invisibly while State B is showing. -->
           <div class="greeting__announce-text" id="greetingAnnounceText" hidden aria-hidden="true">
             <div class="greeting__announce-title" id="greetingAnnounceTitle"></div>
             <div class="greeting__announce-line" id="greetingAnnounceLine" lang="pa"></div>
@@ -3048,7 +3150,7 @@
          DAILY PROGRESS — iOS-Style Inline Bar
     ════════════════════════════════════════════════════════════════════ -->
     <div class="progress-inline" role="progressbar" aria-label="Today's Progress" aria-valuenow="0" aria-valuemin="0" aria-valuemax="8">
-      <span class="progress-inline__label" id="progressLabel">☀️ Continue morning Nitnem</span>
+      <span class="progress-inline__label" id="progressLabel">☀️ Start morning Nitnem</span>
       <div class="progress-inline__bar">
         <div class="progress-inline__fill" id="progressFill"></div>
       </div>
@@ -3056,11 +3158,7 @@
     </div>
 
     <!-- ════════════════════════════════════════════════════════════════════
-         CAMPAIGN SLOT — filled by js/campaign-renderer.js from remote config.
-         Empty and hidden unless a campaign is active and in its schedule
-         window, so the default Home experience is untouched. Placed after the
-         daily-progress bar so a campaign reads as an invitation below the
-         user's own practice, never as a takeover above it.
+         CAMPAIGN SLOT — filled by js/campaign-renderer.js
     ════════════════════════════════════════════════════════════════════ -->
     <div id="campaignMount" hidden></div>
 
@@ -3068,7 +3166,6 @@
          HERO CAROUSEL — Premium Swipeable Cards
     ════════════════════════════════════════════════════════════════════ -->
     <section class="hero-carousel" aria-label="Featured Content">
-      <!-- Adaptive Background Glow — Changes color based on current hero card -->
       <div class="hero-carousel__glow" id="heroGlow" aria-hidden="true"></div>
 
       <div class="hero-carousel__track" id="heroTrack" role="region" aria-roledescription="carousel">
@@ -3115,8 +3212,8 @@
           </div>
         </article>
 
-        <!-- Card 2: Amritvela Kirtan -->
-        <article class="hero-card" id="heroCard2" data-stream="amritvela" data-color="#E6A817" data-color-rgb="230,168,23" aria-label="Amritvela Kirtan Collection" role="group" aria-roledescription="slide" data-href="GurbaniRadio/gurbani-radio.html?stream=amritvela&autoplay=true">
+        <!-- Card 2: Amritvela Smagams -->
+        <article class="hero-card" id="heroCard2" data-stream="amritvela" data-color="#E6A817" data-color-rgb="230,168,23" aria-label="Amritvela Smagams Collection" role="group" aria-roledescription="slide" data-href="GurbaniRadio/gurbani-radio.html?stream=amritvela&autoplay=true">
           <div class="hero-card__image-wrapper">
             <picture id="heroCard2Picture">
               <img decoding="async" class="hero-card__image" id="heroCard2Img"
@@ -3142,16 +3239,16 @@
                 })();
               </script>
             </picture>
-            <div class="hero-card__badge hero-card__badge--dlive" aria-label="D-LIVE stream">
+            <div class="hero-card__badge hero-card__badge--curated" aria-label="Curated collection">
               <span class="hero-card__badge-dot" aria-hidden="true" style="background:var(--anhad-gold)"></span>
-              <span class="hero-card__badge-text">D-LIVE</span>
+              <span class="hero-card__badge-text">CURATED</span>
             </div>
             <div class="hero-card__overlay">
               <div class="hero-card__overlay-info">
-                <div class="hero-card__title">Amritvela Kirtan</div>
+                <div class="hero-card__title">Amritvela Smagams</div>
                 <div class="hero-card__subtitle" style="margin-right:75px;max-width:calc(100% - 75px);display:block;">Sacred Dawn Kirtan Collection</div>
               </div>
-              <button class="hero-card__play-btn ios-haptic" id="heroPlayBtn2" aria-label="Play Amritvela" data-action="play" data-stream="amritvela">
+              <button class="hero-card__play-btn ios-haptic" id="heroPlayBtn2" aria-label="Play Amritvela Smagams" data-action="play" data-stream="amritvela">
                 <svg id="heroPlayIcon2" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="7,3 21,12 7,21"/></svg>
               </button>
             </div>
@@ -3185,9 +3282,9 @@
                 })();
               </script>
             </picture>
-            <div class="hero-card__badge hero-card__badge--live" aria-label="Live streaming">
-              <span class="hero-card__badge-dot" aria-hidden="true"></span>
-              <span class="hero-card__badge-text">LIVE</span>
+            <div class="hero-card__badge hero-card__badge--curated" aria-label="Non-stop Simran stream">
+              <span class="hero-card__badge-dot" aria-hidden="true" style="background:#FFB347"></span>
+              <span class="hero-card__badge-text">24/7 SIMRAN</span>
             </div>
             <div class="hero-card__overlay">
               <div class="hero-card__overlay-info">
@@ -3232,94 +3329,36 @@
       </div>
     </section>
 
-    <!-- Hero card images + background are fully managed by js/anhad-sky-bg.js (loaded with defer below).
-         This script fires AFTER DOMContentLoaded and handles:
-           - Correct time-based slot detection
-           - Auto-refresh every 60s only when slot changes
-           - Smooth fade transitions
-           - Theme switch (light/dark/auto) immediate response
-         No duplicate logic needed here. -->
-    <script>
-      // Thin bridge: dispatch themechange when AnhadTheme.set() is called from elsewhere
-      // so anhad-sky-bg.js always reacts to it.
-      (function() {
-        var _orig = window.AnhadTheme && window.AnhadTheme.set;
-        // AnhadTheme.set already dispatches 'themechange' via window event — no extra wiring needed.
-        // If window.AnhadSky is ready, call it immediately to apply theme to images.
-        if (window.AnhadSky && window.AnhadSky.updateHeroCardImages) {
-          window.AnhadSky.updateHeroCardImages();
-          window.AnhadSky.applyTimeOfDay();
-        }
-      })();
-    </script>
-
-    <!-- ════════════════════════════════════════════════════════════════════
-         GURPURAB SPECIAL MODE — Divine Visual Effects Container
-    ════════════════════════════════════════════════════════════════════ -->
-    <!-- Day Mode Background Orbs (Static decoration) -->
-    <div class="day-orbs-container" aria-hidden="true">
-      <div class="day-orb day-orb-1"></div>
-      <div class="day-orb day-orb-2"></div>
-      <div class="day-orb day-orb-3"></div>
-      <div class="day-orb day-orb-4"></div>
-    </div>
-
-    <div class="gurpurab-container" id="gurpurabContainer" aria-hidden="true">
-      <!-- Ambient Glow Layer -->
-      <div class="gurpurab-ambient-glow"></div>
-      
-      <!-- Ring Halo Layer -->
-      <div class="gurpurab-ring-halo"></div>
-      
-      <!-- Petals Container (Celebration Mode Only) -->
-      <div class="gurpurab-petals-container">
-        <div class="gurpurab-petal gurpurab-petal--1"></div>
-        <div class="gurpurab-petal gurpurab-petal--2"></div>
-        <div class="gurpurab-petal gurpurab-petal--3"></div>
-        <div class="gurpurab-petal gurpurab-petal--4"></div>
-        <div class="gurpurab-petal gurpurab-petal--5"></div>
-        <div class="gurpurab-petal gurpurab-petal--6"></div>
-      </div>
-      
-      <!-- Sparkles Container (Celebration Mode Only) -->
-      <div class="gurpurab-sparkles-container">
-        <div class="gurpurab-sparkle gurpurab-sparkle--1"></div>
-        <div class="gurpurab-sparkle gurpurab-sparkle--2"></div>
-        <div class="gurpurab-sparkle gurpurab-sparkle--3"></div>
-        <div class="gurpurab-sparkle gurpurab-sparkle--4"></div>
-        <div class="gurpurab-sparkle gurpurab-sparkle--5"></div>
-        <div class="gurpurab-sparkle gurpurab-sparkle--6"></div>
-      </div>
-    </div>
-
     <!-- ════════════════════════════════════════════════════════════════════
          UPCOMING GURPURAB — Contextual Event Card
     ════════════════════════════════════════════════════════════════════ -->
-    <article class="event-card" id="eventCard" aria-label="Upcoming Gurpurab" data-href="Calendar/GurpurabCalendar-ios.html" style="margin-top: -30px !important;">
-      <!-- Celebration/Remembrance Badges -->
-      <div class="gurpurab-celebration-badge">✦ Today: Gurpurab</div>
-      <div class="gurpurab-remembrance-badge">🕯️ Remembrance Day</div>
+    <article class="event-card" id="eventCard" aria-label="Upcoming Gurpurab" data-href="Calendar/GurpurabCalendar-ios.html">
+      <!-- Celebration/Remembrance Badges (dynamic) -->
+      <div class="gurpurab-celebration-badge" id="gurpurabCelebrationBadge" style="display:none;"></div>
+      <div class="gurpurab-remembrance-badge" id="gurpurabRemembranceBadge" style="display:none;"></div>
       
       <div class="event-card__main">
         <div class="event-card__info">
-          <div class="event-card__eyebrow">UPCOMING EVENT</div>
+          <div class="event-card__eyebrow" id="eventEyebrow">✦ UPCOMING GURPURAB</div>
           <div class="event-card__title skeleton" id="eventTitle" style="min-height: 24px;"></div>
-          <div class="event-card__date skeleton" id="eventDate" style="min-height: 18px;"></div>
-          <div class="event-card__countdown-wrapper">
-            <div class="event-card__countdown skeleton" id="eventCountdown" style="min-height: 32px;"></div>
-            <div class="event-card__countdown-label skeleton" id="eventCountdownLabel" style="min-height: 14px;"></div>
+          <div class="event-card__meta-row">
+            <div class="event-card__date skeleton" id="eventDate" style="min-height: 18px;"></div>
+            <div class="event-card__countdown-wrapper" id="eventCountdownWrapper">
+              <div class="event-card__countdown skeleton" id="eventCountdown" style="min-height: 20px;"></div>
+              <div class="event-card__countdown-label skeleton" id="eventCountdownLabel" style="min-height: 14px;"></div>
+            </div>
           </div>
           <button class="event-card__learn-more" onclick="event.stopPropagation(); if (window.navigateTo) window.navigateTo('Calendar/GurpurabCalendar-ios.html'); else window.location.href='Calendar/GurpurabCalendar-ios.html'">
             Learn More
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
           </button>
         </div>
-        <div class="event-card__guru-img-wrapper" id="eventGuruImgWrapper" style="width: 130px; height: 130px; min-width: 130px; min-height: 130px; aspect-ratio: 1/1;">
-          <img decoding="async" class="event-card__guru-img" id="eventGuruImg" src="" alt="" width="130" height="130" style="width: 93%; height: 97%; object-fit: cover; object-position: center; border-radius: 60%;">
+        <div class="event-card__guru-img-wrapper" id="eventGuruImgWrapper">
+          <img decoding="async" class="event-card__guru-img" id="eventGuruImg" src="" alt="" width="110" height="110" style="width: 100%; height: 100%; object-fit: cover; object-position: center; border-radius: 50%;">
         </div>
       </div>
-      <div class="event-card__days-badge">
-        <span id="eventCountdownBadgeValue">--</span> <span id="eventCountdownBadgeLabel">days left</span>
+      <div class="event-card__days-badge" id="eventDaysBadge" style="display:none;">
+        <span id="eventCountdownBadgeValue"></span> <span id="eventCountdownBadgeLabel"></span>
       </div>
     </article>
 
@@ -3362,12 +3401,6 @@
         <div class="practice-card__ring">
           <svg viewBox="0 0 60 60">
             <circle class="practice-card__ring-bg" cx="30" cy="30" r="26"/>
-            <!-- dashoffset 163.4 = empty, matching #nitnemRing and #sehajRing. It was
-                 hardcoded to 0 (a fully-drawn ring) and NOTHING ever updated it:
-                 UIController._setRing() is only ever called for nitnemRing and
-                 sehajRing, so this card rendered a permanent bright completion
-                 ring while its two siblings rendered empty ones — the odd-one-out
-                 glow. -->
             <circle class="practice-card__ring-fill" id="hukamRing" cx="30" cy="30" r="26" stroke-dasharray="163.4" stroke-dashoffset="163.4"/>
           </svg>
           <div class="practice-card__ring-icon" aria-hidden="true"><span class="ios-emoji" role="img" aria-label="scroll">📜</span></div>
@@ -3389,7 +3422,7 @@
       <div class="quick-card__icon" aria-hidden="true"><span class="ios-emoji" role="img" aria-label="fire">🔥</span></div>
       <div class="quick-card__content">
         <div class="quick-card__title">Nitnem Tracker</div>
-        <div class="quick-card__subtitle">Track streaks & daily progress</div>
+        <div class="quick-card__subtitle">Track streaks &amp; daily progress</div>
       </div>
       <div class="quick-card__meta" id="nitnemStreak">
         <span class="quick-card__progress">Start today</span>
@@ -3409,8 +3442,6 @@
       <svg class="quick-card__chevron" aria-hidden="true"><use href="#icon-chevron-right"/></svg>
     </article>
 
-
-
     <article class="quick-card quick-card--purple ios-haptic" id="shabadVicharCard" aria-label="Shabad Vichar" data-href="ShabadVichar/shabad-vichar.html">
       <div class="quick-card__icon" aria-hidden="true"><span class="ios-emoji" role="img" aria-label="light">🪔</span></div>
       <div class="quick-card__content">
@@ -3429,11 +3460,11 @@
       <svg class="quick-card__chevron" aria-hidden="true"><use href="#icon-chevron-right"/></svg>
     </article>
 
-    <article class="quick-card quick-card--rose ios-haptic" id="notesCard" aria-label="Notes" data-href="Notes/notes.html">
+    <article class="quick-card quick-card--rose ios-haptic" id="notesCard" aria-label="Spiritual Notes" data-href="Notes/notes.html">
       <div class="quick-card__icon" aria-hidden="true"><span class="ios-emoji" role="img" aria-label="notes">📝</span></div>
       <div class="quick-card__content">
-        <div class="quick-card__title">Notes</div>
-        <div class="quick-card__subtitle" id="notesSubtitle">Start writing</div>
+        <div class="quick-card__title">Spiritual Notes</div>
+        <div class="quick-card__subtitle" id="notesSubtitle">Start writing reflections</div>
       </div>
       <div class="quick-card__meta">
         <span class="quick-card__meta-value" id="notesMeta"></span>
@@ -3482,8 +3513,8 @@
   <!-- ════════════════════════════════════════════════════════════════════════
        RADIO BOTTOM SHEET — Choose Stream (Emoji Icons)
   ════════════════════════════════════════════════════════════════════════ -->
-  <div class="sheet-overlay" id="radioSheetOverlay" aria-hidden="true"></div>
-  <div class="sheet" id="radioSheet" role="dialog" aria-label="Choose Stream" aria-modal="true">
+  <div class="sheet-overlay" id="radioSheetOverlay" aria-hidden="true" style="display: none;"></div>
+  <div class="sheet" id="radioSheet" role="dialog" aria-label="Choose Stream" aria-modal="true" aria-hidden="true" style="display: none;">
     <div class="sheet__handle" aria-hidden="true"></div>
     <div class="sheet__header">
       <h3 class="sheet__title">Choose Radio Stream</h3>
@@ -3537,15 +3568,6 @@
 
   <!-- ════════════════════════════════════════════════════════════════════════
        SCRIPTS — PERFORMANCE OPTIMIZED
-       
-       PERF STRATEGY:
-      • fetch-utils, page-lifecycle, unified-stats, capacitor, storage: small
-         utility scripts that are kept deferred (fast parse)
-      • audio-coordinator + overlay-player: deferred (small, sets up API stubs)
-      • anhad-audio-singleton.js (97KB): DEMAND-LOADED on first play interaction
-         — parsed only when the user actually taps a play button
-      • smooth-navigation.js (45KB): IDLE waterfall — not needed until first nav
-      • audio-coordinator stays deferred so it can expose the AnhadAudio stub
   ════════════════════════════════════════════════════════════════════════ -->
   <!-- DEFERRED: Small utilities only, fast parse -->
   <script src="lib/fetch-utils.js" defer></script>
@@ -3561,6 +3583,10 @@
   <script src="lib/remote-config.js?v=4.0.5" defer></script>
   <!-- Consumes window.AnhadCampaigns; must load after the resolver above. -->
   <script src="js/campaign-renderer.js?v=2" defer></script>
+  
+  <!-- Event Service & Desktop UI Fixes -->
+  <script src="js/event-service.js?v=1.0.0" defer></script>
+  <script src="js/desktop-ui-fixes.js?v=1.0.0" defer></script>
   
   <!-- Core UI logic -->
   <script src="js/trendora-app.js?v=4.0.4" defer></script>
@@ -3899,40 +3925,121 @@
   </script>
 
   <!-- ═══════════════════════════════════════
-       COMING SOON OVERLAY — Chaliya 2026
+       COMING SOON OVERLAY — Chaliya Sahib 2026
   ═══════════════════════════════════════ -->
-  <div id="anhadComingSoonOverlay" role="dialog" aria-modal="true" aria-label="Chaliya 2026 Coming Soon" aria-hidden="true">
-    <div id="anhadComingSoonCard">
+  <div id="anhadComingSoonOverlay" role="dialog" aria-modal="true" aria-label="Chaliya Sahib 2026" aria-hidden="true">
+    <div id="anhadComingSoonCard" class="chaliya-luxury-card">
+      <button class="cs-top-close-btn" id="anhadComingSoonTopClose" aria-label="Close modal">✕</button>
+      
       <div class="cs-badge-pill">
         <span class="cs-badge-dot"></span>
-        <span class="cs-badge-text">COMING SOON</span>
+        <span class="cs-badge-text">✦ ANNUAL SACRED SADHANA • 40 DAYS</span>
       </div>
+
       <div class="cs-ik-onkar">ੴ</div>
-      <div class="cs-title">Chaliya 2026</div>
+      <div class="cs-title">Chaliya Sahib 2026</div>
       <div class="cs-gurmukhi-subtitle">ਪ੍ਰਕਾਸ਼ ਪੁਰਬ ਸ੍ਰੀ ਗੁਰੂ ਨਾਨਕ ਦੇਵ ਜੀ</div>
-      <div class="cs-feature">Parkash Purab Guru Nanak Dev Ji</div>
-      <div class="cs-desc">40 Days of Divine Naam Simran &amp; Nitnem Practice.<br>Stay tuned for this sacred journey! 🙏</div>
-      <button class="cs-close ios-haptic" id="anhadComingSoonClose">ਵਾਹਿਗੁਰੂ &nbsp;✓</button>
+      <div class="cs-feature">40 Days of Collective Amritvela Naam Simran &amp; Nitnem</div>
+
+      <!-- 3-Pillar Sadhana Cards Grid -->
+      <div class="cs-pillars-grid">
+        <div class="cs-pillar-card">
+          <div class="cs-pillar-icon">🌅</div>
+          <div class="cs-pillar-title">Amritvela</div>
+          <div class="cs-pillar-desc">3:30 AM Global Simran</div>
+        </div>
+        <div class="cs-pillar-card">
+          <div class="cs-pillar-icon">📿</div>
+          <div class="cs-pillar-title">Nitnem</div>
+          <div class="cs-pillar-desc">Daily Streak Tracker</div>
+        </div>
+        <div class="cs-pillar-card">
+          <div class="cs-pillar-icon">🤝</div>
+          <div class="cs-pillar-title">Sadhsangat</div>
+          <div class="cs-pillar-desc">Live Sangat Presence</div>
+        </div>
+      </div>
+
+      <!-- Milestones Bar -->
+      <div class="cs-milestones-bar">
+        <div class="cs-milestone-step">
+          <span class="cs-step-num">1</span>
+          <span class="cs-step-label">Sankalp</span>
+        </div>
+        <div class="cs-milestone-line"></div>
+        <div class="cs-milestone-step">
+          <span class="cs-step-num">20</span>
+          <span class="cs-step-label">Madhya</span>
+        </div>
+        <div class="cs-milestone-line"></div>
+        <div class="cs-milestone-step">
+          <span class="cs-step-num">40</span>
+          <span class="cs-step-label">Bhog Smagam</span>
+        </div>
+      </div>
+
+      <!-- Actions Row -->
+      <div class="cs-actions-row">
+        <button class="cs-notify-btn ios-haptic" id="chaliyaNotifyBtn">
+          <span id="chaliyaNotifyIcon">🔔</span>
+          <span id="chaliyaNotifyText">Join &amp; Remind Me</span>
+        </button>
+        <button class="cs-close ios-haptic" id="anhadComingSoonClose">
+          ਵਾਹਿਗੁਰੂ &nbsp;✓
+        </button>
+      </div>
     </div>
   </div>
 
   <script>
-    // ── Chaliya 2026: Coming Soon popup ──
+    // ── Chaliya 2026: Coming Soon Luxury Interactive Modal ──
     (function() {
       var card = document.getElementById('chaliya2026Card');
       var overlay = document.getElementById('anhadComingSoonOverlay');
       var closeBtn = document.getElementById('anhadComingSoonClose');
+      var topCloseBtn = document.getElementById('anhadComingSoonTopClose');
+      var notifyBtn = document.getElementById('chaliyaNotifyBtn');
+      var notifyText = document.getElementById('chaliyaNotifyText');
+      var notifyIcon = document.getElementById('chaliyaNotifyIcon');
+
+      function updateNotifyState() {
+        if (!notifyBtn) return;
+        var isJoined = localStorage.getItem('anhad_chaliya_2026_joined') === '1';
+        if (isJoined) {
+          notifyBtn.classList.add('joined');
+          if (notifyIcon) notifyIcon.textContent = '✅';
+          if (notifyText) notifyText.textContent = 'Joined & Reminders Active';
+        } else {
+          notifyBtn.classList.remove('joined');
+          if (notifyIcon) notifyIcon.textContent = '🔔';
+          if (notifyText) notifyText.textContent = 'Join & Remind Me';
+        }
+      }
+
+      function toggleNotify(e) {
+        if (e) { e.preventDefault(); e.stopPropagation(); }
+        var isJoined = localStorage.getItem('anhad_chaliya_2026_joined') === '1';
+        if (isJoined) {
+          localStorage.setItem('anhad_chaliya_2026_joined', '0');
+        } else {
+          localStorage.setItem('anhad_chaliya_2026_joined', '1');
+          if (navigator.vibrate) navigator.vibrate([15, 40, 20]);
+        }
+        updateNotifyState();
+      }
 
       function showComingSoon(e) {
         if (e) { e.preventDefault(); e.stopPropagation(); }
+        if (!overlay) return;
+        updateNotifyState();
         overlay.classList.add('active');
         overlay.setAttribute('aria-hidden', 'false');
-        // Vibrate for haptic feedback
         if (navigator.vibrate) navigator.vibrate([10, 30, 10]);
         closeBtn && closeBtn.focus();
       }
 
       function hideComingSoon() {
+        if (!overlay) return;
         overlay.classList.remove('active');
         overlay.setAttribute('aria-hidden', 'true');
       }
@@ -3944,6 +4051,8 @@
         });
       }
       if (closeBtn) closeBtn.addEventListener('click', hideComingSoon);
+      if (topCloseBtn) topCloseBtn.addEventListener('click', hideComingSoon);
+      if (notifyBtn) notifyBtn.addEventListener('click', toggleNotify);
 
       // Close on backdrop click
       if (overlay) {
@@ -3961,8 +4070,6 @@
       };
       document.addEventListener('keydown', window.anhadComingSoonEscHandler);
     })();
-
-
   </script>
 
   <!-- Floating Tab Bar — Same as Dashboard -->

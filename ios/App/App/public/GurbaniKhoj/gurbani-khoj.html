@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pa" data-theme="light">
 <head>
     <!-- CRITICAL: Theme blocker - MUST run before paint -->
@@ -123,23 +123,10 @@
   <link rel="stylesheet" href="../css/anhad-core.css">
   <link rel="stylesheet" href="../css/theme-variables.css">
   <link rel="stylesheet" href="../css/global-mini-player.css?v=5">
-    <link rel="stylesheet" href="../css/desktop-responsive.css?v=26">
-
-  <!-- Global Theme -->
-  <script src="../lib/global-theme.js"></script>
-
-  <!-- Navigation -->
-  <script src="../lib/desktop-sidebar.js" defer></script>
-  <script src="../lib/smart-back.js"></script>
-  <script src="../lib/page-lifecycle.js"></script>
-  <script src="../lib/smooth-navigation.js"></script>
-  <script src="../lib/state-preservation.js"></script>
-
-  <!-- Offline Database -->
-  <script src="offline-db.js"></script>
 
   <!-- Cache bust version to enforce reload -->
-  <link rel="stylesheet" href="gurbani-khoj.css?v=40">
+  <link rel="stylesheet" href="gurbani-khoj.css?v=42">
+  <link rel="stylesheet" href="../css/desktop-responsive.css?v=30">
 
   <!-- ✅ CRITICAL: Dark mode quick-card fix - MUST load last, highest specificity -->
   <style>
@@ -183,8 +170,16 @@
     html[data-theme="dark"][data-time-of-day="night"] .quick-card {
       background: #1C1C1E !important;
       border: 1px solid rgba(255,255,255,0.08) !important;
-    }
   </style>
+
+  <!-- Global Theme & Navigation -->
+  <script src="../lib/global-theme.js"></script>
+  <script src="../lib/desktop-sidebar.js" defer></script>
+  <script src="../lib/smart-back.js"></script>
+  <script src="../lib/page-lifecycle.js"></script>
+  <script src="../lib/smooth-navigation.js"></script>
+  <script src="../lib/state-preservation.js"></script>
+  <script src="offline-db.js"></script>
 </head>
 <body>
 <div class="app" id="app">
@@ -551,8 +546,6 @@
       <span>Recent</span>
     </button>
   </nav>
-
-</div><!-- /#app -->
 
 <!-- ══════════════════════════════════════════
      Voice Search Panel (Screen 2: Speak to Search)
@@ -945,6 +938,8 @@
       <div class="offline-stats" id="offlineStatsText">Total 0 / 3000 Angs downloaded</div>
     </div>
   </div>
+
+</div><!-- /#app -->
 
   <script src="../lib/audio-coordinator.js"></script>
 

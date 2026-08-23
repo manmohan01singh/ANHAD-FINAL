@@ -536,12 +536,17 @@ function _anhadHomepageDataInit() {
     let completed = 0, total = 11;
     try { const sb = localStorage.getItem('nitnemTracker_selectedBanis'); if (sb) { const p = JSON.parse(sb); total = (p.amritvela?.length || 0) + (p.rehras?.length || 0) + (p.sohila?.length || 0); if (total === 0) total = 11; } } catch (e) { }
     try { const today = now.toLocaleDateString('en-CA'); const nl = localStorage.getItem('nitnemTracker_nitnemLog'); if (nl) { const p = JSON.parse(nl); if (p[today]) { if (Array.isArray(p[today])) completed = p[today].length; else { const td = p[today]; completed = (td.amritvela?.length || 0) + (td.rehras?.length || 0) + (td.sohila?.length || 0); } } } } catch (e) { }
-    let suggestion = ''; if (hour >= 4 && hour < 9) suggestion = 'Start Japji Sahib Ji 🌅'; else if (hour >= 9 && hour < 12) suggestion = 'Continue morning Nitnem ☀️'; else if (hour >= 12 && hour < 17) suggestion = 'Rehras Sahib Ji in evening 🙏'; else if (hour >= 17 && hour < 20) suggestion = 'Time for Rehras Sahib Ji 🌆'; else suggestion = 'Sohila Sahib Ji before bed 🌙';
+    let suggestion = '';
+    if (hour >= 4 && hour < 9) suggestion = completed === 0 ? 'Start Japji Sahib Ji 🌅' : 'Continue Japji Sahib Ji 🌅';
+    else if (hour >= 9 && hour < 12) suggestion = completed === 0 ? 'Start morning Nitnem ☀️' : 'Continue morning Nitnem ☀️';
+    else if (hour >= 12 && hour < 17) suggestion = completed === 0 ? 'Start Nitnem 🙏' : 'Rehras Sahib Ji in evening 🙏';
+    else if (hour >= 17 && hour < 20) suggestion = 'Time for Rehras Sahib Ji 🌆';
+    else suggestion = 'Sohila Sahib Ji before bed 🌙';
     const percent = Math.round((completed / total) * 100);
     const lbl = document.getElementById('progressLabel'), pct = document.getElementById('progressPercent'), txt = document.getElementById('progressText'), fill = document.getElementById('progressFill');
-    if (lbl) lbl.textContent = `${completed}/${total} Banis`;
+    if (lbl) lbl.textContent = completed >= total ? '✓ Complete' : (completed === 0 ? '☀️ Start morning Nitnem' : '☀️ Continue morning Nitnem');
     if (pct) pct.textContent = `${percent}%`;
-    if (txt) txt.textContent = completed === 0 ? suggestion : completed >= total ? 'Amazing! All banis completed today! 🎉' : `${completed} done! ${suggestion}`;
+    if (txt) txt.textContent = `${completed}/${total} Banis`;
     if (fill) setTimeout(() => { fill.style.width = `${percent}%`; }, 600);
     
     console.log('[Homepage] Progress card updated:', { completed, total, percent });

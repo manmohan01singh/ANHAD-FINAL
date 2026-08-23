@@ -21,7 +21,7 @@
   // targets whichever backend the app itself is reading from.
   const API_BASE = (() => {
     try {
-      if (window.Capacitor && window.Capacitor.isNative) return 'https://anhad-final.onrender.com';
+      if (window.Capacitor && ((typeof window.Capacitor.isNativePlatform === 'function' && window.Capacitor.isNativePlatform()) || (typeof window.Capacitor.getPlatform === 'function' && window.Capacitor.getPlatform() !== 'web') || window.Capacitor.isNative)) return 'https://anhad-final.onrender.com';
       const port = window.location.port;
       const host = window.location.hostname;
       if (port === '3000' || port === '3001' || host === 'localhost' || host === '127.0.0.1') {

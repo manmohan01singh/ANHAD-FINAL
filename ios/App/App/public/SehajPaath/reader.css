@@ -8,6 +8,22 @@
    ═══════════════════════════════════════════════════════════════════════════════ */
 
 @font-face {
+    font-family: 'RiyastiHastlikhat';
+    src: url('../nitnem/g-fonts/RiyastiHastlikhat.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: optional;
+}
+
+@font-face {
+    font-family: 'PGMuskan';
+    src: url('../nitnem/g-fonts/pg_muskan_5.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: optional;
+}
+
+@font-face {
     font-family: 'PG Serif';
     src: url('../nitnem/g-fonts/pg_serif_r.ttf') format('truetype');
     font-weight: 400;
@@ -84,10 +100,10 @@
     --accent: #C9A227;
     --accent-light: #B8860B;
 
-    /* Font families - Default to standard Noto Sans Gurmukhi */
+    /* Font families - Premium Gurmukhi fonts like Hukamnama & Nitnem */
     --font-primary: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', sans-serif;
-    --font-gurmukhi: 'Noto Sans Gurmukhi', 'PG Serif', sans-serif;
-    --gurmukhi-size: 24px;
+    --font-gurmukhi: 'RiyastiHastlikhat', 'PGMuskan', 'Noto Sans Gurmukhi', 'PG Serif', sans-serif;
+    --gurmukhi-size: 32px;
     --line-height: 2.2;
 
     /* Spacing */

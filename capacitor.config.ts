@@ -10,7 +10,7 @@ const config: CapacitorConfig = {
     // Only set server.url when developing against a live dev server
     server: {
         androidScheme: 'https',
-        cleartext: false
+        cleartext: true
     },
 
     // Android-specific configuration

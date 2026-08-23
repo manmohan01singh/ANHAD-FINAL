@@ -101,7 +101,7 @@
 
   const API_BASE = (() => {
     try {
-      if (window.Capacitor && window.Capacitor.isNative) return 'https://anhad-final.onrender.com';
+      if (window.Capacitor && ((typeof window.Capacitor.isNativePlatform === 'function' && window.Capacitor.isNativePlatform()) || (typeof window.Capacitor.getPlatform === 'function' && window.Capacitor.getPlatform() !== 'web') || window.Capacitor.isNative)) return 'https://anhad-final.onrender.com';
       const port = window.location.port;
       const host = window.location.hostname;
       if (port === '3000' || port === '3001' || host === 'localhost' || host === '127.0.0.1') {
@@ -252,8 +252,16 @@
     }
 
     getCurrentPlatform() {
-      if (window.Capacitor && window.Capacitor.isNative) {
-        return window.Capacitor.getPlatform() || 'android';
+      if (window.Capacitor) {
+        if (typeof window.Capacitor.isNativePlatform === 'function' && window.Capacitor.isNativePlatform()) {
+          return (typeof window.Capacitor.getPlatform === 'function' ? window.Capacitor.getPlatform() : 'android') || 'android';
+        }
+        if (typeof window.Capacitor.getPlatform === 'function' && window.Capacitor.getPlatform() !== 'web') {
+          return window.Capacitor.getPlatform();
+        }
+        if (window.Capacitor.isNative) {
+          return (typeof window.Capacitor.getPlatform === 'function' ? window.Capacitor.getPlatform() : 'android') || 'android';
+        }
       }
       return 'web';
     }

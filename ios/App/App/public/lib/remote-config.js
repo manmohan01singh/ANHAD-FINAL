@@ -18,6 +18,13 @@
 (function(window) {
   'use strict';
 
+  // Defensive re-entrancy guard, matching the pattern used by
+  // campaign-renderer.js and anhad-audio-singleton.js: if this file is ever
+  // double-included on one page, this stops a second RemoteConfigManager
+  // instance from spinning up its own permanent 15s poll + duplicate
+  // online/visibilitychange listeners alongside an orphaned first instance.
+  if (window.AnhadCampaigns) return;
+
   const CONFIG_CACHE_KEY = 'anhad_remote_config_cache_v1';
   const CONFIG_CACHE_TTL = 3600000; // 1 Hour — past this the cache is served but treated as stale
   // An admin toggle must reach open devices quickly, so poll while the app is
@@ -94,7 +101,7 @@
 
   const API_BASE = (() => {
     try {
-      if (window.Capacitor && window.Capacitor.isNative) return 'https://anhad-final.onrender.com';
+      if (window.Capacitor && ((typeof window.Capacitor.isNativePlatform === 'function' && window.Capacitor.isNativePlatform()) || (typeof window.Capacitor.getPlatform === 'function' && window.Capacitor.getPlatform() !== 'web') || window.Capacitor.isNative)) return 'https://anhad-final.onrender.com';
       const port = window.location.port;
       const host = window.location.hostname;
       if (port === '3000' || port === '3001' || host === 'localhost' || host === '127.0.0.1') {
@@ -245,8 +252,16 @@
     }
 
     getCurrentPlatform() {
-      if (window.Capacitor && window.Capacitor.isNative) {
-        return window.Capacitor.getPlatform() || 'android';
+      if (window.Capacitor) {
+        if (typeof window.Capacitor.isNativePlatform === 'function' && window.Capacitor.isNativePlatform()) {
+          return (typeof window.Capacitor.getPlatform === 'function' ? window.Capacitor.getPlatform() : 'android') || 'android';
+        }
+        if (typeof window.Capacitor.getPlatform === 'function' && window.Capacitor.getPlatform() !== 'web') {
+          return window.Capacitor.getPlatform();
+        }
+        if (window.Capacitor.isNative) {
+          return (typeof window.Capacitor.getPlatform === 'function' ? window.Capacitor.getPlatform() : 'android') || 'android';
+        }
       }
       return 'web';
     }

@@ -21,7 +21,6 @@
     { id: 'sehaj', label: 'Sehaj Paath', gurmukhi: 'ਸਹਿਜ ਪਾਠ', icon: '📖', path: 'SehajPaath/sehaj-paath.html', aliases: ['SehajPaath/sehaj-paath.html', 'SehajPaath/reader.html'] },
     { id: 'naam', label: 'Naam Abhyas', gurmukhi: 'ਨਾਮ ਅਭਿਆਸ', icon: '🙏', path: 'NaamAbhyas/naam-abhyas.html', aliases: ['NaamAbhyas/naam-abhyas.html', 'NaamAbhyas/naam-abhyas-timer.html'] },
     { id: 'sadhsangat', label: 'Sadhsangat Live', gurmukhi: 'ਸਾਧਸੰਗਤ', icon: '📡', badge: 'HD', path: 'sadhsangat-live/index.html', aliases: ['sadhsangat-live/index.html', 'sadhsangat-live/'] },
-    { id: 'dashboard', label: 'Dashboard', gurmukhi: 'ਡੈਸ਼ਬੋਰਡ', icon: '📊', path: 'Dashboard/dashboard.html', aliases: ['Dashboard/dashboard.html', 'Dashboard/'] },
     { id: 'tracker', label: 'Nitnem Tracker', gurmukhi: 'ਟਰੈਕਰ', icon: '🔥', path: 'NitnemTracker/nitnem-tracker.html', aliases: ['NitnemTracker/nitnem-tracker.html', 'NitnemTracker/'] },
     { id: 'favorites', label: 'Favorites', gurmukhi: 'ਮਨਪਸੰਦ', icon: '❤️', path: 'Favorites/favorites.html', aliases: ['Favorites/favorites.html', 'Favorites/'] },
     { id: 'notes', label: 'Spiritual Notes', gurmukhi: 'ਨੋਟਸ', icon: '📝', path: 'Notes/notes.html', aliases: ['Notes/notes.html', 'Notes/'] },
@@ -66,7 +65,6 @@
     if (loc.indexOf('/sehajpaath') !== -1 || loc.indexOf('sehaj-paath') !== -1) return 'sehaj';
     if (loc.indexOf('/naamabhyas') !== -1 || loc.indexOf('naam-abhyas') !== -1) return 'naam';
     if (loc.indexOf('/sadhsangat') !== -1 || loc.indexOf('sadhsangat-live') !== -1) return 'sadhsangat';
-    if (loc.indexOf('/dashboard') !== -1) return 'dashboard';
     if (loc.indexOf('/favorites') !== -1) return 'favorites';
     if (loc.indexOf('/notes') !== -1) return 'notes';
     if (loc.indexOf('/insights') !== -1 || loc.indexOf('/learning') !== -1) return 'learning';
@@ -127,15 +125,23 @@
     var html = '' +
       '<aside class="desktop-sidebar" aria-label="Desktop Navigation" id="' + SIDEBAR_ID + '">' +
         '<div class="desktop-sidebar__header">' +
-          '<a href="' + homeHref + '" class="desktop-sidebar__brand">' +
-            '<div class="desktop-sidebar__logo-wrapper">' +
-              '<img decoding="async" src="' + logoSrc + '" alt="ANHAD" class="desktop-sidebar__logo">' +
-            '</div>' +
-            '<div class="desktop-sidebar__brand-meta">' +
-              '<span class="desktop-sidebar__brand-name">ANHAD</span>' +
-              '<span class="desktop-sidebar__brand-gurmukhi">ਅਨਹਦ ਬਾਣੀ</span>' +
-            '</div>' +
-          '</a>' +
+          '<div class="desktop-sidebar__header-top">' +
+            '<a href="' + homeHref + '" class="desktop-sidebar__brand">' +
+              '<div class="desktop-sidebar__logo-wrapper">' +
+                '<img decoding="async" src="' + logoSrc + '" alt="ANHAD" class="desktop-sidebar__logo">' +
+              '</div>' +
+              '<div class="desktop-sidebar__brand-meta">' +
+                '<span class="desktop-sidebar__brand-name">ANHAD</span>' +
+                '<span class="desktop-sidebar__brand-gurmukhi">ਅਨਹਦ ਬਾਣੀ</span>' +
+              '</div>' +
+            '</a>' +
+            '<button type="button" class="desktop-sidebar__collapse-btn" id="desktopSidebarCollapseBtn" aria-label="Collapse Sidebar" title="Collapse Sidebar (Ctrl+B)">' +
+              '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+                '<rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>' +
+                '<line x1="9" y1="3" x2="9" y2="21"></line>' +
+              '</svg>' +
+            '</button>' +
+          '</div>' +
           '<div class="desktop-sidebar__status-pill">' +
             '<span class="desktop-sidebar__status-dot"></span>' +
             '<span class="desktop-sidebar__status-text">Darbar Sahib Live</span>' +
@@ -152,60 +158,89 @@
         '<div class="desktop-sidebar__footer">' +
           footerHtml +
         '</div>' +
-      '</aside>';
+      '</aside>' +
+      '<button type="button" class="desktop-sidebar__expand-btn" id="desktopSidebarExpandBtn" aria-label="Expand Sidebar" title="Expand Sidebar (Ctrl+B)">' +
+        '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">' +
+          '<rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>' +
+          '<line x1="9" y1="3" x2="9" y2="21"></line>' +
+          '<polyline points="14 9 17 12 14 15"></polyline>' +
+        '</svg>' +
+      '</button>';
 
     return html;
   }
 
-  function isReaderPage() {
-    var loc = window.location.pathname.toLowerCase();
-    if (
-      loc.indexOf('reader.html') !== -1 ||
-      loc.indexOf('shabad-reader') !== -1 ||
-      loc.indexOf('japji-sahib') !== -1 ||
-      loc.indexOf('anand-sahib') !== -1 ||
-      loc.indexOf('chaupai-sahib') !== -1 ||
-      loc.indexOf('jaap-sahib') !== -1 ||
-      loc.indexOf('rehras-sahib') !== -1 ||
-      loc.indexOf('sohila-sahib') !== -1 ||
-      loc.indexOf('tav-prasad-savaiye') !== -1 ||
-      loc.indexOf('my-pothi') !== -1
-    ) {
-      return true;
-    }
-    if (
-      document.body.classList.contains('reader-page') ||
-      document.body.classList.contains('is-reader') ||
-      document.querySelector('.reader-app') !== null ||
-      document.querySelector('.reader-container') !== null
-    ) {
-      return true;
-    }
-    return false;
-  }
-
   function initSidebar() {
-    if (window.innerWidth < 1024 || isReaderPage()) {
+    if (window.innerWidth < 1024) {
       var existing = document.getElementById(SIDEBAR_ID);
       if (existing) existing.style.display = 'none';
-      document.body.classList.add('reader-no-sidebar');
       return;
     }
 
-    document.body.classList.remove('reader-no-sidebar');
     var existing = document.getElementById(SIDEBAR_ID);
     if (!existing) {
       var div = document.createElement('div');
       div.innerHTML = buildSidebarHtml();
-      var sidebarEl = div.firstElementChild;
-      document.body.insertBefore(sidebarEl, document.body.firstChild);
+      while (div.firstElementChild) {
+        document.body.insertBefore(div.firstElementChild, document.body.firstChild);
+      }
     } else {
+      var div = document.createElement('div');
+      div.innerHTML = buildSidebarHtml();
+      var freshSidebar = div.querySelector('#' + SIDEBAR_ID);
+      if (freshSidebar) {
+        existing.innerHTML = freshSidebar.innerHTML;
+      }
+      var expandBtn = document.getElementById('desktopSidebarExpandBtn');
+      if (!expandBtn) {
+        var freshExpandBtn = div.querySelector('#desktopSidebarExpandBtn');
+        if (freshExpandBtn) document.body.appendChild(freshExpandBtn);
+      }
       existing.style.display = 'flex';
       updateActiveItem();
     }
 
+    // Apply saved collapsed state
+    var isCollapsed = localStorage.getItem('anhad_sidebar_collapsed') === '1';
+    document.body.classList.toggle('sidebar-collapsed', isCollapsed);
+
+    attachSidebarControls();
     attachThemeToggle();
     syncThemeIcon();
+  }
+
+  function attachSidebarControls() {
+    var collapseBtn = document.getElementById('desktopSidebarCollapseBtn');
+    var expandBtn = document.getElementById('desktopSidebarExpandBtn');
+
+    if (collapseBtn && !collapseBtn._wired) {
+      collapseBtn._wired = true;
+      collapseBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        document.body.classList.add('sidebar-collapsed');
+        localStorage.setItem('anhad_sidebar_collapsed', '1');
+      });
+    }
+
+    if (expandBtn && !expandBtn._wired) {
+      expandBtn._wired = true;
+      expandBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        document.body.classList.remove('sidebar-collapsed');
+        localStorage.setItem('anhad_sidebar_collapsed', '0');
+      });
+    }
+
+    if (!window._anhadSidebarKeyWired) {
+      window._anhadSidebarKeyWired = true;
+      document.addEventListener('keydown', function(e) {
+        if ((e.ctrlKey || e.metaKey) && (e.key === 'b' || e.key === 'B')) {
+          e.preventDefault();
+          var nowCollapsed = document.body.classList.toggle('sidebar-collapsed');
+          localStorage.setItem('anhad_sidebar_collapsed', nowCollapsed ? '1' : '0');
+        }
+      });
+    }
   }
 
   function updateActiveItem() {

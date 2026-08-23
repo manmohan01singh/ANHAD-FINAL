@@ -1015,30 +1015,51 @@
 
         const badgeValueEl = document.getElementById('eventCountdownBadgeValue');
         const badgeLabelEl = document.getElementById('eventCountdownBadgeLabel');
+        const celebrationBadge = document.getElementById('gurpurabCelebrationBadge');
+        const remembranceBadge = document.getElementById('gurpurabRemembranceBadge');
+        const daysBadge = document.getElementById('eventDaysBadge');
 
         // Update date/countdown display
         if (event.isToday) {
+          if (daysBadge) daysBadge.style.display = 'none';
           if (event.eventCategory === 'remembrance') {
+            if (remembranceBadge) {
+              remembranceBadge.textContent = `🕯️ ${event.name || 'Remembrance Day'}`;
+              remembranceBadge.style.display = 'inline-flex';
+            }
+            if (celebrationBadge) celebrationBadge.style.display = 'none';
             if (dateEl) dateEl.textContent = '🕯️ In remembrance';
             if (countEl) countEl.textContent = '🙏';
             if (labelEl) labelEl.textContent = 'Today';
-          } else if (event.eventCategory === 'celebration') {
+          } else {
+            if (celebrationBadge) {
+              celebrationBadge.textContent = `✦ Today: ${event.name || 'Gurpurab'}`;
+              celebrationBadge.style.display = 'inline-flex';
+            }
+            if (remembranceBadge) remembranceBadge.style.display = 'none';
             if (dateEl) dateEl.textContent = '🎉 Celebrate today!';
             if (countEl) countEl.textContent = '✨';
-            if (labelEl) labelEl.textContent = 'Today';
-          } else {
-            if (dateEl) dateEl.textContent = 'Today';
-            if (countEl) countEl.textContent = '🙏';
             if (labelEl) labelEl.textContent = 'Today';
           }
           if (badgeValueEl) badgeValueEl.textContent = 'Today';
           if (badgeLabelEl) badgeLabelEl.textContent = '';
         } else {
-          if (dateEl) dateEl.textContent = event.dateStr;
-          if (countEl) countEl.textContent = event.daysLeft;
-          if (labelEl) labelEl.textContent = event.daysLeft === 1 ? 'day' : 'days';
-          if (badgeValueEl) badgeValueEl.textContent = event.daysLeft;
-          if (badgeLabelEl) badgeLabelEl.textContent = event.daysLeft === 1 ? 'day left' : 'days left';
+          if (celebrationBadge) celebrationBadge.style.display = 'none';
+          if (remembranceBadge) remembranceBadge.style.display = 'none';
+          if (dateEl) dateEl.textContent = event.dateStr || 'Upcoming';
+          const daysNum = (typeof event.daysLeft === 'number' && !isNaN(event.daysLeft)) ? event.daysLeft : null;
+          if (daysNum !== null && daysNum >= 0) {
+            if (countEl) countEl.textContent = daysNum;
+            if (labelEl) labelEl.textContent = daysNum === 1 ? 'day' : 'days';
+            if (daysBadge) {
+              daysBadge.innerHTML = `<span>${daysNum}</span> <span>${daysNum === 1 ? 'day left' : 'days left'}</span>`;
+              daysBadge.style.display = 'inline-flex';
+            }
+          } else {
+            if (countEl) countEl.textContent = '🗓️';
+            if (labelEl) labelEl.textContent = 'Upcoming';
+            if (daysBadge) daysBadge.style.display = 'none';
+          }
         }
 
         // Update Guru image
@@ -1475,8 +1496,16 @@
       if (fillEl) {
         requestAnimationFrame(() => { fillEl.style.width = `${percent}%`; });
       }
-      if (textEl) textEl.textContent = `${completed}/${total}`;
-      if (labelEl) labelEl.textContent = completed >= total ? '✓ Complete' : 'Today\'s Nitnem';
+      if (textEl) textEl.textContent = `${completed}/${total} Banis`;
+      if (labelEl) {
+        if (completed >= total) {
+          labelEl.textContent = '✓ Complete';
+        } else if (completed === 0) {
+          labelEl.textContent = '☀️ Start morning Nitnem';
+        } else {
+          labelEl.textContent = '☀️ Continue morning Nitnem';
+        }
+      }
     },
 
     updateNotificationBadge() {
@@ -1948,21 +1977,21 @@
       const sheet = document.getElementById(sheetId);
       if (!overlay || !sheet) return;
 
-      overlay.classList.add('sheet-overlay--active');
-      overlay.style.pointerEvents = '';
-      sheet.classList.add('sheet--active');
+      overlay.style.display = 'block';
+      sheet.style.display = 'block';
+      overlay.setAttribute('aria-hidden', 'false');
+      sheet.setAttribute('aria-hidden', 'false');
+
+      requestAnimationFrame(() => {
+        overlay.classList.add('sheet-overlay--active');
+        overlay.style.pointerEvents = '';
+        sheet.classList.add('sheet--active');
+      });
+
       document.body.style.overflow = 'hidden';
-      // Same signal Insights uses. Lets the shared rules suppress the nav
-      // pill and the mini player while a sheet is up, so all three SPA pages
-      // behave identically instead of only Insights getting the treatment.
       document.body.classList.add('modal-open');
       this._active = sheetId;
 
-      // Bound once per overlay element, not once per open. A {once:true}
-      // listener is only consumed if the overlay itself is clicked, so closing
-      // the sheet any other way left it armed and the next open() stacked
-      // another one. The element is recreated by the SPA content swap, so the
-      // flag correctly resets when the page is re-rendered.
       if (!overlay._anhadSheetCloseBound) {
         overlay._anhadSheetCloseBound = true;
         overlay.addEventListener('click', () => this.close(sheetId));
@@ -1976,16 +2005,27 @@
       const overlay = document.getElementById(id + 'Overlay');
       const sheet = document.getElementById(id);
 
-      if (sheet) sheet.classList.remove('sheet--active');
-      if (overlay) {
-        // The class removal is delayed so the backdrop can fade out, but the
-        // overlay covers the whole viewport and stayed hit-testable for that
-        // whole 300ms — swallowing the first tap after every close.
-        overlay.style.pointerEvents = 'none';
+      if (sheet) {
+        sheet.classList.remove('sheet--active');
+        sheet.setAttribute('aria-hidden', 'true');
         setTimeout(() => {
-          overlay.classList.remove('sheet-overlay--active');
+          if (!sheet.classList.contains('sheet--active')) {
+            sheet.style.display = 'none';
+          }
+        }, 450);
+      }
+
+      if (overlay) {
+        overlay.style.pointerEvents = 'none';
+        overlay.classList.remove('sheet-overlay--active');
+        overlay.setAttribute('aria-hidden', 'true');
+        setTimeout(() => {
+          if (!overlay.classList.contains('sheet-overlay--active')) {
+            overlay.style.display = 'none';
+          }
         }, 300);
       }
+
       document.body.classList.remove('modal-open');
       document.body.style.overflow = '';
       this._active = null;
@@ -1993,6 +2033,30 @@
 
     closeAll() {
       if (this._active) this.close(this._active);
+    },
+
+    // CRITICAL FIX: Force-close all sheets on page load
+    // Prevents stuck modal state from persisted/cached DOM
+    ensureAllClosed() {
+      document.querySelectorAll('.sheet').forEach(sheet => {
+        sheet.classList.remove('sheet--active');
+        sheet.setAttribute('aria-hidden', 'true');
+        sheet.style.display = 'none';
+      });
+      document.querySelectorAll('.sheet-overlay').forEach(overlay => {
+        overlay.classList.remove('sheet-overlay--active');
+        overlay.setAttribute('aria-hidden', 'true');
+        overlay.style.pointerEvents = 'none';
+        overlay.style.display = 'none';
+      });
+      document.body.classList.remove('modal-open');
+      document.body.style.overflow = '';
+      this._active = null;
+
+      try {
+        sessionStorage.removeItem('anhad_radio_sheet_open');
+        sessionStorage.removeItem('anhad_modal_state');
+      } catch (e) {}
     }
   };
 
@@ -2000,7 +2064,7 @@
   const AudioSync = {
     _info: {
       darbar: { title: 'Darbar Sahib Ji Live', subtitle: 'Sri Harmandir Sahib Ji' },
-      amritvela: { title: 'Amritvela Kirtan', subtitle: 'Curated Smagam Tracks' },
+      amritvela: { title: 'Amritvela Smagams', subtitle: 'Sacred Dawn Kirtan Collection' },
       simran: { title: 'Waheguru Simran', subtitle: 'Divine Meditation & Simran' }
     },
 
@@ -2613,7 +2677,7 @@
       step('resetChrome', () => {
         document.body.style.overflow = '';
         document.documentElement.style.overflow = '';
-        SheetController.closeAll();
+        SheetController.ensureAllClosed(); // Use ensureAllClosed instead of closeAll
         this._restoreHomeShellElements();
       });
 

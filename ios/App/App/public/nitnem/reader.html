@@ -68,10 +68,10 @@
               'riyasti': "'RiyastiHastlikhat', 'Noto Sans Gurmukhi', sans-serif",
               'pg-muskan': "'PGMuskan', 'Noto Sans Gurmukhi', sans-serif"
             };
-            const fontKey = settings.fontFamily || 'noto';
-            const fontFamily = fontMap[fontKey] || fontMap.noto;
+            const fontKey = settings.fontFamily || 'riyasti';
+            const fontFamily = fontMap[fontKey] || fontMap.riyasti;
             const fontWeight = settings.fontWeight || '500';
-            const fontSize = settings.gurbaniFontSize || 28;
+            const fontSize = settings.gurbaniFontSize || 32;
             const textAlign = settings.textAlign || 'center';
 
             // CRITICAL FIX: Inject inline <style> to prevent flash
@@ -116,9 +116,9 @@
     
     <!-- Styles -->
     <link rel="stylesheet" href="../css/theme-variables.css">
-    <link rel="stylesheet" href="css/reader.css">
+    <link rel="stylesheet" href="css/reader.css?v=6">
     <link rel="stylesheet" href="../css/global-mini-player.css?v=4">
-    <link rel="stylesheet" href="../css/desktop-responsive.css?v=26">
+    <link rel="stylesheet" href="../css/desktop-responsive.css?v=30">
     
     <!-- Navigation Libraries -->
     <script src="../lib/desktop-sidebar.js" defer></script>
@@ -633,10 +633,8 @@
     <script src="../lib/audio-preload.js"></script>
   <script src="../lib/audio-coordinator.js"></script>
     <script src="../lib/overlay-player.js"></script>
-    
-    <script src="../lib/smooth-navigation.js"></script>
-    
-    
+
+
     <!-- Dynamic Orb Scroll Effects -->
     <script>
     document.addEventListener('DOMContentLoaded', function() {

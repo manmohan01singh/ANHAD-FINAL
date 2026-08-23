@@ -45,7 +45,7 @@
     // Dynamic audio path detection
     const AUDIO_BASE_PATH = (() => {
         const loc = window.location;
-        if (loc.protocol === 'file:' || (window.Capacitor && window.Capacitor.isNative)) {
+        if (loc.protocol === 'file:' || (window.Capacitor && ((typeof window.Capacitor.isNativePlatform === 'function' && window.Capacitor.isNativePlatform()) || (typeof window.Capacitor.getPlatform === 'function' && window.Capacitor.getPlatform() !== 'web') || window.Capacitor.isNative))) {
             return '../Audio/';
         }
         if (loc.hostname === 'localhost' || loc.hostname === '127.0.0.1') {

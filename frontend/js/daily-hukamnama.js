@@ -307,7 +307,7 @@
                     } catch (e) {
                         reject(e);
                     }
-                })).catch(() => null);
+                }))).catch(() => null);
 
                 if (results) {
                     console.log('[HukamPlayer] ✅ Capacitor success with URL:', results);

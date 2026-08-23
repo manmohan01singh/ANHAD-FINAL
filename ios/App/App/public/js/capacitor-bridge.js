@@ -19,7 +19,14 @@
 
     const Protocol = {
         get isCapacitor() {
-            return window.Capacitor !== undefined && window.Capacitor.isNativePlatform === true;
+            if (typeof window.Capacitor === 'undefined') return false;
+            if (typeof window.Capacitor.isNativePlatform === 'function') {
+                return window.Capacitor.isNativePlatform();
+            }
+            if (typeof window.Capacitor.getPlatform === 'function') {
+                return window.Capacitor.getPlatform() !== 'web';
+            }
+            return !!(window.Capacitor.isNative || window.Capacitor.isNativePlatform);
         },
         
         get isHttps() {

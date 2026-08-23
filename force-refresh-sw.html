@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Force Service Worker Update - ANHAD</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            margin-top: 0;
+        }
+        button {
+            background: #007AFF;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+        .success {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+        .error {
+            background: #ffebee;
+            color: #c62828;
+        }
+        code {
+            background: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+        .step {
+            margin: 15px 0;
+            padding: 10px;
+            background: #f9f9f9;
+            border-left: 3px solid #007AFF;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔄 Force Service Worker Update</h1>
+        <p>This will clear all caches and force reload of all updated files.</p>
+        
+        <div class="step">
+            <strong>Step 1:</strong> Clear all Service Worker caches
+            <br>
+            <button onclick="clearAllCaches()">Clear All Caches</button>
+        </div>
+
+        <div class="step">
+            <strong>Step 2:</strong> Unregister Service Workers
+            <br>
+            <button onclick="unregisterSW()">Unregister Service Workers</button>
+        </div>
+
+        <div class="step">
+            <strong>Step 3:</strong> Do ALL (Recommended)
+            <br>
+            <button onclick="forceCompleteRefresh()" style="background: #ff9500;">🔥 NUCLEAR OPTION - Do Everything</button>
+        </div>
+
+        <div id="status" class="status" style="display:none;"></div>
+
+        <hr style="margin: 30px 0;">
+
+        <h3>Manual Steps (if buttons don't work):</h3>
+        <ol>
+            <li>Press <code>F12</code> to open DevTools</li>
+            <li>Go to <strong>Application</strong> tab</li>
+            <li>Click <strong>Service Workers</strong></li>
+            <li>Click <strong>Unregister</strong> on all workers</li>
+            <li>Click <strong>Storage</strong> → <strong>Clear site data</strong></li>
+            <li>Close DevTools</li>
+            <li>Press <code>Ctrl+Shift+R</code> to hard refresh</li>
+        </ol>
+    </div>
+
+    <script>
+        function showStatus(message, type = 'info') {
+            const status = document.getElementById('status');
+            status.textContent = message;
+            status.className = `status ${type}`;
+            status.style.display = 'block';
+        }
+
+        async function clearAllCaches() {
+            try {
+                showStatus('Clearing all caches...', 'info');
+                
+                // Get all cache names
+                const cacheNames = await caches.keys();
+                console.log('Found caches:', cacheNames);
+                
+                // Delete all caches
+                await Promise.all(
+                    cacheNames.map(cacheName => {
+                        console.log('Deleting cache:', cacheName);
+                        return caches.delete(cacheName);
+                    })
+                );
+                
+                // Clear localStorage
+                localStorage.clear();
+                
+                // Clear sessionStorage
+                sessionStorage.clear();
+                
+                showStatus(`✅ SUCCESS! Cleared ${cacheNames.length} caches + localStorage + sessionStorage`, 'success');
+            } catch (error) {
+                showStatus(`❌ ERROR: ${error.message}`, 'error');
+                console.error('Error clearing caches:', error);
+            }
+        }
+
+        async function unregisterSW() {
+            try {
+                showStatus('Unregistering Service Workers...', 'info');
+                
+                if ('serviceWorker' in navigator) {
+                    const registrations = await navigator.serviceWorker.getRegistrations();
+                    console.log('Found registrations:', registrations.length);
+                    
+                    await Promise.all(
+                        registrations.map(registration => {
+                            console.log('Unregistering:', registration);
+                            return registration.unregister();
+                        })
+                    );
+                    
+                    showStatus(`✅ SUCCESS! Unregistered ${registrations.length} Service Workers`, 'success');
+                } else {
+                    showStatus('⚠️ Service Workers not supported', 'error');
+                }
+            } catch (error) {
+                showStatus(`❌ ERROR: ${error.message}`, 'error');
+                console.error('Error unregistering SW:', error);
+            }
+        }
+
+        async function forceCompleteRefresh() {
+            try {
+                showStatus('🔥 NUCLEAR OPTION - Clearing everything...', 'info');
+                
+                // Step 1: Clear all caches
+                const cacheNames = await caches.keys();
+                await Promise.all(cacheNames.map(name => caches.delete(name)));
+                
+                // Step 2: Unregister all service workers
+                if ('serviceWorker' in navigator) {
+                    const registrations = await navigator.serviceWorker.getRegistrations();
+                    await Promise.all(registrations.map(reg => reg.unregister()));
+                }
+                
+                // Step 3: Clear storage
+                localStorage.clear();
+                sessionStorage.clear();
+                
+                // Step 4: Clear IndexedDB
+                if (window.indexedDB) {
+                    const dbs = await window.indexedDB.databases();
+                    dbs.forEach(db => {
+                        window.indexedDB.deleteDatabase(db.name);
+                    });
+                }
+                
+                showStatus('✅ COMPLETE! Reloading in 2 seconds...', 'success');
+                
+                // Step 5: Hard reload
+                setTimeout(() => {
+                    window.location.reload(true);
+                }, 2000);
+                
+            } catch (error) {
+                showStatus(`❌ ERROR: ${error.message}`, 'error');
+                console.error('Error:', error);
+            }
+        }
+
+        // Show current cache info on load
+        window.addEventListener('load', async () => {
+            try {
+                const cacheNames = await caches.keys();
+                const registrations = await navigator.serviceWorker.getRegistrations();
+                console.log('Current caches:', cacheNames);
+                console.log('Current SW registrations:', registrations);
+            } catch (error) {
+                console.error('Error checking status:', error);
+            }
+        });
+    </script>
+</body>
+</html>

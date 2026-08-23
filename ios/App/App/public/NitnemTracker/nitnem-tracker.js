@@ -9589,7 +9589,11 @@ const ReportsManager = {
     downloadBackupFile(data, filename) {
         try {
             const jsonStr = typeof data === 'string' ? data : JSON.stringify(data, null, 2);
-            const isNativeApp = !!(window.Capacitor && window.Capacitor.isNative);
+            const isNativeApp = !!(window.Capacitor && (
+                (typeof window.Capacitor.isNativePlatform === 'function' && window.Capacitor.isNativePlatform()) ||
+                (typeof window.Capacitor.getPlatform === 'function' && window.Capacitor.getPlatform() !== 'web') ||
+                window.Capacitor.isNative
+            ));
 
             // 1. Always copy JSON to clipboard as immediate safe backup
             if (navigator.clipboard && navigator.clipboard.writeText) {
