@@ -44,10 +44,6 @@
     s.textContent = `
       body {
         transition-property: color !important;
-        background-attachment: fixed;
-        background-size: cover;
-        background-position: center top;
-        background-repeat: no-repeat;
       }
     `;
     document.head.appendChild(s);
