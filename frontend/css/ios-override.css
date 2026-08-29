@@ -1011,7 +1011,7 @@ body {
 
 /* Improve emoji visibility in dark mode for Quick Access cards */
 [data-theme="dark"] .quick-card__icon .ios-emoji {
-  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.3)) !important;
+  filter: none !important;
   opacity: 1 !important;
 }
 
@@ -1407,7 +1407,7 @@ a,
 }
 
 [data-theme-mode="auto"] .practice-card__ring-icon .ios-emoji {
-  filter: drop-shadow(0 2px 8px var(--sky-card-shadow)) !important;
+  filter: none !important;
 }
 
 /* Quick Access Grid Overrides for Auto Mode */
@@ -1577,7 +1577,7 @@ a,
 }
 
 [data-theme-mode="auto"] .tab-item.active .tab-icon {
-  filter: drop-shadow(0 2px 8px var(--sky-card-shadow)) !important;
+  filter: none !important;
 }
 
 /* =========================================================================

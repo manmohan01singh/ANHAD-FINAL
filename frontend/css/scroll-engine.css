@@ -9,7 +9,12 @@
    Applying will-change to every card causes "layer explosion" — too many
    promoted layers exhaust mobile GPU VRAM (~50-100 MB on low-end Android).
    Cards receive will-change only during their animation-active phase. */
-.tab-bar,
+.tab-bar {
+    will-change: transform;
+    transform: translateX(-50%) translateZ(0);
+    backface-visibility: hidden;
+}
+
 .mini-player,
 .gmp,
 .nav-glass,

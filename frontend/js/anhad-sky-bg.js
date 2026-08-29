@@ -310,6 +310,7 @@
     // localStorage read (getSlot) on every tick of every non-Home page, which
     // is pure waste: nothing here has any effect outside Home.
     if (document.hidden) return;
+    if (document.body.classList.contains('scrolling') || document.documentElement.classList.contains('scrolling')) return;
     if (!document.documentElement.hasAttribute('data-anhad-home')) return;
 
     const slot = getSlot();

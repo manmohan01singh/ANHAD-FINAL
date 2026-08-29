@@ -188,7 +188,7 @@
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    transition: all 0.2s ease !important;
+    transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease !important;
     flex-shrink: 0 !important;
   }
   .desktop-sidebar__collapse-btn:hover {
@@ -218,7 +218,7 @@
     display: none !important;
     align-items: center !important;
     justify-content: center !important;
-    transition: all 0.25s var(--ease-spring) !important;
+    transition: transform 0.25s var(--ease-spring), box-shadow 0.25s var(--ease-spring), background 0.25s ease !important;
   }
   .desktop-sidebar__expand-btn:hover {
     transform: scale(1.08) translateY(-2px) !important;
@@ -251,7 +251,7 @@
     margin-right: auto !important;
     width: 100% !important;
     max-width: var(--desktop-content-max) !important;
-    transition: all 0.32s var(--ease-spring) !important;
+    transition: max-width 0.32s var(--ease-spring), width 0.32s var(--ease-spring), margin 0.32s var(--ease-spring) !important;
   }
 
   .desktop-sidebar__brand {
@@ -494,7 +494,7 @@
     color: var(--text-primary, #1C1C1E) !important;
     border: 1px solid rgba(212, 148, 58, 0.16) !important;
     text-decoration: none !important;
-    transition: all 0.2s ease !important;
+    transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease, border-color 0.2s ease !important;
     white-space: nowrap !important;
     box-sizing: border-box !important;
   }
@@ -522,7 +522,7 @@
     justify-content: center !important;
     border-radius: var(--desktop-radius-sm) !important;
     box-sizing: border-box !important;
-    transition: all 0.2s ease !important;
+    transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease !important;
   }
   .desktop-sidebar__theme-toggle:hover {
     background: rgba(212, 148, 58, 0.22) !important;
@@ -764,7 +764,7 @@
     align-items: center !important;
     justify-content: center !important;
     cursor: pointer !important;
-    transition: all 0.2s var(--ease-spring) !important;
+    transition: transform 0.2s var(--ease-spring), background 0.2s ease, border-color 0.2s ease !important;
   }
   html.dark-mode .home-header .header__btn,
   [data-theme="dark"] .home-header .header__btn {
@@ -1218,7 +1218,7 @@
     background: linear-gradient(145deg, #FFFDF9 0%, #FAF5EC 50%, #F5EFE3 100%) !important;
     border: 1.5px solid rgba(212, 148, 58, 0.18) !important;
     box-shadow: 0 10px 28px -4px rgba(212, 148, 58, 0.1), 0 3px 10px rgba(0, 0, 0, 0.03), inset 0 2px 4px rgba(255, 255, 255, 0.95), inset 0 -2px 6px rgba(212, 148, 58, 0.06) !important;
-    transition: all 0.28s var(--ease-spring) !important;
+    transition: transform 0.28s var(--ease-spring), box-shadow 0.28s var(--ease-spring), border-color 0.28s var(--ease-spring) !important;
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
@@ -1274,7 +1274,6 @@
     width: 72px !important;
     height: 72px !important;
     margin-bottom: 12px !important;
-    filter: drop-shadow(0 4px 10px rgba(212, 148, 58, 0.25)) !important;
   }
 
   .practice-card__title {
@@ -1308,7 +1307,7 @@
     background: linear-gradient(145deg, #FFFDF9 0%, #FAF5EC 50%, #F5EFE3 100%) !important;
     border: 1.5px solid rgba(212, 148, 58, 0.16) !important;
     box-shadow: 0 8px 22px -3px rgba(212, 148, 58, 0.08), 0 2px 6px rgba(0, 0, 0, 0.02), inset 0 2px 3px rgba(255, 255, 255, 0.9), inset 0 -1.5px 4px rgba(212, 148, 58, 0.05) !important;
-    transition: all 0.25s var(--ease-spring) !important;
+    transition: transform 0.25s var(--ease-spring), box-shadow 0.25s var(--ease-spring), border-color 0.25s var(--ease-spring) !important;
     display: flex !important;
     align-items: center !important;
     gap: 14px !important;
@@ -2205,15 +2204,15 @@
   }
 @media screen and (min-width: 1024px) {
   /* ─────────────────────────────────────────────────────────────────────────────
-     15. CHALIYA SAHIB 2026 MODAL — DESKTOP COMPACT & CENTERED LUXURY
+     15. CHALIYA SAHIB 2026 MODAL — DESKTOP COMPACT & CENTERED LUXURY GLASS
      ───────────────────────────────────────────────────────────────────────────── */
   #anhadComingSoonOverlay {
     position: fixed !important;
     inset: 0 !important;
     z-index: 10050 !important;
-    background: rgba(0, 0, 0, 0.65) !important;
-    backdrop-filter: blur(24px) saturate(190%) !important;
-    -webkit-backdrop-filter: blur(24px) saturate(190%) !important;
+    background: rgba(8, 6, 12, 0.58) !important;
+    backdrop-filter: blur(28px) saturate(190%) brightness(102%) !important;
+    -webkit-backdrop-filter: blur(28px) saturate(190%) brightness(102%) !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
@@ -2227,23 +2226,24 @@
   }
 
   #anhadComingSoonCard {
-    max-width: 480px !important;
+    max-width: 440px !important;
     width: 92% !important;
     margin: auto !important;
     border-radius: 28px !important;
     padding: 28px 24px 22px !important;
-    background: linear-gradient(150deg, #FFFFFF 0%, #FAF6EE 60%, #F5EDE0 100%) !important;
-    border: 1.5px solid rgba(212, 148, 58, 0.35) !important;
-    box-shadow: 0 28px 80px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(212, 148, 58, 0.18), inset 0 2px 4px rgba(255, 255, 255, 0.95) !important;
+    background: #FFFFFF !important;
+    border: 1px solid rgba(0, 0, 0, 0.08) !important;
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.14), 0 4px 16px rgba(0, 0, 0, 0.04) !important;
     position: relative !important;
     text-align: center !important;
     box-sizing: border-box !important;
   }
   html.dark-mode #anhadComingSoonCard,
   [data-theme="dark"] #anhadComingSoonCard {
-    background: linear-gradient(150deg, #221B14 0%, #181419 60%, #110E13 100%) !important;
-    border-color: rgba(247, 198, 52, 0.35) !important;
-    box-shadow: 0 32px 90px rgba(0, 0, 0, 0.8), 0 10px 30px rgba(212, 148, 58, 0.15), inset 0 1.5px 2px rgba(247, 198, 52, 0.3) !important;
+    background: #1C1C1E !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.7), 0 4px 20px rgba(0, 0, 0, 0.5) !important;
+    color: #FFFFFF !important;
   }
 
   /* ─────────────────────────────────────────────────────────────────────────────
@@ -2348,7 +2348,7 @@
     border: 1px solid rgba(212, 148, 58, 0.2) !important;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03) !important;
     color: var(--text-primary) !important;
-    transition: all 0.2s ease !important;
+    transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease !important;
   }
   .source-chip:hover {
     transform: translateY(-2px) !important;

@@ -29,7 +29,7 @@ const axios = require('axios');
 const cron = require('node-cron');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3004;
 app.disable('x-powered-by');
 
 // ═══════════════════════════════════════════════════════════════════
