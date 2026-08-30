@@ -596,9 +596,23 @@
       try {
         const nameFilter = localStorage.getItem('gurpurab_name_filter') || 'guru-sahib';
         const dataUrl = (window.ANHAD_ROOT || '') + 'data/gurpurab-events-2026.json';
-        const response = await fetch(dataUrl);
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        const data = await response.json();
+        let data = null;
+        try {
+          const response = await fetch(dataUrl);
+          if (response.ok) data = await response.json();
+        } catch (e) {
+          console.warn('[DataManager] Fetch failed, using fallback calendar data:', e);
+        }
+        if (!data || !data.years) {
+          data = {
+            years: {
+              '2026': [
+                { id: 'first-parkash-sggs', name_en: 'First Parkash Sri Guru Granth Sahib Ji', name_pa: 'ਪਹਿਲਾ ਪ੍ਰਕਾਸ਼ ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ', gregorian_date: '2026-09-12', type: 'parkash' },
+                { id: 'gurpurab-guru-nanak', name_en: 'Prakash Purab Sri Guru Nanak Dev Ji', name_pa: 'ਪ੍ਰਕਾਸ਼ ਪੁਰਬ ਸ੍ਰੀ ਗੁਰੂ ਨਾਨਕ ਦੇਵ ਜੀ', gregorian_date: '2026-11-24', type: 'gurpurab' }
+              ]
+            }
+          };
+        }
         const guruNames = [
           'guru nanak', 'ਗੁਰੂ ਨਾਨਕ', 
           'guru angad', 'ਗੁਰੂ ਅੰਗਦ', 

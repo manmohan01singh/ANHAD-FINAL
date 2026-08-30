@@ -3010,13 +3010,14 @@
     }
   
 
-                        /* ─── SACRED DEVOTIONAL HERO ARTWORK (CINEMATIC EXPANDED EDITION) ─── */
+                            /* ─── SACRED DEVOTIONAL HERO ARTWORK (FULL WIDTH CINEMATIC) ─── */
     .greeting {
-      margin-top: 4px !important;
-      margin-bottom: 22px !important;
-      padding: 0 4px !important;
+      margin-top: -2px !important;
+      margin-bottom: 20px !important;
+      padding: 0 !important;
       text-align: center !important;
       position: relative !important;
+      width: 100% !important;
     }
     .greeting__portrait-slider,
     .greeting__guru-portrait,
@@ -3037,15 +3038,15 @@
     .greeting__hero-banner {
       position: relative;
       width: 100%;
-      max-width: 860px;
+      max-width: 1000px;
       margin: 0 auto;
       display: flex;
       justify-content: center;
       align-items: center;
       overflow: hidden;
-      /* 4-sided ultra-soft natural gradient dissolve into cream/ivory background */
-      mask-image: radial-gradient(ellipse 95% 90% at 50% 50%, #000000 70%, rgba(0,0,0,0.75) 86%, transparent 100%);
-      -webkit-mask-image: radial-gradient(ellipse 95% 90% at 50% 50%, #000000 70%, rgba(0,0,0,0.75) 86%, transparent 100%);
+      /* 4-sided natural soft edge dissolve */
+      mask-image: radial-gradient(ellipse 98% 94% at 50% 50%, #000000 84%, rgba(0,0,0,0.85) 94%, transparent 100%);
+      -webkit-mask-image: radial-gradient(ellipse 98% 94% at 50% 50%, #000000 84%, rgba(0,0,0,0.85) 94%, transparent 100%);
     }
     .greeting__hero-artwork {
       width: 100%;
@@ -3061,12 +3062,38 @@
     html.dark-mode .greeting__hero-banner,
     [data-theme="dark"] .greeting__hero-banner,
     [data-time-of-day="night"] .greeting__hero-banner {
-      mask-image: radial-gradient(ellipse 94% 88% at 50% 50%, #000000 64%, rgba(0,0,0,0.6) 84%, transparent 100%);
-      -webkit-mask-image: radial-gradient(ellipse 94% 88% at 50% 50%, #000000 64%, rgba(0,0,0,0.6) 84%, transparent 100%);
+      mask-image: radial-gradient(ellipse 96% 92% at 50% 50%, #000000 80%, rgba(0,0,0,0.7) 92%, transparent 100%);
+      -webkit-mask-image: radial-gradient(ellipse 96% 92% at 50% 50%, #000000 80%, rgba(0,0,0,0.7) 92%, transparent 100%);
       filter: drop-shadow(0 8px 36px rgba(212, 148, 58, 0.22));
     }
     
-    /* Event Card Guru Image Guarantee */
+    /* Event Card Guru Image Guarantee & Dark Contrast */
+    .event-card {
+      opacity: 1 !important;
+      visibility: visible !important;
+    }
+    html.dark-mode .event-card,
+    [data-theme="dark"] .event-card {
+      background: rgba(28, 28, 30, 0.95) !important;
+      border: 1px solid rgba(255, 255, 255, 0.08) !important;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
+    }
+    html.dark-mode .event-card__title,
+    [data-theme="dark"] .event-card__title {
+      color: #FFFFFF !important;
+    }
+    html.dark-mode .event-card__date,
+    [data-theme="dark"] .event-card__date {
+      color: #D4943A !important;
+    }
+    html.dark-mode .event-card__countdown,
+    [data-theme="dark"] .event-card__countdown {
+      color: #FFFFFF !important;
+    }
+    html.dark-mode .event-card__countdown-label,
+    [data-theme="dark"] .event-card__countdown-label {
+      color: #A1A1A6 !important;
+    }
     .event-card__guru-img-wrapper {
       position: relative;
       padding: 4px;
@@ -3099,9 +3126,9 @@
     
     @media (max-width: 480px) {
       .greeting {
-        margin-top: 2px !important;
-        margin-bottom: 16px !important;
-        padding: 0 2px !important;
+        margin-top: -4px !important;
+        margin-bottom: 14px !important;
+        padding: 0 !important;
       }
       .greeting__hero-banner {
         max-width: 100% !important;
@@ -3615,6 +3642,9 @@
     <!-- ════════════════════════════════════════════════════════════════════
          UPCOMING GURPURAB — Contextual Event Card
     ════════════════════════════════════════════════════════════════════ -->
+        <!-- ════════════════════════════════════════════════════════════════════
+         UPCOMING GURPURAB — Contextual Event Card
+    ════════════════════════════════════════════════════════════════════ -->
     <article class="event-card" id="eventCard" aria-label="Upcoming Gurpurab" data-href="Calendar/GurpurabCalendar-ios.html">
       <!-- Celebration/Remembrance Badges (dynamic) -->
       <div class="gurpurab-celebration-badge" id="gurpurabCelebrationBadge" style="display:none;"></div>
@@ -3623,12 +3653,12 @@
       <div class="event-card__main">
         <div class="event-card__info">
           <div class="event-card__eyebrow" id="eventEyebrow">✦ UPCOMING GURPURAB</div>
-          <div class="event-card__title skeleton" id="eventTitle" style="min-height: 24px;"></div>
+          <div class="event-card__title" id="eventTitle">First Parkash Sri Guru Granth Sahib Ji</div>
           <div class="event-card__meta-row">
-            <div class="event-card__date skeleton" id="eventDate" style="min-height: 18px;"></div>
+            <div class="event-card__date" id="eventDate">Sep 12</div>
             <div class="event-card__countdown-wrapper" id="eventCountdownWrapper">
-              <div class="event-card__countdown skeleton" id="eventCountdown" style="min-height: 20px;"></div>
-              <div class="event-card__countdown-label skeleton" id="eventCountdownLabel" style="min-height: 14px;"></div>
+              <div class="event-card__countdown" id="eventCountdown">13</div>
+              <div class="event-card__countdown-label" id="eventCountdownLabel">days left</div>
             </div>
           </div>
           <button class="event-card__learn-more" onclick="event.stopPropagation(); if (window.navigateTo) window.navigateTo('Calendar/GurpurabCalendar-ios.html'); else window.location.href='Calendar/GurpurabCalendar-ios.html'">
@@ -3637,11 +3667,11 @@
           </button>
         </div>
         <div class="event-card__guru-img-wrapper" id="eventGuruImgWrapper">
-          <img decoding="async" class="event-card__guru-img loaded" id="eventGuruImg" src="guruimages/gurugranthsahebji.jpeg" alt="Sri Guru Granth Sahib Ji" width="110" height="110" style="width: 100%; height: 100%; object-fit: cover; object-position: center 25%; border-radius: 50%; opacity: 1 !important;">
+          <img decoding="async" class="event-card__guru-img loaded" id="eventGuruImg" src="guruimages/gurugranthsahebji.jpeg" alt="Sri Guru Granth Sahib Ji" width="130" height="130" style="width: 100%; height: 100%; object-fit: cover; object-position: center 25%; border-radius: 50%; opacity: 1 !important; display: block;">
         </div>
       </div>
       <div class="event-card__days-badge" id="eventDaysBadge" style="display:none;">
-        <span id="eventCountdownBadgeValue"></span> <span id="eventCountdownBadgeLabel"></span>
+        <span id="eventCountdownBadgeValue">13</span> <span id="eventCountdownBadgeLabel">days left</span>
       </div>
     </article>
 
