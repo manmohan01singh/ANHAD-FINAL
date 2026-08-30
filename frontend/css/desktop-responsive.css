@@ -1281,10 +1281,8 @@
   .practice-card {
     padding: 26px 22px !important;
     border-radius: 24px !important;
-    background: linear-gradient(145deg, #FFFDF9 0%, #FAF5EC 50%, #F5EFE3 100%) !important;
-    border: 1.5px solid rgba(212, 148, 58, 0.18) !important;
-    box-shadow: 0 10px 28px -4px rgba(212, 148, 58, 0.1), 0 3px 10px rgba(0, 0, 0, 0.03), inset 0 2px 4px rgba(255, 255, 255, 0.95), inset 0 -2px 6px rgba(212, 148, 58, 0.06) !important;
-    transition: transform 0.28s var(--ease-spring), box-shadow 0.28s var(--ease-spring), border-color 0.28s var(--ease-spring) !important;
+    border: none !important;
+    transition: transform 0.28s var(--ease-spring), box-shadow 0.28s ease !important;
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
@@ -1297,43 +1295,53 @@
   }
 
   .practice-card--nitnem {
-    background: linear-gradient(145deg, #FFFDF8 0%, #FAF2E4 50%, #F5E8D2 100%) !important;
-    border-color: rgba(212, 148, 58, 0.24) !important;
-    box-shadow: 0 10px 28px -4px rgba(212, 148, 58, 0.14), 0 3px 10px rgba(0, 0, 0, 0.03), inset 0 2px 4px rgba(255, 255, 255, 0.95), inset 0 -2px 6px rgba(212, 148, 58, 0.08) !important;
+    background: linear-gradient(145deg, #FFFDF8 0%, #FFF3DC 45%, #FDE4BD 100%) !important;
+    border: none !important;
+    box-shadow: 0 10px 28px -4px rgba(212, 148, 58, 0.22), 0 3px 10px rgba(0, 0, 0, 0.02), inset 2.5px 2.5px 6px rgba(255, 255, 255, 1), inset -2.5px -2.5px 6px rgba(212, 148, 58, 0.12) !important;
   }
 
   .practice-card--sehaj {
-    background: linear-gradient(145deg, #FCFAFF 0%, #F4EEFF 50%, #EAE0FF 100%) !important;
-    border-color: rgba(88, 86, 214, 0.22) !important;
-    box-shadow: 0 10px 28px -4px rgba(88, 86, 214, 0.12), 0 3px 10px rgba(0, 0, 0, 0.03), inset 0 2px 4px rgba(255, 255, 255, 0.95), inset 0 -2px 6px rgba(88, 86, 214, 0.08) !important;
+    background: linear-gradient(145deg, #FDFBFF 0%, #F4EDFF 45%, #E8D8FF 100%) !important;
+    border: none !important;
+    box-shadow: 0 10px 28px -4px rgba(124, 58, 237, 0.20), 0 3px 10px rgba(0, 0, 0, 0.02), inset 2.5px 2.5px 6px rgba(255, 255, 255, 1), inset -2.5px -2.5px 6px rgba(124, 58, 237, 0.10) !important;
   }
 
   .practice-card--hukam {
-    background: linear-gradient(145deg, #FFFDF9 0%, #FDF1EA 50%, #FCE3D6 100%) !important;
-    border-color: rgba(255, 110, 74, 0.22) !important;
-    box-shadow: 0 10px 28px -4px rgba(255, 110, 74, 0.12), 0 3px 10px rgba(0, 0, 0, 0.03), inset 0 2px 4px rgba(255, 255, 255, 0.95), inset 0 -2px 6px rgba(255, 110, 74, 0.08) !important;
+    background: linear-gradient(145deg, #FFFDFB 0%, #FFF0EB 45%, #FEDCD0 100%) !important;
+    border: none !important;
+    box-shadow: 0 10px 28px -4px rgba(225, 29, 72, 0.20), 0 3px 10px rgba(0, 0, 0, 0.02), inset 2.5px 2.5px 6px rgba(255, 255, 255, 1), inset -2.5px -2.5px 6px rgba(225, 29, 72, 0.10) !important;
   }
 
   .practice-card:hover {
     transform: translateY(-4px) scale(1.015) !important;
-    box-shadow: 0 18px 40px -6px rgba(212, 148, 58, 0.22), 0 6px 16px rgba(0, 0, 0, 0.04), inset 0 2px 6px rgba(255, 255, 255, 1), inset 0 -3px 8px rgba(212, 148, 58, 0.1) !important;
-    border-color: rgba(212, 148, 58, 0.42) !important;
   }
   .practice-card:active {
     transform: translateY(0) scale(0.98) !important;
     box-shadow: 0 4px 14px rgba(212, 148, 58, 0.12), inset 0 2px 6px rgba(0, 0, 0, 0.08) !important;
   }
 
-  html.dark-mode .practice-card,
-  [data-theme="dark"] .practice-card {
-    background: linear-gradient(145deg, #1D1A1F 0%, #171419 50%, #121014 100%) !important;
-    border: 1.5px solid rgba(212, 148, 58, 0.2) !important;
-    box-shadow: 0 12px 34px rgba(0, 0, 0, 0.55), 0 2px 8px rgba(0, 0, 0, 0.4), inset 0 1.5px 3px rgba(255, 255, 255, 0.08), inset 0 -2px 6px rgba(0, 0, 0, 0.7) !important;
+  html.dark-mode .practice-card--nitnem,
+  [data-theme="dark"] .practice-card--nitnem,
+  [data-time-of-day="night"] .practice-card--nitnem {
+    background: linear-gradient(145deg, #241D12 0%, #1A140A 50%, #100C06 100%) !important;
+    border: none !important;
+    box-shadow: 0 14px 36px rgba(0, 0, 0, 0.7), 0 0 20px rgba(212, 148, 58, 0.14), inset 2px 2px 5px rgba(255, 255, 255, 0.08), inset -2px -2px 6px rgba(0, 0, 0, 0.8) !important;
   }
-  html.dark-mode .practice-card:hover,
-  [data-theme="dark"] .practice-card:hover {
-    box-shadow: 0 20px 48px rgba(0, 0, 0, 0.75), 0 0 24px rgba(212, 148, 58, 0.22), inset 0 2px 4px rgba(255, 255, 255, 0.12), inset 0 -3px 8px rgba(0, 0, 0, 0.85) !important;
-    border-color: rgba(212, 148, 58, 0.45) !important;
+
+  html.dark-mode .practice-card--sehaj,
+  [data-theme="dark"] .practice-card--sehaj,
+  [data-time-of-day="night"] .practice-card--sehaj {
+    background: linear-gradient(145deg, #1E1528 0%, #150E20 50%, #0E0815 100%) !important;
+    border: none !important;
+    box-shadow: 0 14px 36px rgba(0, 0, 0, 0.7), 0 0 20px rgba(139, 92, 246, 0.14), inset 2px 2px 5px rgba(255, 255, 255, 0.08), inset -2px -2px 6px rgba(0, 0, 0, 0.8) !important;
+  }
+
+  html.dark-mode .practice-card--hukam,
+  [data-theme="dark"] .practice-card--hukam,
+  [data-time-of-day="night"] .practice-card--hukam {
+    background: linear-gradient(145deg, #241417 0%, #1A0B0E 50%, #110608 100%) !important;
+    border: none !important;
+    box-shadow: 0 14px 36px rgba(0, 0, 0, 0.7), 0 0 20px rgba(244, 63, 94, 0.14), inset 2px 2px 5px rgba(255, 255, 255, 0.08), inset -2px -2px 6px rgba(0, 0, 0, 0.8) !important;
   }
 
   .practice-card__ring {
