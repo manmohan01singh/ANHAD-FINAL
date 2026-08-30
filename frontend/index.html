@@ -4868,19 +4868,24 @@
     /* ════════════════════════════════════════════════════════════════
        4. GURPURAB CALENDAR CARD (EVENT CARD) — ENLARGED GURU AVATAR & UNIFIED PILLS
        ════════════════════════════════════════════════════════════════ */
+    /* ════════════════════════════════════════════════════════════════
+       4. GURPURAB CALENDAR CARD (EVENT CARD) — ENLARGED & BALANCED
+       ════════════════════════════════════════════════════════════════ */
     html body .event-card,
     html body .event-card.event-today,
     html[data-theme-mode] body .event-card {
-      padding: 14px 18px !important;
-      border-radius: 24px !important;
-      border: 1px solid rgba(212, 168, 58, 0.18) !important;
+      padding: 16px 20px !important;
+      min-height: 124px !important;
+      border-radius: 26px !important;
+      border: 1px solid rgba(212, 168, 58, 0.22) !important;
       background: linear-gradient(135deg, #FFFFFF 0%, #FFFDF8 45%, #FFF2D6 100%) !important;
       box-shadow:
+        0 0 20px rgba(212, 168, 58, 0.18),
         5px 8px 20px rgba(212, 168, 58, 0.14),
         -4px -4px 10px rgba(255, 255, 255, 1),
         inset 2px 2px 4px rgba(255, 255, 255, 0.9),
         inset -1.5px -1.5px 4px rgba(212, 168, 58, 0.08) !important;
-      margin-bottom: 18px !important;
+      margin-bottom: 22px !important;
       position: relative !important;
       overflow: hidden !important;
     }
@@ -4888,7 +4893,7 @@
       display: flex !important;
       align-items: center !important;
       justify-content: space-between !important;
-      gap: 14px !important;
+      gap: 16px !important;
     }
     html body .event-card__info {
       flex: 1 !important;
@@ -4900,18 +4905,18 @@
       letter-spacing: 0.8px !important;
       text-transform: uppercase !important;
       color: #C68A2C !important;
-      margin-bottom: 2px !important;
+      margin-bottom: 3px !important;
     }
     html body .event-card__title {
-      font-size: 1.02rem !important;
+      font-size: 1.05rem !important;
       font-weight: 700 !important;
       line-height: 1.25 !important;
       letter-spacing: -0.1px !important;
       color: #1C1C1E !important;
-      margin: 2px 0 8px 0 !important;
+      margin: 2px 0 10px 0 !important;
     }
 
-    /* UNIFIED BOTTOM ROW PILLS & BUTTONS (SAME HEIGHT, MATCHING PROPORTIONS) */
+    /* UNIFIED BOTTOM ROW PILLS & BUTTONS (BALANCED COMPACT SIZES) */
     html body .event-card__bottom-row {
       display: flex !important;
       align-items: center !important;
@@ -4919,11 +4924,11 @@
       flex-wrap: wrap !important;
     }
     html body .event-card__date-pill {
-      height: 26px !important;
-      padding: 0 10px !important;
-      font-size: 0.74rem !important;
+      height: 28px !important;
+      padding: 0 12px !important;
+      font-size: 0.76rem !important;
       font-weight: 700 !important;
-      border-radius: 9px !important;
+      border-radius: 12px !important;
       background: rgba(212, 148, 58, 0.12) !important;
       color: #9E6B18 !important;
       display: inline-flex !important;
@@ -4933,11 +4938,11 @@
       line-height: 1 !important;
     }
     html body .event-card__badge-pill {
-      height: 26px !important;
-      padding: 0 10px !important;
-      font-size: 0.74rem !important;
+      height: 28px !important;
+      padding: 0 12px !important;
+      font-size: 0.76rem !important;
       font-weight: 700 !important;
-      border-radius: 9px !important;
+      border-radius: 12px !important;
       background: linear-gradient(135deg, #FF6B6B, #FF8E53) !important;
       color: #FFFFFF !important;
       box-shadow: 0 2px 6px rgba(255, 107, 107, 0.3) !important;
@@ -4948,13 +4953,13 @@
       line-height: 1 !important;
     }
     html body .event-card__learn-btn {
-      height: 26px !important;
-      padding: 0 10px !important;
-      font-size: 0.74rem !important;
+      height: 28px !important;
+      padding: 0 12px !important;
+      font-size: 0.76rem !important;
       font-weight: 700 !important;
       color: #AF7D14 !important;
       background: rgba(212, 148, 58, 0.12) !important;
-      border-radius: 9px !important;
+      border-radius: 12px !important;
       display: inline-flex !important;
       align-items: center !important;
       justify-content: center !important;
@@ -4966,15 +4971,15 @@
       white-space: nowrap !important;
     }
 
-    /* ENLARGED GURU AVATAR (74px x 74px) */
+    /* ENLARGED GURU AVATAR (88px x 88px) WITH GOLDEN GLOW */
     html body .event-card__guru-img-wrapper {
-      width: 74px !important;
-      height: 74px !important;
-      min-width: 74px !important;
-      min-height: 74px !important;
+      width: 88px !important;
+      height: 88px !important;
+      min-width: 88px !important;
+      min-height: 88px !important;
       border-radius: 50% !important;
-      border: 2.5px solid #D4943A !important;
-      box-shadow: 0 4px 14px rgba(212, 148, 58, 0.25) !important;
+      border: 3px solid #D4943A !important;
+      box-shadow: 0 0 16px rgba(212, 148, 58, 0.45), 0 4px 14px rgba(0, 0, 0, 0.15) !important;
       overflow: hidden !important;
       display: flex !important;
       align-items: center !important;
@@ -4993,8 +4998,9 @@
     html[data-theme="dark"] body .event-card,
     html[data-time-of-day="night"] body .event-card {
       background: linear-gradient(150deg, #1C1A16 0%, #12110E 100%) !important;
-      border: 1px solid rgba(212, 148, 58, 0.20) !important;
+      border: 1.5px solid rgba(212, 148, 58, 0.35) !important;
       box-shadow:
+        0 0 18px rgba(212, 148, 58, 0.25),
         6px 10px 24px rgba(0, 0, 0, 0.75),
         -2px -2px 8px rgba(255, 255, 255, 0.03),
         inset 2px 2px 6px rgba(212, 148, 58, 0.15),
@@ -5019,7 +5025,7 @@
     }
 
     /* ════════════════════════════════════════════════════════════════
-       5. PRACTICE CARDS — DISTINCT PASTEL CUSHION CLAY & CIRCULAR ICONS
+       5. PRACTICE CARDS — DYNAMIC GLOWING BORDERS & SUPREME CLAY
        ════════════════════════════════════════════════════════════════ */
     html body .practice-card {
       padding: 14px 8px 12px !important;
@@ -5028,57 +5034,127 @@
       flex-direction: column !important;
       align-items: center !important;
       text-align: center !important;
+      transition: transform 0.25s ease, box-shadow 0.25s ease !important;
     }
 
-    /* Light / Daytime Mode Practice Cards */
-    html:not(.dark-mode):not([data-theme="dark"]):not([data-time-of-day="night"]) body .practice-card--nitnem {
+    /* Dynamic Morning Mode (Golden Dawn Glow) */
+    html[data-time-of-day="morning"]:not(.dark-mode):not([data-theme="dark"]) body .practice-card {
+      background: linear-gradient(150deg, #FFFFFF 0%, #FFF8EC 45%, #FDE9CF 100%) !important;
+      border: 1.5px solid rgba(245, 180, 50, 0.8) !important;
+      box-shadow:
+        0 0 16px rgba(234, 150, 30, 0.35),
+        6px 8px 20px rgba(212, 148, 58, 0.16),
+        inset 2.5px 2.5px 5px rgba(255, 255, 255, 1),
+        inset -2.5px -2.5px 5px rgba(212, 148, 58, 0.10) !important;
+    }
+    html[data-time-of-day="morning"]:not(.dark-mode):not([data-theme="dark"]) body .practice-card__ring-fill {
+      stroke: #D4860A !important;
+    }
+    html[data-time-of-day="morning"]:not(.dark-mode):not([data-theme="dark"]) body .practice-card__ring-icon svg {
+      color: #D4860A !important;
+      filter: drop-shadow(0 0 6px rgba(212, 134, 10, 0.4)) !important;
+    }
+
+    /* Dynamic Day Mode (Radiant Azure Sky Glow) */
+    html[data-time-of-day="day"]:not(.dark-mode):not([data-theme="dark"]) body .practice-card {
+      background: linear-gradient(150deg, #FFFFFF 0%, #EEF6FF 45%, #DCEEFF 100%) !important;
+      border: 1.5px solid rgba(80, 160, 245, 0.8) !important;
+      box-shadow:
+        0 0 16px rgba(59, 130, 246, 0.35),
+        6px 8px 20px rgba(80, 145, 220, 0.18),
+        inset 2.5px 2.5px 5px rgba(255, 255, 255, 1),
+        inset -2.5px -2.5px 5px rgba(80, 145, 220, 0.10) !important;
+    }
+    html[data-time-of-day="day"]:not(.dark-mode):not([data-theme="dark"]) body .practice-card__ring-fill {
+      stroke: #2563EB !important;
+    }
+    html[data-time-of-day="day"]:not(.dark-mode):not([data-theme="dark"]) body .practice-card__ring-icon svg {
+      color: #2563EB !important;
+      filter: drop-shadow(0 0 6px rgba(37, 99, 235, 0.4)) !important;
+    }
+
+    /* Dynamic Evening Mode (Warm Sunset Amber-Coral Glow) */
+    html[data-time-of-day="evening"]:not(.dark-mode):not([data-theme="dark"]) body .practice-card {
+      background: linear-gradient(150deg, #FFFFFF 0%, #FFF1EB 45%, #FDE1D4 100%) !important;
+      border: 1.5px solid rgba(249, 115, 22, 0.8) !important;
+      box-shadow:
+        0 0 16px rgba(234, 88, 12, 0.35),
+        6px 8px 20px rgba(234, 88, 12, 0.16),
+        inset 2.5px 2.5px 5px rgba(255, 255, 255, 1),
+        inset -2.5px -2.5px 5px rgba(234, 88, 12, 0.10) !important;
+    }
+    html[data-time-of-day="evening"]:not(.dark-mode):not([data-theme="dark"]) body .practice-card__ring-fill {
+      stroke: #EA580C !important;
+    }
+    html[data-time-of-day="evening"]:not(.dark-mode):not([data-theme="dark"]) body .practice-card__ring-icon svg {
+      color: #EA580C !important;
+      filter: drop-shadow(0 0 6px rgba(234, 88, 12, 0.4)) !important;
+    }
+
+    /* Fallback / General Light Mode Practice Cards */
+    html:not(.dark-mode):not([data-theme="dark"]):not([data-time-of-day="night"]):not([data-time-of-day="morning"]):not([data-time-of-day="day"]):not([data-time-of-day="evening"]) body .practice-card--nitnem {
       background: linear-gradient(165deg, #FFFDFB 0%, #FFEFD8 50%, #FFE5C0 100%) !important;
-      border: 1px solid rgba(212,148,58,0.24) !important;
-      box-shadow:
-        6px 10px 20px rgba(212,148,58,0.16),
-        2px 4px 8px rgba(139,69,19,0.06),
-        inset 2px 2px 4px rgba(255,255,255,0.92),
-        inset -3px -3px 6px rgba(212,148,58,0.15) !important;
+      border: 1.5px solid rgba(212,148,58,0.6) !important;
+      box-shadow: 0 0 14px rgba(212,148,58,0.25), 6px 10px 20px rgba(212,148,58,0.16), inset 2px 2px 4px rgba(255,255,255,0.92) !important;
     }
-    html:not(.dark-mode):not([data-theme="dark"]):not([data-time-of-day="night"]) body .practice-card--sehaj {
+    html:not(.dark-mode):not([data-theme="dark"]):not([data-time-of-day="night"]):not([data-time-of-day="morning"]):not([data-time-of-day="day"]):not([data-time-of-day="evening"]) body .practice-card--sehaj {
       background: linear-gradient(165deg, #FBF9FF 0%, #F0EBFF 50%, #E4DCFF 100%) !important;
-      border: 1px solid rgba(88,86,214,0.24) !important;
-      box-shadow:
-        6px 10px 20px rgba(88,86,214,0.16),
-        2px 4px 8px rgba(45,0,135,0.06),
-        inset 2px 2px 4px rgba(255,255,255,0.92),
-        inset -3px -3px 6px rgba(88,86,214,0.15) !important;
+      border: 1.5px solid rgba(88,86,214,0.6) !important;
+      box-shadow: 0 0 14px rgba(88,86,214,0.25), 6px 10px 20px rgba(88,86,214,0.16), inset 2px 2px 4px rgba(255,255,255,0.92) !important;
     }
-    html:not(.dark-mode):not([data-theme="dark"]):not([data-time-of-day="night"]) body .practice-card--hukam {
+    html:not(.dark-mode):not([data-theme="dark"]):not([data-time-of-day="night"]):not([data-time-of-day="morning"]):not([data-time-of-day="day"]):not([data-time-of-day="evening"]) body .practice-card--hukam {
       background: linear-gradient(165deg, #FFFDFB 0%, #FFF0E8 50%, #FFE0CC 100%) !important;
-      border: 1px solid rgba(255,110,74,0.24) !important;
-      box-shadow:
-        6px 10px 20px rgba(255,110,74,0.16),
-        2px 4px 8px rgba(139,45,0,0.06),
-        inset 2px 2px 4px rgba(255,255,255,0.92),
-        inset -3px -3px 6px rgba(255,110,74,0.15) !important;
+      border: 1.5px solid rgba(255,110,74,0.6) !important;
+      box-shadow: 0 0 14px rgba(255,110,74,0.25), 6px 10px 20px rgba(255,110,74,0.16), inset 2px 2px 4px rgba(255,255,255,0.92) !important;
     }
 
-    /* Dark Mode & Dynamic Night Mode Practice Cards — Pure Deep Obsidian Clay */
+    /* Dark Mode & Dynamic Night Mode Practice Cards — Deep Obsidian with Glowing Borders */
     html.dark-mode body .practice-card,
-    html.dark-mode body .practice-card--nitnem,
-    html.dark-mode body .practice-card--sehaj,
-    html.dark-mode body .practice-card--hukam,
     html[data-theme="dark"] body .practice-card,
-    html[data-theme="dark"] body .practice-card--nitnem,
-    html[data-theme="dark"] body .practice-card--sehaj,
-    html[data-theme="dark"] body .practice-card--hukam,
     html[data-time-of-day="night"] body .practice-card,
-    html[data-time-of-day="night"] body .practice-card--nitnem,
-    html[data-time-of-day="night"] body .practice-card--sehaj,
-    html[data-time-of-day="night"] body .practice-card--hukam,
-    body.dark-mode .practice-card,
-    body.dark-mode .practice-card--nitnem,
-    body.dark-mode .practice-card--sehaj,
-    body.dark-mode .practice-card--hukam {
+    body.dark-mode .practice-card {
       background: linear-gradient(150deg, #1C1C20 0%, #121215 50%, #0B0B0D 100%) !important;
-      border: 1px solid rgba(255, 255, 255, 0.08) !important;
+      border: 1.5px solid rgba(255, 255, 255, 0.15) !important;
       box-shadow: 
+        6px 8px 22px rgba(0, 0, 0, 0.75),
+        -2px -2px 6px rgba(255, 255, 255, 0.03),
+        inset 2px 2px 4px rgba(255, 255, 255, 0.08),
+        inset -2px -2px 5px rgba(0, 0, 0, 0.65) !important;
+    }
+
+    html.dark-mode body .practice-card--nitnem,
+    html[data-theme="dark"] body .practice-card--nitnem,
+    html[data-time-of-day="night"] body .practice-card--nitnem,
+    body.dark-mode .practice-card--nitnem {
+      border: 1.5px solid rgba(212, 168, 75, 0.5) !important;
+      box-shadow:
+        0 0 16px rgba(212, 168, 75, 0.35),
+        6px 8px 22px rgba(0, 0, 0, 0.75),
+        -2px -2px 6px rgba(255, 255, 255, 0.03),
+        inset 2px 2px 4px rgba(255, 255, 255, 0.08),
+        inset -2px -2px 5px rgba(0, 0, 0, 0.65) !important;
+    }
+
+    html.dark-mode body .practice-card--sehaj,
+    html[data-theme="dark"] body .practice-card--sehaj,
+    html[data-time-of-day="night"] body .practice-card--sehaj,
+    body.dark-mode .practice-card--sehaj {
+      border: 1.5px solid rgba(168, 85, 247, 0.5) !important;
+      box-shadow:
+        0 0 16px rgba(168, 85, 247, 0.35),
+        6px 8px 22px rgba(0, 0, 0, 0.75),
+        -2px -2px 6px rgba(255, 255, 255, 0.03),
+        inset 2px 2px 4px rgba(255, 255, 255, 0.08),
+        inset -2px -2px 5px rgba(0, 0, 0, 0.65) !important;
+    }
+
+    html.dark-mode body .practice-card--hukam,
+    html[data-theme="dark"] body .practice-card--hukam,
+    html[data-time-of-day="night"] body .practice-card--hukam,
+    body.dark-mode .practice-card--hukam {
+      border: 1.5px solid rgba(249, 115, 22, 0.5) !important;
+      box-shadow:
+        0 0 16px rgba(249, 115, 22, 0.35),
         6px 8px 22px rgba(0, 0, 0, 0.75),
         -2px -2px 6px rgba(255, 255, 255, 0.03),
         inset 2px 2px 4px rgba(255, 255, 255, 0.08),

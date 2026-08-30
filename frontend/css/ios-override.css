@@ -2192,8 +2192,9 @@ body,
 /* ── Dark event-cards ── */
 [data-theme="dark"] .event-card,
 .dark-mode .event-card {
-  background: #1C1C1E !important;
-  border: none !important;
+  background: linear-gradient(150deg, #1C1A16 0%, #12110E 100%) !important;
+  border: 1.5px solid rgba(212, 148, 58, 0.35) !important;
+  box-shadow: 0 0 18px rgba(212, 148, 58, 0.25), 6px 10px 24px rgba(0, 0, 0, 0.75) !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
 }
