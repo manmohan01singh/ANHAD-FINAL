@@ -208,10 +208,8 @@ html.dark-mode .greeting__dark-carousel-container,
     padding: 0 !important;
     margin-top: -10px !important;
     margin-bottom: 0 !important;
-    position: relative !important;
-    left: -4px !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
+    position: static !important;
+    left: auto !important;
     transform: none !important;
 }
 

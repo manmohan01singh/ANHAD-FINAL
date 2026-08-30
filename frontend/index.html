@@ -476,6 +476,15 @@
         margin-right: calc(-50vw + 50%) !important;
         overflow: visible !important;
       }
+      /* In dark mode the carousel must NOT use full-bleed — it needs its own centered box */
+      html.dark-mode .greeting,
+      [data-theme="dark"] .greeting,
+      [data-time-of-day="night"] .greeting {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+      }
     }
     .greeting__hero-artwork {
       width: 120% !important;
@@ -4451,14 +4460,14 @@
       color: #94A3B8 !important;
     }
   </style>
-  <!-- ANHAD MASTER VISUAL OVERRIDES v10.75.0 -->
+  <!-- ANHAD MASTER VISUAL OVERRIDES v10.76.0 -->
   <style id="anhad-master-overrides">
     /* ════════════════════════════════════════════════════════════════
        1. GREETING SECTION & CLEAN SPACING BEFORE NITNEM BAR
        ════════════════════════════════════════════════════════════════ */
     html body .greeting {
-      margin-top: -8px !important;
-      margin-bottom: 24px !important;
+      margin-top: -18px !important;
+      margin-bottom: 20px !important;
       padding-bottom: 0px !important;
       position: relative !important;
       overflow: visible !important;
@@ -4481,15 +4490,15 @@
     }
 
     /* ════════════════════════════════════════════════════════════════
-       2. LIGHT MODE HERO ARTWORK — LARGE MAJESTIC SIZE & PERFECT CENTER
+       2. LIGHT MODE HERO ARTWORK — GRAND MAJESTIC SCALE & UPWARD EXPANSION
        ════════════════════════════════════════════════════════════════ */
     html body .greeting__hero-banner {
       display: flex !important;
       flex-direction: column !important;
-      width: calc(100% + 32px) !important;
+      width: calc(100% + 40px) !important;
       max-width: none !important;
-      margin-left: -16px !important;
-      margin-right: -16px !important;
+      margin-left: -20px !important;
+      margin-right: -20px !important;
       margin-top: 0 !important;
       margin-bottom: 0 !important;
       overflow: visible !important;
@@ -4512,12 +4521,12 @@
       width: 100% !important;
       max-width: 100% !important;
       height: auto !important;
-      aspect-ratio: 1906 / 710 !important;
+      aspect-ratio: 1906 / 608 !important;
       object-fit: contain !important;
       display: block !important;
       margin: 0 auto !important;
-      transform: translateX(8px) scale(1.12) !important;
-      transform-origin: center center !important;
+      transform: translateX(8px) scale(1.18) !important;
+      transform-origin: center top !important;
       image-rendering: -webkit-optimize-contrast !important;
       image-rendering: high-quality !important;
     }
@@ -4526,7 +4535,7 @@
     html body .progress-inline,
     html body #nitnemTrackerCard,
     html body .nitnem-progress {
-      margin-top: 24px !important;
+      margin-top: 20px !important;
       margin-bottom: 16px !important;
     }
 
@@ -4594,13 +4603,13 @@
       visibility: visible !important;
     }
 
-    /* Slides: Dead center — no optical shift */
+    /* Slides: Symmetrically centered with rightward optical shift */
     html body .greeting__slide {
       position: absolute !important;
       width: 120px !important;
       height: 120px !important;
       top: 50% !important;
-      left: 50% !important;
+      left: calc(50% + 14px) !important;
       margin-top: -60px !important;
       margin-left: -60px !important;
       display: flex !important;
@@ -5267,7 +5276,7 @@
         <div class="greeting__hero-banner" id="greetingHeroBanner" aria-label="Sacred Guru Darbar">
           <picture id="greetingHeroPicture">
             <source id="greetingHeroSource" srcset="guruimages/guru-greeting-hero.webp" type="image/webp">
-            <img class="greeting__hero-artwork" id="greetingHeroArtwork" src="guruimages/guru-greeting-hero.webp" alt="Sri Guru Granth Sahib Ji with Sri Guru Gobind Singh Ji and Sri Guru Nanak Dev Ji" width="1906" height="710" loading="eager" fetchpriority="high" decoding="async">
+            <img class="greeting__hero-artwork" id="greetingHeroArtwork" src="guruimages/guru-greeting-hero.webp" alt="Sri Guru Granth Sahib Ji with Sri Guru Gobind Singh Ji and Sri Guru Nanak Dev Ji" width="1906" height="608" loading="eager" fetchpriority="high" decoding="async">
           </picture>
         </div>
 
