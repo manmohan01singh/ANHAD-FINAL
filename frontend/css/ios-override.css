@@ -1812,15 +1812,17 @@ a,
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
 }
-/* Event Card — soft sky blue clay, no border */
-[data-theme-mode="auto"][data-time-of-day="day"] .event-card {
-  background: linear-gradient(140deg, #EFF8FF 0%, #DBEAFE 100%) !important;
+/* Event Card — warm cushion clay */
+[data-theme-mode="auto"][data-time-of-day="day"] .event-card,
+[data-theme-mode="auto"][data-time-of-day="morning"] .event-card,
+[data-theme-mode="auto"][data-time-of-day="evening"] .event-card {
+  background: linear-gradient(135deg, #FFFFFF 0%, #FFFDF8 45%, #FFF2D6 100%) !important;
   box-shadow:
-    8px 8px 20px rgba(59, 130, 246, 0.08),
-    -6px -6px 18px rgba(255, 255, 255, 0.95),
-    inset 3px 3px 8px rgba(255, 255, 255, 0.90),
-    inset -3px -3px 8px rgba(59, 130, 246, 0.05) !important;
-  border: none !important;
+    5px 8px 20px rgba(212, 168, 58, 0.14),
+    -4px -4px 10px rgba(255, 255, 255, 1),
+    inset 2px 2px 4px rgba(255, 255, 255, 0.90),
+    inset -1.5px -1.5px 4px rgba(212, 168, 58, 0.08) !important;
+  border: 1px solid rgba(212, 168, 58, 0.16) !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
 }
