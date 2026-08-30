@@ -2035,35 +2035,35 @@ a:active {
 
 html:not(.dark-mode):not([data-theme="dark"]):not([data-time-of-day="night"]) .practice-card--nitnem {
   background: linear-gradient(165deg, #FFFDFB 0%, #FFEFD8 50%, #FFE5C0 100%) !important;
-  border: 1px solid rgba(212, 148, 58, 0.22) !important;
-  border-radius: 26px !important;
+  border: none !important;
+  border-radius: 28px !important;
   box-shadow: 
-    6px 10px 20px rgba(212, 148, 58, 0.15),
-    2px 4px 8px rgba(139, 69, 19, 0.06),
-    inset 2px 2px 4px rgba(255, 255, 255, 0.9),
-    inset -3px -3px 6px rgba(212, 148, 58, 0.15) !important;
+    0 8px 22px rgba(212, 148, 58, 0.12),
+    -3px -3px 10px rgba(255, 255, 255, 0.95),
+    inset 2.5px 2.5px 6px rgba(255, 255, 255, 0.95),
+    inset -2.5px -2.5px 6px rgba(212, 148, 58, 0.08) !important;
 }
 
 html:not(.dark-mode):not([data-theme="dark"]):not([data-time-of-day="night"]) .practice-card--sehaj {
   background: linear-gradient(165deg, #FBF9FF 0%, #F0EBFF 50%, #E4DCFF 100%) !important;
-  border: 1px solid rgba(88, 86, 214, 0.22) !important;
-  border-radius: 26px !important;
+  border: none !important;
+  border-radius: 28px !important;
   box-shadow: 
-    6px 10px 20px rgba(88, 86, 214, 0.15),
-    2px 4px 8px rgba(45, 0, 135, 0.06),
-    inset 2px 2px 4px rgba(255, 255, 255, 0.9),
-    inset -3px -3px 6px rgba(88, 86, 214, 0.15) !important;
+    0 8px 22px rgba(88, 86, 214, 0.12),
+    -3px -3px 10px rgba(255, 255, 255, 0.95),
+    inset 2.5px 2.5px 6px rgba(255, 255, 255, 0.95),
+    inset -2.5px -2.5px 6px rgba(88, 86, 214, 0.08) !important;
 }
 
 html:not(.dark-mode):not([data-theme="dark"]):not([data-time-of-day="night"]) .practice-card--hukam {
   background: linear-gradient(165deg, #FFFDFB 0%, #FFF0E8 50%, #FFE0CC 100%) !important;
-  border: 1px solid rgba(255, 110, 74, 0.22) !important;
-  border-radius: 26px !important;
+  border: none !important;
+  border-radius: 28px !important;
   box-shadow: 
-    6px 10px 20px rgba(255, 110, 74, 0.15),
-    2px 4px 8px rgba(139, 45, 0, 0.06),
-    inset 2px 2px 4px rgba(255, 255, 255, 0.9),
-    inset -3px -3px 6px rgba(255, 110, 74, 0.15) !important;
+    0 8px 22px rgba(255, 110, 74, 0.12),
+    -3px -3px 10px rgba(255, 255, 255, 0.95),
+    inset 2.5px 2.5px 6px rgba(255, 255, 255, 0.95),
+    inset -2.5px -2.5px 6px rgba(255, 110, 74, 0.08) !important;
 }
 
 /* Dark Mode Practice Cards */
@@ -2079,13 +2079,13 @@ html.dark-mode .practice-card--hukam,
 [data-time-of-day="night"] .practice-card--nitnem,
 [data-time-of-day="night"] .practice-card--sehaj,
 [data-time-of-day="night"] .practice-card--hukam {
-  background: linear-gradient(150deg, #1C1C20 0%, #121215 50%, #0B0B0D 100%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  background: linear-gradient(150deg, #1D1D22 0%, #131317 50%, #0C0C0E 100%) !important;
+  border: none !important;
   box-shadow: 
-    6px 8px 22px rgba(0, 0, 0, 0.75),
-    -2px -2px 6px rgba(255, 255, 255, 0.03),
-    inset 2px 2px 4px rgba(255, 255, 255, 0.08),
-    inset -2px -2px 5px rgba(0, 0, 0, 0.65) !important;
+    0 8px 24px rgba(0, 0, 0, 0.7),
+    -2px -2px 6px rgba(255, 255, 255, 0.02),
+    inset 2px 2px 5px rgba(255, 255, 255, 0.07),
+    inset -2px -2px 5px rgba(0, 0, 0, 0.6) !important;
 }
 
 /* Subtle inner glow */

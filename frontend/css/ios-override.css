@@ -2516,7 +2516,7 @@ html {
    Specificity is html + two attributes + class = (0,3,1), one higher than the
    day rule it has to beat, and it is last in the file.
    ═══════════════════════════════════════════════════════════════════════════ */
-/* Dynamic Night Mode & Dark Mode Practice Cards — Supreme Deep Obsidian Clay */
+/* Dynamic Night Mode & Dark Mode Practice Cards — Cushion Soft Deep Obsidian Clay */
 html.dark-mode .practice-card,
 html[data-theme="dark"] .practice-card,
 html[data-time-of-day="night"] .practice-card,
@@ -2529,13 +2529,13 @@ html[data-theme="dark"] .practice-card--hukam,
 html[data-time-of-day="night"] .practice-card--nitnem,
 html[data-time-of-day="night"] .practice-card--sehaj,
 html[data-time-of-day="night"] .practice-card--hukam {
-  background: linear-gradient(150deg, #1C1C20 0%, #121215 50%, #0B0B0D 100%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  background: linear-gradient(150deg, #1D1D22 0%, #131317 50%, #0C0C0E 100%) !important;
+  border: none !important;
   box-shadow: 
-    6px 8px 22px rgba(0, 0, 0, 0.75),
-    -2px -2px 6px rgba(255, 255, 255, 0.03),
-    inset 2px 2px 4px rgba(255, 255, 255, 0.08),
-    inset -2px -2px 5px rgba(0, 0, 0, 0.65) !important;
+    0 8px 24px rgba(0, 0, 0, 0.7),
+    -2px -2px 6px rgba(255, 255, 255, 0.02),
+    inset 2px 2px 5px rgba(255, 255, 255, 0.07),
+    inset -2px -2px 5px rgba(0, 0, 0, 0.6) !important;
 }
 
 html.dark-mode .practice-card__title,

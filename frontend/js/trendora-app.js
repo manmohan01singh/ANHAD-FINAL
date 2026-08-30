@@ -267,12 +267,11 @@
       return tuks[randomIndex];
     },
 
-        update() {
+    update() {
       if (typeof window.syncGreetingHeroArtwork === 'function') {
         window.syncGreetingHeroArtwork();
       }
     }
-  };
   };
 
   // ═══════════════════════════════════════════════════════════════════════════
