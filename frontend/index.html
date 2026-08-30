@@ -2873,6 +2873,52 @@
 
   <!-- AUTHORITATIVE DESKTOP RESPONSIVE & SYMMETRY ENGINE (Last in <head> for priority) -->
   <link rel="stylesheet" href="css/desktop-responsive.css?v=26">
+
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       FORENSIC REMEDIATION: SVG Semantic Visibility & Layer Stability
+       ═══════════════════════════════════════════════════════════════════════ -->
+  <style id="anhad-forensic-remediation">
+    /* RC-2: Guarantee SVG chevrons and action icons inherit semantic currentColor */
+    .quick-card__chevron,
+    .sheet__option-arrow,
+    .event-card__learn-more svg {
+      fill: none !important;
+      stroke: currentColor !important;
+      color: var(--text-tertiary, #8E8E93);
+    }
+    html.dark-mode .quick-card__chevron,
+    html.dark-mode .sheet__option-arrow,
+    [data-theme="dark"] .quick-card__chevron,
+    [data-theme="dark"] .sheet__option-arrow,
+    [data-time-of-day="night"] .quick-card__chevron,
+    [data-time-of-day="night"] .sheet__option-arrow {
+      color: rgba(255, 255, 255, 0.5) !important;
+    }
+    /* RC-3: Progressive enhancement: Cards are visible by default without JS dependency */
+    .scroll-reveal,
+    .quick-card,
+    .practice-card,
+    .event-card,
+    .hero-card {
+      opacity: 1 !important;
+      visibility: visible !important;
+    }
+    /* RC-4: Stable header backdrop compositing */
+    .header.home-header {
+      isolation: isolate;
+    }
+    /* Responsive viewport overflow protection across all mobile sizes */
+    html, body, .app, main {
+      max-width: 100vw !important;
+      overflow-x: clip !important;
+      box-sizing: border-box !important;
+    }
+    .practice-grid, .quick-access-grid, .hero-carousel {
+      max-width: 100% !important;
+      box-sizing: border-box !important;
+    }
+  </style>
+
 </head>
 
 <body>

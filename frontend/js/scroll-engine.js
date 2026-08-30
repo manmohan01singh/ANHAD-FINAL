@@ -30,8 +30,8 @@
         });
     }, {
         root: null,
-        rootMargin: '0px 0px 40px 0px',
-        threshold: 0.05
+        rootMargin: '150px 0px 250px 0px',
+        threshold: 0.01
     });
 
     function scanAndObserveReveals() {

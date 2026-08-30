@@ -2375,14 +2375,26 @@ a:active {
   margin-top: 1px;
 }
 
-.quick-card__chevron {
+.quick-card__chevron,
+.sheet__option-arrow {
   width: 18px;
   height: 18px;
-  color: var(--text-quaternary);
+  fill: none !important;
+  stroke: currentColor !important;
+  color: var(--text-tertiary, #8E8E93) !important;
   flex-shrink: 0;
   transition: transform var(--duration-fast) var(--ease-spring);
   position: relative;
   z-index: 1;
+  pointer-events: none;
+}
+html.dark-mode .quick-card__chevron,
+html.dark-mode .sheet__option-arrow,
+[data-theme="dark"] .quick-card__chevron,
+[data-theme="dark"] .sheet__option-arrow,
+[data-time-of-day="night"] .quick-card__chevron,
+[data-time-of-day="night"] .sheet__option-arrow {
+  color: rgba(255, 255, 255, 0.45) !important;
 }
 
 .quick-card:active .quick-card__chevron {
