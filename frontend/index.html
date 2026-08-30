@@ -3010,35 +3010,41 @@
     }
   
 
-            /* ─── SACRED DEVOTIONAL HERO ARTWORK INTEGRATION (FINAL POLISH) ─── */
+                /* ─── SACRED DEVOTIONAL HERO ARTWORK (PERFECT HARMONIZATION) ─── */
     .greeting {
-      margin-top: 6px !important;
-      margin-bottom: 20px !important;
+      margin-top: 8px !important;
+      margin-bottom: 24px !important;
       padding: 0 12px !important;
       text-align: center !important;
       position: relative !important;
     }
     .greeting__portrait-slider,
     .greeting__guru-portrait,
-    .greeting__slide {
+    .greeting__slide,
+    #guruSliderTrack,
+    #guruSlider {
       display: none !important;
       visibility: hidden !important;
       height: 0 !important;
+      width: 0 !important;
       margin: 0 !important;
       padding: 0 !important;
+      overflow: hidden !important;
+      position: absolute !important;
+      pointer-events: none !important;
     }
     .greeting__hero-banner {
       position: relative;
       width: 100%;
-      max-width: 680px;
-      margin: 0 auto 16px;
+      max-width: 720px;
+      margin: 0 auto 18px;
       display: flex;
       justify-content: center;
       align-items: center;
       overflow: hidden;
       /* 4-sided ultra-soft natural gradient dissolve into cream/ivory background */
-      mask-image: radial-gradient(ellipse 90% 86% at 50% 50%, #000000 58%, rgba(0,0,0,0.7) 76%, transparent 100%);
-      -webkit-mask-image: radial-gradient(ellipse 90% 86% at 50% 50%, #000000 58%, rgba(0,0,0,0.7) 76%, transparent 100%);
+      mask-image: radial-gradient(ellipse 92% 88% at 50% 50%, #000000 62%, rgba(0,0,0,0.7) 78%, transparent 100%);
+      -webkit-mask-image: radial-gradient(ellipse 92% 88% at 50% 50%, #000000 62%, rgba(0,0,0,0.7) 78%, transparent 100%);
     }
     .greeting__hero-artwork {
       width: 100%;
@@ -3046,63 +3052,51 @@
       aspect-ratio: 1024 / 516;
       object-fit: contain;
       display: block;
-      transition: opacity 0.3s ease;
+      transition: opacity 0.35s ease;
       filter: contrast(1.02) saturate(1.02);
     }
     
     /* Dark Mode Seamless Dark-Surface Dissolve */
     html.dark-mode .greeting__hero-banner,
-    [data-theme="dark"] .greeting__hero-banner {
-      mask-image: radial-gradient(ellipse 88% 84% at 50% 50%, #000000 52%, rgba(0,0,0,0.55) 74%, transparent 100%);
-      -webkit-mask-image: radial-gradient(ellipse 88% 84% at 50% 50%, #000000 52%, rgba(0,0,0,0.55) 74%, transparent 100%);
-      filter: drop-shadow(0 6px 28px rgba(212, 148, 58, 0.16));
-    }
-    
-    /* Dynamic Theme Environmental Atmosphere */
-    [data-theme-mode="auto"][data-time-of-day="morning"] .greeting__hero-banner {
-      filter: drop-shadow(0 4px 20px rgba(255, 180, 80, 0.1));
-    }
-    [data-theme-mode="auto"][data-time-of-day="evening"] .greeting__hero-banner {
-      filter: drop-shadow(0 4px 22px rgba(212, 148, 58, 0.12));
-    }
-    [data-theme-mode="auto"][data-time-of-day="night"] .greeting__hero-banner {
-      mask-image: radial-gradient(ellipse 88% 84% at 50% 50%, #000000 52%, rgba(0,0,0,0.55) 74%, transparent 100%);
-      -webkit-mask-image: radial-gradient(ellipse 88% 84% at 50% 50%, #000000 52%, rgba(0,0,0,0.55) 74%, transparent 100%);
+    [data-theme="dark"] .greeting__hero-banner,
+    [data-time-of-day="night"] .greeting__hero-banner {
+      mask-image: radial-gradient(ellipse 90% 86% at 50% 50%, #000000 56%, rgba(0,0,0,0.55) 76%, transparent 100%);
+      -webkit-mask-image: radial-gradient(ellipse 90% 86% at 50% 50%, #000000 56%, rgba(0,0,0,0.55) 76%, transparent 100%);
       filter: drop-shadow(0 6px 28px rgba(212, 148, 58, 0.16));
     }
     
     /* Sacred Devotional Typography Hierarchy */
     .greeting__text {
-      max-width: 620px;
+      max-width: 640px;
       margin: 0 auto;
       padding: 0 8px;
     }
     .greeting__salutation {
       font-size: 1.18rem !important;
       font-weight: 700 !important;
-      letter-spacing: 0.6px !important;
+      letter-spacing: 0.8px !important;
       text-transform: uppercase !important;
       color: var(--anhad-gold, #D4943A) !important;
-      margin-bottom: 6px !important;
+      margin-bottom: 8px !important;
     }
     .greeting__gurbani {
       font-family: var(--font-gurmukhi, 'Noto Sans Gurmukhi', serif) !important;
-      font-size: 1.32rem !important;
+      font-size: 1.38rem !important;
       line-height: 1.55 !important;
       font-weight: 600 !important;
       color: var(--text-primary, #1C1C1E) !important;
-      margin-bottom: 6px !important;
+      margin-bottom: 8px !important;
     }
     html.dark-mode .greeting__gurbani,
     [data-theme="dark"] .greeting__gurbani {
       color: #F5F5F7 !important;
     }
     .greeting__translation {
-      font-size: 0.96rem !important;
+      font-size: 0.98rem !important;
       line-height: 1.5 !important;
       color: var(--text-secondary, #636366) !important;
       font-style: italic !important;
-      max-width: 560px !important;
+      max-width: 580px !important;
       margin: 0 auto !important;
     }
     html.dark-mode .greeting__translation,
@@ -3112,22 +3106,22 @@
     
     @media (max-width: 480px) {
       .greeting {
-        margin-top: 2px !important;
-        margin-bottom: 16px !important;
+        margin-top: 4px !important;
+        margin-bottom: 18px !important;
         padding: 0 10px !important;
       }
       .greeting__hero-banner {
-        margin-bottom: 12px;
+        margin-bottom: 14px;
       }
       .greeting__salutation {
         font-size: 1.08rem !important;
       }
       .greeting__gurbani {
-        font-size: 1.2rem !important;
+        font-size: 1.22rem !important;
         line-height: 1.45 !important;
       }
       .greeting__translation {
-        font-size: 0.9rem !important;
+        font-size: 0.92rem !important;
       }
     }
   </style>
@@ -3419,12 +3413,12 @@
     <!-- ════════════════════════════════════════════════════════════════════
          GREETING — iOS Large Title Inspired
     ════════════════════════════════════════════════════════════════════ -->
-        <section class="greeting" aria-label="Personal Greeting">
+            <section class="greeting" aria-label="Personal Greeting">
       <div class="greeting__content">
         <!-- Sacred Devotional Hero Artwork: Sri Guru Gobind Singh Ji • Sri Guru Granth Sahib Ji • Sri Guru Nanak Dev Ji -->
         <div class="greeting__hero-banner" id="greetingHeroBanner" aria-label="Sacred Guru Darbar">
-          <picture>
-            <source srcset="assets/guru-greeting-hero.webp" type="image/webp">
+          <picture id="greetingHeroPicture">
+            <source id="greetingHeroSource" srcset="assets/guru-greeting-hero.webp" type="image/webp">
             <img class="greeting__hero-artwork" id="greetingHeroArtwork"
                  src="assets/guru-greeting-hero.png"
                  alt="Sri Guru Granth Sahib Ji with Sri Guru Gobind Singh Ji and Sri Guru Nanak Dev Ji"
@@ -3433,32 +3427,11 @@
           </picture>
         </div>
 
-        <!-- Hidden container for campaign hooks -->
-        <div class="greeting__portrait-slider" id="guruSlider" data-campaign-state="a" style="display: none !important;">
-          <div class="greeting__slider-track" id="guruSliderTrack" style="display: none !important;"></div>
-          <div class="greeting__announce" id="greetingAnnounce" hidden aria-hidden="true">
-            <span class="greeting__announce-halo" aria-hidden="true"></span>
-            <div class="greeting__announce-disc">
-              <img class="greeting__announce-img" id="greetingAnnounceImg" alt="" aria-hidden="true" decoding="async" loading="lazy" src="assets/Darbar-sahib-AMRITVELA.webp">
-              <span class="greeting__announce-veil" aria-hidden="true"></span>
-              <span class="greeting__announce-ik" aria-hidden="true">ੴ</span>
-              <span class="greeting__announce-badge" id="greetingAnnounceBadge"></span>
-            </div>
-            <span class="greeting__announce-pill" id="greetingAnnouncePill" hidden></span>
-          </div>
-        </div>
-        
         <!-- Sacred Devotional Text & Dynamic Gurbani Pankti -->
         <div class="greeting__text">
-          <div class="greeting__salutation" id="greetingSalutation">SRI GURU GRANTH SAHIB JI</div>
-          <div class="greeting__gurbani" id="greetingGurbani" lang="pa">ਏਕੋ ਨਾਮੁ ਹੁਕਮੁ ਹੈ ਨਾਨਕ ਸਤਿਗੁਰਿ ਦੀਆ ਬੁਝਾਇ ਜੀਉ ॥੫॥</div>
-          <div class="greeting__translation" id="greetingTranslation">The One Name is the Lord's Command; O Nanak, the True Guru has given me this understanding.</div>
-
-          <div class="greeting__announce-text" id="greetingAnnounceText" hidden aria-hidden="true">
-            <div class="greeting__announce-title" id="greetingAnnounceTitle"></div>
-            <div class="greeting__announce-line" id="greetingAnnounceLine" lang="pa"></div>
-            <div class="greeting__announce-sub" id="greetingAnnounceSub"></div>
-          </div>
+          <div class="greeting__salutation" id="greetingSalutation">SAT SRI AKAL</div>
+          <div class="greeting__gurbani" id="greetingGurbani" lang="pa">ਏ ਮਨ ਹਰਿ ਜੀ ਧਿਆਇ ਤੂ ਇਕ ਮਨਿ ਇਕ ਚਿਤਿ ਭਾਇ</div>
+          <div class="greeting__translation" id="greetingTranslation">O mind, meditate on the Dear Lord, with single-minded consciousness and loving focus.</div>
         </div>
       </div>
     </section>
@@ -4654,6 +4627,39 @@
 
   <!-- ANHAD: Animated Sky Background Engine -->
   <script src="js/anhad-sky-bg.js?v=4.0.4" defer></script>
+
+
+  <!-- Synchronize Devotional Hero Artwork with Light/Dark/Dynamic Themes -->
+  <script>
+    (function() {
+      function syncGreetingHeroArtwork() {
+        var img = document.getElementById('greetingHeroArtwork');
+        var source = document.getElementById('greetingHeroSource');
+        if (!img) return;
+        var isDark = document.documentElement.classList.contains('dark-mode') ||
+                     document.documentElement.getAttribute('data-theme') === 'dark' ||
+                     document.documentElement.getAttribute('data-theme-mode') === 'dark' ||
+                     document.documentElement.getAttribute('data-time-of-day') === 'night' ||
+                     document.documentElement.getAttribute('data-time-of-day') === 'evening';
+        
+        var targetWebp = isDark ? 'assets/guru-greeting-hero-dark.webp' : 'assets/guru-greeting-hero.webp';
+        var targetPng = isDark ? 'assets/guru-greeting-hero-dark.png' : 'assets/guru-greeting-hero.png';
+        
+        if (source && source.srcset !== targetWebp) {
+          source.srcset = targetWebp;
+        }
+        if (img && !img.src.endsWith(targetWebp) && !img.src.endsWith(targetPng)) {
+          img.src = targetWebp;
+        }
+      }
+      window.syncGreetingHeroArtwork = syncGreetingHeroArtwork;
+      syncGreetingHeroArtwork();
+      window.addEventListener('anhad_theme_changed', syncGreetingHeroArtwork);
+      window.addEventListener('storage', syncGreetingHeroArtwork);
+      var observer = new MutationObserver(syncGreetingHeroArtwork);
+      observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class', 'data-theme', 'data-theme-mode', 'data-time-of-day'] });
+    })();
+  </script>
 
 </body>
 </html>

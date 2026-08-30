@@ -271,12 +271,12 @@
       const salEl = document.getElementById('greetingSalutation');
       const gurEl = document.getElementById('greetingGurbani');
       const transEl = document.getElementById('greetingTranslation');
-      const name = DataManager.getUserName();
-      const sal = this.getSalutation();
-      if (salEl) salEl.textContent = name ? `${sal}, ${name}` : sal;
-      const tuk = this.getTuk();
-      if (gurEl) gurEl.textContent = tuk.gurmukhi;
-      if (transEl) transEl.textContent = tuk.translation;
+      if (salEl) salEl.textContent = 'SAT SRI AKAL';
+      if (gurEl) gurEl.textContent = 'ਏ ਮਨ ਹਰਿ ਜੀ ਧਿਆਇ ਤੂ ਇਕ ਮਨਿ ਇਕ ਚਿਤਿ ਭਾਇ';
+      if (transEl) transEl.textContent = 'O mind, meditate on the Dear Lord, with single-minded consciousness and loving focus.';
+      if (typeof window.syncGreetingHeroArtwork === 'function') {
+        window.syncGreetingHeroArtwork();
+      }
     }
   };
 
