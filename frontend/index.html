@@ -3064,10 +3064,10 @@
         inset -1px -1px 3px rgba(0, 0, 0, 0.5) !important;
     }
 
-    /* 4. Sacred Devotional Hero Banner (Light & Dynamic Modes) */
+    /* 4. Sacred Devotional Hero Banner (Light & Dynamic Modes) — Grand Majestic Scale */
     .greeting {
-      margin-top: -6px !important;
-      margin-bottom: 16px !important;
+      margin-top: -10px !important;
+      margin-bottom: 22px !important;
       padding: 0 !important;
       text-align: center !important;
       position: relative !important;
@@ -3078,20 +3078,32 @@
     .greeting__hero-banner {
       position: relative !important;
       width: 100% !important;
-      max-width: 600px !important;
+      max-width: 1200px !important;
       margin: 0 auto !important;
       display: flex !important;
       justify-content: center !important;
       align-items: center !important;
       overflow: visible !important;
-      transform: none !important;
-      mask-image: none !important;
-      -webkit-mask-image: none !important;
-      padding: 0 4px !important;
+      transform: scale(1.08) !important;
+      transform-origin: center top !important;
+      padding: 0 !important;
       box-sizing: border-box !important;
+    }
+    @media (max-width: 767px) {
+      .greeting {
+        width: 100vw !important;
+        max-width: 100vw !important;
+        margin-left: calc(-50vw + 50%) !important;
+        margin-right: calc(-50vw + 50%) !important;
+        overflow: hidden !important;
+      }
+      .greeting__hero-banner {
+        transform: scale(1.14) !important;
+      }
     }
     .greeting__hero-artwork {
       width: 100% !important;
+      max-width: 100% !important;
       height: auto !important;
       aspect-ratio: 1906 / 825 !important;
       object-fit: contain !important;
@@ -3099,7 +3111,7 @@
       transition: opacity 0.35s ease !important;
       image-rendering: -webkit-optimize-contrast !important;
       image-rendering: high-quality !important;
-      filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.04)) !important;
+      filter: drop-shadow(0 6px 20px rgba(0, 0, 0, 0.05)) !important;
     }
     
     .greeting__dark-carousel-container {
