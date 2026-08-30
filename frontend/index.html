@@ -4433,52 +4433,71 @@
       color: #94A3B8 !important;
     }
   </style>
-
-
-  <!-- ANHAD MASTER VISUAL OVERRIDES v10.61.0 — DO NOT REMOVE -->
+  <!-- ANHAD MASTER VISUAL OVERRIDES v10.63.0 -->
   <style id="anhad-master-overrides">
-    /* ── HERO BANNER: WIDE HORIZONTAL, SOFT CONTRAST, SIDE FADE ── */
+    /* ════════════════════════════════════════════════════════════════
+       1. GREETING SECTION & LIGHT MODE HERO ARTWORK
+       ════════════════════════════════════════════════════════════════ */
     .greeting {
-      margin-top: -10px !important;
-      margin-bottom: 52px !important;
-      padding-bottom: 32px !important;
+      margin-top: -6px !important;
+      margin-bottom: 48px !important;
+      padding-bottom: 30px !important;
       position: relative !important;
-      width: 100% !important;
       overflow: visible !important;
+      width: 100% !important;
     }
+    .greeting__content {
+      padding-top: 0 !important;
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      width: 100% !important;
+    }
+
+    /* Light Mode Hero Banner: Wider, centered, side-feathered */
     .greeting__hero-banner {
       display: flex !important;
       width: 100% !important;
       max-width: 100% !important;
       margin: 0 auto !important;
       overflow: visible !important;
-      padding-bottom: 20px !important;
+      padding: 0 0 16px 0 !important;
       box-sizing: border-box !important;
+      justify-content: center !important;
+      align-items: center !important;
+      -webkit-mask-image: linear-gradient(to right, transparent 0%, rgba(0,0,0,0.85) 12%, black 20%, black 80%, rgba(0,0,0,0.85) 88%, transparent 100%) !important;
+      mask-image: linear-gradient(to right, transparent 0%, rgba(0,0,0,0.85) 12%, black 20%, black 80%, rgba(0,0,0,0.85) 88%, transparent 100%) !important;
+    }
+    .greeting__hero-banner picture {
+      width: 100% !important;
+      display: flex !important;
+      justify-content: center !important;
     }
     .greeting__hero-artwork {
       width: 100% !important;
+      max-width: 520px !important;
       height: auto !important;
-      aspect-ratio: 1906 / 825 !important;
+      transform: scale(1.06) !important;
       object-fit: contain !important;
       display: block !important;
+      margin: 0 auto !important;
       image-rendering: -webkit-optimize-contrast !important;
       image-rendering: high-quality !important;
     }
 
-    /* ── DARK MODE: HIDE HERO, SHOW CAROUSEL ── */
+    /* Dark Mode: Hide Light Hero */
     html.dark-mode .greeting__hero-banner,
     [data-theme="dark"] .greeting__hero-banner,
-    html.dark-mode .greeting__dark-carousel-container ~ .greeting__hero-banner,
     [data-time-of-day="night"] .greeting__hero-banner {
       display: none !important;
     }
 
-    /* ── DARK CAROUSEL: VISIBLE, CENTERED ── */
+    /* ════════════════════════════════════════════════════════════════
+       2. DARK MODE GURU CAROUSEL & SLIDER ENGINE
+       ════════════════════════════════════════════════════════════════ */
     .greeting__dark-carousel-container {
       display: none;
       width: 100%;
-      max-width: 600px;
-      margin: 0 auto;
     }
     html.dark-mode .greeting__dark-carousel-container,
     [data-theme="dark"] .greeting__dark-carousel-container,
@@ -4489,30 +4508,25 @@
       justify-content: center !important;
       gap: 12px !important;
       width: 100% !important;
-      padding: 8px 0 !important;
+      padding: 8px 0 14px !important;
     }
 
-    /* ── PORTRAIT SLIDER WRAP & TRACK ── */
     .greeting__portrait-slider-wrap {
       position: relative !important;
       width: 100% !important;
-      max-width: 440px !important;
-      height: 200px !important;
+      max-width: 460px !important;
+      height: 210px !important;
+      margin: 0 auto !important;
       display: flex !important;
       align-items: center !important;
       justify-content: center !important;
-      margin: 0 auto !important;
-      box-sizing: border-box !important;
     }
     .greeting__portrait-slider {
       position: relative !important;
       width: 100% !important;
-      height: 200px !important;
+      height: 210px !important;
       overflow: visible !important;
       touch-action: pan-y !important;
-      display: flex !important;
-      align-items: center !important;
-      justify-content: center !important;
     }
     .greeting__slider-track {
       position: relative !important;
@@ -4523,78 +4537,80 @@
       visibility: visible !important;
     }
 
-    /* ── SLIDES: ABSOLUTE CENTERED ── */
+    /* Slides: Absolute centering with margin offset */
     .greeting__slide {
       position: absolute !important;
-      width: 120px !important;
-      height: 120px !important;
+      width: 126px !important;
+      height: 126px !important;
       top: 50% !important;
       left: 50% !important;
-      margin-top: -60px !important;
-      margin-left: -60px !important;
+      margin-top: -63px !important;
+      margin-left: -63px !important;
       display: flex !important;
       align-items: center !important;
       justify-content: center !important;
       opacity: 0 !important;
       visibility: hidden !important;
       pointer-events: none !important;
-      transform: scale(0.6) translateX(0) !important;
-      transition: transform 0.35s cubic-bezier(0.25,1,0.5,1), opacity 0.3s ease, filter 0.3s ease !important;
+      transform: scale(0.45) translateX(0px) !important;
+      transition: transform 0.38s cubic-bezier(0.25,1,0.5,1), opacity 0.3s ease !important;
       cursor: pointer !important;
-      -webkit-user-drag: none !important;
       user-select: none !important;
+      -webkit-user-drag: none !important;
+      will-change: transform, opacity !important;
     }
     .greeting__slide--active {
       opacity: 1 !important;
       visibility: visible !important;
-      transform: scale(1.22) translateX(0) !important;
+      transform: scale(1.24) translateX(0px) !important;
       z-index: 10 !important;
       pointer-events: auto !important;
-      filter: drop-shadow(0 8px 24px rgba(212,148,58,0.55)) !important;
+      filter: drop-shadow(0 10px 28px rgba(212,148,58,0.65)) !important;
     }
     .greeting__slide--prev {
-      opacity: 0.75 !important;
+      opacity: 0.78 !important;
       visibility: visible !important;
-      transform: scale(0.85) translateX(-110px) !important;
-      z-index: 5 !important;
+      transform: scale(0.82) translateX(-116px) !important;
+      z-index: 6 !important;
       pointer-events: auto !important;
     }
     .greeting__slide--next {
-      opacity: 0.75 !important;
+      opacity: 0.78 !important;
       visibility: visible !important;
-      transform: scale(0.85) translateX(110px) !important;
-      z-index: 5 !important;
+      transform: scale(0.82) translateX(116px) !important;
+      z-index: 6 !important;
       pointer-events: auto !important;
     }
     .greeting__slide--far-prev {
-      opacity: 0.28 !important;
+      opacity: 0.30 !important;
       visibility: visible !important;
-      transform: scale(0.62) translateX(-175px) !important;
-      z-index: 1 !important;
+      transform: scale(0.56) translateX(-186px) !important;
+      z-index: 2 !important;
       pointer-events: auto !important;
     }
     .greeting__slide--far-next {
-      opacity: 0.28 !important;
+      opacity: 0.30 !important;
       visibility: visible !important;
-      transform: scale(0.62) translateX(175px) !important;
-      z-index: 1 !important;
+      transform: scale(0.56) translateX(186px) !important;
+      z-index: 2 !important;
       pointer-events: auto !important;
     }
 
-    /* ── GURU PORTRAIT CIRCLE ── */
+    /* Guru Circle Frame */
     .greeting__guru-portrait {
-      width: 120px !important;
-      height: 120px !important;
-      min-width: 120px !important;
-      min-height: 120px !important;
-      max-width: 120px !important;
-      max-height: 120px !important;
+      width: 126px !important;
+      height: 126px !important;
+      min-width: 126px !important;
+      min-height: 126px !important;
+      max-width: 126px !important;
+      max-height: 126px !important;
       border-radius: 50% !important;
       overflow: hidden !important;
-      border: 3px solid #D4943A !important;
-      box-shadow: 0 4px 18px rgba(0,0,0,0.5), 0 0 20px rgba(212,148,58,0.35) !important;
-      background: #1C1C1E !important;
-      margin-bottom: 0 !important;
+      border: 3.5px solid #D4943A !important;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.6), 0 0 24px rgba(212,148,58,0.4) !important;
+      background: #151515 !important;
+      margin: 0 !important;
+      padding: 0 !important;
       pointer-events: none !important;
     }
     .greeting__guru-portrait img {
@@ -4604,41 +4620,113 @@
       display: block !important;
       opacity: 1 !important;
       visibility: visible !important;
+      border-radius: 50% !important;
       pointer-events: none !important;
     }
 
-    /* ── GURPURAB CALENDAR CARD: CUSHION CLAY ── */
-    .event-card {
-      padding: 16px 20px !important;
+    /* ════════════════════════════════════════════════════════════════
+       3. GURPURAB CALENDAR CARD (EVENT CARD) CUSHION CLAY
+       ════════════════════════════════════════════════════════════════ */
+    .event-card,
+    .event-card.event-today {
+      padding: 18px 20px !important;
       border-radius: 28px !important;
       border: none !important;
-      background: linear-gradient(135deg, #FFFFFF 0%, #FFFDF8 45%, #FAF3DE 100%) !important;
+      background: linear-gradient(135deg, #FFFFFF 0%, #FFFCF6 40%, #FFF3DC 100%) !important;
       box-shadow:
-        6px 8px 20px rgba(212,168,83,0.12),
-        -4px -4px 10px rgba(255,255,255,0.98),
-        inset 2px 2px 4px rgba(255,255,255,1),
-        inset -1.5px -1.5px 4px rgba(212,168,83,0.06) !important;
-      margin-bottom: 24px !important;
+        7px 10px 24px rgba(212,168,58,0.15),
+        -5px -5px 12px rgba(255,255,255,1),
+        inset 3px 3px 6px rgba(255,255,255,0.95),
+        inset -2px -2px 5px rgba(212,148,58,0.08) !important;
+      margin-bottom: 22px !important;
+      position: relative !important;
+      overflow: hidden !important;
     }
     html.dark-mode .event-card,
+    html.dark-mode .event-card.event-today,
     [data-theme="dark"] .event-card,
     [data-time-of-day="night"] .event-card {
-      background: linear-gradient(150deg, #1C1C1E 0%, #111113 100%) !important;
-      border: none !important;
+      background: linear-gradient(150deg, #1E1C18 0%, #131210 100%) !important;
+      border: 1px solid rgba(212,148,58,0.18) !important;
       box-shadow:
-        6px 8px 20px rgba(0,0,0,0.7),
-        -3px -3px 8px rgba(255,255,255,0.04),
-        inset 2px 2px 5px rgba(212,148,58,0.15),
-        inset -2px -2px 6px rgba(0,0,0,0.5) !important;
+        8px 12px 28px rgba(0,0,0,0.75),
+        -3px -3px 9px rgba(255,255,255,0.03),
+        inset 2px 2px 6px rgba(212,148,58,0.18),
+        inset -3px -3px 7px rgba(0,0,0,0.55) !important;
     }
 
-    /* ── MINI PLAYER + NAV GAP ── */
-    .mini-player--visible {
-      margin-bottom: 10px !important;
+    /* ════════════════════════════════════════════════════════════════
+       4. PRACTICE CARDS — ROCK SOLID CUSHION CLAY COLORS
+       ════════════════════════════════════════════════════════════════ */
+    /* Light Mode Practice Cards */
+    .practice-card--nitnem {
+      background: linear-gradient(165deg, #FFFDFB 0%, #FFEFD8 50%, #FFE5C0 100%) !important;
+      border: 1px solid rgba(212,148,58,0.24) !important;
+      border-radius: 26px !important;
+      box-shadow:
+        6px 10px 20px rgba(212,148,58,0.16),
+        2px 4px 8px rgba(139,69,19,0.06),
+        inset 2px 2px 4px rgba(255,255,255,0.92),
+        inset -3px -3px 6px rgba(212,148,58,0.15) !important;
     }
-    .bottom-nav,
-    .bottom-nav__wrapper {
-      margin-top: 10px !important;
+    .practice-card--sehaj {
+      background: linear-gradient(165deg, #FBF9FF 0%, #F0EBFF 50%, #E4DCFF 100%) !important;
+      border: 1px solid rgba(88,86,214,0.24) !important;
+      border-radius: 26px !important;
+      box-shadow:
+        6px 10px 20px rgba(88,86,214,0.16),
+        2px 4px 8px rgba(45,0,135,0.06),
+        inset 2px 2px 4px rgba(255,255,255,0.92),
+        inset -3px -3px 6px rgba(88,86,214,0.15) !important;
+    }
+    .practice-card--hukam {
+      background: linear-gradient(165deg, #FFFDFB 0%, #FFF0E8 50%, #FFE0CC 100%) !important;
+      border: 1px solid rgba(255,110,74,0.24) !important;
+      border-radius: 26px !important;
+      box-shadow:
+        6px 10px 20px rgba(255,110,74,0.16),
+        2px 4px 8px rgba(139,45,0,0.06),
+        inset 2px 2px 4px rgba(255,255,255,0.92),
+        inset -3px -3px 6px rgba(255,110,74,0.15) !important;
+    }
+
+    /* Dark Mode Practice Cards */
+    html.dark-mode .practice-card--nitnem,
+    [data-theme="dark"] .practice-card--nitnem,
+    [data-time-of-day="night"] .practice-card--nitnem {
+      background: linear-gradient(165deg, #251D14 0%, #352B1C 50%, #1F170E 100%) !important;
+      border: 1.5px solid rgba(212,148,58,0.22) !important;
+      box-shadow:
+        8px 12px 28px rgba(0,0,0,0.6),
+        inset 2px 2px 4px rgba(255,255,255,0.12),
+        inset -4px -4px 8px rgba(0,0,0,0.6) !important;
+    }
+    html.dark-mode .practice-card--sehaj,
+    [data-theme="dark"] .practice-card--sehaj,
+    [data-time-of-day="night"] .practice-card--sehaj {
+      background: linear-gradient(165deg, #161525 0%, #22203B 50%, #11101E 100%) !important;
+      border: 1.5px solid rgba(88,86,214,0.22) !important;
+      box-shadow:
+        8px 12px 28px rgba(0,0,0,0.6),
+        inset 2px 2px 4px rgba(255,255,255,0.12),
+        inset -4px -4px 8px rgba(0,0,0,0.6) !important;
+    }
+    html.dark-mode .practice-card--hukam,
+    [data-theme="dark"] .practice-card--hukam,
+    [data-time-of-day="night"] .practice-card--hukam {
+      background: linear-gradient(165deg, #251414 0%, #351C1C 50%, #1F0E0E 100%) !important;
+      border: 1.5px solid rgba(255,110,74,0.22) !important;
+      box-shadow:
+        8px 12px 28px rgba(0,0,0,0.6),
+        inset 2px 2px 4px rgba(255,255,255,0.12),
+        inset -4px -4px 8px rgba(0,0,0,0.6) !important;
+    }
+
+    /* ════════════════════════════════════════════════════════════════
+       5. FLOATING MINI PLAYER + BOTTOM NAV GAP
+       ════════════════════════════════════════════════════════════════ */
+    .mini-player--visible {
+      bottom: calc(var(--nav-height, 84px) + var(--safe-bottom, 0px) + 20px) !important;
     }
   </style>
 </head>
@@ -4957,12 +5045,12 @@
 
             <div class="greeting__portrait-slider" id="guruSlider" aria-label="Guru Portraits Carousel">
               <div class="greeting__slider-track" id="guruSliderTrack">
-                <div class="greeting__slide" data-guru="guru-nanak" data-index="0">
+                <div class="greeting__slide greeting__slide--next" data-guru="guru-nanak" data-index="0">
                   <div class="greeting__guru-portrait">
-                    <img src="guruimages/gurunanakdevsahebji.jpeg" alt="Sri Guru Nanak Dev Sahib Ji" style="object-position: center 20%;" loading="eager" draggable="false">
+                    <img src="guruimages/gurunanakdevsahebji.jpeg" alt="Sri Guru Nanak Dev Sahib Ji" style="object-position: center 20%;" loading="lazy" draggable="false">
                   </div>
                 </div>
-                <div class="greeting__slide" data-guru="guru-angad" data-index="1">
+                <div class="greeting__slide greeting__slide--far-next" data-guru="guru-angad" data-index="1">
                   <div class="greeting__guru-portrait">
                     <img src="guruimages/guruangaddevsahebji.jpeg" alt="Sri Guru Angad Dev Sahib Ji" style="object-position: center 25%;" loading="lazy" draggable="false">
                   </div>
@@ -5014,7 +5102,6 @@
                 </div>
               </div>
             </div>
-
             <button class="greeting__slider-arrow greeting__slider-arrow--next" id="guruSliderNext" aria-label="Next Guru" type="button">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
             </button>

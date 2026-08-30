@@ -525,11 +525,18 @@
         if (diff < -total / 2) diff += total;
         if (diff > total / 2) diff -= total;
 
-        if (diff === 0) slide.classList.add('greeting__slide--active');
-        else if (diff === -1) slide.classList.add('greeting__slide--prev');
-        else if (diff === 1) slide.classList.add('greeting__slide--next');
-        else if (diff < -1) slide.classList.add('greeting__slide--far-prev');
-        else if (diff > 1) slide.classList.add('greeting__slide--far-next');
+        if (diff === 0) {
+          slide.classList.add('greeting__slide--active');
+        } else if (diff === -1) {
+          slide.classList.add('greeting__slide--prev');
+        } else if (diff === 1) {
+          slide.classList.add('greeting__slide--next');
+        } else if (diff === -2) {
+          slide.classList.add('greeting__slide--far-prev');
+        } else if (diff === 2) {
+          slide.classList.add('greeting__slide--far-next');
+        }
+        // slides with Math.abs(diff) > 2 stay completely hidden with no active/prev/next class
       });
 
       // Update dots
