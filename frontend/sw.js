@@ -12,7 +12,7 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
-const CACHE_VERSION = 'anhad-v10.93.0'; // v10.93.0: Fixed daytime text from blue hyperlink to editorial slate, separated morning fresh peach from evening #F29A2E amber gold, set Sehaj Paath ring to gold (no purple glow), centered Gurpurab Learn More button, and smoothed hero bottom feathering.
+const CACHE_VERSION = 'anhad-v10.94.0'; // v10.94.0: Cleaned out all conflicting card overrides from ios-override.css, applied high-specificity slate/charcoal text for daytime, rich amber gold #F29A2E for evening, fresh sunrise peach for morning, gold Sehaj Paath with zero purple glow, centered Gurpurab button, and smooth hero bottom fade.
 // v10.29.0: Root-caused why fixes kept looking reverted on both localhost AND the deployed site despite correct source: .js/.css requests (rule 4 below) used cacheFirst(), which NEVER revalidates a hit — once any browser fetched e.g. nav-glass.css once, it kept serving that exact response forever regardless of CACHE_VERSION bumps, until the whole detect-new-SW/install/activate/reload chain happened to complete for that specific client. .html already used staleWhileRevalidate for exactly this reason (see the v10.13-v10.22 history below) but .js/.css never did. Moved .js/.css to staleWhileRevalidate too (new rule 3c) — verified live by injecting a fake stale response into an active client's cache and confirming the SECOND fetch (not a reload, not a cache clear, ~1s later) automatically served the real current file. Also: de-clobbered window.__anhadPageInit — trendora-app.js and homepage-data.js registered the identical 4 keys for Home and the second one to load silently overwrote the first, so only one of the two intended repopulation paths ever actually ran; now both compose, with the double-render debounce moved inside refreshHomeForSpa itself so having two live trigger paths again can't reintroduce the flash. Shell script loads that fail now retry once and log clearly instead of onerror=resolve silently treating a failed fetch as success forever. Added missing cache-busting query params to smooth-navigation.js/homepage-data.js. Live-measured the reported Home bottom gap on a guaranteed-fresh load: padding-bottom computes to exactly 110px, on-screen gap measures 109.67px — matches source exactly, confirming the gap itself was never a code bug, only ever a symptom of the same stale-cache issue this version fixes at the root.
 // v10.28.0: Decreased excessive bottom padding-bottom from 160px to 110px in nav-glass.css, and upgraded the Nitnem, Sehaj Paath, and Hukamnama practice cards with premium 3D soft claymorphism (ambient soft colored drop shadows + inset light reflection and shadow highlights) in both Light & Dark modes.
 // v10.26.0: Found the REAL remaining cause of the Home/Favorites "two-time flash" the user kept reporting even after v10.23/v10.24 — a CSS entrance animation (.page-enter, anhad-core.css), applied by JS via smooth-navigation.js's unconditional post-swap AnhadCore.init() -> initTransition() call, on an #app container that was already fully painted and visible. Adding a class that newly matches an `animation` rule restarts it regardless of how it's added — so this genuinely replayed the 0.48s "fade up from below" entrance on top of content the user was already looking at, on every single arrival at Home/Favorites. Insights never showed this because its own swapped content (#mainContent) already ships `page-enter` baked into its static HTML, so the later JS class-add is a true no-op there (class already present). Fix: added `page-enter` to Home's and Favorites' own #app markup, matching Insights' pattern exactly, instead of touching the JS trigger at all — verified via CDP by sampling #app's actual computed opacity every 25ms across 5 rapid Home<->Favorites round trips (the exact "gets worse the more I test" scenario reported): 172 samples, zero re-triggers, zero errors. Also fixed the Learning page's Daily Gursikhi Quiz re-prompting the same already-answered question on every revisit — it had no persistence at all; now stores {date, selectedIdx} in localStorage (en-CA date, matching the app's existing per-day convention) and restores the answered state instead of a fresh clickable question until the next calendar day.
@@ -48,6 +48,7 @@ const DATA_CACHE = `${CACHE_VERSION}-data`;
 // Files to cache immediately
 const STATIC_FILES = [
   './',
+  'notifications-content.json',
   'Homepage/ios-homepage.html',
   'Homepage/ios-homepage.css',
   'Homepage/ios-homepage.js',
@@ -907,193 +908,102 @@ self.addEventListener('periodicsync', (event) => {
   }
 });
 
-// Check scheduled notifications and fire any that are due
-async function checkAndFireScheduledNotifications() {
-  // PERF FIX: Replaced per-notification MessageChannel round-trips (was blocking
-  // the SW thread for up to 7 * N_clients * 100ms per periodic sync) with a
-  // fast in-memory Set check that is O(1) and purely synchronous.
+let NOTIFICATION_CONTENT_CACHE = null;
 
-  // Quick Capacitor check — if any client URL contains 'capacitor://' skip SW notifs
+async function loadNotificationContent() {
+  if (NOTIFICATION_CONTENT_CACHE) return NOTIFICATION_CONTENT_CACHE;
+  try {
+    const cache = await caches.open(STATIC_CACHE);
+    const response = await cache.match('/notifications-content.json') || await cache.match('notifications-content.json');
+    if (response) {
+      NOTIFICATION_CONTENT_CACHE = await response.json();
+      return NOTIFICATION_CONTENT_CACHE;
+    }
+  } catch (e) {}
+  try {
+    const res = await fetch('/notifications-content.json');
+    if (res.ok) {
+      NOTIFICATION_CONTENT_CACHE = await res.json();
+      return NOTIFICATION_CONTENT_CACHE;
+    }
+  } catch (e) {}
+  return null;
+}
+
+// Check scheduled notifications and fire any that are due across all 15 categories
+async function checkAndFireScheduledNotifications() {
   const clients = await self.clients.matchAll({ type: 'window' });
   const isCapacitor = clients.some(c => c.url && c.url.startsWith('capacitor://'));
   if (isCapacitor) return;
 
   const now = Date.now();
   const today = new Date().toLocaleDateString('en-CA');
-
-  const spiritualNotifications = [
-    {
-      id: 'hukamnama_morning',
-      title: '📜 ਅੱਜ ਦਾ ਹੁਕਮਨਾਮਾ | Ajj da Hukamnama',
-      body: 'Ajj da Hukamnama Sahib read kr lya tuc? Je nhi ta hune kr skde ho',
-      timeRanges: [[6, 10], [12, 14]], // 6-10 AM or 12-2 PM
-      url: '/Hukamnama/daily-hukamnama.html',
-      icon: '📜'
-    },
-    {
-      id: 'nitnem_reminder',
-      title: '🙏 ਨਿਤਨੇਮ ਯਾਦ | Nitnem Reminder',
-      body: 'Nitnem da time hai ji. Aao Gurbani pdhiye',
-      timeRanges: [[5, 9], [18, 20]], // 5-9 AM or 6-8 PM
-      url: '/nitnem/index.html',
-      icon: '🙏'
-    },
-    {
-      id: 'kirtan_time',
-      title: '🎵 ਕੀਰਤਨ ਸੁਣੋ | Kirtan Sunno',
-      body: 'Kujh der Kirtan sun lo. Rabb di yaad ch lin karo',
-      timeRanges: [[8, 12], [15, 19]], // 8 AM-12 PM or 3-7 PM
-      url: '/GurbaniRadio/gurbani-radio.html',
-      icon: '🎵'
-    },
-    {
-      id: 'simran_reminder',
-      title: '☬ ਵਾਹਿਗੁਰੂ ਸਿਮਰਨ | Vaheguru Simran',
-      body: 'Waheguru Simran sun ke mn ko shant kro',
-      timeRanges: [[7, 11], [13, 17], [20, 22]], // 7-11 AM, 1-5 PM, 8-10 PM
-      url: '/GurbaniRadio/gurbani-radio.html?stream=simran',
-      icon: '☬'
-    },
-    {
-      id: 'gurpurab_reminder',
-      title: '🌸 ਗੁਰਪੁਰਬ ਯਾਦ | Gurpurab Yaad',
-      body: 'Ajj koi Gurpurab ya important din hai? Check kro',
-      timeRanges: [[9, 12], [17, 20]], // 9 AM-12 PM or 5-8 PM
-      url: '/index.html',
-      icon: '🌸'
-    },
-    {
-      id: 'guru_sikhya',
-      title: '💎 ਗੁਰੂ ਦੀ ਸਿੱਖਿਆ | Guru di Sikhya',
-      body: 'Ajj Guru Ji di ik sikhya yaad rakhiye',
-      timeRanges: [[10, 14], [16, 21]], // 10 AM-2 PM or 4-9 PM
-      url: '/index.html',
-      icon: '💎'
-    }
-  ];
-
-  // Check and fire spiritual notifications
-  for (const notif of spiritualNotifications) {
-    // Check if current time falls in any of the time ranges
-    const currentHour = new Date().getHours();
-    const inTimeRange = notif.timeRanges.some(([start, end]) => currentHour >= start && currentHour < end);
-    
-    if (!inTimeRange) continue;
-    if (_hasShownToday(notif.id)) continue;
-
-    // Random chance to fire (20% per check to avoid spam)
-    if (Math.random() > 0.2) continue;
-
-    try {
-      await self.registration.showNotification(notif.title, {
-        body: notif.body,
-        icon: '/assets/icon-192x192.png',
-        badge: '/assets/icon-72x72.png',
-        tag: notif.id,
-        data: { url: notif.url },
-        requireInteraction: false,
-        actions: [
-          { action: 'open', title: 'Open' },
-          { action: 'dismiss', title: 'Later' }
-        ]
-      });
-      _markShownToday(notif.id);
-      console.log(`[SW] Fired spiritual notification: ${notif.title}`);
-    } catch (e) {
-      console.error('[SW] Failed to show spiritual notification:', e);
-    }
-  }
-
-  const defaultNotifications = [
-    {
-      id: 'amritvela',
-      title: 'ਅੰਮ੍ਰਿਤ ਵੇਲਾ | Amrit Vela',
-      body: 'ਅੰਮ੍ਰਿਤ ਵੇਲਾ ਸਚੁ ਨਾਉ ਵਡਿਆਈ ਵੀਚਾਰੁ॥ Wake up for Amrit Vela meditation',
-      hour: 4, minute: 0,
-      icon: 'assets/Darbar-sahib-AMRITVELA.webp'
-    },
-    {
-      id: 'hukamnama',
-      title: 'ਅੱਜ ਦਾ ਹੁਕਮਨਾਮਾ | Daily Hukamnama',
-      body: 'Read today\'s sacred command from Sri Guru Granth Sahib Ji',
-      hour: 6, minute: 0,
-      icon: 'assets/icon-192x192.png'
-    },
-    {
-      id: 'rehras',
-      title: 'ਰਹਿਰਾਸ ਸਾਹਿਬ | Rehras Sahib',
-      body: 'Time for evening prayers - ਸੰਝ ਦੀ ਬੰਦਗੀ ਦਾ ਸਮਾਂ',
-      hour: 18, minute: 30,
-      icon: 'assets/icon-192x192.png'
-    },
-    {
-      id: 'nitnem_morning',
-      title: 'ਨਿਤਨੇਮ ਦਾ ਸਮਾਂ | Nitnem Time',
-      body: 'ਸਵੇਰ ਦੀ ਬਾਣੀ ਦਾ ਸਮਾਂ ਹੋ ਗਿਆ ਹੈ — Start your morning Nitnem',
-      hour: 4, minute: 30,
-      icon: 'assets/icon-192x192.png'
-    },
-    {
-      id: 'kirtan',
-      title: 'ਕੀਰਤਨ ਦਰਬਾਰ | Evening Kirtan',
-      body: 'ਸ਼ਾਮ ਦੇ ਕੀਰਤਨ ਸੁਣੋ — Listen to evening kirtan and feel divine peace',
-      hour: 17, minute: 0,
-      icon: 'assets/Darbar-sahib-AMRITVELA.webp'
-    },
-    {
-      id: 'sohila',
-      title: 'ਸੋਹਿਲਾ ਸਾਹਿਬ | Sohila Sahib',
-      body: 'Time for night prayers before sleep - ਸੌਣ ਤੋਂ ਪਹਿਲਾਂ ਸੋਹਿਲਾ ਸਾਹਿਬ',
-      hour: 21, minute: 30,
-      icon: 'assets/icon-192x192.png'
-    },
-    {
-      id: 'nitnem_pending',
-      title: 'ਨਿਤਨੇਮ ਬਾਕੀ | Nitnem Pending',
-      body: 'ਅੱਜ ਦਾ ਨਿਤਨੇਮ ਅਜੇ ਬਾਕੀ ਹੈ — Complete your Nitnem before the day ends',
-      hour: 19, minute: 0,
-      icon: 'assets/icon-192x192.png'
-    }
-  ];
-
   const currentHour = new Date().getHours();
   const currentMinute = new Date().getMinutes();
+  const currentTimeMinutes = currentHour * 60 + currentMinute;
 
-  for (const notif of defaultNotifications) {
-    const notifTime = notif.hour * 60 + notif.minute;
-    const currentTime = currentHour * 60 + currentMinute;
-    const timeDiff = currentTime - notifTime;
+  const contentData = await loadNotificationContent();
+  const notifsObj = contentData && contentData.notifications ? contentData.notifications : {};
 
-    // Fire if within 0-15 minute window
-    if (timeDiff >= 0 && timeDiff <= 15) {
-      // O(1) in-memory check — no MessageChannel round-trips
-      if (!_hasShownToday(notif.id)) {
-        await self.registration.showNotification(notif.title, {
-          body: notif.body,
-          icon: notif.icon || 'assets/icon-192x192.png',
-          badge: 'assets/icon-72x72.png',
-          tag: `anhad-${notif.id}`,
-          renotify: true,
-          requireInteraction: true,
-          vibrate: [200, 100, 200, 100, 400],
-          data: {
-            url: notif.id === 'hukamnama' ? 'Hukamnama/daily-hukamnama.html'
-              : notif.id === 'kirtan' ? 'index.html'
-                : (notif.id === 'nitnem_morning' || notif.id === 'nitnem_pending') ? 'NitnemTracker/nitnem-tracker.html'
-                  : 'reminders/smart-reminders-v7.html',
-            id: notif.id,
-            timestamp: now
-          },
-          actions: [
-            { action: 'open', title: 'Open' },
-            { action: 'snooze', title: 'Snooze 5min' }
-          ]
-        });
+  const categories = [
+    { id: 'amritvela', hour: 4, min: 0, url: 'nitnem/index.html', title: '🌅 ਅੰਮ੍ਰਿਤ ਵੇਲਾ | Amritvela', defaultBody: 'Amritvela bakhshish da sama hai. Aao Naam naal din di shuruaat kariye. 🙏' },
+    { id: 'japji_sahib', hour: 5, min: 0, url: 'nitnem/reader.html?bani=japji-sahib', title: '📖 ਜਪੁਜੀ ਸਾਹਿਬ | Japji Sahib', defaultBody: 'Japji Sahib paath da sama aa gaya hai. Guru Kirpa prapat kariye. 🙏' },
+    { id: 'jaap_sahib', hour: 5, min: 30, url: 'nitnem/reader.html?bani=jaap-sahib', title: '⚔️ ਜਾਪੁ ਸਾਹਿਬ | Jaap Sahib', defaultBody: 'Jaap Sahib paath da vela hai. Akal Purakh di mahima gao. 🙏' },
+    { id: 'tav_prasad_swaye', hour: 6, min: 0, url: 'nitnem/reader.html?bani=tav-prasad-savaiye', title: '🌸 ਤ੍ਵ ਪ੍ਰਸਾਦਿ ਸ੍ਵਯੇ | Tav Prasad Swaye', defaultBody: 'Tav Prasad Swaye paath da vela hai. Khalsa di mahima suno. 🙏' },
+    { id: 'chaupai_sahib', hour: 6, min: 30, url: 'nitnem/reader.html?bani=chaupai-sahib', title: '🛡️ ਚੌਪਈ ਸਾਹਿਬ | Chaupai Sahib', defaultBody: 'Chaupai Sahib paath da vela hai. Raksha da dhaal lao. 🙏' },
+    { id: 'anand_sahib', hour: 7, min: 0, url: 'nitnem/reader.html?bani=anand-sahib', title: '🌺 ਅਨੰਦੁ ਸਾਹਿਬ | Anand Sahib', defaultBody: 'Anand Sahib paath da vela hai. Mann vich anand bharo. 🙏' },
+    { id: 'hukamnama', hour: 6, min: 15, url: 'Hukamnama/daily-hukamnama.html', title: '📜 ਅੱਜ ਦਾ ਹੁਕਮਨਾਮਾ | Daily Hukamnama', defaultBody: 'Ajj da Hukamnama Sahib hazir hai. Guru Maharaj Ji da Hukam suno. 🙏' },
+    { id: 'gurbani_radio', hour: 8, min: 0, url: 'GurbaniRadio/gurbani-radio.html', title: '🎧 ਕੀਰਤਨ ਸੁਣੋ | Gurbani Kirtan', defaultBody: 'Hazoori Kirtan live chal reha hai. Aao Guru Ghar naal judie. 🌸' },
+    { id: 'simran', hour: 10, min: 30, url: 'NaamAbhyas/naam-abhyas.html', title: '🪷 ਵਾਹਿਗੁਰੂ ਸਿਮਰਨ | Vaheguru Simran', defaultBody: 'Sirf 5 minute... Waheguru Waheguru jap ke mann nu shanti bakhshiye. 🙏' },
+    { id: 'evening_peace', hour: 17, min: 30, url: 'index.html', title: '🌇 ਸ਼ਾਮ ਦੀ ਸ਼ਾਂਤੀ | Evening Peace', defaultBody: 'Din khatam hunda ja reha hai. Kujh pal shanti naal bitao. 🙏' },
+    { id: 'rehras_sahib', hour: 18, min: 30, url: 'nitnem/reader.html?bani=rehras-sahib', title: '🌅 ਰਹਰਾਸਿ ਸਾਹਿਬ | Rehras Sahib', defaultBody: 'Rehras Sahib da vela aa gaya. Guru Maharaj Ji di khushian lavo. 🙏' },
+    { id: 'nitnem_missed', hour: 20, min: 30, url: 'NitnemTracker/nitnem-tracker.html', title: '📋 ਨਿਤਨੇਮ ਚੈੱਕ | Nitnem Check', defaultBody: 'Je ajj sama na mil sakya, Guru Maharaj Ji de charna vich kujh pal baithna vi bakhshish hai. 🌸' },
+    { id: 'kirtan_sohila', hour: 21, min: 30, url: 'nitnem/reader.html?bani=sohila-sahib', title: '🌙 ਕੀਰਤਨ ਸੋਹਿਲਾ | Kirtan Sohila', defaultBody: 'Kirtan Sohila paath da vela hai. Raat nu shanti naal bitao. 🙏' },
+    { id: 'bedtime', hour: 22, min: 0, url: 'index.html', title: '✨ ਸ਼ੁਭ ਰਾਤ੍ਰੀ | Bedtime Blessing', defaultBody: 'Ajj da din Guru Kirpa naal guzreya. Shanti naal soyo. 🙏' }
+  ];
 
-        _markShownToday(notif.id);
-        // Inform open clients (fire-and-forget, no await)
-        const shownKey = `anhad_${notif.id}_shown_${today}`;
-        clients.forEach(c => c.postMessage({ type: 'NOTIFICATION_SHOWN', key: shownKey, id: notif.id }));
+  for (const cat of categories) {
+    const targetMinutes = cat.hour * 60 + cat.min;
+    const timeDiff = currentTimeMinutes - targetMinutes;
+
+    // Fire if within 0-20 minute window (reliable for periodic background sync)
+    if (timeDiff >= 0 && timeDiff <= 20) {
+      const todayKey = `${cat.id}_${today}`;
+      if (!_hasShownToday(todayKey)) {
+        let title = cat.title;
+        let body = cat.defaultBody;
+        if (notifsObj[cat.id] && notifsObj[cat.id].length > 0) {
+          const list = notifsObj[cat.id];
+          const pick = list[Math.floor(Math.random() * list.length)];
+          if (pick.title) title = pick.title;
+          if (pick.body) body = pick.body;
+          if (pick.translation) body += `\n${pick.translation}`;
+        }
+
+        try {
+          await self.registration.showNotification(title, {
+            body: body,
+            icon: '/assets/icon-192x192.png',
+            badge: '/assets/icon-72x72.png',
+            tag: `anhad-${cat.id}`,
+            renotify: true,
+            requireInteraction: false,
+            vibrate: [200, 100, 200, 100, 400],
+            data: {
+              url: cat.url,
+              id: cat.id,
+              timestamp: now
+            },
+            actions: [
+              { action: 'open', title: 'Open' },
+              { action: 'snooze', title: 'Snooze 5min' }
+            ]
+          });
+          _markShownToday(todayKey);
+          console.log(`[SW] 🔔 Fired scheduled notification for ${cat.id}: ${title}`);
+        } catch (e) {
+          console.error(`[SW] Failed to show notification for ${cat.id}:`, e);
+        }
       }
     }
   }
