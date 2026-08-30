@@ -2878,139 +2878,106 @@
        FORENSIC REMEDIATION: SVG Semantic Visibility & Layer Stability
        ═══════════════════════════════════════════════════════════════════════ -->
     <style id="anhad-forensic-remediation">
-    /* ═══════════════════════════════════════════════════════════════════════
-       ANHAD HOME — ULTRA-FAST, LIGHTWEIGHT & CALM SPIRITUAL DESIGN SYSTEM
-       ═══════════════════════════════════════════════════════════════════════ */
-    
-    /* 1. Universal Layout & Overflow Protection (320px to 1440px) */
-    html, body, .app, main {
-      max-width: 100vw !important;
-      overflow-x: clip !important;
-      box-sizing: border-box !important;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-    }
-    
-    /* 2. Prune Heavy Floating Orbs & Background CPU Filters */
-    .greeting-orb,
-    .time-orb,
-    .greeting__portrait-wrapper::before {
-      display: none !important;
-      animation: none !important;
-      filter: none !important;
-    }
-    
-    /* 3. High-Performance Crisp Glass Surfaces (8-10px blur instead of 24-40px) */
-    .header__left,
-    .header__right,
-    .anhad-title-pill {
-      backdrop-filter: blur(8px) !important;
-      -webkit-backdrop-filter: blur(8px) !important;
-    }
-    
-    /* 4. Semantic SVG Colors & Icon System across All Themes */
-    .quick-card__chevron,
-    .sheet__option-arrow,
-    .event-card__learn-more svg {
-      fill: none !important;
-      stroke: currentColor !important;
-      color: var(--text-tertiary, #8E8E93);
-      transition: transform 0.15s ease;
-    }
-    .header__btn svg,
-    .tab-icon svg,
-    .quick-card__icon svg,
-    .practice-card__ring-icon svg,
-    .desktop-sidebar__link-icon svg,
-    .sheet__option-icon svg {
-      display: inline-block;
-      vertical-align: middle;
-      color: inherit;
-    }
-    .quick-card__icon svg {
-      stroke: currentColor;
-    }
-    .practice-card__ring-icon svg {
-      stroke: currentColor;
-      color: var(--text-secondary, #636366);
-    }
-    .tab-item .tab-icon svg {
-      stroke: currentColor;
-      color: var(--tab-inactive, #8E8E93);
-      transition: color 0.15s ease, transform 0.15s ease;
-    }
-    .tab-item.active .tab-icon svg {
-      color: var(--anhad-gold, #D4943A) !important;
-      transform: scale(1.08);
-    }
-    .header__btn svg {
-      stroke: currentColor;
-      color: var(--text-primary, #1C1C1E);
-    }
-    html.dark-mode .header__btn svg,
-    [data-theme="dark"] .header__btn svg {
-      color: #F5F5F7 !important;
-    }
-    html.dark-mode .quick-card__chevron,
-    html.dark-mode .sheet__option-arrow,
-    [data-theme="dark"] .quick-card__chevron,
-    [data-theme="dark"] .sheet__option-arrow,
-    [data-time-of-day="night"] .quick-card__chevron,
-    [data-time-of-day="night"] .sheet__option-arrow {
-      color: rgba(255, 255, 255, 0.5) !important;
-    }
-    
-    /* 5. Progressive Visibility: Cards are visible immediately without JS lag */
-    .scroll-reveal,
-    .quick-card,
-    .practice-card,
-    .event-card,
-    .hero-card {
-      opacity: 1 !important;
-      visibility: visible !important;
-    }
-    
-    /* 6. Refined Card Surfaces & Subtle Depth */
-    .quick-card {
-      border: 1px solid rgba(0, 0, 0, 0.05) !important;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02) !important;
-      transition: transform 0.15s ease, background-color 0.15s ease !important;
-    }
-    html.dark-mode .quick-card,
-    [data-theme="dark"] .quick-card {
-      border: 1px solid rgba(255, 255, 255, 0.06) !important;
-      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2) !important;
-    }
-    .quick-card:active {
-      transform: scale(0.985) !important;
-    }
-    
-    /* 7. Practice Card Enhancements */
-    .practice-card {
-      border: 1px solid rgba(0, 0, 0, 0.05) !important;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02) !important;
-    }
-    html.dark-mode .practice-card,
-    [data-theme="dark"] .practice-card {
-      border: 1px solid rgba(255, 255, 255, 0.06) !important;
-    }
-    
-    /* 8. Clean Header Isolation */
-    .header.home-header {
-      isolation: isolate;
-      border-bottom: none !important;
-    }
-    
-    /* 9. Hero Play Button Clean Translucent Styling */
-    .hero-card__play-btn {
-      backdrop-filter: blur(8px) !important;
-      -webkit-backdrop-filter: blur(8px) !important;
-      border: 1px solid rgba(255, 255, 255, 0.25) !important;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15) !important;
-    }
-  
+    /* ═══════════════════════════════════════════════════════════════════════════
+       ANHAD FORENSIC MASTER REMEDIATION PASS (v10.51.0 PRODUCTION READY)
+       ═══════════════════════════════════════════════════════════════════════════ */
 
-                                                    /* ─── SACRED DEVOTIONAL HERO ARTWORK (MAXIMUM CRYSTAL CLARITY) ─── */
+    /* 1. Global Page Background Foundation */
+    body, #app, .app-shell, .page-wrapper {
+      background-color: #FAF8F5 !important;
+      transition: background-color 0.3s cubic-bezier(0.25, 1, 0.5, 1) !important;
+    }
+    
+    html.dark-mode body,
+    html.dark-mode #app,
+    [data-theme="dark"] body,
+    [data-theme="dark"] #app,
+    [data-time-of-day="night"] body,
+    [data-time-of-day="night"] #app {
+      background-color: #0D0D0F !important;
+    }
+
+    /* 2. Seamless Cushion Clay Bottom Navigation Bar */
+    .nav-glass,
+    .bottom-nav {
+      background: rgba(255, 255, 255, 0.88) !important;
+      backdrop-filter: blur(28px) saturate(190%) !important;
+      -webkit-backdrop-filter: blur(28px) saturate(190%) !important;
+      border: none !important;
+      box-shadow: 
+        0 -8px 30px rgba(0, 0, 0, 0.05),
+        0 -1px 3px rgba(0, 0, 0, 0.02),
+        inset 0 1.5px 2px rgba(255, 255, 255, 0.9) !important;
+    }
+    html.dark-mode .nav-glass,
+    html.dark-mode .bottom-nav,
+    [data-theme="dark"] .nav-glass,
+    [data-theme="dark"] .bottom-nav {
+      background: rgba(18, 18, 20, 0.92) !important;
+      backdrop-filter: blur(28px) saturate(190%) !important;
+      -webkit-backdrop-filter: blur(28px) saturate(190%) !important;
+      border: none !important;
+      box-shadow: 
+        0 -8px 32px rgba(0, 0, 0, 0.6),
+        inset 0 1px 1px rgba(255, 255, 255, 0.06),
+        inset 0 -1px 1px rgba(0, 0, 0, 0.4) !important;
+    }
+
+    /* Nav Active Item — Borderless Cushion Clay Highlight */
+    .nav-glass__item--active,
+    .bottom-nav__item.active {
+      background: linear-gradient(135deg, rgba(212, 148, 58, 0.16) 0%, rgba(212, 148, 58, 0.08) 100%) !important;
+      border-radius: 18px !important;
+      border: none !important;
+      box-shadow: 
+        inset 1.5px 1.5px 3px rgba(255, 255, 255, 0.8),
+        inset -1.5px -1.5px 3px rgba(212, 148, 58, 0.15),
+        0 4px 12px rgba(212, 148, 58, 0.12) !important;
+      transform: translateY(-2px) scale(1.02) !important;
+      transition: all 0.25s cubic-bezier(0.25, 1, 0.5, 1) !important;
+    }
+    html.dark-mode .nav-glass__item--active,
+    html.dark-mode .bottom-nav__item.active,
+    [data-theme="dark"] .nav-glass__item--active,
+    [data-theme="dark"] .bottom-nav__item.active {
+      background: linear-gradient(135deg, rgba(212, 148, 58, 0.22) 0%, rgba(212, 148, 58, 0.08) 100%) !important;
+      border: none !important;
+      box-shadow: 
+        inset 1px 1px 2px rgba(255, 255, 255, 0.15),
+        inset -1px -1px 3px rgba(0, 0, 0, 0.5),
+        0 4px 14px rgba(212, 148, 58, 0.2) !important;
+    }
+
+    /* 3. Global Mini Player — Floating Island with 16px Clearance */
+    .global-mini-player {
+      bottom: calc(108px + max(16px, env(safe-area-inset-bottom, 16px))) !important;
+      left: 16px !important;
+      right: 16px !important;
+      max-width: 440px !important;
+      margin: 0 auto !important;
+      border-radius: 24px !important;
+      border: none !important;
+      background: rgba(255, 255, 255, 0.90) !important;
+      backdrop-filter: blur(24px) saturate(180%) !important;
+      -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+      box-shadow: 
+        0 12px 32px rgba(0, 0, 0, 0.10),
+        0 2px 8px rgba(0, 0, 0, 0.04),
+        inset 1.5px 1.5px 3px rgba(255, 255, 255, 1),
+        inset -1.5px -1.5px 3px rgba(0, 0, 0, 0.03) !important;
+      z-index: 99 !important;
+    }
+    html.dark-mode .global-mini-player,
+    [data-theme="dark"] .global-mini-player {
+      background: rgba(22, 22, 26, 0.92) !important;
+      border: none !important;
+      box-shadow: 
+        0 14px 36px rgba(0, 0, 0, 0.7),
+        inset 1px 1px 2px rgba(255, 255, 255, 0.1),
+        inset -1px -1px 3px rgba(0, 0, 0, 0.5) !important;
+    }
+
+    /* 4. Sacred Devotional Hero Banner (Light & Dynamic Modes) */
     .greeting {
       margin-top: -10px !important;
       margin-bottom: 20px !important;
@@ -3039,12 +3006,11 @@
     .greeting__hero-artwork {
       width: 100%;
       height: auto;
-      aspect-ratio: 1024 / 516;
+      aspect-ratio: 1906 / 825;
       object-fit: contain;
       display: block;
       transition: opacity 0.35s ease;
       image-rendering: -webkit-optimize-contrast;
-      image-rendering: crisp-edges;
     }
     
     .greeting__dark-carousel-container {
@@ -3072,16 +3038,28 @@
       padding: 6px 0 !important;
     }
 
+    .greeting__portrait-slider-wrap {
+      position: relative;
+      width: 100%;
+      max-width: 480px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto;
+    }
+
     .greeting__portrait-slider {
       position: relative;
       width: 100%;
-      height: 150px;
+      height: 155px;
       overflow: visible;
       touch-action: pan-y;
       display: flex;
       align-items: center;
       justify-content: center;
       user-select: none;
+      -webkit-user-select: none;
+      -webkit-user-drag: none;
       cursor: grab;
     }
     .greeting__portrait-slider:active {
@@ -3102,35 +3080,40 @@
       pointer-events: none;
       transform: scale(0.6) translateX(0);
       cursor: pointer;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-user-drag: none;
     }
     .greeting__slide--active {
       opacity: 1;
       transform: scale(1.22) translateX(0);
       z-index: 10;
-      pointer-events: auto;
+      pointer-events: auto !important;
       filter: drop-shadow(0 8px 24px rgba(212, 148, 58, 0.45));
     }
     .greeting__slide--prev {
-      opacity: 0.65;
+      opacity: 0.68;
       transform: scale(0.85) translateX(-96px);
       z-index: 5;
-      pointer-events: auto;
+      pointer-events: auto !important;
     }
     .greeting__slide--next {
-      opacity: 0.65;
+      opacity: 0.68;
       transform: scale(0.85) translateX(96px);
       z-index: 5;
-      pointer-events: auto;
+      pointer-events: auto !important;
     }
     .greeting__slide--far-prev {
-      opacity: 0.2;
+      opacity: 0.25;
       transform: scale(0.62) translateX(-160px);
       z-index: 1;
+      pointer-events: auto !important;
     }
     .greeting__slide--far-next {
-      opacity: 0.2;
+      opacity: 0.25;
       transform: scale(0.62) translateX(160px);
       z-index: 1;
+      pointer-events: auto !important;
     }
     .greeting__guru-portrait {
       width: 104px;
@@ -3140,12 +3123,54 @@
       border: 3px solid #D4943A;
       box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4), 0 0 16px rgba(212, 148, 58, 0.3);
       background: #1C1C1E;
+      pointer-events: none;
+      user-select: none;
+      -webkit-user-drag: none;
     }
     .greeting__guru-portrait img {
       width: 100%;
       height: 100%;
       object-fit: cover;
       display: block;
+      pointer-events: none !important;
+      -webkit-user-drag: none !important;
+      user-select: none !important;
+    }
+
+    .greeting__slider-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: rgba(26, 26, 30, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1.5px solid rgba(212, 148, 58, 0.35);
+      color: #D4943A;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 25;
+      transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5), inset 0 1px 2px rgba(255, 255, 255, 0.1);
+      padding: 0;
+    }
+    .greeting__slider-arrow:hover {
+      background: rgba(212, 148, 58, 0.25);
+      border-color: #D4943A;
+      transform: translateY(-50%) scale(1.1);
+    }
+    .greeting__slider-arrow:active {
+      transform: translateY(-50%) scale(0.95);
+    }
+    .greeting__slider-arrow--prev {
+      left: 6px;
+    }
+    .greeting__slider-arrow--next {
+      right: 6px;
     }
     
     .greeting__text {
@@ -3168,33 +3193,29 @@
       color: #FFFFFF;
       line-height: 1.45;
       margin-bottom: 4px;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.5);
     }
     .greeting__translation {
-      font-size: 0.84rem;
-      color: #A1A1A6;
+      font-size: 0.88rem;
+      font-style: italic;
+      color: rgba(255, 255, 255, 0.72);
       line-height: 1.35;
+      margin-bottom: 0;
     }
-    
-    /* ─── SLIM SLEEK GURPURAB CARD (SOFT BUTTERCREAM CLAY) ─── */
+
+    /* 5. Gurpurab Calendar Card — Slim Sleek Horizontal Layout */
     .event-card {
-      position: relative !important;
-      opacity: 1 !important;
-      visibility: visible !important;
-      border-radius: 24px !important;
-      padding: 14px 18px !important;
-      margin-bottom: 18px !important;
-      background: linear-gradient(145deg, #FFFDF8 0%, #FFF8ED 50%, #FFF0DC 100%) !important;
+      padding: 12px 16px !important;
+      border-radius: 22px !important;
+      min-height: auto !important;
       border: none !important;
       box-shadow: 
-        5px 6px 16px rgba(212, 148, 58, 0.1),
-        -3px -3px 8px rgba(255, 255, 255, 0.95),
-        inset 2px 2px 4px rgba(255, 255, 255, 0.9),
-        inset -2px -2px 4px rgba(212, 148, 58, 0.08) !important;
-      display: flex !important;
-      align-items: center !important;
-      cursor: pointer !important;
-      transition: transform 0.25s ease, box-shadow 0.25s ease !important;
-      overflow: visible !important;
+        5px 6px 16px rgba(0, 0, 0, 0.05),
+        -3px -3px 8px rgba(255, 255, 255, 0.98),
+        inset 1.5px 1.5px 3px rgba(255, 255, 255, 1),
+        inset -1.5px -1.5px 3px rgba(0, 0, 0, 0.02) !important;
+      background: linear-gradient(135deg, #FFFFFF 0%, #FFFDF7 55%, #FBF6E9 100%) !important;
+      overflow: hidden !important;
     }
     html.dark-mode .event-card,
     [data-theme="dark"] .event-card,
@@ -3202,99 +3223,45 @@
       background: linear-gradient(150deg, #18181B 0%, #101012 100%) !important;
       border: none !important;
       box-shadow: 
-        5px 6px 18px rgba(0, 0, 0, 0.6),
+        5px 6px 16px rgba(0, 0, 0, 0.6),
         -2px -2px 6px rgba(255, 255, 255, 0.03),
-        inset 2px 2px 4px rgba(212, 148, 58, 0.18),
+        inset 2px 2px 4px rgba(212, 148, 58, 0.15),
         inset -2px -2px 5px rgba(0, 0, 0, 0.45) !important;
     }
-    .event-card__main {
+    .event-card__content {
       display: flex !important;
+      flex-direction: row !important;
       align-items: center !important;
       justify-content: space-between !important;
-      width: 100% !important;
       gap: 14px !important;
+      width: 100% !important;
     }
-    .event-card__info {
-      flex: 1 !important;
+    .event-card__left {
+      flex: 1 1 auto !important;
       min-width: 0 !important;
-      display: flex !important;
-      flex-direction: column !important;
-      gap: 3px !important;
-    }
-    .event-card__eyebrow {
-      font-size: 10px !important;
-      font-weight: 800 !important;
-      letter-spacing: 0.6px !important;
-      color: #D4943A !important;
-      text-transform: uppercase !important;
-    }
-    html.dark-mode .event-card__eyebrow,
-    [data-theme="dark"] .event-card__eyebrow,
-    [data-time-of-day="night"] .event-card__eyebrow {
-      color: #F59E0B !important;
     }
     .event-card__title {
       font-size: 1.05rem !important;
+      line-height: 1.32 !important;
       font-weight: 700 !important;
-      line-height: 1.3 !important;
-      color: #1D1D1F !important;
+      margin: 3px 0 6px 0 !important;
       white-space: normal !important;
-      overflow: visible !important;
-      text-overflow: clip !important;
-      margin: 2px 0 6px !important;
+      word-wrap: break-word !important;
+      color: #1A1A1A !important;
     }
     html.dark-mode .event-card__title,
     [data-theme="dark"] .event-card__title,
     [data-time-of-day="night"] .event-card__title {
-      color: #F8FAFC !important;
+      color: #F5E6C8 !important;
     }
-    .event-card__bottom-row {
+    .event-card__badge-row {
       display: flex !important;
       align-items: center !important;
-      gap: 8px !important;
+      gap: 6px !important;
       flex-wrap: wrap !important;
+      margin-top: 2px !important;
     }
-    .event-card__date-pill {
-      font-size: 11px !important;
-      font-weight: 700 !important;
-      padding: 3px 8px !important;
-      border-radius: 10px !important;
-      background: rgba(212, 148, 58, 0.15) !important;
-      color: #D4943A !important;
-    }
-    html.dark-mode .event-card__date-pill,
-    [data-theme="dark"] .event-card__date-pill,
-    [data-time-of-day="night"] .event-card__date-pill {
-      background: rgba(245, 158, 11, 0.18) !important;
-      color: #FBBF24 !important;
-    }
-    .event-card__badge-pill {
-      font-size: 11px !important;
-      font-weight: 800 !important;
-      padding: 3px 10px !important;
-      border-radius: 10px !important;
-      background: linear-gradient(135deg, #D4943A, #B8860B) !important;
-      color: #FFFFFF !important;
-      box-shadow: 0 2px 8px rgba(212, 148, 58, 0.35) !important;
-    }
-    .event-card__learn-btn {
-      display: inline-flex !important;
-      align-items: center !important;
-      gap: 4px !important;
-      font-size: 11px !important;
-      font-weight: 700 !important;
-      color: #D4943A !important;
-      background: transparent !important;
-      border: none !important;
-      padding: 2px 4px !important;
-      cursor: pointer !important;
-    }
-    html.dark-mode .event-card__learn-btn,
-    [data-theme="dark"] .event-card__learn-btn,
-    [data-time-of-day="night"] .event-card__learn-btn {
-      color: #FBBF24 !important;
-    }
-    .event-card__guru-img-wrapper {
+    .event-card__guru-wrapper {
       width: 78px !important;
       height: 78px !important;
       min-width: 78px !important;
@@ -3318,49 +3285,123 @@
       display: block !important;
     }
 
-        /* ─── WHISPER-SOFT PASTEL CUSHION CLAY FOR ALL CARDS (LIGHT MODE) ─── */
+    /* ═══════════════════════════════════════════════════════════════════════════
+       6. YOUR PRACTICE CARDS — LUXURY CUSHION CLAYMORPHISM (ALL MODES)
+       ═══════════════════════════════════════════════════════════════════════════ */
     .practice-card {
       border: none !important;
       border-radius: 24px !important;
-      background: linear-gradient(150deg, #FFFFFF 0%, #F5FAFF 55%, #EAF4FE 100%) !important;
+      padding: 16px 10px 14px 10px !important;
+      background: linear-gradient(150deg, #FFFFFF 0%, #F2F7FD 50%, #E2EEFC 100%) !important;
       box-shadow: 
-        4px 5px 14px rgba(100, 160, 220, 0.08),
-        -3px -3px 8px rgba(255, 255, 255, 0.98),
-        inset 1.5px 1.5px 3px rgba(255, 255, 255, 1),
-        inset -1.5px -1.5px 3px rgba(100, 160, 220, 0.05) !important;
+        5px 7px 18px rgba(90, 150, 220, 0.15),
+        -4px -4px 10px rgba(255, 255, 255, 0.98),
+        inset 2px 2px 4px rgba(255, 255, 255, 1),
+        inset -2px -2px 5px rgba(90, 150, 220, 0.08) !important;
       transition: transform 0.25s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.25s ease !important;
+      position: relative !important;
+      overflow: hidden !important;
     }
     .practice-card:active {
       transform: scale(0.96) translateY(2px) !important;
+      box-shadow: 
+        2px 3px 8px rgba(90, 150, 220, 0.18),
+        inset 3px 3px 6px rgba(90, 150, 220, 0.12),
+        inset -2px -2px 4px rgba(255, 255, 255, 0.9) !important;
     }
     
-    /* Nitnem: Whisper Soft Gold/Honey Clay */
-    .practice-card--nitnem {
-      background: linear-gradient(150deg, #FFFFFF 0%, #FAF6EE 55%, #F4ECE0 100%) !important;
+    /* Practice Card Embedded Ring Icon Style */
+    .practice-card__ring {
+      position: relative !important;
+      margin: 0 auto 10px auto !important;
+      width: 58px !important;
+      height: 58px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      border-radius: 50% !important;
+      background: rgba(255, 255, 255, 0.85) !important;
+      box-shadow: 
+        inset 1.5px 1.5px 3px rgba(0, 0, 0, 0.06),
+        0 3px 8px rgba(255, 255, 255, 0.9) !important;
     }
-    /* Sehaj Paath: Whisper Soft Lilac Clay */
-    .practice-card--sehaj {
-      background: linear-gradient(150deg, #FFFFFF 0%, #F8F5FF 55%, #F0E8FE 100%) !important;
+    .practice-card__ring svg {
+      width: 100% !important;
+      height: 100% !important;
+      position: absolute !important;
+      top: 0 !important;
+      left: 0 !important;
     }
-    /* Hukamnama: Whisper Soft Peach Clay */
-    .practice-card--hukam {
-      background: linear-gradient(150deg, #FFFFFF 0%, #FFF5EF 55%, #FDE9DF 100%) !important;
+    .practice-card__ring-bg {
+      stroke: rgba(0, 0, 0, 0.05) !important;
+    }
+    .practice-card__ring-icon {
+      position: relative !important;
+      z-index: 2 !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+    }
+    .practice-card__title {
+      font-weight: 700 !important;
+      font-size: 0.95rem !important;
+      color: #1E293B !important;
+      margin-bottom: 2px !important;
+    }
+    .practice-card__status {
+      font-size: 0.76rem !important;
+      color: #64748B !important;
+      font-weight: 500 !important;
     }
 
-    /* Dynamic Day / Sky-Blue Mode: All practice cards harmonious whisper sky blue */
+    /* Simple Light Mode: Distinct Warm Pastel Cushion Tones */
+    .practice-card--nitnem {
+      background: linear-gradient(150deg, #FFFFFF 0%, #FFF9EB 45%, #FBE9CD 100%) !important;
+      box-shadow: 
+        5px 7px 18px rgba(212, 168, 83, 0.16),
+        -4px -4px 10px rgba(255, 255, 255, 0.98),
+        inset 2px 2px 4px rgba(255, 255, 255, 1),
+        inset -2px -2px 5px rgba(212, 168, 83, 0.09) !important;
+    }
+    .practice-card--sehaj {
+      background: linear-gradient(150deg, #FFFFFF 0%, #FAF5FF 45%, #EFE2FE 100%) !important;
+      box-shadow: 
+        5px 7px 18px rgba(168, 85, 247, 0.16),
+        -4px -4px 10px rgba(255, 255, 255, 0.98),
+        inset 2px 2px 4px rgba(255, 255, 255, 1),
+        inset -2px -2px 5px rgba(168, 85, 247, 0.09) !important;
+    }
+    .practice-card--hukam {
+      background: linear-gradient(150deg, #FFFFFF 0%, #FFF4EE 45%, #FDE4D6 100%) !important;
+      box-shadow: 
+        5px 7px 18px rgba(249, 115, 22, 0.16),
+        -4px -4px 10px rgba(255, 255, 255, 0.98),
+        inset 2px 2px 4px rgba(255, 255, 255, 1),
+        inset -2px -2px 5px rgba(249, 115, 22, 0.09) !important;
+    }
+
+    /* Dynamic Day / Sky-Blue Mode: All practice cards harmonious rich sky-blue cushion clay */
     [data-theme-mode="auto"][data-time-of-day="day"] .practice-card,
     [data-theme-mode="auto"][data-time-of-day="day"] .practice-card--nitnem,
     [data-theme-mode="auto"][data-time-of-day="day"] .practice-card--sehaj,
     [data-theme-mode="auto"][data-time-of-day="day"] .practice-card--hukam {
-      background: linear-gradient(150deg, #FFFFFF 0%, #F5FAFF 55%, #EAF4FE 100%) !important;
-      box-shadow: 4px 5px 14px rgba(100, 160, 220, 0.09), -3px -3px 8px rgba(255, 255, 255, 0.98), inset 1.5px 1.5px 3px rgba(255, 255, 255, 1), inset -1.5px -1.5px 3px rgba(100, 160, 220, 0.06) !important;
+      background: linear-gradient(150deg, #FFFFFF 0%, #EEF6FF 45%, #DCEEFF 100%) !important;
+      box-shadow: 
+        5px 7px 18px rgba(80, 145, 220, 0.18),
+        -4px -4px 10px rgba(255, 255, 255, 1),
+        inset 2px 2px 4px rgba(255, 255, 255, 1),
+        inset -2px -2px 5px rgba(80, 145, 220, 0.10) !important;
     }
 
-    /* Quick Access Cards — Distinct Whisper Soft Pastel Whites */
+    /* 7. Quick Access Cards — Cushion Clay Surfaces */
     .quick-card {
       border: none !important;
       border-radius: 22px !important;
-      box-shadow: 4px 5px 14px rgba(0, 0, 0, 0.04), -3px -3px 8px rgba(255, 255, 255, 0.98), inset 1.5px 1.5px 3px rgba(255, 255, 255, 1), inset -1.5px -1.5px 3px rgba(0, 0, 0, 0.02) !important;
+      box-shadow: 
+        4px 5px 14px rgba(0, 0, 0, 0.04),
+        -3px -3px 8px rgba(255, 255, 255, 0.98),
+        inset 1.5px 1.5px 3px rgba(255, 255, 255, 1),
+        inset -1.5px -1.5px 3px rgba(0, 0, 0, 0.02) !important;
       transition: transform 0.25s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.25s ease !important;
     }
     .quick-card:active {
@@ -3370,31 +3411,31 @@
     /* Whisper Mint Green (Nitnem Tracker) */
     .quick-card--green,
     .quick-card[data-href*="NitnemTracker"] {
-      background: linear-gradient(145deg, #FFFFFF 0%, #F6FEF9 60%, #EBFDF2 100%) !important;
+      background: linear-gradient(145deg, #FFFFFF 0%, #F4FEF8 55%, #E6FDF0 100%) !important;
     }
     /* Whisper Butter Yellow (Naam Abhyas) */
     .quick-card--gold,
     .quick-card[data-href*="NaamAbhyas"] {
-      background: linear-gradient(145deg, #FFFFFF 0%, #FEFEF5 60%, #FEFCE8 100%) !important;
+      background: linear-gradient(145deg, #FFFFFF 0%, #FEFEF3 55%, #FDFBD8 100%) !important;
     }
     /* Whisper Lavender Purple (Shabad Vichar) */
     .quick-card--purple,
     .quick-card[data-href*="shabad"] {
-      background: linear-gradient(145deg, #FFFFFF 0%, #FAF8FF 60%, #F3ECFE 100%) !important;
+      background: linear-gradient(145deg, #FFFFFF 0%, #FAF7FF 55%, #F1E7FE 100%) !important;
     }
     /* Whisper Sky Blue (Sadhsangat Live) */
     .quick-card--blue,
     .quick-card[data-href*="sadhsangat"] {
-      background: linear-gradient(145deg, #FFFFFF 0%, #F5FAFF 60%, #E8F3FE 100%) !important;
+      background: linear-gradient(145deg, #FFFFFF 0%, #F3F9FF 55%, #E3F1FE 100%) !important;
     }
     /* Whisper Rose (Daily Quotes / Khoj) */
     .quick-card--rose,
     .quick-card[data-href*="Khoj"] {
-      background: linear-gradient(145deg, #FFFFFF 0%, #FFF8F9 60%, #FEECEF 100%) !important;
+      background: linear-gradient(145deg, #FFFFFF 0%, #FFF7F8 55%, #FEE5E9 100%) !important;
     }
     /* Whisper Teal */
     .quick-card--teal {
-      background: linear-gradient(145deg, #FFFFFF 0%, #F5FEFD 60%, #E6FBF7 100%) !important;
+      background: linear-gradient(145deg, #FFFFFF 0%, #F3FEFD 55%, #E1FAF5 100%) !important;
     }
 
     /* ─── PURE DEEP BLACK OBSIDIAN CLAY FOR ALL CARDS (DARK MODE) ─── */
@@ -3406,7 +3447,34 @@
     [data-time-of-day="night"] .quick-card {
       background: linear-gradient(150deg, #18181B 0%, #101012 100%) !important;
       border: none !important;
-      box-shadow: 5px 6px 16px rgba(0, 0, 0, 0.6), -2px -2px 6px rgba(255, 255, 255, 0.03), inset 2px 2px 4px rgba(212, 148, 58, 0.15), inset -2px -2px 5px rgba(0, 0, 0, 0.45) !important;
+      box-shadow: 
+        5px 6px 16px rgba(0, 0, 0, 0.65),
+        -2px -2px 6px rgba(255, 255, 255, 0.03),
+        inset 2px 2px 4px rgba(212, 148, 58, 0.15),
+        inset -2px -2px 5px rgba(0, 0, 0, 0.45) !important;
+    }
+    html.dark-mode .practice-card__ring,
+    [data-theme="dark"] .practice-card__ring,
+    [data-time-of-day="night"] .practice-card__ring {
+      background: rgba(255, 255, 255, 0.06) !important;
+      box-shadow: 
+        inset 1.5px 1.5px 3px rgba(0, 0, 0, 0.6),
+        0 2px 6px rgba(212, 148, 58, 0.15) !important;
+    }
+    html.dark-mode .practice-card__ring-bg,
+    [data-theme="dark"] .practice-card__ring-bg,
+    [data-time-of-day="night"] .practice-card__ring-bg {
+      stroke: rgba(255, 255, 255, 0.08) !important;
+    }
+    html.dark-mode .practice-card__title,
+    [data-theme="dark"] .practice-card__title,
+    [data-time-of-day="night"] .practice-card__title {
+      color: #F1F5F9 !important;
+    }
+    html.dark-mode .practice-card__status,
+    [data-theme="dark"] .practice-card__status,
+    [data-time-of-day="night"] .practice-card__status {
+      color: #94A3B8 !important;
     }
   </style>
 
@@ -3717,34 +3785,38 @@
         <div class="greeting__hero-banner" id="greetingHeroBanner" aria-label="Sacred Guru Darbar">
           <picture id="greetingHeroPicture">
             <source id="greetingHeroSource" srcset="assets/guru-greeting-hero.webp" type="image/webp">
-            <img class="greeting__hero-artwork" id="greetingHeroArtwork"
-                 src="assets/guru-greeting-hero.png"
-                 alt="Sri Guru Granth Sahib Ji with Sri Guru Gobind Singh Ji and Sri Guru Nanak Dev Ji"
-                 width="1024" height="516"
-                 loading="eager" fetchpriority="high" decoding="async">
+            <img class="greeting__hero-artwork" id="greetingHeroArtwork" src="assets/guru-greeting-hero.png" alt="Sri Guru Granth Sahib Ji with Sri Guru Gobind Singh Ji and Sri Guru Nanak Dev Ji" width="1906" height="825" loading="eager" fetchpriority="high" decoding="async">
           </picture>
         </div>
 
         <!-- Dark Mode / Dynamic Night: Interactive All-Guru Carousel + Gurbani Wisdom -->
         <div class="greeting__dark-carousel-container" id="greetingDarkCarousel">
-                    <div class="greeting__portrait-slider" id="guruSlider" aria-label="Guru Portraits Carousel">
-            <div class="greeting__slider-track" id="guruSliderTrack">
-              <div class="greeting__slide greeting__slide--active" data-guru="sggs">
-                <div class="greeting__guru-portrait">
-                  <img src="guruimages/gurugranthsahebji.jpeg" alt="Sri Guru Granth Sahib Ji" style="object-position: center 25%;" loading="eager">
+          <div class="greeting__portrait-slider-wrap">
+            <button class="greeting__slider-arrow greeting__slider-arrow--prev" id="guruSliderPrev" aria-label="Previous Guru" type="button">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            </button>
+            <div class="greeting__portrait-slider" id="guruSlider" aria-label="Guru Portraits Carousel">
+              <div class="greeting__slider-track" id="guruSliderTrack">
+                <div class="greeting__slide greeting__slide--active" data-guru="sggs">
+                  <div class="greeting__guru-portrait">
+                    <img src="guruimages/gurugranthsahebji.jpeg" alt="Sri Guru Granth Sahib Ji" style="object-position: center 25%;" loading="eager" draggable="false">
+                  </div>
                 </div>
-              </div>
-              <div class="greeting__slide greeting__slide--prev" data-guru="guru-gobind">
-                <div class="greeting__guru-portrait">
-                  <img src="guruimages/gurugobindsinghsahebji.jpeg" alt="Sri Guru Gobind Singh Sahib Ji" style="object-position: center 25%;" loading="lazy">
+                <div class="greeting__slide greeting__slide--prev" data-guru="guru-gobind">
+                  <div class="greeting__guru-portrait">
+                    <img src="guruimages/gurugobindsinghsahebji.jpeg" alt="Sri Guru Gobind Singh Sahib Ji" style="object-position: center 25%;" loading="lazy" draggable="false">
+                  </div>
                 </div>
-              </div>
-              <div class="greeting__slide greeting__slide--next" data-guru="guru-nanak">
-                <div class="greeting__guru-portrait">
-                  <img src="guruimages/gurunanakdevsahebji.jpeg" alt="Sri Guru Nanak Dev Sahib Ji" style="object-position: center 20%;" loading="lazy">
+                <div class="greeting__slide greeting__slide--next" data-guru="guru-nanak">
+                  <div class="greeting__guru-portrait">
+                    <img src="guruimages/gurunanakdevsahebji.jpeg" alt="Sri Guru Nanak Dev Sahib Ji" style="object-position: center 20%;" loading="lazy" draggable="false">
+                  </div>
                 </div>
               </div>
             </div>
+            <button class="greeting__slider-arrow greeting__slider-arrow--next" id="guruSliderNext" aria-label="Next Guru" type="button">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </button>
           </div>
           
           <div class="greeting__text" id="greetingText">

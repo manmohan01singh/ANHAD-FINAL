@@ -330,10 +330,13 @@
     return null;
   }
 
-  const PortraitSlider = {
-    _currentIndex: 10, // Default to Guru Arjan Dev Ji
+    const PortraitSlider = {
+    _currentIndex: 10, // Default to Sri Guru Granth Sahib Ji
     _startX: 0,
+    _startY: 0,
     _isDragging: false,
+    _activePointerId: null,
+    _eventsBound: false,
     _gurus: [
       { id: 'guru-nanak', name: 'Sri Guru Nanak Dev Sahib Ji', img: 'guruimages/gurunanakdevsahebji.jpeg', pos: 'center 20%', colors: ['#ddcdb3', '#c9b89f', '#b8a88e'] },
       { id: 'guru-angad', name: 'Sri Guru Angad Dev Sahib Ji', img: 'guruimages/guruangaddevsahebji.jpeg', pos: 'center 25%', colors: ['#ab9468', '#e6d8bf', '#624d31'] },
@@ -348,7 +351,7 @@
       { id: 'sggs', name: 'Sri Guru Granth Sahib Ji', img: 'guruimages/gurugranthsahebji.jpeg', pos: 'center 25%', colors: ['#a06f2c', '#53371e', '#c89035'] }
     ],
 
-        init() {
+    init() {
       const track = document.getElementById('guruSliderTrack');
       if (!track) return;
       track.innerHTML = '';
@@ -356,14 +359,18 @@
         const slide = document.createElement('div');
         slide.className = 'greeting__slide';
         slide.setAttribute('data-guru', guru.id);
+        slide.setAttribute('data-index', i);
         slide.innerHTML = `
           <div class="greeting__guru-portrait">
-            <img src="${guru.img}" alt="${guru.name}" style="object-position: ${guru.pos || 'center 25%'};" loading="lazy">
+            <img src="${guru.img}" alt="${guru.name}" style="object-position: ${guru.pos || 'center 25%'}; pointer-events: none; -webkit-user-drag: none; user-select: none;" loading="lazy" draggable="false">
           </div>
         `;
-        slide.addEventListener('click', () => {
-          this._currentIndex = i;
-          this.update();
+        slide.addEventListener('click', (e) => {
+          if (this._currentIndex !== i) {
+            e.stopPropagation();
+            this._currentIndex = i;
+            this.update();
+          }
         });
         track.appendChild(slide);
       });
@@ -371,51 +378,103 @@
       this.update(true);
     },
 
-        _bindEvents() {
+    _bindEvents() {
+      if (this._eventsBound) return;
       const slider = document.getElementById('guruSlider');
       if (!slider) return;
+      this._eventsBound = true;
 
-      let startX = 0;
-      let startY = 0;
-      let isMoving = false;
+      // Wire Prev/Next arrow buttons
+      const prevBtn = document.getElementById('guruSliderPrev');
+      const nextBtn = document.getElementById('guruSliderNext');
+      if (prevBtn) {
+        prevBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          this.prev();
+        });
+      }
+      if (nextBtn) {
+        nextBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          this.next();
+        });
+      }
 
-      const onTouchStart = (e) => {
-        const touch = e.touches ? e.touches[0] : e;
-        startX = touch.clientX;
-        startY = touch.clientY;
-        isMoving = true;
+      const handleStart = (clientX, clientY, pointerId = null) => {
+        this._startX = clientX;
+        this._startY = clientY;
+        this._isDragging = true;
+        this._activePointerId = pointerId;
       };
 
-      const onTouchMove = (e) => {
-        if (!isMoving) return;
-        const touch = e.touches ? e.touches[0] : e;
-        const deltaX = touch.clientX - startX;
-        const deltaY = touch.clientY - startY;
+      const handleMove = (clientX, clientY, e = null) => {
+        if (!this._isDragging) return;
+        const deltaX = clientX - this._startX;
+        const deltaY = clientY - this._startY;
 
-        // Trigger slide if horizontal finger swipe delta exceeds 25px
-        if (Math.abs(deltaX) > 25 && Math.abs(deltaX) > Math.abs(deltaY)) {
+        // Trigger slide if horizontal swipe exceeds 20px
+        if (Math.abs(deltaX) > 20 && Math.abs(deltaX) > Math.abs(deltaY)) {
+          if (e && e.cancelable) e.preventDefault();
           if (deltaX < 0) {
             this.next();
           } else {
             this.prev();
           }
-          isMoving = false;
+          this._startX = clientX;
+          this._startY = clientY;
         }
       };
 
-      const onTouchEnd = () => {
-        isMoving = false;
+      const handleEnd = () => {
+        this._isDragging = false;
+        this._activePointerId = null;
       };
 
-      // Direct swipe listeners on slider element
-      slider.addEventListener('touchstart', onTouchStart, { passive: true });
-      slider.addEventListener('touchmove', onTouchMove, { passive: true });
-      slider.addEventListener('touchend', onTouchEnd, { passive: true });
-      slider.addEventListener('touchcancel', onTouchEnd, { passive: true });
+      // Unified Pointer Events
+      if (window.PointerEvent) {
+        slider.addEventListener('pointerdown', (e) => {
+          handleStart(e.clientX, e.clientY, e.pointerId);
+          try { slider.setPointerCapture(e.pointerId); } catch(err) {}
+        });
+        slider.addEventListener('pointermove', (e) => {
+          if (this._isDragging && (this._activePointerId === null || e.pointerId === this._activePointerId)) {
+            handleMove(e.clientX, e.clientY, e);
+          }
+        });
+        slider.addEventListener('pointerup', (e) => {
+          try { slider.releasePointerCapture(e.pointerId); } catch(err) {}
+          handleEnd();
+        });
+        slider.addEventListener('pointercancel', (e) => {
+          try { slider.releasePointerCapture(e.pointerId); } catch(err) {}
+          handleEnd();
+        });
+      } else {
+        // Touch fallback
+        slider.addEventListener('touchstart', (e) => {
+          if (e.touches && e.touches.length > 0) {
+            handleStart(e.touches[0].clientX, e.touches[0].clientY);
+          }
+        }, { passive: true });
+        slider.addEventListener('touchmove', (e) => {
+          if (e.touches && e.touches.length > 0) {
+            handleMove(e.touches[0].clientX, e.touches[0].clientY, e);
+          }
+        }, { passive: true });
+        slider.addEventListener('touchend', handleEnd, { passive: true });
+        slider.addEventListener('touchcancel', handleEnd, { passive: true });
 
-      slider.addEventListener('mousedown', onTouchStart);
-      window.addEventListener('mousemove', onTouchMove);
-      window.addEventListener('mouseup', onTouchEnd);
+        // Mouse fallback
+        slider.addEventListener('mousedown', (e) => {
+          handleStart(e.clientX, e.clientY);
+        });
+        window.addEventListener('mousemove', (e) => {
+          handleMove(e.clientX, e.clientY, e);
+        });
+        window.addEventListener('mouseup', handleEnd);
+      }
     },
 
     next() {
@@ -447,7 +506,7 @@
       }
     },
 
-        update(immediate = false) {
+    update(immediate = false) {
       const slides = document.querySelectorAll('.greeting__slide');
       const total = this._gurus.length;
 
@@ -478,22 +537,11 @@
     },
 
     _updateOrbColors() {
-      // Disabled: Background light behind images removed
       return;
     },
 
     _syncText() {
-      const salEl = document.getElementById('greetingSalutation');
-      const gurEl = document.getElementById('greetingGurbani');
-      const transEl = document.getElementById('greetingTranslation');
-
-      if (salEl && (!salEl.textContent || salEl.textContent.trim() === '')) {
-        salEl.textContent = 'Sri Guru Granth Sahib Ji';
-      }
-      if (gurEl && (!gurEl.textContent || gurEl.textContent.trim() === '')) {
-        gurEl.textContent = 'ਏਕੋ ਨਾਮੁ ਹੁਕਮੁ ਹੈ ਨਾਨਕ ਸਤਿਗੁਰਿ ਦੀਆ ਬੁਝਾਇ ਜੀਉ ॥੫॥';
-        if (transEl) transEl.textContent = "The One Name is the Lord's Command; O Nanak, the True Guru has given me this understanding.";
-      }
+      this.update();
     }
   };
 
