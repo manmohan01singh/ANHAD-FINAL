@@ -30,13 +30,13 @@
     /* Text */
     --text-primary: #1C1C1E;
     --text-secondary: #8E8E93;
-    --text-accent: #007AFF;
+    --text-accent: #D4943A;
     
     /* UI Elements */
     --border-color: rgba(0, 0, 0, 0.1);
     --shadow-color: rgba(0, 0, 0, 0.15);
     --highlight-color: #FFD60A;
-    --btn-bg: #007AFF;
+    --btn-bg: #D4943A;
     --btn-text: #FFFFFF;
     
     /* Card Gradients */
@@ -83,11 +83,11 @@
     --bg-tertiary: #E5E5EA;
     --text-primary: #1C1C1E;
     --text-secondary: #8E8E93;
-    --text-accent: #007AFF;
+    --text-accent: #D4943A;
     --border-color: rgba(0, 0, 0, 0.1);
     --shadow-color: rgba(0, 0, 0, 0.15);
     --highlight-color: #FFD60A;
-    --btn-bg: #007AFF;
+    --btn-bg: #D4943A;
     --btn-text: #FFFFFF;
     /* Card gradients — standard light mode version */
     --card-green-gradient: linear-gradient(140deg, #E8F5E9 0%, #C8E6C9 100%);
@@ -108,11 +108,11 @@
     --bg-tertiary: #3A3A3C;
     --text-primary: #F5F5F7;
     --text-secondary: #8E8E93;
-    --text-accent: #0A84FF;
+    --text-accent: #D4943A;
     --border-color: rgba(255, 255, 255, 0.15);
     --shadow-color: rgba(0, 0, 0, 0.5);
     --highlight-color: #FFD60A;
-    --btn-bg: #0A84FF;
+    --btn-bg: #D4943A;
     --btn-text: #FFFFFF;
     /* Card gradients — dark mode versions */
     --card-green-gradient: linear-gradient(140deg, #1C3D2A 0%, #2D4A3E 100%);
@@ -158,13 +158,13 @@
     /* Text */
     --text-primary: #F5F5F7;
     --text-secondary: #8E8E93;
-    --text-accent: #0A84FF;
+    --text-accent: #D4943A;
     
     /* UI Elements */
     --border-color: rgba(255, 255, 255, 0.15);
     --shadow-color: rgba(0, 0, 0, 0.5);
     --highlight-color: #FFD60A;
-    --btn-bg: #0A84FF;
+    --btn-bg: #D4943A;
     --btn-text: #FFFFFF;
     
     /* Card Gradients - Dark mode versions */
@@ -245,13 +245,13 @@ html:not([data-theme]) {
     /* Text */
     --text-primary: #1C1C1E;
     --text-secondary: #8E8E93;
-    --text-accent: #007AFF;
+    --text-accent: #D4943A;
     
     /* UI Elements */
     --border-color: rgba(0, 0, 0, 0.1);
     --shadow-color: rgba(0, 0, 0, 0.15);
     --highlight-color: #FFD60A;
-    --btn-bg: #007AFF;
+    --btn-bg: #D4943A;
     --btn-text: #FFFFFF;
     
     /* Card Gradients - Default to light theme */

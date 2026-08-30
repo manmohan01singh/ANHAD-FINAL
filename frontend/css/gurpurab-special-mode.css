@@ -313,61 +313,35 @@
 .gurpurab-mode--celebration .event-card,
 .gurpurab-mode--remembrance .event-card {
   position: relative;
-  border: 1px solid rgba(212, 175, 55, 0.4);
+  border: none !important;
   box-shadow: 
-    0 8px 32px rgba(212, 148, 58, 0.15),
-    0 0 0 1px rgba(212, 175, 55, 0.1);
-  transform: scale(1.01);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+    0 12px 28px -4px rgba(212, 148, 58, 0.16),
+    0 4px 10px rgba(0, 0, 0, 0.02),
+    -4px -4px 10px rgba(255, 255, 255, 0.98),
+    inset 2.5px 2.5px 6px rgba(255, 255, 255, 1),
+    inset -2.5px -2.5px 6px rgba(212, 148, 58, 0.08) !important;
+  transform: none;
 }
 
 /* Celebration mode extras */
 .gurpurab-mode--celebration .event-card {
-  background: linear-gradient(
-    145deg,
-    rgba(255, 248, 220, 0.6) 0%,
-    rgba(255, 248, 240, 0.4) 50%,
-    rgba(255, 240, 245, 0.3) 100%
-  );
+  background: linear-gradient(145deg, #FFFFFF 0%, #FFFDF8 45%, #FEEFD8 100%) !important;
 }
 
 .gurpurab-mode--celebration .event-card__title {
-  background: linear-gradient(
-    135deg,
-    #AF7D14 0%,
-    #D4943A 30%,
-    #FFD700 50%,
-    #D4943A 70%,
-    #AF7D14 100%
-  );
-  background-size: 200% 200%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: titleShimmer 4s ease-in-out infinite;
-}
-
-@keyframes titleShimmer {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
+  color: #1A171D !important;
+  font-weight: 800 !important;
 }
 
 /* Remembrance mode - calm and respectful */
 .gurpurab-mode--remembrance .event-card {
-  background: linear-gradient(
-    145deg,
-    rgba(230, 230, 250, 0.5) 0%,
-    rgba(240, 240, 245, 0.4) 50%,
-    rgba(245, 245, 250, 0.3) 100%
-  );
-  border-color: rgba(180, 180, 200, 0.4);
-  box-shadow: 
-    0 4px 20px rgba(150, 150, 170, 0.1),
-    0 0 0 1px rgba(180, 180, 200, 0.1);
+  background: linear-gradient(145deg, #FFFFFF 0%, #FFFDF8 45%, #FEEFD8 100%) !important;
+  border: none !important;
 }
 
 .gurpurab-mode--remembrance .event-card__title {
-  color: #8B7B8B;
+  color: #1A171D !important;
+  font-weight: 800 !important;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════

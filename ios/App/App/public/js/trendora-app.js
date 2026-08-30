@@ -1059,7 +1059,7 @@
 
         // Update eyebrow text
         if (eyebrowEl) {
-          eyebrowEl.textContent = event.isToday ? 'TODAY' : 'Upcoming Gurpurab';
+          eyebrowEl.textContent = event.isToday ? "✦ TODAY'S HISTORICAL DIWAS" : 'Upcoming Gurpurab';
         }
 
         const badgeValueEl = document.getElementById('eventCountdownBadgeValue');
