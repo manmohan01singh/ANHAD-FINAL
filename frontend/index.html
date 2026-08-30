@@ -557,14 +557,14 @@
       margin-top: 2px !important;
     }
     .event-card__guru-wrapper {
-      width: 82px !important;
-      height: 82px !important;
-      min-width: 82px !important;
-      min-height: 82px !important;
+      width: 70px !important;
+      height: 70px !important;
+      min-width: 70px !important;
+      min-height: 70px !important;
       border-radius: 50% !important;
       padding: 2.5px !important;
       background: linear-gradient(145deg, #F5E6C8 0%, #D4A84B 50%, #B8860B 100%) !important;
-      box-shadow: 0 4px 14px rgba(212, 168, 83, 0.35) !important;
+      box-shadow: 0 3px 12px rgba(212, 168, 83, 0.3) !important;
       display: flex !important;
       align-items: center !important;
       justify-content: center !important;
@@ -870,14 +870,14 @@
     }
 
     .event-card__guru-wrapper {
-      width: 82px !important;
-      height: 82px !important;
-      min-width: 82px !important;
-      min-height: 82px !important;
+      width: 70px !important;
+      height: 70px !important;
+      min-width: 70px !important;
+      min-height: 70px !important;
       border-radius: 50% !important;
       padding: 2.5px !important;
       background: linear-gradient(145deg, #F5E6C8 0%, #D4A84B 50%, #B8860B 100%) !important;
-      box-shadow: 0 4px 14px rgba(212, 168, 83, 0.35) !important;
+      box-shadow: 0 3px 12px rgba(212, 168, 83, 0.3) !important;
       display: flex !important;
       align-items: center !important;
       justify-content: center !important;
@@ -1168,14 +1168,14 @@
     }
 
     .event-card__guru-wrapper {
-      width: 82px !important;
-      height: 82px !important;
-      min-width: 82px !important;
-      min-height: 82px !important;
+      width: 70px !important;
+      height: 70px !important;
+      min-width: 70px !important;
+      min-height: 70px !important;
       border-radius: 50% !important;
       padding: 2.5px !important;
       background: linear-gradient(145deg, #F5E6C8 0%, #D4A84B 50%, #B8860B 100%) !important;
-      box-shadow: 0 4px 14px rgba(212, 168, 83, 0.35) !important;
+      box-shadow: 0 3px 12px rgba(212, 168, 83, 0.3) !important;
       display: flex !important;
       align-items: center !important;
       justify-content: center !important;
@@ -4451,7 +4451,7 @@
       color: #94A3B8 !important;
     }
   </style>
-  <!-- ANHAD MASTER VISUAL OVERRIDES v10.72.0 -->
+  <!-- ANHAD MASTER VISUAL OVERRIDES v10.73.0 -->
   <style id="anhad-master-overrides">
     /* ════════════════════════════════════════════════════════════════
        1. GREETING SECTION & CLEAN SPACING BEFORE NITNEM BAR
@@ -4712,43 +4712,137 @@
     }
 
     /* ════════════════════════════════════════════════════════════════
-       4. GURPURAB CALENDAR CARD (EVENT CARD) CUSHION CLAY
+       4. GURPURAB CALENDAR CARD (EVENT CARD) — SLEEK COMPACT CUSHION CLAY
        ════════════════════════════════════════════════════════════════ */
     .event-card,
     .event-card.event-today {
-      padding: 18px 20px !important;
-      border-radius: 28px !important;
-      border: none !important;
-      background: linear-gradient(135deg, #FFFFFF 0%, #FFFCF6 40%, #FFF3DC 100%) !important;
+      padding: 14px 18px !important;
+      border-radius: 24px !important;
+      border: 1px solid rgba(212, 168, 58, 0.16) !important;
+      background: linear-gradient(135deg, #FFFFFF 0%, #FFFDF8 45%, #FFF2D6 100%) !important;
       box-shadow:
-        7px 10px 24px rgba(212,168,58,0.15),
-        -5px -5px 12px rgba(255,255,255,1),
-        inset 3px 3px 6px rgba(255,255,255,0.95),
-        inset -2px -2px 5px rgba(212,148,58,0.08) !important;
-      margin-bottom: 22px !important;
+        5px 8px 20px rgba(212, 168, 58, 0.14),
+        -4px -4px 10px rgba(255, 255, 255, 1),
+        inset 2px 2px 4px rgba(255, 255, 255, 0.9),
+        inset -1.5px -1.5px 4px rgba(212, 168, 58, 0.08) !important;
+      margin-bottom: 20px !important;
       position: relative !important;
       overflow: hidden !important;
     }
+    .event-card__main {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      gap: 12px !important;
+    }
+    .event-card__info {
+      flex: 1 !important;
+    }
+    .event-card__eyebrow {
+      font-size: 0.70rem !important;
+      font-weight: 800 !important;
+      letter-spacing: 0.8px !important;
+      text-transform: uppercase !important;
+      color: #C68A2C !important;
+      margin-bottom: 2px !important;
+    }
+    .event-card__title {
+      font-size: 1.02rem !important;
+      font-weight: 700 !important;
+      line-height: 1.25 !important;
+      letter-spacing: -0.1px !important;
+      color: #1C1C1E !important;
+      margin: 2px 0 8px 0 !important;
+    }
+    .event-card__bottom-row {
+      display: flex !important;
+      align-items: center !important;
+      gap: 6px !important;
+      flex-wrap: wrap !important;
+    }
+    .event-card__date-pill {
+      padding: 3px 9px !important;
+      font-size: 0.75rem !important;
+      font-weight: 700 !important;
+      border-radius: 10px !important;
+      background: rgba(212, 148, 58, 0.12) !important;
+      color: #9E6B18 !important;
+    }
+    .event-card__badge-pill {
+      padding: 3px 9px !important;
+      font-size: 0.75rem !important;
+      font-weight: 700 !important;
+      border-radius: 10px !important;
+      background: linear-gradient(135deg, #FF6B6B, #FF8E53) !important;
+      color: #FFFFFF !important;
+      box-shadow: 0 2px 6px rgba(255, 107, 107, 0.3) !important;
+    }
+    .event-card__learn-btn {
+      font-size: 0.78rem !important;
+      font-weight: 700 !important;
+      color: #AF7D14 !important;
+      background: rgba(212, 148, 58, 0.10) !important;
+      padding: 3px 9px !important;
+      border-radius: 10px !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 3px !important;
+      border: none !important;
+      cursor: pointer !important;
+    }
+    .event-card__guru-img-wrapper {
+      width: 64px !important;
+      height: 64px !important;
+      min-width: 64px !important;
+      min-height: 64px !important;
+      border-radius: 50% !important;
+      border: 2.5px solid #D4943A !important;
+      box-shadow: 0 4px 14px rgba(212, 148, 58, 0.25) !important;
+      overflow: hidden !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      flex-shrink: 0 !important;
+    }
+    .event-card__guru-img {
+      width: 100% !important;
+      height: 100% !important;
+      object-fit: cover !important;
+    }
+
+    /* Dark Mode Event Card */
     html.dark-mode .event-card,
     html.dark-mode .event-card.event-today,
     [data-theme="dark"] .event-card,
     [data-time-of-day="night"] .event-card {
-      background: linear-gradient(150deg, #1E1C18 0%, #131210 100%) !important;
-      border: 1px solid rgba(212,148,58,0.18) !important;
+      background: linear-gradient(150deg, #1C1A16 0%, #12110E 100%) !important;
+      border: 1px solid rgba(212, 148, 58, 0.20) !important;
       box-shadow:
-        8px 12px 28px rgba(0,0,0,0.75),
-        -3px -3px 9px rgba(255,255,255,0.03),
-        inset 2px 2px 6px rgba(212,148,58,0.18),
-        inset -3px -3px 7px rgba(0,0,0,0.55) !important;
+        6px 10px 24px rgba(0, 0, 0, 0.75),
+        -2px -2px 8px rgba(255, 255, 255, 0.03),
+        inset 2px 2px 6px rgba(212, 148, 58, 0.15),
+        inset -2px -2px 6px rgba(0, 0, 0, 0.6) !important;
+    }
+    html.dark-mode .event-card__title,
+    [data-theme="dark"] .event-card__title,
+    [data-time-of-day="night"] .event-card__title {
+      color: #F5F5F7 !important;
     }
 
     /* ════════════════════════════════════════════════════════════════
-       5. PRACTICE CARDS — ROCK SOLID CUSHION CLAY & TINTED ICONS
+       5. PRACTICE CARDS — PERFECT CIRCULAR ICONS & CUSHION CLAY
        ════════════════════════════════════════════════════════════════ */
+    .practice-card {
+      padding: 14px 8px 12px !important;
+      border-radius: 26px !important;
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      text-align: center !important;
+    }
     .practice-card--nitnem {
       background: linear-gradient(165deg, #FFFDFB 0%, #FFEFD8 50%, #FFE5C0 100%) !important;
       border: 1px solid rgba(212,148,58,0.24) !important;
-      border-radius: 26px !important;
       box-shadow:
         6px 10px 20px rgba(212,148,58,0.16),
         2px 4px 8px rgba(139,69,19,0.06),
@@ -4758,7 +4852,6 @@
     .practice-card--sehaj {
       background: linear-gradient(165deg, #FBF9FF 0%, #F0EBFF 50%, #E4DCFF 100%) !important;
       border: 1px solid rgba(88,86,214,0.24) !important;
-      border-radius: 26px !important;
       box-shadow:
         6px 10px 20px rgba(88,86,214,0.16),
         2px 4px 8px rgba(45,0,135,0.06),
@@ -4768,7 +4861,6 @@
     .practice-card--hukam {
       background: linear-gradient(165deg, #FFFDFB 0%, #FFF0E8 50%, #FFE0CC 100%) !important;
       border: 1px solid rgba(255,110,74,0.24) !important;
-      border-radius: 26px !important;
       box-shadow:
         6px 10px 20px rgba(255,110,74,0.16),
         2px 4px 8px rgba(139,45,0,0.06),
@@ -4776,27 +4868,42 @@
         inset -3px -3px 6px rgba(255,110,74,0.15) !important;
     }
 
-    /* PRACTICE CARD ICONS: NO STARK WHITE BG — SOFT TINTED BLEND */
+    /* PRACTICE CARD ICONS: CIRCULAR SOFT SQUIRCLE / PILL — NO SQUARE BOX */
+    .practice-card__ring {
+      width: 52px !important;
+      height: 52px !important;
+      position: relative !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      margin-bottom: 8px !important;
+    }
     .practice-card__ring-icon {
-      background: rgba(255, 255, 255, 0.45) !important;
-      backdrop-filter: blur(8px) !important;
-      border: 1px solid rgba(255, 255, 255, 0.6) !important;
+      width: 44px !important;
+      height: 44px !important;
+      border-radius: 50% !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
       box-shadow: none !important;
     }
     .practice-card--nitnem .practice-card__ring-icon {
-      background: rgba(212, 148, 58, 0.14) !important;
-      border: 1px solid rgba(212, 148, 58, 0.22) !important;
+      background: rgba(212, 148, 58, 0.15) !important;
+      border: 1.5px solid rgba(212, 148, 58, 0.25) !important;
+      color: #B47820 !important;
     }
     .practice-card--sehaj .practice-card__ring-icon {
-      background: rgba(88, 86, 214, 0.14) !important;
-      border: 1px solid rgba(88, 86, 214, 0.22) !important;
+      background: rgba(88, 86, 214, 0.15) !important;
+      border: 1.5px solid rgba(88, 86, 214, 0.25) !important;
+      color: #5856D6 !important;
     }
     .practice-card--hukam .practice-card__ring-icon {
-      background: rgba(255, 110, 74, 0.14) !important;
-      border: 1px solid rgba(255, 110, 74, 0.22) !important;
+      background: rgba(255, 110, 74, 0.15) !important;
+      border: 1.5px solid rgba(255, 110, 74, 0.25) !important;
+      color: #FF6E4A !important;
     }
 
-    /* Dark Mode Practice Cards & Icons */
+    /* Dark Mode Practice Cards & Circular Icons */
     html.dark-mode .practice-card--nitnem,
     [data-theme="dark"] .practice-card--nitnem,
     [data-time-of-day="night"] .practice-card--nitnem {
@@ -4832,6 +4939,7 @@
     [data-time-of-day="night"] .practice-card__ring-icon {
       background: rgba(255, 255, 255, 0.08) !important;
       border: 1px solid rgba(255, 255, 255, 0.12) !important;
+      border-radius: 50% !important;
     }
 
     /* ════════════════════════════════════════════════════════════════

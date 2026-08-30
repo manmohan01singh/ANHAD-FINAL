@@ -187,6 +187,15 @@ html.dark-mode .greeting__hero-banner,
     display: none !important;
 }
 
+html.dark-mode .greeting,
+[data-theme="dark"] .greeting,
+[data-time-of-day="night"] .greeting {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
+
 #greetingDarkCarousel,
 html.dark-mode .greeting__dark-carousel-container,
 [data-theme="dark"] .greeting__dark-carousel-container,
@@ -200,7 +209,7 @@ html.dark-mode .greeting__dark-carousel-container,
     margin-top: -10px !important;
     margin-bottom: 0 !important;
     position: relative !important;
-    left: 0 !important;
+    left: -12px !important;
     margin-left: auto !important;
     margin-right: auto !important;
     transform: none !important;
