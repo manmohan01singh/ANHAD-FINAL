@@ -2087,11 +2087,40 @@ a:active {
   margin-bottom: var(--space-3);
 }
 
+/* Soft circular background behind the icon - NO HARD SQUARE */
+.practice-card__ring::before {
+  content: '';
+  position: absolute;
+  inset: 8px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.5) 100%);
+  z-index: 0;
+  transition: all 0.3s ease;
+}
+
+.practice-card:hover .practice-card__ring::before {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.7) 100%);
+  transform: scale(1.05);
+}
+
+/* Dark mode - softer background */
+.dark-mode .practice-card__ring::before,
+[data-theme="dark"] .practice-card__ring::before {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%);
+}
+
+.dark-mode .practice-card:hover .practice-card__ring::before,
+[data-theme="dark"] .practice-card:hover .practice-card__ring::before {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.05) 100%);
+}
+
 .practice-card__ring svg {
   width: 60px;
   height: 60px;
   transform: rotate(-90deg);
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.05));
+  position: relative;
+  z-index: 1;
 }
 
 .practice-card__ring-bg {
@@ -2125,6 +2154,7 @@ a:active {
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 2;
 }
 
 .practice-card__ring-icon svg {
@@ -2132,6 +2162,7 @@ a:active {
   height: 24px;
   color: var(--text-secondary);
   opacity: 0.75;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
 }
 
 .practice-card--nitnem .practice-card__ring-icon svg {

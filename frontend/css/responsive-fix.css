@@ -198,6 +198,8 @@ html.dark-mode .greeting__dark-carousel-container,
     padding: 0 !important;
     margin-top: -10px !important;
     margin-bottom: 0 !important;
+    position: relative !important;
+    transform: translateX(25px) !important;
 }
 
 /* Portrait Slider Container */
