@@ -3010,20 +3010,25 @@
     }
   
 
-    /* ─── SACRED DEVOTIONAL HERO ARTWORK INTEGRATION ─── */
+        /* ─── SACRED DEVOTIONAL HERO ARTWORK INTEGRATION (REFINED) ─── */
+    .greeting {
+      margin-top: 4px !important;
+      margin-bottom: 24px !important;
+      padding: 0 16px !important;
+      text-align: center !important;
+    }
     .greeting__hero-banner {
       position: relative;
       width: 100%;
-      max-width: 580px;
-      margin: 0 auto 14px;
+      max-width: 660px;
+      margin: 0 auto 16px;
       display: flex;
       justify-content: center;
       align-items: center;
       overflow: hidden;
-      border-radius: 20px;
-      /* Soft natural edge vignetting: melts seamlessly into page surface */
-      mask-image: radial-gradient(ellipse 95% 90% at 50% 50%, black 65%, transparent 100%);
-      -webkit-mask-image: radial-gradient(ellipse 95% 90% at 50% 50%, black 65%, transparent 100%);
+      /* 4-sided ultra-soft natural gradient dissolve into cream/ivory background */
+      mask-image: radial-gradient(ellipse 90% 86% at 50% 50%, #000000 58%, rgba(0,0,0,0.7) 76%, transparent 100%);
+      -webkit-mask-image: radial-gradient(ellipse 90% 86% at 50% 50%, #000000 58%, rgba(0,0,0,0.7) 76%, transparent 100%);
     }
     .greeting__hero-artwork {
       width: 100%;
@@ -3032,46 +3037,90 @@
       object-fit: contain;
       display: block;
       transition: opacity 0.3s ease;
+      filter: contrast(1.03) saturate(1.02);
     }
+    
+    /* Dark Mode Seamless Dark-Surface Dissolve */
     html.dark-mode .greeting__hero-banner,
     [data-theme="dark"] .greeting__hero-banner {
-      /* Subtle dark mode contrast harmonization */
-      mask-image: radial-gradient(ellipse 92% 88% at 50% 50%, black 60%, transparent 100%);
-      -webkit-mask-image: radial-gradient(ellipse 92% 88% at 50% 50%, black 60%, transparent 100%);
-      filter: drop-shadow(0 4px 20px rgba(212, 148, 58, 0.12));
+      mask-image: radial-gradient(ellipse 88% 84% at 50% 50%, #000000 52%, rgba(0,0,0,0.55) 74%, transparent 100%);
+      -webkit-mask-image: radial-gradient(ellipse 88% 84% at 50% 50%, #000000 52%, rgba(0,0,0,0.55) 74%, transparent 100%);
+      filter: drop-shadow(0 6px 28px rgba(212, 148, 58, 0.16));
+    }
+    
+    /* Dynamic Theme Environmental Atmosphere */
+    [data-theme-mode="auto"][data-time-of-day="morning"] .greeting__hero-banner {
+      filter: drop-shadow(0 4px 20px rgba(255, 180, 80, 0.1));
+    }
+    [data-theme-mode="auto"][data-time-of-day="evening"] .greeting__hero-banner {
+      filter: drop-shadow(0 4px 22px rgba(212, 148, 58, 0.12));
+    }
+    [data-theme-mode="auto"][data-time-of-day="night"] .greeting__hero-banner {
+      mask-image: radial-gradient(ellipse 88% 84% at 50% 50%, #000000 52%, rgba(0,0,0,0.55) 74%, transparent 100%);
+      -webkit-mask-image: radial-gradient(ellipse 88% 84% at 50% 50%, #000000 52%, rgba(0,0,0,0.55) 74%, transparent 100%);
+      filter: drop-shadow(0 6px 28px rgba(212, 148, 58, 0.16));
+    }
+    
+    /* Sacred Devotional Typography Hierarchy */
+    .greeting__text {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 0 8px;
     }
     .greeting__salutation {
       font-size: 1.15rem !important;
       font-weight: 700 !important;
-      letter-spacing: 0.5px !important;
+      letter-spacing: 0.6px !important;
+      text-transform: uppercase !important;
       color: var(--anhad-gold, #D4943A) !important;
-      margin-bottom: 4px !important;
+      margin-bottom: 6px !important;
     }
     .greeting__gurbani {
       font-family: var(--font-gurmukhi, 'Noto Sans Gurmukhi', serif) !important;
-      font-size: 1.18rem !important;
-      line-height: 1.5 !important;
+      font-size: 1.25rem !important;
+      line-height: 1.55 !important;
       font-weight: 600 !important;
       color: var(--text-primary, #1C1C1E) !important;
-      margin-bottom: 4px !important;
+      margin-bottom: 6px !important;
     }
     html.dark-mode .greeting__gurbani,
     [data-theme="dark"] .greeting__gurbani {
       color: #F5F5F7 !important;
     }
     .greeting__translation {
-      font-size: 0.92rem !important;
-      line-height: 1.45 !important;
+      font-size: 0.94rem !important;
+      line-height: 1.5 !important;
       color: var(--text-secondary, #636366) !important;
-      max-width: 520px !important;
+      font-style: italic !important;
+      max-width: 540px !important;
       margin: 0 auto !important;
     }
     html.dark-mode .greeting__translation,
     [data-theme="dark"] .greeting__translation {
       color: #A1A1A6 !important;
     }
-
-</style>
+    
+    @media (max-width: 480px) {
+      .greeting {
+        margin-top: 0 !important;
+        margin-bottom: 18px !important;
+        padding: 0 12px !important;
+      }
+      .greeting__hero-banner {
+        margin-bottom: 12px;
+      }
+      .greeting__salutation {
+        font-size: 1.05rem !important;
+      }
+      .greeting__gurbani {
+        font-size: 1.12rem !important;
+        line-height: 1.45 !important;
+      }
+      .greeting__translation {
+        font-size: 0.88rem !important;
+      }
+    }
+  </style>
 
 </head>
 
