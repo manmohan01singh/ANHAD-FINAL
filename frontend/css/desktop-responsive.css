@@ -470,8 +470,8 @@
     padding-top: 14px !important;
     margin-top: auto !important;
     border-top: 1px solid rgba(212, 148, 58, 0.14) !important;
-    display: flex !important;
-    align-items: center !important;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
     gap: 8px !important;
     width: 100% !important;
     box-sizing: border-box !important;
@@ -482,15 +482,14 @@
   }
 
   .desktop-sidebar__footer-action {
-    flex: 1 1 0 !important;
-    height: 38px !important;
-    min-height: 38px !important;
+    height: 40px !important;
+    min-height: 40px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
     gap: 6px !important;
-    padding: 0 6px !important;
-    font-size: 0.78rem !important;
+    padding: 0 8px !important;
+    font-size: 0.82rem !important;
     font-weight: 600 !important;
     border-radius: 12px !important;
     background: rgba(212, 148, 58, 0.08) !important;
@@ -511,28 +510,6 @@
     background: rgba(212, 148, 58, 0.18) !important;
     color: var(--gold-primary, #D4943A) !important;
     transform: translateY(-1px) !important;
-  }
-
-  .desktop-sidebar__theme-toggle {
-    flex: 0 0 38px !important;
-    width: 38px !important;
-    height: 38px !important;
-    min-height: 38px !important;
-    min-width: 38px !important;
-    padding: 0 !important;
-    border: 1px solid rgba(212, 148, 58, 0.16) !important;
-    background: rgba(212, 148, 58, 0.08) !important;
-    cursor: pointer !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    border-radius: 12px !important;
-    box-sizing: border-box !important;
-    transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease !important;
-  }
-  .desktop-sidebar__theme-toggle:hover {
-    background: rgba(212, 148, 58, 0.22) !important;
-    transform: scale(1.05) !important;
   }
 
   /* ─────────────────────────────────────────────────────────────────────────────
@@ -847,7 +824,7 @@
     max-width: 1140px !important;
     margin: 0 auto 0 auto !important;
     padding: 0 !important;
-    overflow: hidden !important;
+    overflow: visible !important;
   }
 
   .greeting__hero-banner picture {
@@ -863,15 +840,14 @@
     width: 100% !important;
     max-width: 1140px !important;
     height: auto !important;
-    aspect-ratio: 1906 / 525 !important;
-    object-fit: cover !important;
-    object-position: center top !important;
+    aspect-ratio: 1906 / 650 !important;
+    object-fit: contain !important;
     display: block !important;
     margin: 0 auto !important;
     transform: none !important;
     filter: drop-shadow(0 6px 20px rgba(212, 148, 58, 0.08)) !important;
-    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 74%, rgba(0,0,0,0.3) 83%, transparent 95%) !important;
-    mask-image: linear-gradient(to bottom, #000 0%, #000 74%, rgba(0,0,0,0.3) 83%, transparent 95%) !important;
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 89%, rgba(0,0,0,0.3) 94%, transparent 100%) !important;
+    mask-image: linear-gradient(to bottom, #000 0%, #000 89%, rgba(0,0,0,0.3) 94%, transparent 100%) !important;
   }
 
   .greeting__portrait-slider {
