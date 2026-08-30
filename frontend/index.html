@@ -3551,8 +3551,24 @@
 
         <!-- Dark Mode / Dynamic Night: Interactive All-Guru Carousel + Gurbani Wisdom -->
         <div class="greeting__dark-carousel-container" id="greetingDarkCarousel">
-          <div class="greeting__portrait-slider" id="guruSlider" aria-label="Guru Portraits Carousel">
-            <div class="greeting__slider-track" id="guruSliderTrack"></div>
+                    <div class="greeting__portrait-slider" id="guruSlider" aria-label="Guru Portraits Carousel">
+            <div class="greeting__slider-track" id="guruSliderTrack">
+              <div class="greeting__slide greeting__slide--active" data-guru="sggs">
+                <div class="greeting__guru-portrait">
+                  <img src="guruimages/gurugranthsahebji.jpeg" alt="Sri Guru Granth Sahib Ji" style="object-position: center 25%;" loading="eager">
+                </div>
+              </div>
+              <div class="greeting__slide greeting__slide--prev" data-guru="guru-gobind">
+                <div class="greeting__guru-portrait">
+                  <img src="guruimages/gurugobindsinghsahebji.jpeg" alt="Sri Guru Gobind Singh Sahib Ji" style="object-position: center 25%;" loading="lazy">
+                </div>
+              </div>
+              <div class="greeting__slide greeting__slide--next" data-guru="guru-nanak">
+                <div class="greeting__guru-portrait">
+                  <img src="guruimages/gurunanakdevsahebji.jpeg" alt="Sri Guru Nanak Dev Sahib Ji" style="object-position: center 20%;" loading="lazy">
+                </div>
+              </div>
+            </div>
           </div>
           
           <div class="greeting__text" id="greetingText">

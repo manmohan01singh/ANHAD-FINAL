@@ -331,21 +331,21 @@
   }
 
   const PortraitSlider = {
-    _currentIndex: 4, // Default to Guru Arjan Dev Ji
+    _currentIndex: 10, // Default to Guru Arjan Dev Ji
     _startX: 0,
     _isDragging: false,
     _gurus: [
-      { id: 'guru-nanak', name: 'Sri Guru Nanak Dev Sahib Ji', img: '/guruimages/gurunanakdevsahebji.jpeg', pos: 'center 20%', colors: ['#ddcdb3', '#c9b89f', '#b8a88e'] },
-      { id: 'guru-angad', name: 'Sri Guru Angad Dev Sahib Ji', img: '/guruimages/guruangaddevsahebji.jpeg', pos: 'center 25%', colors: ['#ab9468', '#e6d8bf', '#624d31'] },
-      { id: 'guru-amar-das', name: 'Sri Guru Amar Das Sahib Ji', img: '/guruimages/guruamardasji.jpeg', pos: 'center 25%', colors: ['#e7be7f', '#e4dccd', '#a37f4f'] },
-      { id: 'guru-ram-das', name: 'Sri Guru Ram Das Sahib Ji', img: '/guruimages/gururamdassahebji.jpeg', pos: 'center 25%', colors: ['#a97634', '#e3bc7b', '#8b5e28'] },
-      { id: 'guru-arjan', name: 'Sri Guru Arjan Dev Sahib Ji', img: '/guruimages/guruarjanddevsahebji.jpeg', gurbani: 'ਅੰਮ੍ਰਿਤ ਵੇਲਾ ਸਚੁ ਨਾਉ ਵਡਿਆਈ ਵੀਚਾਰੁ ॥', translation: 'In the Amrit Vela, chant the True Name, and contemplate His Glorious Greatness.', pos: 'center 25%', colors: ['#edeef0', '#e0c195', '#c9a876'] },
-      { id: 'guru-hargobind', name: 'Sri Guru Hargobind Sahib Ji', img: '/guruimages/guruhargobindsahebji.jpeg', pos: 'center 25%', colors: ['#ecedef', '#c0c0bf', '#916026'] },
-      { id: 'guru-har-rai', name: 'Sri Guru Har Rai Sahib Ji', img: '/guruimages/guruharraisahebji.jpeg', pos: 'center 25%', colors: ['#ac7d3d', '#afab85', '#875515'] },
-      { id: 'guru-harkrishan', name: 'Sri Guru Har Krishan Sahib Ji', img: '/guruimages/guruharkrishansahebji.jpeg', pos: 'center 25%', colors: ['#ece5d5', '#d9d0c0', '#c6bbab'] },
-      { id: 'guru-teg-bahadur', name: 'Sri Guru Tegh Bahadur Sahib Ji', img: '/guruimages/gurutegbahadursahebji.jpeg', pos: 'center 45%', colors: ['#2f3d46', '#4a5a63', '#5d6d76'] },
-      { id: 'guru-gobind', name: 'Sri Guru Gobind Singh Sahib Ji', img: '/guruimages/gurugobindsinghsahebji.jpeg', pos: 'center 25%', colors: ['#b77928', '#e1cdac', '#8e5f1f'] },
-      { id: 'sggs', name: 'Sri Guru Granth Sahib Ji', img: '/guruimages/gurugranthsahebji.jpeg', pos: 'center 25%', colors: ['#a06f2c', '#53371e', '#c89035'] }
+      { id: 'guru-nanak', name: 'Sri Guru Nanak Dev Sahib Ji', img: 'guruimages/gurunanakdevsahebji.jpeg', pos: 'center 20%', colors: ['#ddcdb3', '#c9b89f', '#b8a88e'] },
+      { id: 'guru-angad', name: 'Sri Guru Angad Dev Sahib Ji', img: 'guruimages/guruangaddevsahebji.jpeg', pos: 'center 25%', colors: ['#ab9468', '#e6d8bf', '#624d31'] },
+      { id: 'guru-amar-das', name: 'Sri Guru Amar Das Sahib Ji', img: 'guruimages/guruamardasji.jpeg', pos: 'center 25%', colors: ['#e7be7f', '#e4dccd', '#a37f4f'] },
+      { id: 'guru-ram-das', name: 'Sri Guru Ram Das Sahib Ji', img: 'guruimages/gururamdassahebji.jpeg', pos: 'center 25%', colors: ['#a97634', '#e3bc7b', '#8b5e28'] },
+      { id: 'guru-arjan', name: 'Sri Guru Arjan Dev Sahib Ji', img: 'guruimages/guruarjanddevsahebji.jpeg', gurbani: 'ਅੰਮ੍ਰਿਤ ਵੇਲਾ ਸਚੁ ਨਾਉ ਵਡਿਆਈ ਵੀਚਾਰੁ ॥', translation: 'In the Amrit Vela, chant the True Name, and contemplate His Glorious Greatness.', pos: 'center 25%', colors: ['#edeef0', '#e0c195', '#c9a876'] },
+      { id: 'guru-hargobind', name: 'Sri Guru Hargobind Sahib Ji', img: 'guruimages/guruhargobindsahebji.jpeg', pos: 'center 25%', colors: ['#ecedef', '#c0c0bf', '#916026'] },
+      { id: 'guru-har-rai', name: 'Sri Guru Har Rai Sahib Ji', img: 'guruimages/guruharraisahebji.jpeg', pos: 'center 25%', colors: ['#ac7d3d', '#afab85', '#875515'] },
+      { id: 'guru-harkrishan', name: 'Sri Guru Har Krishan Sahib Ji', img: 'guruimages/guruharkrishansahebji.jpeg', pos: 'center 25%', colors: ['#ece5d5', '#d9d0c0', '#c6bbab'] },
+      { id: 'guru-teg-bahadur', name: 'Sri Guru Tegh Bahadur Sahib Ji', img: 'guruimages/gurutegbahadursahebji.jpeg', pos: 'center 45%', colors: ['#2f3d46', '#4a5a63', '#5d6d76'] },
+      { id: 'guru-gobind', name: 'Sri Guru Gobind Singh Sahib Ji', img: 'guruimages/gurugobindsinghsahebji.jpeg', pos: 'center 25%', colors: ['#b77928', '#e1cdac', '#8e5f1f'] },
+      { id: 'sggs', name: 'Sri Guru Granth Sahib Ji', img: 'guruimages/gurugranthsahebji.jpeg', pos: 'center 25%', colors: ['#a06f2c', '#53371e', '#c89035'] }
     ],
 
         init() {
