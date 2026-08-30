@@ -353,23 +353,32 @@
     init() {
       const track = document.getElementById('guruSliderTrack');
       if (!track) return;
-      track.innerHTML = '';
-      this._gurus.forEach((guru, i) => {
-        const slide = document.createElement('div');
-        slide.className = 'greeting__slide';
-        slide.setAttribute('data-guru', guru.id);
-        slide.setAttribute('data-index', i);
-        slide.innerHTML = `
-          <div class="greeting__guru-portrait">
-            <img src="${guru.img}" alt="${guru.name}" style="object-position: ${guru.pos || 'center 25%'}; pointer-events: none; -webkit-user-drag: none; user-select: none;" loading="lazy" draggable="false">
-          </div>
-        `;
-        slide.addEventListener('click', (e) => {
+      
+      // If track has no slides, generate them
+      if (track.children.length === 0) {
+        track.innerHTML = '';
+        this._gurus.forEach((guru, i) => {
+          const slide = document.createElement('div');
+          slide.className = 'greeting__slide';
+          slide.setAttribute('data-guru', guru.id);
+          slide.setAttribute('data-index', i);
+          slide.innerHTML = `
+            <div class="greeting__guru-portrait">
+              <img src="${guru.img}" alt="${guru.name}" style="object-position: ${guru.pos || 'center 25%'}; pointer-events: none; -webkit-user-drag: none; user-select: none;" loading="lazy" draggable="false">
+            </div>
+          `;
+          track.appendChild(slide);
+        });
+      }
+
+      // Bind click on all slides
+      const slides = track.querySelectorAll('.greeting__slide');
+      slides.forEach((slide, i) => {
+        slide.onclick = (e) => {
           e.stopPropagation();
           this._currentIndex = i;
           this.update();
-        });
-        track.appendChild(slide);
+        };
       });
 
       this._renderDots();
