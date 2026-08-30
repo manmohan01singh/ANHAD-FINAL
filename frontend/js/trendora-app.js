@@ -348,12 +348,27 @@
       { id: 'sggs', name: 'Sri Guru Granth Sahib Ji', img: '/guruimages/gurugranthsahebji.jpeg', pos: 'center 25%', colors: ['#a06f2c', '#53371e', '#c89035'] }
     ],
 
-    init() {
-      // Primary devotional artwork in greetingHeroBanner is now the authoritative hero visual.
-      // Duplicate circular portraits are disabled to maintain clean visual hierarchy.
+        init() {
       const track = document.getElementById('guruSliderTrack');
-      if (track) track.innerHTML = '';
-      this._syncText();
+      if (!track) return;
+      track.innerHTML = '';
+      this._gurus.forEach((guru, i) => {
+        const slide = document.createElement('div');
+        slide.className = 'greeting__slide';
+        slide.setAttribute('data-guru', guru.id);
+        slide.innerHTML = `
+          <div class="greeting__guru-portrait">
+            <img src="${guru.img}" alt="${guru.name}" style="object-position: ${guru.pos || 'center 25%'};" loading="lazy">
+          </div>
+        `;
+        slide.addEventListener('click', () => {
+          this._currentIndex = i;
+          this.update();
+        });
+        track.appendChild(slide);
+      });
+      this._bindEvents();
+      this.update(true);
     },
 
     _bindEvents() {
@@ -439,7 +454,7 @@
       }
     },
 
-    update(immediate = false) {
+        update(immediate = false) {
       const slides = document.querySelectorAll('.greeting__slide');
       const total = this._gurus.length;
 
@@ -458,10 +473,15 @@
         else if (diff > 1) slide.classList.add('greeting__slide--far-next');
       });
 
-      // Update background orb colors based on current Guru
-      this._updateOrbColors();
-      
-      this._syncText();
+      const current = this._gurus[this._currentIndex];
+      if (current) {
+        const salEl = document.getElementById('greetingSalutation');
+        const gurEl = document.getElementById('greetingGurbani');
+        const transEl = document.getElementById('greetingTranslation');
+        if (salEl) salEl.textContent = current.name;
+        if (gurEl) gurEl.textContent = current.gurbani || 'ਏਕੋ ਨਾਮੁ ਹੁਕਮੁ ਹੈ ਨਾਨਕ ਸਤਿਗੁਰਿ ਦੀਆ ਬੁਝਾਇ ਜੀਉ ॥੫॥';
+        if (transEl) transEl.textContent = current.translation || "The One Name is the Lord's Command; O Nanak, the True Guru has given me this understanding.";
+      }
     },
 
     _updateOrbColors() {
