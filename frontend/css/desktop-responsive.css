@@ -846,8 +846,8 @@
     margin: 0 auto !important;
     transform: none !important;
     filter: drop-shadow(0 6px 20px rgba(212, 148, 58, 0.08)) !important;
-    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 92.5%, rgba(0,0,0,0.15) 94.5%, transparent 95.5%) !important;
-    mask-image: linear-gradient(to bottom, #000 0%, #000 92.5%, rgba(0,0,0,0.15) 94.5%, transparent 95.5%) !important;
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 88%, rgba(0,0,0,0.7) 91%, rgba(0,0,0,0.3) 93.5%, rgba(0,0,0,0.06) 94.8%, transparent 95.5%) !important;
+    mask-image: linear-gradient(to bottom, #000 0%, #000 88%, rgba(0,0,0,0.7) 91%, rgba(0,0,0,0.3) 93.5%, rgba(0,0,0,0.06) 94.8%, transparent 95.5%) !important;
   }
 
   .greeting__portrait-slider {
@@ -1273,22 +1273,40 @@
   html[data-time-of-day="evening"]:not(.dark-mode):not([data-theme="dark"]) .quick-card:hover {
     box-shadow: 0 18px 40px -6px rgba(242, 154, 46, 0.30), 0 6px 16px rgba(0, 0, 0, 0.04), inset 2.5px 2.5px 6px rgba(255, 255, 255, 1), inset -3px -3px 8px rgba(242, 154, 46, 0.14) !important;
   }
+  html[data-time-of-day="evening"]:not(.dark-mode):not([data-theme="dark"]) .practice-card__title,
+  html[data-time-of-day="evening"]:not(.dark-mode):not([data-theme="dark"]) .quick-card__title,
+  html[data-time-of-day="evening"]:not(.dark-mode):not([data-theme="dark"]) .event-card__title {
+    color: #5C3200 !important;
+  }
+  html[data-time-of-day="evening"]:not(.dark-mode):not([data-theme="dark"]) .practice-card__status,
+  html[data-time-of-day="evening"]:not(.dark-mode):not([data-theme="dark"]) .quick-card__subtitle {
+    color: #B86B07 !important;
+  }
 
-  /* Morning: Dawn Peach (#F29A2E sync) */
+  /* Morning: Dawn Peach */
   html[data-time-of-day="morning"]:not(.dark-mode):not([data-theme="dark"]) .practice-card,
   html[data-time-of-day="morning"]:not(.dark-mode):not([data-theme="dark"]) .quick-card,
   html[data-time-of-day="morning"]:not(.dark-mode):not([data-theme="dark"]) .event-card,
   html[data-time-of-day="morning"]:not(.dark-mode):not([data-theme="dark"]) .progress-inline {
-    background: linear-gradient(135deg, #FFFDF8 0%, #FFF5E6 45%, #FEE8C9 100%) !important;
+    background: linear-gradient(135deg, #FFFDFB 0%, #FFF5EC 45%, #FEE8D8 100%) !important;
     border: none !important;
-    box-shadow: 0 10px 28px -4px rgba(242, 154, 46, 0.18), 0 3px 10px rgba(0, 0, 0, 0.02), inset 2.5px 2.5px 6px rgba(255, 255, 255, 1), inset -2.5px -2.5px 6px rgba(242, 154, 46, 0.10) !important;
+    box-shadow: 0 10px 24px -3px rgba(235, 130, 80, 0.16), 0 3px 10px rgba(0, 0, 0, 0.02), inset 2.5px 2.5px 6px rgba(255, 255, 255, 1), inset -2.5px -2.5px 6px rgba(235, 130, 80, 0.08) !important;
   }
   html[data-time-of-day="morning"]:not(.dark-mode):not([data-theme="dark"]) .practice-card:hover,
   html[data-time-of-day="morning"]:not(.dark-mode):not([data-theme="dark"]) .quick-card:hover {
-    box-shadow: 0 18px 40px -6px rgba(242, 154, 46, 0.26), 0 6px 16px rgba(0, 0, 0, 0.04), inset 2.5px 2.5px 6px rgba(255, 255, 255, 1), inset -3px -3px 8px rgba(242, 154, 46, 0.12) !important;
+    box-shadow: 0 18px 40px -6px rgba(235, 130, 80, 0.24), 0 6px 16px rgba(0, 0, 0, 0.04), inset 2.5px 2.5px 6px rgba(255, 255, 255, 1), inset -3px -3px 8px rgba(235, 130, 80, 0.10) !important;
+  }
+  html[data-time-of-day="morning"]:not(.dark-mode):not([data-theme="dark"]) .practice-card__title,
+  html[data-time-of-day="morning"]:not(.dark-mode):not([data-theme="dark"]) .quick-card__title,
+  html[data-time-of-day="morning"]:not(.dark-mode):not([data-theme="dark"]) .event-card__title {
+    color: #4A1E08 !important;
+  }
+  html[data-time-of-day="morning"]:not(.dark-mode):not([data-theme="dark"]) .practice-card__status,
+  html[data-time-of-day="morning"]:not(.dark-mode):not([data-theme="dark"]) .quick-card__subtitle {
+    color: #9C4112 !important;
   }
 
-  /* Day / Sky Blue */
+  /* Day / Sky Blue (Slate Editorial Typography — No Hyperlink Blue) */
   html[data-time-of-day="day"]:not(.dark-mode):not([data-theme="dark"]) .practice-card,
   html[data-time-of-day="day"]:not(.dark-mode):not([data-theme="dark"]) .quick-card,
   html[data-time-of-day="day"]:not(.dark-mode):not([data-theme="dark"]) .event-card {
@@ -1300,17 +1318,26 @@
   html[data-time-of-day="day"]:not(.dark-mode):not([data-theme="dark"]) .quick-card:hover {
     box-shadow: 0 18px 40px -6px rgba(37, 99, 235, 0.22), 0 6px 16px rgba(0, 0, 0, 0.04), inset 2.5px 2.5px 6px rgba(255, 255, 255, 1), inset -3px -3px 8px rgba(37, 99, 235, 0.10) !important;
   }
+  html[data-time-of-day="day"]:not(.dark-mode):not([data-theme="dark"]) .practice-card__title,
+  html[data-time-of-day="day"]:not(.dark-mode):not([data-theme="dark"]) .quick-card__title,
+  html[data-time-of-day="day"]:not(.dark-mode):not([data-theme="dark"]) .event-card__title {
+    color: #1E293B !important;
+  }
+  html[data-time-of-day="day"]:not(.dark-mode):not([data-theme="dark"]) .practice-card__status,
+  html[data-time-of-day="day"]:not(.dark-mode):not([data-theme="dark"]) .quick-card__subtitle {
+    color: #64748B !important;
+  }
 
-  /* Static Light Mode: Distinct Soft Pastel Colors */
+  /* Static Light Mode: Distinct Soft Pastel Colors (Sehaj Gold, No Purple Glow) */
   html:not(.dark-mode):not([data-theme="dark"]):not([data-time-of-day="night"]):not([data-time-of-day="morning"]):not([data-time-of-day="day"]):not([data-time-of-day="evening"]) .practice-card--nitnem {
     background: linear-gradient(145deg, #FFFDF8 0%, #FFF4E3 45%, #FEEAD0 100%) !important;
     border: none !important;
     box-shadow: 0 10px 28px -4px rgba(212, 148, 58, 0.22), 0 3px 10px rgba(0, 0, 0, 0.02), inset 2.5px 2.5px 6px rgba(255, 255, 255, 1), inset -2.5px -2.5px 6px rgba(212, 148, 58, 0.12) !important;
   }
   html:not(.dark-mode):not([data-theme="dark"]):not([data-time-of-day="night"]):not([data-time-of-day="morning"]):not([data-time-of-day="day"]):not([data-time-of-day="evening"]) .practice-card--sehaj {
-    background: linear-gradient(145deg, #FDFBFF 0%, #F5EEFF 45%, #EADBFF 100%) !important;
+    background: linear-gradient(145deg, #FFFDF8 0%, #FFF8EE 45%, #FEEFD8 100%) !important;
     border: none !important;
-    box-shadow: 0 10px 28px -4px rgba(124, 58, 237, 0.20), 0 3px 10px rgba(0, 0, 0, 0.02), inset 2.5px 2.5px 6px rgba(255, 255, 255, 1), inset -2.5px -2.5px 6px rgba(124, 58, 237, 0.10) !important;
+    box-shadow: 0 10px 28px -4px rgba(212, 148, 58, 0.16), 0 3px 10px rgba(0, 0, 0, 0.02), inset 2.5px 2.5px 6px rgba(255, 255, 255, 1), inset -2.5px -2.5px 6px rgba(212, 148, 58, 0.10) !important;
   }
   html:not(.dark-mode):not([data-theme="dark"]):not([data-time-of-day="night"]):not([data-time-of-day="morning"]):not([data-time-of-day="day"]):not([data-time-of-day="evening"]) .practice-card--hukam {
     background: linear-gradient(145deg, #FFFDFB 0%, #FFF0EB 45%, #FEDCD0 100%) !important;
