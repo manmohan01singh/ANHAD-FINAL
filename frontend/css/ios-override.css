@@ -2261,7 +2261,6 @@ body,
 }
 
 /* Isolate Compositor Layers for Icons */
-[data-theme="dark"] .practice-card__ring-icon,
 [data-theme="dark"] .quick-card__icon {
   transform: translate3d(0, 0, 0);
   will-change: transform;

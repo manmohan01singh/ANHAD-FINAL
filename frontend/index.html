@@ -4496,39 +4496,105 @@
       background: linear-gradient(145deg, #FFFFFF 0%, #F3FEFD 55%, #E1FAF5 100%) !important;
     }
 
-    /* ─── PURE DEEP BLACK OBSIDIAN CLAY FOR ALL CARDS (DARK MODE) ─── */
+    /* ─── DYNAMIC THEME CLAYMORPHISM FOR PRACTICE CARDS (MORNING / DAY / EVENING) ─── */
+    /* Morning Dawn: Luminous Golden Amber Cushion Clay */
+    [data-theme-mode="auto"][data-time-of-day="morning"] .practice-card,
+    [data-time-of-day="morning"] .practice-card {
+      background: linear-gradient(150deg, #FFFFFF 0%, #FFF8EC 45%, #FDE9CF 100%) !important;
+      border: 1.5px solid rgba(255, 255, 255, 0.95) !important;
+      box-shadow: 
+        6px 8px 20px rgba(212, 148, 58, 0.16),
+        -4px -4px 12px rgba(255, 255, 255, 0.98),
+        inset 2.5px 2.5px 5px rgba(255, 255, 255, 1),
+        inset -2.5px -2.5px 5px rgba(212, 148, 58, 0.10) !important;
+    }
+    
+    /* Day Sky: Fresh Radiant Azure Cushion Clay */
+    [data-theme-mode="auto"][data-time-of-day="day"] .practice-card,
+    [data-time-of-day="day"] .practice-card {
+      background: linear-gradient(150deg, #FFFFFF 0%, #EEF6FF 45%, #DCEEFF 100%) !important;
+      border: 1.5px solid rgba(255, 255, 255, 0.95) !important;
+      box-shadow: 
+        6px 8px 20px rgba(80, 145, 220, 0.18),
+        -4px -4px 12px rgba(255, 255, 255, 1),
+        inset 2.5px 2.5px 5px rgba(255, 255, 255, 1),
+        inset -2.5px -2.5px 5px rgba(80, 145, 220, 0.10) !important;
+    }
+
+    /* Evening Twilight: Warm Amber-Dusk Cushion Clay */
+    [data-theme-mode="auto"][data-time-of-day="evening"] .practice-card,
+    [data-time-of-day="evening"] .practice-card {
+      background: linear-gradient(150deg, #FFFFFF 0%, #FFF1EB 45%, #FDE1D4 100%) !important;
+      border: 1.5px solid rgba(255, 255, 255, 0.95) !important;
+      box-shadow: 
+        6px 8px 20px rgba(234, 88, 12, 0.16),
+        -4px -4px 12px rgba(255, 255, 255, 0.98),
+        inset 2.5px 2.5px 5px rgba(255, 255, 255, 1),
+        inset -2.5px -2.5px 5px rgba(234, 88, 12, 0.10) !important;
+    }
+
+    /* ─── PURE DEEP OBSIDIAN BLACK CLAY FOR ALL CARDS (DARK MODE & DYNAMIC NIGHT) ─── */
     html.dark-mode .practice-card,
+    html.dark-mode .practice-card--nitnem,
+    html.dark-mode .practice-card--sehaj,
+    html.dark-mode .practice-card--hukam,
     [data-theme="dark"] .practice-card,
+    [data-theme="dark"] .practice-card--nitnem,
+    [data-theme="dark"] .practice-card--sehaj,
+    [data-theme="dark"] .practice-card--hukam,
     [data-time-of-day="night"] .practice-card,
+    [data-time-of-day="night"] .practice-card--nitnem,
+    [data-time-of-day="night"] .practice-card--sehaj,
+    [data-time-of-day="night"] .practice-card--hukam,
     html.dark-mode .quick-card,
     [data-theme="dark"] .quick-card,
     [data-time-of-day="night"] .quick-card {
-      background: linear-gradient(150deg, #18181B 0%, #101012 100%) !important;
-      border: none !important;
+      background: linear-gradient(150deg, #1C1C20 0%, #121215 50%, #0B0B0D 100%) !important;
+      border: 1px solid rgba(255, 255, 255, 0.08) !important;
       box-shadow: 
-        5px 6px 16px rgba(0, 0, 0, 0.65),
+        6px 8px 22px rgba(0, 0, 0, 0.75),
         -2px -2px 6px rgba(255, 255, 255, 0.03),
-        inset 2px 2px 4px rgba(212, 148, 58, 0.15),
-        inset -2px -2px 5px rgba(0, 0, 0, 0.45) !important;
+        inset 2px 2px 4px rgba(255, 255, 255, 0.08),
+        inset -2px -2px 5px rgba(0, 0, 0, 0.65) !important;
     }
+
+    html.dark-mode .practice-card:active,
+    html.dark-mode .practice-card--nitnem:active,
+    html.dark-mode .practice-card--sehaj:active,
+    html.dark-mode .practice-card--hukam:active,
+    [data-theme="dark"] .practice-card:active,
+    [data-time-of-day="night"] .practice-card:active {
+      transform: scale(0.95) translateY(2px) !important;
+      box-shadow: 
+        2px 3px 8px rgba(0, 0, 0, 0.8),
+        inset 3px 3px 6px rgba(0, 0, 0, 0.8),
+        inset -2px -2px 4px rgba(255, 255, 255, 0.05) !important;
+    }
+
     html.dark-mode .practice-card__ring,
     [data-theme="dark"] .practice-card__ring,
     [data-time-of-day="night"] .practice-card__ring {
-      background: rgba(255, 255, 255, 0.06) !important;
+      background: linear-gradient(145deg, #24242A 0%, #151518 100%) !important;
+      border: 1.5px solid rgba(255, 255, 255, 0.09) !important;
       box-shadow: 
-        inset 1.5px 1.5px 3px rgba(0, 0, 0, 0.6),
-        0 2px 6px rgba(212, 148, 58, 0.15) !important;
+        0 4px 14px rgba(0, 0, 0, 0.6),
+        -1.5px -1.5px 4px rgba(255, 255, 255, 0.03),
+        inset 2px 2px 4px rgba(255, 255, 255, 0.08),
+        inset -1.5px -1.5px 3px rgba(0, 0, 0, 0.6) !important;
     }
+
     html.dark-mode .practice-card__ring-bg,
     [data-theme="dark"] .practice-card__ring-bg,
     [data-time-of-day="night"] .practice-card__ring-bg {
       stroke: rgba(255, 255, 255, 0.08) !important;
     }
+
     html.dark-mode .practice-card__title,
     [data-theme="dark"] .practice-card__title,
     [data-time-of-day="night"] .practice-card__title {
-      color: #F1F5F9 !important;
+      color: #F8FAFC !important;
     }
+
     html.dark-mode .practice-card__status,
     [data-theme="dark"] .practice-card__status,
     [data-time-of-day="night"] .practice-card__status {
@@ -4678,13 +4744,13 @@
       visibility: visible !important;
     }
 
-    /* Slides: Symmetrically centered with rightward optical shift */
+    /* Slides: Dead center */
     html body .greeting__slide {
       position: absolute !important;
       width: 120px !important;
       height: 120px !important;
       top: 50% !important;
-      left: calc(50% + 14px) !important;
+      left: 50% !important;
       margin-top: -60px !important;
       margin-left: -60px !important;
       display: flex !important;
@@ -5009,72 +5075,34 @@
       display: none !important;
     }
     html body .practice-card__ring-icon {
-      width: 44px !important;
-      height: 44px !important;
-      border-radius: 50% !important;
+      position: absolute !important;
+      top: 50% !important;
+      left: 50% !important;
+      transform: translate(-50%, -50%) !important;
+      width: 28px !important;
+      height: 28px !important;
+      border: none !important;
+      background: transparent !important;
       display: flex !important;
       align-items: center !important;
       justify-content: center !important;
       box-shadow: none !important;
     }
     html body .practice-card--nitnem .practice-card__ring-icon {
-      background: rgba(212, 148, 58, 0.15) !important;
-      border: 1.5px solid rgba(212, 148, 58, 0.25) !important;
-      border-radius: 50% !important;
-      color: #B47820 !important;
+      background: transparent !important;
+      border: none !important;
+      color: #D4A84B !important;
     }
     html body .practice-card--sehaj .practice-card__ring-icon {
-      background: rgba(88, 86, 214, 0.15) !important;
-      border: 1.5px solid rgba(88, 86, 214, 0.25) !important;
-      border-radius: 50% !important;
-      color: #5856D6 !important;
+      background: transparent !important;
+      border: none !important;
+      color: #9333EA !important;
     }
     html body .practice-card--hukam .practice-card__ring-icon {
-      background: rgba(255, 110, 74, 0.15) !important;
-      border: 1.5px solid rgba(255, 110, 74, 0.25) !important;
-      border-radius: 50% !important;
-      color: #FF6E4A !important;
+      background: transparent !important;
+      border: none !important;
+      color: #EA580C !important;
     }
-
-    /* Dark Mode Practice Cards & Circular Icons */
-    html.dark-mode body .practice-card--nitnem,
-    html[data-theme="dark"] body .practice-card--nitnem,
-    html[data-time-of-day="night"] body .practice-card--nitnem {
-      background: linear-gradient(165deg, #251D14 0%, #352B1C 50%, #1F170E 100%) !important;
-      border: 1.5px solid rgba(212,148,58,0.22) !important;
-      box-shadow:
-        8px 12px 28px rgba(0,0,0,0.6),
-        inset 2px 2px 4px rgba(255,255,255,0.12),
-        inset -4px -4px 8px rgba(0,0,0,0.6) !important;
-    }
-    html.dark-mode body .practice-card--sehaj,
-    html[data-theme="dark"] body .practice-card--sehaj,
-    html[data-time-of-day="night"] body .practice-card--sehaj {
-      background: linear-gradient(165deg, #161525 0%, #22203B 50%, #11101E 100%) !important;
-      border: 1.5px solid rgba(88,86,214,0.22) !important;
-      box-shadow:
-        8px 12px 28px rgba(0,0,0,0.6),
-        inset 2px 2px 4px rgba(255,255,255,0.12),
-        inset -4px -4px 8px rgba(0,0,0,0.6) !important;
-    }
-    html.dark-mode body .practice-card--hukam,
-    html[data-theme="dark"] body .practice-card--hukam,
-    html[data-time-of-day="night"] body .practice-card--hukam {
-      background: linear-gradient(165deg, #251414 0%, #351C1C 50%, #1F0E0E 100%) !important;
-      border: 1.5px solid rgba(255,110,74,0.22) !important;
-      box-shadow:
-        8px 12px 28px rgba(0,0,0,0.6),
-        inset 2px 2px 4px rgba(255,255,255,0.12),
-        inset -4px -4px 8px rgba(0,0,0,0.6) !important;
-    }
-    html.dark-mode body .practice-card__ring-icon,
-    html[data-theme="dark"] body .practice-card__ring-icon,
-    html[data-time-of-day="night"] body .practice-card__ring-icon {
-      background: rgba(255, 255, 255, 0.08) !important;
-      border: 1px solid rgba(255, 255, 255, 0.12) !important;
-      border-radius: 50% !important;
-    }
-
     /* ════════════════════════════════════════════════════════════════
        6. FLOATING MINI PLAYER + BOTTOM NAV GAP
        ════════════════════════════════════════════════════════════════ */
@@ -5237,10 +5265,11 @@
         <polyline points="9 22 9 12 15 12 15 22"/>
       </symbol>
       <symbol id="icon-scroll" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M19 17V5a2 2 0 0 0-2-2H4"/>
-        <path d="M8 21h12a2 2 0 0 0 2-2v-2H6a2 2 0 0 0-2 2c0 1.1.9 2 2 2h2"/>
-        <path d="M4 5a2 2 0 0 0 0 4h13a2 2 0 0 0 2-2V5"/>
-        <line x1="8" y1="13" x2="16" y2="13"/>
+        <!-- Hukamnama: open scroll / holy letter -->
+        <rect x="4" y="4" width="16" height="16" rx="3"/>
+        <line x1="8" y1="9" x2="16" y2="9"/>
+        <line x1="8" y1="12" x2="16" y2="12"/>
+        <line x1="8" y1="15" x2="13" y2="15"/>
       </symbol>
       <symbol id="icon-mala-beads" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="12" cy="12" r="8"/>
@@ -6673,19 +6702,12 @@
         var img = document.getElementById('greetingHeroArtwork');
         var source = document.getElementById('greetingHeroSource');
         if (!img) return;
-        var isDark = document.documentElement.classList.contains('dark-mode') ||
-                     document.documentElement.getAttribute('data-theme') === 'dark' ||
-                     document.documentElement.getAttribute('data-theme-mode') === 'dark' ||
-                     document.documentElement.getAttribute('data-time-of-day') === 'night' ||
-                     document.documentElement.getAttribute('data-time-of-day') === 'evening';
-        
-        var targetWebp = isDark ? 'assets/guru-greeting-hero-dark.webp' : 'guruimages/guru-greeting-hero.webp';
-        var targetPng = isDark ? 'assets/guru-greeting-hero-dark.png' : 'assets/guru-greeting-hero.png';
+        var targetWebp = 'guruimages/guru-greeting-hero.webp';
         
         if (source && source.srcset !== targetWebp) {
           source.srcset = targetWebp;
         }
-        if (img && !img.src.endsWith(targetWebp) && !img.src.endsWith(targetPng)) {
+        if (img && !img.src.endsWith('guru-greeting-hero.webp')) {
           img.src = targetWebp;
         }
       }
