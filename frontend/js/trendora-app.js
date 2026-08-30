@@ -371,58 +371,51 @@
       this.update(true);
     },
 
-    _bindEvents() {
+        _bindEvents() {
       const slider = document.getElementById('guruSlider');
       if (!slider) return;
 
-      // Element-level listeners: the slider node is recreated by each SPA
-      // content swap, so these die with it and must be rebound every time.
-      // Guarded so one swap can't double-bind a surviving node.
-      if (!slider._anhadSliderBound) {
-        slider._anhadSliderBound = true;
-        slider.addEventListener('touchstart', (e) => this._onDragStart(e.touches[0].clientX), { passive: true });
-        slider.addEventListener('mousedown', (e) => this._onDragStart(e.clientX));
+      let startX = 0;
+      let startY = 0;
+      let isMoving = false;
 
-        // SCROLL FIX: passive:true on touchmove prevents the browser from waiting to
-        // see if we'll call preventDefault() — which would block page scroll on mobile.
-        slider.addEventListener('touchmove', (e) => this._onDragMove(e.touches[0].clientX), { passive: true });
-      }
+      const onTouchStart = (e) => {
+        const touch = e.touches ? e.touches[0] : e;
+        startX = touch.clientX;
+        startY = touch.clientY;
+        isMoving = true;
+      };
 
-      // Window-level listeners survive every DOM swap, so binding them per
-      // init() leaked four permanent listeners on every single return to Home —
-      // the app's largest listener leak. They only ever call back into this
-      // singleton, so one set per JS realm is all that is needed.
-      if (window.__anhadPortraitSliderWindowBound) return;
-      window.__anhadPortraitSliderWindowBound = true;
+      const onTouchMove = (e) => {
+        if (!isMoving) return;
+        const touch = e.touches ? e.touches[0] : e;
+        const deltaX = touch.clientX - startX;
+        const deltaY = touch.clientY - startY;
 
-      window.addEventListener('mousemove', (e) => this._onDragMove(e.clientX));
+        // Trigger slide if horizontal finger swipe delta exceeds 25px
+        if (Math.abs(deltaX) > 25 && Math.abs(deltaX) > Math.abs(deltaY)) {
+          if (deltaX < 0) {
+            this.next();
+          } else {
+            this.prev();
+          }
+          isMoving = false;
+        }
+      };
 
-      // SCROLL FIX: passive:true on window touchend is CRITICAL.
-      // A non-passive window touchend listener blocks scroll dispatch for the
-      // entire page on Android Chrome because the browser must wait to check if
-      // preventDefault() will be called — even if we never call it.
-      window.addEventListener('touchend', () => this._onDragEnd(), { passive: true });
-      window.addEventListener('touchcancel', () => this._onDragEnd(), { passive: true });
-      window.addEventListener('mouseup', () => this._onDragEnd());
-    },
+      const onTouchEnd = () => {
+        isMoving = false;
+      };
 
-    _onDragStart(x) {
-      this._startX = x;
-      this._isDragging = true;
-    },
+      // Direct swipe listeners on slider element
+      slider.addEventListener('touchstart', onTouchStart, { passive: true });
+      slider.addEventListener('touchmove', onTouchMove, { passive: true });
+      slider.addEventListener('touchend', onTouchEnd, { passive: true });
+      slider.addEventListener('touchcancel', onTouchEnd, { passive: true });
 
-    _onDragMove(x) {
-      if (!this._isDragging) return;
-      const diff = this._startX - x;
-      if (Math.abs(diff) > 50) {
-        if (diff > 0) this.next();
-        else this.prev();
-        this._isDragging = false;
-      }
-    },
-
-    _onDragEnd() {
-      this._isDragging = false;
+      slider.addEventListener('mousedown', onTouchStart);
+      window.addEventListener('mousemove', onTouchMove);
+      window.addEventListener('mouseup', onTouchEnd);
     },
 
     next() {
