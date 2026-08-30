@@ -6,6 +6,18 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
+/* ─── GLOBAL RENDERING & SUBPIXEL COMPOSITING STABILITY GUARDS ─── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
 /* ─────────────────────────────────────────────────────────────────────────────
    SUBTLE AMBIENT ORBS — Behind Header + Greeting (ONLY SKY BLUE)
    Matches "Your Practice" card color exactly

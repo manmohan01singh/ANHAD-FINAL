@@ -40,12 +40,21 @@
 
 /* Light Theme Overrides - High Contrast Glass */
 [data-theme="light"] .tab-bar,
-html:not([data-theme="dark"]):not(.dark-mode) .tab-bar {
+html:not([data-theme="dark"]):not(.dark-mode):not([data-time-of-day="night"]) .tab-bar {
   background: rgba(255, 255, 255, 0.8) !important;
   border-color: rgba(0, 0, 0, 0.08) !important;
   box-shadow:
     0 20px 50px rgba(0, 0, 0, 0.15),
     0 0 0 1px rgba(255, 255, 255, 0.5) inset !important;
+}
+
+/* Dark Theme & Dynamic Night Tab Bar */
+[data-theme="dark"] .tab-bar,
+html.dark-mode .tab-bar,
+[data-time-of-day="night"] .tab-bar {
+  background: rgba(18, 18, 22, 0.92) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.75), inset 0 1px 1px rgba(255, 255, 255, 0.06) !important;
 }
 
 /* Tab Item Styles - Unified - BRIGHT ICONS */
@@ -72,30 +81,47 @@ html:not([data-theme="dark"]):not(.dark-mode) .tab-item {
   /* FIXED: Increased from 0.4 to 0.85 - light mode icons bright */
 }
 
-/* ACTIVE TAB - Claymorphism Highlighted Bar (NO RED SHADOW) */
+/* ═══════════════════════════════════════════════════════════════════════
+   ACTIVE TAB — SEAMLESS CUSHION CLAYMORPHISM (NO HARD BORDERS)
+   ═══════════════════════════════════════════════════════════════════════ */
 .tab-item.active {
-  color: #FF3B30 !important;
-  /* Soft cushion clay effect - NO colored shadow */
-  background: linear-gradient(145deg, rgba(255, 245, 245, 0.95), rgba(255, 230, 230, 0.9)) !important;
-  border: 1px solid rgba(255, 255, 255, 0.9) !important;
+  color: #D4943A !important;
+  border: none !important;
+  border-radius: 24px !important;
+  background: linear-gradient(145deg, #FFFFFF, #F2ECE4) !important;
   box-shadow: 
+    4px 5px 12px rgba(0, 0, 0, 0.07),
     -3px -3px 8px rgba(255, 255, 255, 0.95),
-    inset 1.5px 1.5px 3px rgba(255, 255, 255, 0.95),
-    inset -1.5px -1.5px 3px rgba(0, 0, 0, 0.05) !important;
+    inset 2px 2px 5px rgba(255, 255, 255, 0.95),
+    inset -2px -2px 5px rgba(0, 0, 0, 0.05) !important;
 }
 
-/* Dark mode active tab */
 [data-theme="dark"] .tab-item.active,
 html.dark-mode .tab-item.active {
-  background: linear-gradient(145deg, rgba(40, 40, 42, 0.9), rgba(30, 30, 32, 0.85)) !important;
-  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  color: #D4943A !important;
+  border: none !important;
+  border-radius: 24px !important;
+  background: linear-gradient(145deg, #2C261F, #181512) !important;
   box-shadow: 
-    -3px -3px 10px rgba(255, 255, 255, 0.05),
-    inset 1.5px 1.5px 3px rgba(0, 0, 0, 0.3),
-    inset -1.5px -1.5px 3px rgba(255, 255, 255, 0.05) !important;
+    4px 5px 14px rgba(0, 0, 0, 0.55),
+    -2px -2px 7px rgba(255, 255, 255, 0.03),
+    inset 2px 2px 4px rgba(212, 148, 58, 0.22),
+    inset -2px -2px 5px rgba(0, 0, 0, 0.45) !important;
 }
 
-.tab-item.active .tab-icon {
+.tab-item.active .tab-icon,
+.tab-item.active svg {
+  color: #D4943A !important;
+  stroke: #D4943A !important;
+  transform: scale(1.08) !important;
+}
+
+.tab-item.active .tab-label {
+  color: #D4943A !important;
+  font-weight: 800 !important;
+}
+
+.tab-icon {
   transform: scale(1.1) translateY(-2px) !important;
   /* PERF FIX: Removed filter:drop-shadow() — forces a paint layer on the tab
      icon inside the already backdrop-filtered nav bar. scale+translateY alone

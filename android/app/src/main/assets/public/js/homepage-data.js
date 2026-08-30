@@ -587,26 +587,17 @@ function _anhadHomepageDataInit() {
   // re-runs after an SPA swap either, meaning this copy was equally unable
   // to survive/rebind after Home is restored from DOM_CACHE).
 
-  // ━━━ BACK BUTTON CLICK ━━━
-  const backBtn = document.querySelector('.header__btn[href*="ios-homepage"]') || document.querySelector('.header__btn');
+  // ━━━ BACK BUTTON CLICK (Specific to sub-pages only, never home header buttons) ━━━
+  const backBtn = document.querySelector('#backBtn, .header__back-btn, .header__btn--back');
   if (backBtn) {
     backBtn.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
-      // CRITICAL: Don't redirect to ios-homepage in Capacitor — causes redirect loop
-      if (typeof window.Capacitor !== 'undefined') {
-        // In native mode, just go back in history or stay
-        if (window.anhadGoBack) {
-          window.anhadGoBack('./index.html');
-        } else {
-          window.history.back();
-        }
-        return;
+      if (window.history.length > 1) {
+        window.history.back();
+      } else {
+        window.location.href = './index.html';
       }
-
-      const destination = 'Homepage/ios-homepage.html';
-      if (window.navigateTo) window.navigateTo(destination);
-      else window.location.href = destination;
     });
   }
 
@@ -652,7 +643,12 @@ function _anhadHomepageDataInit() {
       if (themeLabel) themeLabel.textContent = 'Dark Mode';
     }
     if (themeIcon) {
-      themeIcon.textContent = mode === 'auto' ? '✨' : (isDark ? '☀️' : '🌙');
+      if (themeIcon.tagName && themeIcon.tagName.toLowerCase() === 'svg') {
+        const iconHref = isDark ? '#icon-sun-theme' : '#icon-moon-theme';
+        themeIcon.innerHTML = `<use href="${iconHref}"/>`;
+      } else {
+        themeIcon.textContent = mode === 'auto' ? '✨' : (isDark ? '☀️' : '🌙');
+      }
     }
   }
 

@@ -1,6 +1,7 @@
 {
-  "version": "1.0.60",
-  "buildTime": "2026-08-30T14:10:00Z",
-  "timestamp": 1788100200000,
+  "version": "1.0.3",
+  "buildTime": "2026-08-30T14:14:28.056Z",
+  "timestamp": 1788099268057,
+  "commitHash": "5b59bd5",
   "branch": "main"
 }

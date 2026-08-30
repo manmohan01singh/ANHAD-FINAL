@@ -47,7 +47,7 @@
             RAAGS = raagsData.raags || [];
             CONTRIBUTORS = composersData.composers || [];
             THEMES = themesData.themes || [];
-            GURU_SAHIBAAN = guruSahibaanData.guruSahibaan?.en?.gurus || [];
+            GURU_SAHIBAAN = guruSahibaanData.gurus || guruSahibaanData.guruSahibaan?.en?.gurus || [];
             SAKHIS = sakhisData.sakhis || [];
             SIKH_HISTORY = historyData.sections || {};
         } catch (error) {
@@ -565,15 +565,15 @@
     }
 
     function renderGuruSahibaan(lang, filter = '') {
-        const contribField = lang === 'pa' ? 'majorContributionsPa' : lang === 'hi' ? 'majorContributionsHi' : 'majorContributions';
-        const teachingField = lang === 'pa' ? 'keyTeachingsPa' : lang === 'hi' ? 'keyTeachingsHi' : 'keyTeachings';
-        
         let list = GURU_SAHIBAAN;
         if (filter) {
+            const q = filter.toLowerCase();
             list = list.filter(g => 
-                (g.name && g.name.toLowerCase().includes(filter)) ||
-                (g.namePunjabi && g.namePunjabi.toLowerCase().includes(filter)) ||
-                (g.english && g.english.toLowerCase().includes(filter))
+                (g.nameEn && g.nameEn.toLowerCase().includes(q)) ||
+                (g.namePa && g.namePa.toLowerCase().includes(q)) ||
+                (g.nameHi && g.nameHi.toLowerCase().includes(q)) ||
+                (g.name && g.name.toLowerCase().includes(q)) ||
+                (g.english && g.english.toLowerCase().includes(q))
             );
         }
         
@@ -582,17 +582,103 @@
         }
         
         return list.map((g, i) => {
-            const contrib = g[contribField] || g.majorContributions || g.desc || g.description || 'Contributions details coming soon.';
-            const teachings = g[teachingField] || g.keyTeachings || 'Teachings details coming soon.';
-            const nameDisp = lang === 'pa' ? (g.namePunjabi || g.name) : lang === 'hi' ? (g.nameHindi || g.name) : (g.english || g.name);
-            const subtitleDisp = lang === 'pa' ? 'ਇਤਿਹਾਸਕ ਜੀਵਨ ਕਾਲ' : lang === 'hi' ? 'ऐतिहासिक जीवन काल' : 'Historical Lifetime';
+            const nameDisp = lang === 'pa' ? (g.namePa || g.namePunjabi || g.name) : lang === 'hi' ? (g.nameHi || g.nameHindi || g.name) : (g.nameEn || g.english || g.name);
+            const titleGurmukhi = g.gurmukhiTitle || '';
+            const yearsDisp = g.years || '';
             
+            // Multilingual text extractors
+            const getField = (obj) => {
+                if (!obj) return '';
+                if (typeof obj === 'string') return obj;
+                return obj[lang] || obj['en'] || '';
+            };
+
+            const histContext = getField(g.historicalContext);
+            const earlyLife = getField(g.earlyLife);
+            const contributions = getField(g.majorContributions) || g.majorContributionsPa || g.majorContributions || '';
+            const significance = getField(g.historicalSignificance);
+            
+            // Events list
+            let eventsHtml = '';
+            if (g.importantEvents && Array.isArray(g.importantEvents)) {
+                eventsHtml = g.importantEvents.map(ev => {
+                    const title = lang === 'pa' ? (ev.titlePa || ev.titleEn) : lang === 'hi' ? (ev.titleHi || ev.titleEn) : ev.titleEn;
+                    const desc = ev.descEn || '';
+                    return `
+                    <div style="margin-top:8px; padding:10px 12px; background:rgba(212,160,58,0.06); border-radius:12px; border-left:3px solid #D4A03A;">
+                        <div style="font-weight:700; font-size:13px; color:var(--text-primary);">${title}</div>
+                        ${desc ? `<div style="font-size:12px; color:var(--text-secondary); margin-top:3px; line-height:1.45;">${desc}</div>` : ''}
+                    </div>`;
+                }).join('');
+            }
+
+            // Gurbani stats
+            let gurbaniHtml = '';
+            if (g.gurbaniContribution) {
+                const gb = g.gurbaniContribution;
+                const comps = gb.majorCompositions ? gb.majorCompositions.join(', ') : '';
+                gurbaniHtml = `
+                <div style="margin-top:12px; padding:12px; background:rgba(255,255,255,0.03); border-radius:14px; border:1px solid rgba(255,255,255,0.07);">
+                    <div style="font-size:12px; font-weight:700; color:#D4A03A; margin-bottom:4px;">
+                        🎵 ${lang === 'pa' ? 'ਗੁਰਬਾਣੀ ਰਚਨਾ' : lang === 'hi' ? 'गुरबाणी रचना' : 'Gurbani Contribution'}
+                    </div>
+                    <div style="font-size:12.5px; color:var(--text-secondary); line-height:1.5;">
+                        ${gb.shabadsCount ? `<strong>${gb.shabadsCount}</strong> Shabads / Saloks` : ''}
+                        ${gb.raagsCount ? ` across <strong>${gb.raagsCount}</strong> Raags.` : ''}
+                        ${comps ? `<div style="margin-top:4px; font-size:12px; color:var(--text-tertiary);"><span style="color:var(--text-secondary); font-weight:600;">Compositions:</span> ${comps}</div>` : ''}
+                    </div>
+                </div>`;
+            }
+
+            // Sources list
+            let sourcesHtml = '';
+            if (g.sources && Array.isArray(g.sources)) {
+                sourcesHtml = `<div style="margin-top:10px; font-size:11px; color:var(--text-tertiary);">
+                    <strong>${lang === 'pa' ? 'ਇਤਿਹਾਸਕ ਪ੍ਰਮਾਣ' : lang === 'hi' ? 'ऐतिहासिक स्रोत' : 'Sources'}:</strong> ${g.sources.join(' • ')}
+                </div>`;
+            }
+
+            const uniqueId = `guruCard_${g.id || i}`;
+
             return `
-            <div class="theme-card" style="margin-bottom: 14px; padding: 18px; border-radius: 20px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);">
-                <div class="theme-card__title" style="font-size: 16px; font-weight: 800; color: #D4A03A;">🙏 ${nameDisp}</div>
-                <div style="font-size: 12px; color: var(--text-tertiary); margin: 4px 0 8px;">${subtitleDisp}: ${g.years || ''}</div>
-                <div class="theme-card__desc" style="font-size: 13.5px; line-height: 1.55; color: var(--text-secondary);">${contrib}</div>
-                <div style="font-size: 12px; color: var(--text-secondary); margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.08);"><strong>${lang === 'pa' ? 'ਮੁੱਖ ਸਿੱਖਿਆਵਾਂ' : lang === 'hi' ? 'मुख्य शिक्षाएं' : 'Key Teachings'}:</strong> ${teachings}</div>
+            <div class="theme-card guru-insight-card" id="${uniqueId}" style="margin-bottom:18px; padding:20px; border-radius:22px; background:rgba(255,255,255,0.035); border:1px solid rgba(255,255,255,0.08); box-shadow:0 4px 20px rgba(0,0,0,0.04);">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
+                    <div>
+                        <div class="theme-card__title" style="font-size:17px; font-weight:800; color:#D4A03A; line-height:1.3;">
+                            ${nameDisp}
+                        </div>
+                        ${titleGurmukhi ? `<div style="font-size:12px; color:var(--text-secondary); font-weight:600; margin-top:2px;">${titleGurmukhi}</div>` : ''}
+                    </div>
+                    <span style="font-size:11px; font-weight:700; background:rgba(212,160,58,0.12); color:#D4A03A; padding:3px 8px; border-radius:100px; white-space:nowrap;">
+                        ${yearsDisp}
+                    </span>
+                </div>
+
+                ${histContext ? `
+                <div style="font-size:13px; line-height:1.55; color:var(--text-secondary); margin-top:10px; padding:10px 14px; background:rgba(0,0,0,0.15); border-radius:14px;">
+                    <strong>${lang === 'pa' ? 'ਇਤਿਹਾਸਕ ਪਿਛੋਕੜ' : lang === 'hi' ? 'ऐतिहासिक पृष्ठभूमि' : 'Historical Era'}:</strong> ${histContext}
+                </div>` : ''}
+
+                <div class="theme-card__desc" style="font-size:13.5px; line-height:1.6; color:var(--text-primary); margin-top:14px; white-space:pre-line;">
+                    ${contributions}
+                </div>
+
+                ${eventsHtml ? `
+                <div style="margin-top:14px;">
+                    <div style="font-size:12.5px; font-weight:700; color:#D4A03A;">
+                        📜 ${lang === 'pa' ? 'ਮੁੱਖ ਇਤਿਹਾਸਕ ਘਟਨਾਵਾਂ' : lang === 'hi' ? 'प्रमुख ऐतिहासिक घटनाएं' : 'Key Historical Milestones'}
+                    </div>
+                    ${eventsHtml}
+                </div>` : ''}
+
+                ${gurbaniHtml}
+
+                ${significance ? `
+                <div style="font-size:12.5px; line-height:1.55; color:var(--text-secondary); margin-top:12px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.07);">
+                    <strong>${lang === 'pa' ? 'ਸਦੀਵੀ ਮਹੱਤਤਾ' : lang === 'hi' ? 'शाश्वत महत्व' : 'Historical Significance'}:</strong> ${significance}
+                </div>` : ''}
+
+                ${sourcesHtml}
             </div>`;
         }).join('');
     }

@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
   <meta name="color-scheme" content="light dark">
-    <!-- CRITICAL: Theme blocker - MUST run before paint -->
   <script>
     (function() {
       try {
@@ -15,7 +14,6 @@
           } else {
             const hour = new Date().getHours();
             effectiveTheme = (hour >= 5 && hour < 20) ? 'light' : 'dark';
-            
             if (hour >= 5 && hour < 9) timeOfDay = 'morning';
             else if (hour >= 9 && hour < 16) timeOfDay = 'day';
             else if (hour >= 16 && hour < 20) timeOfDay = 'evening';
@@ -48,600 +46,593 @@
           if (effectiveTheme === 'dark') document.body.classList.add('dark-mode');
           document.body.classList.add('theme-loaded');
         }, { once: true });
-
-        if (document.documentElement.hasAttribute('data-anhad-home')) {
-          try { sessionStorage.removeItem('gurbaniKhoj_state'); } catch(e) {}
-        }
       } catch (e) {}
     })();
   </script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Spiritual Notifications - ANHAD</title>
-    <link rel="stylesheet" href="../css/styles.css">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Spiritual Notifications - ANHAD</title>
+  <link rel="stylesheet" href="../css/anhad-core.css">
+  <link rel="stylesheet" href="../css/theme-variables.css">
+  <link rel="stylesheet" href="../css/nav-glass.css">
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: var(--bg-primary, #f5f5f7);
-            color: var(--text-primary, #1a1a2e);
-            min-height: 100vh;
-            padding-bottom: 80px;
-        }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg-primary, #FAF8F5);
+      color: var(--text-primary, #1C1C1E);
+      min-height: 100vh;
+      padding-bottom: 120px;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
 
-        [data-theme="dark"] body {
-            background: #000000;
-            color: #ffffff;
-        }
+    [data-theme="dark"] body {
+      background: var(--bg-primary, #0D0D0F);
+      color: var(--text-primary, #F5F5F7);
+    }
 
-        .header {
-            background: var(--bg-secondary, #ffffff);
-            padding-top: calc(env(safe-area-inset-top, 24px) + 36px);
-            padding-left: 20px;
-            padding-right: 20px;
-            padding-bottom: 20px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            border-bottom: 1px solid var(--border-color, #e5e5e5);
-        }
+    .settings-container {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 16px 20px;
+    }
 
-        [data-theme="dark"] .header {
-            background: #1c1c1e;
-            border-bottom-color: #2c2c2e;
-        }
+    .header-info {
+      margin-bottom: 24px;
+      text-align: center;
+      padding: 12px 0 6px;
+    }
 
-        .header h1 {
-            font-size: 32px;
-            font-weight: 700;
-            margin-bottom: 8px;
-            position: relative;
-        }
+    .header-info h1 {
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      margin-bottom: 6px;
+      color: var(--text-primary, #1C1C1E);
+    }
 
-        .header h1::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            right: -20px;
-            width: 8px;
-            height: 8px;
-            background: #f7c634;
-            border-radius: 50%;
-            transform: translateY(-50%) scale(0);
-            transition: transform 0.3s ease;
-        }
+    [data-theme="dark"] .header-info h1 {
+      color: #FFFFFF;
+    }
 
-        .header h1.has-changes::after {
-            transform: translateY(-50%) scale(1);
-        }
+    .header-info p {
+      font-size: 14px;
+      color: var(--text-secondary, #8E8E93);
+      line-height: 1.4;
+      max-width: 480px;
+      margin: 0 auto;
+    }
 
-        .header p {
-            color: var(--text-secondary, #666);
-            font-size: 14px;
-        }
+    /* Top Quick Action Buttons */
+    .quick-actions {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
 
-        [data-theme="dark"] .header p {
-            color: #aaa;
-        }
+    .quick-btn {
+      flex: 1;
+      padding: 12px 14px;
+      border-radius: 16px;
+      border: 1px solid rgba(242, 154, 46, 0.25);
+      background: rgba(242, 154, 46, 0.08);
+      color: var(--text-primary, #1C1C1E);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
 
-        .back-btn {
-            position: absolute;
-            top: calc(env(safe-area-inset-top, 24px) + 4px);
-            left: 16px;
-            background: none;
-            border: none;
-            font-size: 28px;
-            cursor: pointer;
-            padding: 8px;
-            color: var(--text-primary, #1a1a2e);
-            z-index: 101;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            transition: background 0.2s ease;
-        }
+    [data-theme="dark"] .quick-btn {
+      color: #F5F5F7;
+      background: rgba(242, 154, 46, 0.12);
+      border-color: rgba(242, 154, 46, 0.3);
+    }
 
-        .back-btn:hover {
-            background: rgba(0, 0, 0, 0.05);
-        }
+    .quick-btn:active {
+      transform: scale(0.97);
+      background: rgba(242, 154, 46, 0.2);
+    }
 
-        [data-theme="dark"] .back-btn {
-            color: #ffffff;
-        }
+    /* Section Cards */
+    .section-group {
+      margin-bottom: 28px;
+    }
 
-        [data-theme="dark"] .back-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
+    .section-title {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: #F29A2E;
+      margin-bottom: 12px;
+      padding-left: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
 
-        .settings-container {
-            padding: 20px;
-            max-width: 600px;
-            margin: 0 auto;
-        }
+    .card-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
 
-        .section {
-            margin-bottom: 32px;
-        }
+    .setting-card {
+      background: rgba(255, 255, 255, 0.85);
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      border-radius: 20px;
+      padding: 16px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      transition: all 0.25s ease;
+    }
 
-        .section-title {
-            font-size: 13px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: var(--text-secondary, #666);
-            margin-bottom: 12px;
-            padding-left: 4px;
-        }
+    [data-theme="dark"] .setting-card {
+      background: rgba(28, 28, 30, 0.75);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    }
 
-        [data-theme="dark"] .section-title {
-            color: #aaa;
-        }
+    .card-main {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex: 1;
+      min-width: 0;
+    }
 
-        .setting-card {
-            background: var(--bg-secondary, #ffffff);
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            transition: transform 0.2s ease;
-        }
+    .card-icon {
+      font-size: 24px;
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      background: rgba(242, 154, 46, 0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
 
-        [data-theme="dark"] .setting-card {
-            background: #1c1c1e;
-        }
+    .card-text {
+      flex: 1;
+      min-width: 0;
+    }
 
-        .setting-card:active {
-            transform: scale(0.98);
-        }
+    .card-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-primary, #1C1C1E);
+      margin-bottom: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
 
-        .setting-info {
-            flex: 1;
-        }
+    [data-theme="dark"] .card-title {
+      color: #FFFFFF;
+    }
 
-        .setting-icon {
-            font-size: 28px;
-            margin-right: 16px;
-        }
+    .card-subtitle {
+      font-size: 12px;
+      color: var(--text-secondary, #8E8E93);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
 
-        .setting-label {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
+    .card-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
 
-        .setting-description {
-            font-size: 13px;
-            color: var(--text-secondary, #666);
-        }
+    .time-input-wrap {
+      position: relative;
+    }
 
-        [data-theme="dark"] .setting-description {
-            color: #aaa;
-        }
+    .time-input {
+      background: rgba(0, 0, 0, 0.05);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+      padding: 6px 8px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-primary, #1C1C1E);
+      font-family: inherit;
+      outline: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
 
-        .setting-time {
-            font-size: 14px;
-            color: var(--accent-color, #f7c634);
-            font-weight: 500;
-            margin-top: 4px;
-        }
+    [data-theme="dark"] .time-input {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.15);
+      color: #F5F5F7;
+    }
 
-        /* Toggle Switch */
-        .toggle {
-            position: relative;
-            width: 51px;
-            height: 31px;
-            background: var(--toggle-off, #e5e5e5);
-            border-radius: 16px;
-            cursor: pointer;
-            transition: background 0.3s ease;
-        }
+    .time-input:focus {
+      border-color: #F29A2E;
+      background: rgba(242, 154, 46, 0.1);
+    }
 
-        [data-theme="dark"] .toggle {
-            background: #3a3a3c;
-        }
+    /* Test Button */
+    .test-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
+      border: 1px solid rgba(242, 154, 46, 0.3);
+      background: rgba(242, 154, 46, 0.1);
+      color: #F29A2E;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 14px;
+    }
 
-        .toggle.active {
-            background: var(--accent-color, #f7c634);
-        }
+    .test-btn:active {
+      transform: scale(0.9);
+      background: #F29A2E;
+      color: #FFFFFF;
+    }
 
-        .toggle::after {
-            content: '';
-            position: absolute;
-            top: 2px;
-            left: 2px;
-            width: 27px;
-            height: 27px;
-            background: #ffffff;
-            border-radius: 50%;
-            transition: transform 0.3s ease;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-        }
+    /* iOS Clay Toggle Switch */
+    .toggle {
+      width: 48px;
+      height: 28px;
+      background: rgba(120, 120, 128, 0.25);
+      border-radius: 14px;
+      position: relative;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      flex-shrink: 0;
+    }
 
-        .toggle.active::after {
-            transform: translateX(20px);
-        }
+    .toggle.active {
+      background: #F29A2E;
+      box-shadow: 0 2px 10px rgba(242, 154, 46, 0.4);
+    }
 
-        /* Time Picker */
-        .time-picker {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+    .toggle-knob {
+      width: 24px;
+      height: 24px;
+      background: #FFFFFF;
+      border-radius: 50%;
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
 
-        .time-picker input {
-            width: 80px;
-            padding: 8px 12px;
-            border: 1px solid var(--border-color, #e5e5e5);
-            border-radius: 8px;
-            font-size: 16px;
-            font-family: inherit;
-            background: var(--bg-primary, #f5f5f7);
-            color: var(--text-primary, #1a1a2e);
-        }
+    .toggle.active .toggle-knob {
+      transform: translateX(20px);
+    }
 
-        [data-theme="dark"] .time-picker input {
-            background: #2c2c2e;
-            border-color: #3a3a3c;
-            color: #ffffff;
-        }
+    /* Sticky Save Bar */
+    .save-bar-container {
+      position: fixed;
+      bottom: 24px;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: center;
+      padding: 0 20px;
+      z-index: 999;
+      pointer-events: none;
+    }
 
-        /* Save Button */
-        .save-btn {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: linear-gradient(135deg, #f7c634, #ff9500);
-            color: #ffffff;
-            border: none;
-            padding: 16px 48px;
-            border-radius: 25px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(247, 198, 52, 0.3);
-            transition: all 0.3s ease;
-            z-index: 1000;
-        }
+    .save-btn {
+      pointer-events: auto;
+      background: linear-gradient(135deg, #F29A2E 0%, #D8821C 100%);
+      color: #FFFFFF;
+      border: none;
+      border-radius: 28px;
+      padding: 16px 36px;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(242, 154, 46, 0.45);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
 
-        .save-btn:hover {
-            box-shadow: 0 6px 16px rgba(247, 198, 52, 0.4);
-            transform: translateX(-50%) translateY(-2px);
-        }
+    .save-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 28px rgba(242, 154, 46, 0.55);
+    }
 
-        .save-btn:active {
-            transform: translateX(-50%) scale(0.95);
-        }
+    .save-btn:active {
+      transform: scale(0.96);
+    }
 
-        .save-btn.saving {
-            background: linear-gradient(135deg, #aaa, #888);
-            cursor: not-allowed;
-        }
+    /* Toast */
+    .toast {
+      position: fixed;
+      top: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-100px);
+      background: rgba(30, 30, 32, 0.95);
+      color: #FFFFFF;
+      padding: 14px 24px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(12px);
+      z-index: 10000;
+      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
 
-        /* Toast */
-        .toast {
-            position: fixed;
-            bottom: 80px;
-            left: 50%;
-            transform: translateX(-50%) translateY(100px);
-            background: rgba(0, 0, 0, 0.85);
-            color: #ffffff;
-            padding: 12px 24px;
-            border-radius: 25px;
-            font-size: 14px;
-            opacity: 0;
-            transition: all 0.3s ease;
-            z-index: 1000;
-        }
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+    }
+  </style>
 
-        .toast.show {
-            transform: translateX(-50%) translateY(0);
-            opacity: 1;
-        }
-
-        /* Loading State */
-        .loading {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 40px;
-            color: var(--text-secondary, #666);
-        }
-
-        .spinner {
-            width: 32px;
-            height: 32px;
-            border: 3px solid var(--border-color, #e5e5e5);
-            border-top-color: var(--accent-color, #f7c634);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-right: 12px;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-    </style>
+  <script src="../lib/spiritual-notifications.js"></script>
 </head>
+
 <body>
-    <div class="header">
-        <button class="back-btn" onclick="goBack()">←</button>
-        <h1>Spiritual Notifications</h1>
-        <p>Manage your daily spiritual reminders</p>
+  <!-- Navigation Header -->
+  <nav class="glass-nav">
+    <button class="glass-nav__back" onclick="history.back()">
+      <svg class="back-chevron" viewBox="0 0 9 16"><path d="M8 1L1 8L8 15" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="back-label">Settings</span>
+    </button>
+    <span class="glass-nav__title">Spiritual Notifications</span>
+    <div class="glass-nav__action"></div>
+  </nav>
+
+  <div class="settings-container">
+    <div class="header-info">
+      <h1>Spiritual Notifications</h1>
+      <p>Receive peaceful, timely reminders throughout the day for Nitnem banis, Daily Hukamnama, Simran, and Kirtan.</p>
     </div>
 
-    <div class="settings-container" id="settingsContainer">
-        <div class="loading">
-            <div class="spinner"></div>
-            <span>Loading settings...</span>
-        </div>
+    <div class="quick-actions">
+      <button class="quick-btn" onclick="toggleAllNotifications(true)">
+        <span>✅</span> Enable All
+      </button>
+      <button class="quick-btn" onclick="toggleAllNotifications(false)">
+        <span>⏸️</span> Pause All
+      </button>
+      <button class="quick-btn" onclick="resetToDefaults()">
+        <span>🔄</span> Reset Times
+      </button>
     </div>
 
-    <button class="save-btn" id="saveBtn" onclick="saveSettings()" style="display: none;">Save Settings</button>
+    <div id="sectionsContainer"></div>
+  </div>
 
-    <div class="toast" id="toast">Settings saved!</div>
+  <div class="save-bar-container">
+    <button class="save-btn" id="saveBtn" onclick="saveAllSettings()">
+      <span>💾</span> Save & Schedule Notifications
+    </button>
+  </div>
 
-    <script src="../lib/spiritual-notifications.js"></script>
-    <script>
-        function goBack() {
-            // Try to go back to Settings page
-            if (document.referrer && document.referrer.includes('Settings')) {
-                window.history.back();
-            } else {
-                // Direct navigation to Settings page
-                window.location.href = './index.html';
-            }
-        }
+  <div class="toast" id="toast"></div>
 
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 3000);
-        }
+  <script>
+    const SECTIONS = [
+      {
+        id: 'morning',
+        title: '🌅 Morning Nitnem & Prayers',
+        categories: [
+          'amritvela',
+          'japji_sahib',
+          'jaap_sahib',
+          'tav_prasad_swaye',
+          'chaupai_sahib',
+          'anand_sahib',
+          'hukamnama'
+        ]
+      },
+      {
+        id: 'day',
+        title: '🎧 Daytime Inspiration & Simran',
+        categories: [
+          'gurbani_radio',
+          'simran',
+          'random_spiritual_reminders'
+        ]
+      },
+      {
+        id: 'evening',
+        title: '🌇 Evening & Night Prayers',
+        categories: [
+          'evening_peace',
+          'rehras_sahib',
+          'nitnem_missed',
+          'kirtan_sohila',
+          'bedtime'
+        ]
+      }
+    ];
 
-        function createToggle(id, checked) {
-            const toggle = document.createElement('div');
-            toggle.className = 'toggle' + (checked ? ' active' : '');
-            toggle.dataset.id = id;
-            toggle.onclick = function() {
-                this.classList.toggle('active');
-                document.getElementById('saveBtn').style.display = 'block';
-            };
-            return toggle;
-        }
+    function showToast(message) {
+      const t = document.getElementById('toast');
+      t.innerHTML = message;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 3500);
+    }
 
-        function createTimePicker(id, value) {
-            const picker = document.createElement('input');
-            picker.type = 'time';
-            picker.value = value;
-            picker.dataset.id = id;
-            picker.onchange = function() {
-                document.getElementById('saveBtn').style.display = 'block';
-            };
-            return picker;
-        }
+    function renderUI() {
+      const container = document.getElementById('sectionsContainer');
+      const manager = window.SpiritualNotifications;
+      if (!manager) return;
 
-        function renderSettings() {
-            const container = document.getElementById('settingsContainer');
-            const config = window.SpiritualNotifications.getConfig();
+      const config = manager.getConfig();
+      const meta = manager.getMeta();
 
-            let html = '';
+      let html = '';
 
-            // Fixed-time notifications section
-            html += '<div class="section">';
-            html += '<div class="section-title">Daily Reminders</div>';
+      SECTIONS.forEach(sec => {
+        html += `<div class="section-group">`;
+        html += `<div class="section-title">${sec.title}</div>`;
+        html += `<div class="card-list">`;
 
-            // Hukamnama
-            html += '<div class="setting-card">';
-            html += '<div class="setting-icon">🙏</div>';
-            html += '<div class="setting-info">';
-            html += '<div class="setting-label">Hukamnama</div>';
-            html += '<div class="setting-description">Daily Hukamnama with first pankti</div>';
-            html += '<div class="setting-time">' + config.hukamnama.time + '</div>';
-            html += '</div>';
-            html += '<div class="time-picker">';
-            html += '<input type="time" value="' + config.hukamnama.time + '" data-key="hukamnama.time">';
-            html += '</div>';
-            html += '</div>';
+        sec.categories.forEach(catKey => {
+          const itemMeta = meta[catKey];
+          const itemConf = config[catKey] || {};
+          if (!itemMeta) return;
 
-            // Amritvela
-            html += '<div class="setting-card">';
-            html += '<div class="setting-icon">🌅</div>';
-            html += '<div class="setting-info">';
-            html += '<div class="setting-label">Amritvela Banis</div>';
-            html += '<div class="setting-description">Morning banis reminder</div>';
-            html += '<div class="setting-time">' + config.amritvela.time + '</div>';
-            html += '</div>';
-            html += '<div class="time-picker">';
-            html += '<input type="time" value="' + config.amritvela.time + '" data-key="amritvela.time">';
-            html += '</div>';
-            html += '</div>';
+          const isEnabled = itemConf.enabled !== false;
+          const timeVal = itemConf.time || itemMeta.defaultTime || '06:00';
+          const hasTime = catKey !== 'random_spiritual_reminders';
 
-            // Rehras Sahib
-            html += '<div class="setting-card">';
-            html += '<div class="setting-icon">🙏</div>';
-            html += '<div class="setting-info">';
-            html += '<div class="setting-label">Rehras Sahib</div>';
-            html += '<div class="setting-description">Evening paath reminder</div>';
-            html += '<div class="setting-time">' + config.rehras.time + '</div>';
-            html += '</div>';
-            html += '<div class="time-picker">';
-            html += '<input type="time" value="' + config.rehras.time + '" data-key="rehras.time">';
-            html += '</div>';
-            html += '</div>';
+          html += `
+            <div class="setting-card" id="card_${catKey}">
+              <div class="card-main">
+                <div class="card-icon">${itemMeta.icon}</div>
+                <div class="card-text">
+                  <div class="card-title">${itemMeta.label}</div>
+                  <div class="card-subtitle">${itemMeta.subtitle}</div>
+                </div>
+              </div>
+              
+              <div class="card-controls">
+                ${hasTime ? `
+                  <div class="time-input-wrap">
+                    <input type="time" class="time-input" 
+                           id="time_${catKey}" 
+                           value="${timeVal}" 
+                           onchange="onTimeChange('${catKey}', this.value)">
+                  </div>
+                ` : ''}
 
-            // Sohela
-            html += '<div class="setting-card">';
-            html += '<div class="setting-icon">🌙</div>';
-            html += '<div class="setting-info">';
-            html += '<div class="setting-label">Sohela Sahib</div>';
-            html += '<div class="setting-description">Bedtime paath reminder</div>';
-            html += '<div class="setting-time">' + config.sohela.time + '</div>';
-            html += '</div>';
-            html += '<div class="time-picker">';
-            html += '<input type="time" value="' + config.sohela.time + '" data-key="sohela.time">';
-            html += '</div>';
-            html += '</div>';
+                <button class="test-btn" title="Test this notification" onclick="testNotification('${catKey}')">
+                  🔔
+                </button>
 
-            html += '</div>';
-
-            // Random notifications section
-            html += '<div class="section">';
-            html += '<div class="section-title">Inspirational Reminders</div>';
-
-            html += '<div class="setting-card">';
-            html += '<div class="setting-icon">💫</div>';
-            html += '<div class="setting-info">';
-            html += '<div class="setting-label">Random Notifications</div>';
-            html += '<div class="setting-description">' + config.random.count + 'x daily between ' + config.random.startHour + ' AM - ' + config.random.endHour + ' PM</div>';
-            html += '</div>';
-            html += '<div class="toggle' + (config.random.enabled ? ' active' : '') + '" id="randomToggle"></div>';
-            html += '</div>';
-
-            html += '</div>';
-
-            // Enable/Disable toggles for each
-            html += '<div class="section">';
-            html += '<div class="section-title">Enable/Disable</div>';
-
-            html += '<div class="setting-card">';
-            html += '<div class="setting-info">';
-            html += '<div class="setting-label">Hukamnama Reminder</div>';
-            html += '</div>';
-            html += '<div class="toggle' + (config.hukamnama.enabled ? ' active' : '') + '" data-key="hukamnama.enabled"></div>';
-            html += '</div>';
-
-            html += '<div class="setting-card">';
-            html += '<div class="setting-info">';
-            html += '<div class="setting-label">Amritvela Reminder</div>';
-            html += '</div>';
-            html += '<div class="toggle' + (config.amritvela.enabled ? ' active' : '') + '" data-key="amritvela.enabled"></div>';
-            html += '</div>';
-
-            html += '<div class="setting-card">';
-            html += '<div class="setting-info">';
-            html += '<div class="setting-label">Rehras Sahib Reminder</div>';
-            html += '</div>';
-            html += '<div class="toggle' + (config.rehras.enabled ? ' active' : '') + '" data-key="rehras.enabled"></div>';
-            html += '</div>';
-
-            html += '<div class="setting-card">';
-            html += '<div class="setting-info">';
-            html += '<div class="setting-label">Sohela Sahib Reminder</div>';
-            html += '</div>';
-            html += '<div class="toggle' + (config.sohela.enabled ? ' active' : '') + '" data-key="sohela.enabled"></div>';
-            html += '</div>';
-
-            html += '</div>';
-
-            container.innerHTML = html;
-
-            // Add event listeners
-            document.querySelectorAll('.toggle').forEach(toggle => {
-                toggle.onclick = function() {
-                    this.classList.toggle('active');
-                    showSaveButton();
-                };
-            });
-
-            document.querySelectorAll('input[type="time"]').forEach(input => {
-                input.onchange = function() {
-                    showSaveButton();
-                };
-            });
-        }
-
-        function showSaveButton() {
-            document.getElementById('saveBtn').style.display = 'block';
-            document.querySelector('.header h1').classList.add('has-changes');
-        }
-
-        async function saveSettings() {
-            const saveBtn = document.getElementById('saveBtn');
-            const originalText = saveBtn.textContent;
-            
-            try {
-                // Disable button and show saving state
-                saveBtn.classList.add('saving');
-                saveBtn.textContent = 'Saving...';
-                saveBtn.disabled = true;
-
-                const config = window.SpiritualNotifications.getConfig();
-
-                // Get time values
-                document.querySelectorAll('input[type="time"]').forEach(input => {
-                    const key = input.dataset.key;
-                    if (key) {
-                        const [section, prop] = key.split('.');
-                        config[section][prop] = input.value;
-                    }
-                });
-
-                // Get toggle values
-                document.querySelectorAll('.toggle[data-key]').forEach(toggle => {
-                    const key = toggle.dataset.key;
-                    if (key) {
-                        const [section, prop] = key.split('.');
-                        config[section][prop] = toggle.classList.contains('active');
-                    }
-                });
-
-                // Random toggle
-                const randomToggle = document.getElementById('randomToggle');
-                if (randomToggle) {
-                    config.random.enabled = randomToggle.classList.contains('active');
-                }
-
-                // Save config
-                window.SpiritualNotifications.config = config;
-                window.SpiritualNotifications.saveConfig();
-
-                // Reschedule notifications
-                await window.SpiritualNotifications.scheduleAll();
-
-                showToast('✓ Settings saved successfully!');
-
-                // Hide save button after a brief delay
-                setTimeout(() => {
-                    saveBtn.style.display = 'none';
-                    saveBtn.classList.remove('saving');
-                    saveBtn.textContent = originalText;
-                    saveBtn.disabled = false;
-                    document.querySelector('.header h1').classList.remove('has-changes');
-                }, 500);
-            } catch (error) {
-                console.error('Failed to save settings:', error);
-                showToast('⚠ Failed to save settings');
-                saveBtn.classList.remove('saving');
-                saveBtn.textContent = originalText;
-                saveBtn.disabled = false;
-            }
-        }
-
-        // Initialize
-        document.addEventListener('DOMContentLoaded', function() {
-            // Load theme
-            const theme = localStorage.getItem('anhad_theme') || 'light';
-            document.documentElement.setAttribute('data-theme', theme);
-
-            // Render settings
-            if (window.SpiritualNotifications) {
-                renderSettings();
-            } else {
-                setTimeout(renderSettings, 100);
-            }
+                <div class="toggle ${isEnabled ? 'active' : ''}" 
+                     id="toggle_${catKey}" 
+                     onclick="onToggleChange('${catKey}')">
+                  <div class="toggle-knob"></div>
+                </div>
+              </div>
+            </div>
+          `;
         });
-    </script>
+
+        html += `</div></div>`;
+      });
+
+      container.innerHTML = html;
+    }
+
+    function onToggleChange(categoryKey) {
+      const manager = window.SpiritualNotifications;
+      const config = manager.getConfig();
+      const current = config[categoryKey] ? config[categoryKey].enabled !== false : true;
+      const next = !current;
+
+      manager.updateSetting(categoryKey, { enabled: next });
+      
+      const toggleEl = document.getElementById(`toggle_${categoryKey}`);
+      if (toggleEl) {
+        toggleEl.classList.toggle('active', next);
+      }
+    }
+
+    function onTimeChange(categoryKey, newTime) {
+      const manager = window.SpiritualNotifications;
+      manager.updateSetting(categoryKey, { time: newTime });
+    }
+
+    function toggleAllNotifications(enable) {
+      const manager = window.SpiritualNotifications;
+      const meta = manager.getMeta();
+      Object.keys(meta).forEach(k => {
+        manager.updateSetting(k, { enabled: enable });
+      });
+      renderUI();
+      showToast(enable ? '✅ All 15 notifications enabled' : '⏸️ All notifications paused');
+    }
+
+    function resetToDefaults() {
+      const manager = window.SpiritualNotifications;
+      const meta = manager.getMeta();
+      Object.keys(meta).forEach(k => {
+        const defaultT = meta[k].defaultTime;
+        if (defaultT) {
+          manager.updateSetting(k, { enabled: true, time: defaultT });
+        } else {
+          manager.updateSetting(k, { enabled: true });
+        }
+      });
+      renderUI();
+      showToast('🔄 Notification times reset to recommended defaults');
+    }
+
+    async function testNotification(categoryKey) {
+      const manager = window.SpiritualNotifications;
+      showToast(`🔔 Triggering test for ${manager.getMeta()[categoryKey]?.label || 'Notification'}...`);
+      const success = await manager.testNotification(categoryKey);
+      if (success) {
+        showToast('✨ Test notification fired! Check your notification tray.');
+      } else {
+        showToast('⚠️ Please allow notification permission in your system settings.');
+      }
+    }
+
+    async function saveAllSettings() {
+      const manager = window.SpiritualNotifications;
+      const meta = manager.getMeta();
+
+      // Collect all current input values
+      Object.keys(meta).forEach(k => {
+        const timeInput = document.getElementById(`time_${k}`);
+        if (timeInput) {
+          manager.updateSetting(k, { time: timeInput.value });
+        }
+      });
+
+      manager.saveConfig();
+
+      const btn = document.getElementById('saveBtn');
+      btn.innerHTML = '<span>⏳</span> Scheduling...';
+      btn.disabled = true;
+
+      try {
+        const scheduled = await manager.scheduleAll();
+        showToast(`✨ Saved! Scheduled ${scheduled.length} notifications for the week.`);
+      } catch (e) {
+        showToast('✅ Saved settings successfully.');
+      } finally {
+        btn.innerHTML = '<span>💾</span> Save & Schedule Notifications';
+        btn.disabled = false;
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      renderUI();
+    });
+  </script>
 </body>
 </html>

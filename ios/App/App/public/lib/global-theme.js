@@ -48,26 +48,25 @@
                 timeOfDay = 'night';
             }
         }
-        // Only set time-of-day on home page where the sky canvas + palette exist
-        // Sub-pages use clean light/dark mode only (no morning/day/evening/night palette)
-        if (html.hasAttribute('data-anhad-home')) {
-            html.setAttribute('data-time-of-day', timeOfDay);
-        } else {
-            html.removeAttribute('data-time-of-day');
-        }
+
+        const activeTimeOfDay = (theme === 'dark') ? 'night' : ((theme === 'light') ? 'day' : timeOfDay);
+        html.setAttribute('data-time-of-day', activeTimeOfDay);
+
+        // Update in-memory cache
+        window._anhadThemeCache = {
+            theme: theme,
+            timeOfDay: activeTimeOfDay
+        };
 
         // 1. SCOPE TRANSITION KILL to background/color properties only
-        // This preserves transform/opacity animations so buttons and scrolling
-        // remain alive during theme switch — no more global animation freeze!
         html.classList.add('theme-switching');
 
         // 2. APPLY THEME ATTRIBUTES & CLASSES
-        if (effectiveTheme === 'dark') {
+        if (effectiveTheme === 'dark' || activeTimeOfDay === 'night') {
             html.classList.add('dark', 'dark-mode');
             if (document.body) document.body.classList.add('dark-mode');
             html.setAttribute('data-theme', 'dark');
             html.style.colorScheme = 'dark';
-            // FORCE inline styles to ensure immediate visual update
             html.style.setProperty('background-color', '#0D0D0F', 'important');
             html.style.color = '#F5F5F7';
         } else {
@@ -75,7 +74,6 @@
             if (document.body) document.body.classList.remove('dark-mode');
             html.setAttribute('data-theme', 'light');
             html.style.colorScheme = 'light';
-            // FORCE inline styles to ensure immediate visual update
             html.style.setProperty('background-color', '#FAF8F5', 'important');
             html.style.color = '#1C1C1E';
         }
@@ -86,40 +84,43 @@
         // In auto mode with time-based backgrounds
         if (theme === 'auto') {
             let autoBg = '#FAF8F5';
-            if (timeOfDay === 'morning') autoBg = '#FFF5EC';
-            else if (timeOfDay === 'day') autoBg = '#FAF8F5';
-            else if (timeOfDay === 'evening') autoBg = '#FFF8E7';
-            else if (timeOfDay === 'night') autoBg = '#0D0D0F';
+            if (activeTimeOfDay === 'morning') autoBg = '#FFF5EC';
+            else if (activeTimeOfDay === 'day') autoBg = '#FAF8F5';
+            else if (activeTimeOfDay === 'evening') autoBg = '#FFF8E7';
+            else if (activeTimeOfDay === 'night') autoBg = '#0D0D0F';
             html.style.setProperty('background-color', autoBg, 'important');
         }
 
         // Update meta theme-color (cached — not queried on every tick)
         if (!_metaTheme || !document.contains(_metaTheme)) _metaTheme = document.querySelector('meta[name="theme-color"]');
         if (_metaTheme) {
-            _metaTheme.content = effectiveTheme === 'dark' ? '#0D0D0F' : '#FAF8F5';
+            _metaTheme.content = (effectiveTheme === 'dark' || activeTimeOfDay === 'night') ? '#0D0D0F' : '#FAF8F5';
         }
 
-        // Re-queried whenever the cached nodes are no longer in the document.
-        // The old check was `!_themeIcons.length`, which never fired: a static
-        // NodeList keeps its length after its nodes are detached, so once the
-        // first SPA content swap replaced the header the cache held dead nodes
-        // for the rest of the session and the theme icon stopped updating.
         if (!_themeIcons || !_themeIcons.length || !document.contains(_themeIcons[0])) {
             _themeIcons = document.querySelectorAll('#themeIcon, .theme-icon');
         }
         if (_themeIcons.length > 0) {
-            const iconText = theme === 'auto' ? '✨' : (effectiveTheme === 'dark' ? '☀️' : '🌙');
-            const iconClass = theme === 'auto' ? 'fas fa-magic' : (effectiveTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon');
+            const isDarkNow = (effectiveTheme === 'dark' || activeTimeOfDay === 'night');
+            const iconText = theme === 'auto' ? '✨' : (isDarkNow ? '☀️' : '🌙');
+            const iconClass = theme === 'auto' ? 'fas fa-magic' : (isDarkNow ? 'fas fa-sun' : 'fas fa-moon');
             _themeIcons.forEach(icon => {
                 if (icon.tagName === 'SPAN') {
                     icon.textContent = iconText;
+                } else if (icon.tagName && icon.tagName.toLowerCase() === 'svg') {
+                    const href = isDarkNow ? '#icon-sun-theme' : '#icon-moon-theme';
+                    icon.innerHTML = `<use href="${href}"/>`;
                 } else {
                     icon.className = iconClass;
                 }
             });
         }
 
-        // 3. RESTORE TRANSITIONS after one rAF so the browser paints the instant switch
+        if (typeof window.syncGreetingHeroArtwork === 'function') {
+            window.syncGreetingHeroArtwork();
+        }
+
+        // 3. RESTORE TRANSITIONS after one rAF
         if (html.classList.contains('theme-switching') || html.classList.contains('theme-changing')) {
             requestAnimationFrame(() => {
                 html.classList.remove('theme-switching');
@@ -135,10 +136,13 @@
     function setTheme(theme) {
         localStorage.setItem(THEME_KEY, theme);
         applyTheme(theme);
-        // Dispatch on document with bubbling so all listeners on document and window receive it cleanly
         const eventDetail = { bubbles: true, detail: { theme } };
         document.dispatchEvent(new CustomEvent('themechange', eventDetail));
         document.dispatchEvent(new CustomEvent('anhadThemeChanged', eventDetail));
+        document.dispatchEvent(new CustomEvent('anhad_theme_changed', eventDetail));
+        window.dispatchEvent(new CustomEvent('themechange', eventDetail));
+        window.dispatchEvent(new CustomEvent('anhadThemeChanged', eventDetail));
+        window.dispatchEvent(new CustomEvent('anhad_theme_changed', eventDetail));
         window.dispatchEvent(new CustomEvent('anhadTimeForced'));
     }
 

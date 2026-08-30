@@ -9,7 +9,12 @@
    Applying will-change to every card causes "layer explosion" — too many
    promoted layers exhaust mobile GPU VRAM (~50-100 MB on low-end Android).
    Cards receive will-change only during their animation-active phase. */
-.tab-bar,
+.tab-bar {
+    will-change: transform;
+    transform: translateX(-50%) translateZ(0);
+    backface-visibility: hidden;
+}
+
 .mini-player,
 .gmp,
 .nav-glass,
@@ -27,15 +32,16 @@ header,
     backface-visibility: hidden;
 }
 
-/* ─── 2. ACTIVE SCROLL HARDWARE ACCELERATION ─── */
-/* Smooth hardware compositing for cards without paint invalidations */
+/* ─── 2. HARDWARE ACCELERATION REFINED (REMEDIATED) ─── */
+/* Removed blanket translateZ(0) from static cards to eliminate GPU tile clipping and layer explosion.
+   Browser-native compositing manages cards naturally with zero detachment during momentum scroll. */
 .hero-card,
 .practice-card,
 .quick-card,
 .event-card,
 .glass-card {
-    transform: translateZ(0);
-    backface-visibility: hidden;
+    transform: none;
+    backface-visibility: visible;
 }
 
 /* ─── 3. REDUCED MOTION ACCESSIBILITY ─── */

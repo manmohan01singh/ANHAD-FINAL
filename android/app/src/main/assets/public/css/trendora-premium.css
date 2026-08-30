@@ -581,10 +581,16 @@ a:active {
 
 /* Compact header on scroll — frosted glass with golden accent */
 .header--compact {
-  background: transparent !important;
-  backdrop-filter: blur(var(--blur-lg)) saturate(200%);
-  -webkit-backdrop-filter: blur(var(--blur-lg)) saturate(200%);
-  border-bottom: none;
+  background: rgba(250, 248, 245, 0.88) !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+.dark-mode .header--compact {
+  background: rgba(13, 13, 15, 0.88) !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 
@@ -861,19 +867,13 @@ a:active {
   height: 76px;
   object-fit: contain;
   opacity: 0.88;
-  /* PERF FIX: filter:drop-shadow() removed from this element — it forces a
-     repaint on every animation frame when combined with the float animation.
-     Shadow is applied via ::after pseudo-element which does not animate. */
-  filter: drop-shadow(0 0 14px rgba(212, 148, 58, 0.3)) drop-shadow(0 0 36px rgba(245, 200, 66, 0.12)) drop-shadow(0 2px 10px rgba(0, 0, 0, 0.15));
   animation: decoLogoFloat 6s ease-in-out infinite;
   transition: opacity 0.5s ease;
-  /* GPU-promote the animating element for compositor-only float */
   will-change: transform;
 }
 
 .dark-mode .deco-logo-home img {
   opacity: 0.92;
-  filter: drop-shadow(0 0 18px rgba(212, 160, 74, 0.45)) drop-shadow(0 0 44px rgba(245, 200, 66, 0.2)) drop-shadow(0 2px 12px rgba(0, 0, 0, 0.4));
 }
 
 @keyframes decoLogoFloat {
@@ -2033,37 +2033,59 @@ a:active {
     inset -2px -2px 4px rgba(0, 0, 0, 0.1) !important;
 }
 
-.practice-card--nitnem {
+html:not(.dark-mode):not([data-theme="dark"]):not([data-time-of-day="night"]) .practice-card--nitnem {
   background: linear-gradient(165deg, #FFFDFB 0%, #FFEFD8 50%, #FFE5C0 100%) !important;
-  border: 1px solid rgba(212, 148, 58, 0.22) !important;
-  border-radius: 26px !important;
+  border: none !important;
+  border-radius: 28px !important;
   box-shadow: 
-    6px 10px 20px rgba(212, 148, 58, 0.15),
-    2px 4px 8px rgba(139, 69, 19, 0.06),
-    inset 2px 2px 4px rgba(255, 255, 255, 0.9),
-    inset -3px -3px 6px rgba(212, 148, 58, 0.15) !important;
+    0 8px 22px rgba(212, 148, 58, 0.12),
+    -3px -3px 10px rgba(255, 255, 255, 0.95),
+    inset 2.5px 2.5px 6px rgba(255, 255, 255, 0.95),
+    inset -2.5px -2.5px 6px rgba(212, 148, 58, 0.08) !important;
 }
 
-.practice-card--sehaj {
+html:not(.dark-mode):not([data-theme="dark"]):not([data-time-of-day="night"]) .practice-card--sehaj {
   background: linear-gradient(165deg, #FBF9FF 0%, #F0EBFF 50%, #E4DCFF 100%) !important;
-  border: 1px solid rgba(88, 86, 214, 0.22) !important;
-  border-radius: 26px !important;
+  border: none !important;
+  border-radius: 28px !important;
   box-shadow: 
-    6px 10px 20px rgba(88, 86, 214, 0.15),
-    2px 4px 8px rgba(45, 0, 135, 0.06),
-    inset 2px 2px 4px rgba(255, 255, 255, 0.9),
-    inset -3px -3px 6px rgba(88, 86, 214, 0.15) !important;
+    0 8px 22px rgba(88, 86, 214, 0.12),
+    -3px -3px 10px rgba(255, 255, 255, 0.95),
+    inset 2.5px 2.5px 6px rgba(255, 255, 255, 0.95),
+    inset -2.5px -2.5px 6px rgba(88, 86, 214, 0.08) !important;
 }
 
-.practice-card--hukam {
+html:not(.dark-mode):not([data-theme="dark"]):not([data-time-of-day="night"]) .practice-card--hukam {
   background: linear-gradient(165deg, #FFFDFB 0%, #FFF0E8 50%, #FFE0CC 100%) !important;
-  border: 1px solid rgba(255, 110, 74, 0.22) !important;
-  border-radius: 26px !important;
+  border: none !important;
+  border-radius: 28px !important;
   box-shadow: 
-    6px 10px 20px rgba(255, 110, 74, 0.15),
-    2px 4px 8px rgba(139, 45, 0, 0.06),
-    inset 2px 2px 4px rgba(255, 255, 255, 0.9),
-    inset -3px -3px 6px rgba(255, 110, 74, 0.15) !important;
+    0 8px 22px rgba(255, 110, 74, 0.12),
+    -3px -3px 10px rgba(255, 255, 255, 0.95),
+    inset 2.5px 2.5px 6px rgba(255, 255, 255, 0.95),
+    inset -2.5px -2.5px 6px rgba(255, 110, 74, 0.08) !important;
+}
+
+/* Dark Mode Practice Cards */
+html.dark-mode .practice-card,
+[data-theme="dark"] .practice-card,
+[data-time-of-day="night"] .practice-card,
+html.dark-mode .practice-card--nitnem,
+html.dark-mode .practice-card--sehaj,
+html.dark-mode .practice-card--hukam,
+[data-theme="dark"] .practice-card--nitnem,
+[data-theme="dark"] .practice-card--sehaj,
+[data-theme="dark"] .practice-card--hukam,
+[data-time-of-day="night"] .practice-card--nitnem,
+[data-time-of-day="night"] .practice-card--sehaj,
+[data-time-of-day="night"] .practice-card--hukam {
+  background: linear-gradient(150deg, #1D1D22 0%, #131317 50%, #0C0C0E 100%) !important;
+  border: none !important;
+  box-shadow: 
+    0 8px 24px rgba(0, 0, 0, 0.7),
+    -2px -2px 6px rgba(255, 255, 255, 0.02),
+    inset 2px 2px 5px rgba(255, 255, 255, 0.07),
+    inset -2px -2px 5px rgba(0, 0, 0, 0.6) !important;
 }
 
 /* Subtle inner glow */
@@ -2087,11 +2109,40 @@ a:active {
   margin-bottom: var(--space-3);
 }
 
+/* Soft circular background behind the icon - NO HARD SQUARE */
+.practice-card__ring::before {
+  content: '';
+  position: absolute;
+  inset: 8px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.5) 100%);
+  z-index: 0;
+  transition: all 0.3s ease;
+}
+
+.practice-card:hover .practice-card__ring::before {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.7) 100%);
+  transform: scale(1.05);
+}
+
+/* Dark mode - softer background */
+.dark-mode .practice-card__ring::before,
+[data-theme="dark"] .practice-card__ring::before {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%);
+}
+
+.dark-mode .practice-card:hover .practice-card__ring::before,
+[data-theme="dark"] .practice-card:hover .practice-card__ring::before {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.05) 100%);
+}
+
 .practice-card__ring svg {
   width: 60px;
   height: 60px;
   transform: rotate(-90deg);
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.05));
+  position: relative;
+  z-index: 1;
 }
 
 .practice-card__ring-bg {
@@ -2125,6 +2176,7 @@ a:active {
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 2;
 }
 
 .practice-card__ring-icon svg {
@@ -2132,6 +2184,7 @@ a:active {
   height: 24px;
   color: var(--text-secondary);
   opacity: 0.75;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
 }
 
 .practice-card--nitnem .practice-card__ring-icon svg {
@@ -2297,8 +2350,6 @@ a:active {
   border: 0.5px solid rgba(255, 255, 255, 0.9);
   position: relative;
   z-index: 1;
-  transform: translateZ(0);
-  backface-visibility: hidden;
   transition: transform var(--duration-fast) var(--ease-spring);
 }
 
@@ -2383,14 +2434,26 @@ a:active {
   margin-top: 1px;
 }
 
-.quick-card__chevron {
+.quick-card__chevron,
+.sheet__option-arrow {
   width: 18px;
   height: 18px;
-  color: var(--text-quaternary);
+  fill: none !important;
+  stroke: currentColor !important;
+  color: var(--text-tertiary, #8E8E93) !important;
   flex-shrink: 0;
   transition: transform var(--duration-fast) var(--ease-spring);
   position: relative;
   z-index: 1;
+  pointer-events: none;
+}
+html.dark-mode .quick-card__chevron,
+html.dark-mode .sheet__option-arrow,
+[data-theme="dark"] .quick-card__chevron,
+[data-theme="dark"] .sheet__option-arrow,
+[data-time-of-day="night"] .quick-card__chevron,
+[data-time-of-day="night"] .sheet__option-arrow {
+  color: rgba(255, 255, 255, 0.45) !important;
 }
 
 .quick-card:active .quick-card__chevron {
@@ -2433,21 +2496,20 @@ a:active {
 ═══════════════════════════════════════════════════════════════════════════════ */
 .event-card {
   position: relative;
-  padding: var(--space-5) var(--space-5);
-  background: rgba(255, 255, 255, 0.35);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border-radius: 32px;
+  padding: 16px 20px;
+  background: linear-gradient(135deg, #FFFFFF 0%, #FFFDF8 45%, #FAF3DE 100%);
+  border-radius: 28px;
   cursor: pointer;
   margin-top: 0;
   margin-bottom: var(--space-7);
   transition: transform var(--duration-fast) var(--ease-spring), box-shadow var(--duration-fast) var(--ease-spring);
-  border: 0.5px solid rgba(255, 255, 255, 0.55);
+  border: none;
   overflow: hidden;
   box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.06),
-    0 2px 8px rgba(0, 0, 0, 0.03),
-    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+    6px 8px 20px rgba(212, 168, 83, 0.12),
+    -4px -4px 10px rgba(255, 255, 255, 0.98),
+    inset 2px 2px 4px rgba(255, 255, 255, 1),
+    inset -1.5px -1.5px 4px rgba(212, 168, 83, 0.06);
 }
 
 .event-card:active {
@@ -2487,7 +2549,7 @@ a:active {
   color: var(--text-primary);
   line-height: 1.3;
   margin-bottom: var(--space-1);
-  max-width: 65%;
+  max-width: 68%;
   letter-spacing: -0.2px;
   font-family: 'Cinzel', 'Georgia', serif;
 }
@@ -2704,7 +2766,6 @@ a:active {
 
   position: relative;
   overflow: hidden;
-  contain: paint;
   transform: translateZ(0);
 }
 
@@ -2765,7 +2826,6 @@ a:active {
   min-width: 56px;
   position: relative;
   z-index: 1;
-  will-change: transform;
 }
 
 .nav-tab:active {
@@ -2791,7 +2851,6 @@ a:active {
 .nav-tab--active svg {
   color: var(--accent);
   transform: translateY(-1px) scale(1.08);
-  filter: drop-shadow(0 1px 4px rgba(212, 148, 58, 0.3));
 }
 
 .nav-tab--active .ios-emoji--nav {
@@ -3482,13 +3541,24 @@ a:active {
     radial-gradient(ellipse 500px 500px at 5% 55%, rgba(88, 86, 214, 0.02) 0%, transparent 65%);
 }
 
-.dark-mode .event-card {
-  background: linear-gradient(160deg, rgba(212, 148, 58, 0.06) 0%, rgba(212, 148, 58, 0.03) 100%);
-  border-color: rgba(212, 148, 58, 0.12);
+.dark-mode .event-card,
+html.dark-mode .event-card,
+[data-theme="dark"] .event-card,
+[data-time-of-day="night"] .event-card {
+  background: linear-gradient(150deg, #1C1C1E 0%, #111113 100%) !important;
+  border: none !important;
+  box-shadow:
+    6px 8px 20px rgba(0, 0, 0, 0.7),
+    -3px -3px 8px rgba(255, 255, 255, 0.04),
+    inset 2px 2px 5px rgba(212, 148, 58, 0.15),
+    inset -2px -2px 6px rgba(0, 0, 0, 0.5) !important;
 }
 
-.dark-mode .event-card::before {
-  opacity: 0.3;
+.dark-mode .event-card::before,
+html.dark-mode .event-card::before,
+[data-theme="dark"] .event-card::before,
+[data-time-of-day="night"] .event-card::before {
+  opacity: 0.4;
 }
 
 .dark-mode .progress-inline {
@@ -3514,7 +3584,6 @@ a:active {
     0 4px 20px rgba(0, 0, 0, 0.35),
     0 2px 8px rgba(0, 0, 0, 0.20),
     inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
-  contain: paint;
   transform: translateZ(0);
 }
 
@@ -3606,41 +3675,26 @@ a:active {
   }
 }
 
-/* ── Scroll Reveal — Staggered Entrance ── */
+/* ── Scroll Reveal — Instant Visible Base ── */
 .scroll-revealed {
-  animation: fadeSlideUp 0.5s var(--ease-ios-spring) both;
+  animation: none !important;
+  opacity: 1 !important;
+  transform: none !important;
 }
 
-/* Revisit within the same session: reveal instantly, no entrance animation.
-   Set by js/scroll-engine.js in place of an inline `style.animation = none`,
-   which stuck to every card permanently because nothing ever cleared it. */
 .anhad-reveal-instant,
 .anhad-reveal-instant.scroll-revealed {
   animation: none !important;
+  opacity: 1 !important;
+  transform: none !important;
 }
 
-.quick-card:nth-child(1).scroll-revealed {
-  animation-delay: 0ms;
-}
-
-.quick-card:nth-child(2).scroll-revealed {
-  animation-delay: 60ms;
-}
-
-.quick-card:nth-child(3).scroll-revealed {
-  animation-delay: 120ms;
-}
-
-.quick-card:nth-child(4).scroll-revealed {
-  animation-delay: 180ms;
-}
-
-.quick-card:nth-child(5).scroll-revealed {
-  animation-delay: 240ms;
-}
-
-.quick-card:nth-child(6).scroll-revealed {
-  animation-delay: 300ms;
+.quick-card.scroll-revealed,
+.quick-card:nth-child(n).scroll-revealed {
+  animation: none !important;
+  animation-delay: 0ms !important;
+  opacity: 1 !important;
+  transform: none !important;
 }
 
 @keyframes fadeSlideUp {

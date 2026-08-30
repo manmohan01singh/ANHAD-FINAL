@@ -73,35 +73,30 @@
     return container;
   }
 
+  function getEffectiveSlot() {
+    const themeMode = document.documentElement.getAttribute('data-theme-mode');
+    const isDark = document.documentElement.classList.contains('dark-mode') ||
+                   document.documentElement.getAttribute('data-theme') === 'dark' ||
+                   themeMode === 'dark';
+    if (isDark) return 'night';
+    if (themeMode === 'light') {
+      const s = getSlot();
+      return s === 'night' ? 'day' : s;
+    }
+    return getSlot();
+  }
+
   // ── Update time-of-day attribute on <html> ───────────────────────────────
   function applyTimeOfDay() {
-    // HOME ONLY. `data-time-of-day` and the --sky-card-* palette drive Home's
-    // sky/claymorphism theme, and several rules keyed off them are not
-    // [data-anhad-home]-scoped — so setting them on Insights/Favorites tints
-    // those pages' cards orange. This function is reached from a 1s interval
-    // and a visibilitychange handler that both outlive navigation, so without
-    // this guard the shell's cleanup in applyNewContent() was undone within a
-    // second of every arrival at a non-Home page.
     if (!document.documentElement.hasAttribute('data-anhad-home')) {
       document.documentElement.removeAttribute('data-time-of-day');
       clearTimeAdaptiveCardColors();
       return;
     }
 
-    const slot = getSlot();
+    const slot = getEffectiveSlot();
     const currentSlot = document.documentElement.getAttribute('data-time-of-day');
 
-    // NATIVE APP FIX: If slot hasn't changed, skip expensive updates.
-    //
-    // ...but only when the work this function does is actually still in place.
-    // On leaving Home, applyNewContent() clears --dynamic-bg-url and the
-    // --sky-card-* palette; on returning it re-sets data-time-of-day ITSELF
-    // (to avoid painting the wrong background for a frame) and only then calls
-    // us. So the slot always matched, this returned early, and the two things
-    // that restore Home's background and card colours below were unreachable.
-    // Home came back with no background image and untinted cards, and because
-    // --dynamic-bg-url stayed unset the 5s smartRefresh() saw a permanently
-    // "stale" background and never idled again for the rest of the session.
     const bgRestored = document.documentElement.style.getPropertyValue('--dynamic-bg-url');
     if (currentSlot === slot && bgRestored) {
       return;
@@ -310,6 +305,7 @@
     // localStorage read (getSlot) on every tick of every non-Home page, which
     // is pure waste: nothing here has any effect outside Home.
     if (document.hidden) return;
+    if (document.body.classList.contains('scrolling') || document.documentElement.classList.contains('scrolling')) return;
     if (!document.documentElement.hasAttribute('data-anhad-home')) return;
 
     const slot = getSlot();

@@ -696,6 +696,12 @@
         else if (hour >= 16 && hour < 20) timeOfDay = 'evening';
         else timeOfDay = 'night';
       }
+      const isDark = currentMode === 'dark' || currentTheme === 'dark' || htmlEl.classList.contains('dark-mode');
+      if (isDark) {
+        timeOfDay = 'night';
+      } else if (currentMode === 'light' && timeOfDay === 'night') {
+        timeOfDay = 'day';
+      }
       htmlEl.setAttribute('data-time-of-day', timeOfDay);
       if (currentMode === 'auto') {
         let autoBg = '#FAF8F5';
@@ -705,7 +711,7 @@
         else if (timeOfDay === 'night') autoBg = '#0D0D0F';
         htmlEl.style.setProperty('background-color', autoBg, 'important');
       } else {
-        htmlEl.style.setProperty('background-color', currentTheme === 'dark' ? '#0D0D0F' : '#FAF8F5', 'important');
+        htmlEl.style.setProperty('background-color', isDark ? '#0D0D0F' : '#FAF8F5', 'important');
       }
     } else {
       htmlEl.removeAttribute('data-anhad-home');
@@ -759,6 +765,10 @@
         window.AnhadSky.applyTimeOfDay();
         window.AnhadSky.updateHeroCardImages();
       } catch(e) {}
+    }
+
+    if (typeof window.syncGreetingHeroArtwork === 'function') {
+      try { window.syncGreetingHeroArtwork(); } catch(e) {}
     }
 
     // Synchronize bottom navigation active tab

@@ -772,10 +772,17 @@
 
             scheduleStreakSaverCheck(notifs);
 
-            // ═══ ADD SPIRITUAL NOTIFICATIONS ═══
-            if (window.SpiritualNotifications) {
-                var spiritualNotifs = await window.SpiritualNotifications.scheduleAll();
-                notifs = notifs.concat(spiritualNotifs);
+            // ═══ ADD SPIRITUAL NOTIFICATIONS (all 15 categories from notifications-content.json) ═══
+            if (window.SpiritualNotifications && typeof window.SpiritualNotifications.buildNotifications === 'function') {
+                try {
+                    var spiritualNotifs = await window.SpiritualNotifications.buildNotifications();
+                    if (Array.isArray(spiritualNotifs)) {
+                        notifs = notifs.concat(spiritualNotifs);
+                        console.log('[ANHAD] Built ' + spiritualNotifs.length + ' spiritual notifications for scheduling');
+                    }
+                } catch(spErr) {
+                    console.warn('[ANHAD] Failed to build spiritual notifications:', spErr);
+                }
             }
 
             if (notifs.length > 0) {
@@ -937,7 +944,7 @@
             }
             // ═══ SPIRITUAL NOTIFICATION ACTIONS ═══
             else if (window.SpiritualNotifications) {
-                window.SpiritualNotifications.handleNotificationAction(ex.action, ex.target);
+                window.SpiritualNotifications.handleNotificationAction(ex.action, ex.target, ex.url);
             }
             else if (ex.url) {
                 window.location.href = resolveFrontendUrl(ex.url);

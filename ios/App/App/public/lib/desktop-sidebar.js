@@ -117,10 +117,7 @@
         '<span class="ios-emoji">' + item.icon + '</span>' +
         '<span>' + item.label.split(' ')[0] + '</span>' +
       '</a>';
-    }).join('') +
-    '<button type="button" class="desktop-sidebar__footer-action desktop-sidebar__theme-toggle" id="desktopThemeToggle" aria-label="Toggle Theme" title="Toggle Theme">' +
-      '<span class="ios-emoji" id="desktopThemeIcon">🌙</span>' +
-    '</button>';
+    }).join('');
 
     var html = '' +
       '<aside class="desktop-sidebar" aria-label="Desktop Navigation" id="' + SIDEBAR_ID + '">' +

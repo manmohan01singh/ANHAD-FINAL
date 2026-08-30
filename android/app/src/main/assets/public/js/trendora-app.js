@@ -268,15 +268,9 @@
     },
 
     update() {
-      const salEl = document.getElementById('greetingSalutation');
-      const gurEl = document.getElementById('greetingGurbani');
-      const transEl = document.getElementById('greetingTranslation');
-      const name = DataManager.getUserName();
-      const sal = this.getSalutation();
-      if (salEl) salEl.textContent = name ? `${sal}, ${name}` : sal;
-      const tuk = this.getTuk();
-      if (gurEl) gurEl.textContent = tuk.gurmukhi;
-      if (transEl) transEl.textContent = tuk.translation;
+      if (typeof window.syncGreetingHeroArtwork === 'function') {
+        window.syncGreetingHeroArtwork();
+      }
     }
   };
 
@@ -335,126 +329,159 @@
     return null;
   }
 
-  const PortraitSlider = {
-    _currentIndex: 4, // Default to Guru Arjan Dev Ji
+      const PortraitSlider = {
+    _currentIndex: 10, // Default to Sri Guru Granth Sahib Ji
     _startX: 0,
-    _isDragging: false,
+    _startY: 0,
+    _isMoving: false,
+    _eventsBound: false,
     _gurus: [
-      { id: 'guru-nanak', name: 'Sri Guru Nanak Dev Sahib Ji', img: '/guruimages/gurunanakdevsahebji.jpeg', pos: 'center 20%', colors: ['#ddcdb3', '#c9b89f', '#b8a88e'] },
-      { id: 'guru-angad', name: 'Sri Guru Angad Dev Sahib Ji', img: '/guruimages/guruangaddevsahebji.jpeg', pos: 'center 25%', colors: ['#ab9468', '#e6d8bf', '#624d31'] },
-      { id: 'guru-amar-das', name: 'Sri Guru Amar Das Sahib Ji', img: '/guruimages/guruamardasji.jpeg', pos: 'center 25%', colors: ['#e7be7f', '#e4dccd', '#a37f4f'] },
-      { id: 'guru-ram-das', name: 'Sri Guru Ram Das Sahib Ji', img: '/guruimages/gururamdassahebji.jpeg', pos: 'center 25%', colors: ['#a97634', '#e3bc7b', '#8b5e28'] },
-      { id: 'guru-arjan', name: 'Sri Guru Arjan Dev Sahib Ji', img: '/guruimages/guruarjanddevsahebji.jpeg', gurbani: 'ਅੰਮ੍ਰਿਤ ਵੇਲਾ ਸਚੁ ਨਾਉ ਵਡਿਆਈ ਵੀਚਾਰੁ ॥', translation: 'In the Amrit Vela, chant the True Name, and contemplate His Glorious Greatness.', pos: 'center 25%', colors: ['#edeef0', '#e0c195', '#c9a876'] },
-      { id: 'guru-hargobind', name: 'Sri Guru Hargobind Sahib Ji', img: '/guruimages/guruhargobindsahebji.jpeg', pos: 'center 25%', colors: ['#ecedef', '#c0c0bf', '#916026'] },
-      { id: 'guru-har-rai', name: 'Sri Guru Har Rai Sahib Ji', img: '/guruimages/guruharraisahebji.jpeg', pos: 'center 25%', colors: ['#ac7d3d', '#afab85', '#875515'] },
-      { id: 'guru-harkrishan', name: 'Sri Guru Har Krishan Sahib Ji', img: '/guruimages/guruharkrishansahebji.jpeg', pos: 'center 25%', colors: ['#ece5d5', '#d9d0c0', '#c6bbab'] },
-      { id: 'guru-teg-bahadur', name: 'Sri Guru Tegh Bahadur Sahib Ji', img: '/guruimages/gurutegbahadursahebji.jpeg', pos: 'center 45%', colors: ['#2f3d46', '#4a5a63', '#5d6d76'] },
-      { id: 'guru-gobind', name: 'Sri Guru Gobind Singh Sahib Ji', img: '/guruimages/gurugobindsinghsahebji.jpeg', pos: 'center 25%', colors: ['#b77928', '#e1cdac', '#8e5f1f'] },
-      { id: 'sggs', name: 'Sri Guru Granth Sahib Ji', img: '/guruimages/gurugranthsahebji.jpeg', pos: 'center 25%', colors: ['#a06f2c', '#53371e', '#c89035'] }
+      { id: 'guru-nanak', name: 'Sri Guru Nanak Dev Sahib Ji', img: 'guruimages/gurunanakdevsahebji.jpeg', pos: 'center 20%', colors: ['#ddcdb3', '#c9b89f', '#b8a88e'] },
+      { id: 'guru-angad', name: 'Sri Guru Angad Dev Sahib Ji', img: 'guruimages/guruangaddevsahebji.jpeg', pos: 'center 25%', colors: ['#ab9468', '#e6d8bf', '#624d31'] },
+      { id: 'guru-amar-das', name: 'Sri Guru Amar Das Sahib Ji', img: 'guruimages/guruamardasji.jpeg', pos: 'center 25%', colors: ['#e7be7f', '#e4dccd', '#a37f4f'] },
+      { id: 'guru-ram-das', name: 'Sri Guru Ram Das Sahib Ji', img: 'guruimages/gururamdassahebji.jpeg', pos: 'center 25%', colors: ['#a97634', '#e3bc7b', '#8b5e28'] },
+      { id: 'guru-arjan', name: 'Sri Guru Arjan Dev Sahib Ji', img: 'guruimages/guruarjanddevsahebji.jpeg', gurbani: 'ਅੰਮ੍ਰਿਤ ਵੇਲਾ ਸਚੁ ਨਾਉ ਵਡਿਆਈ ਵੀਚਾਰੁ ॥', translation: 'In the Amrit Vela, chant the True Name, and contemplate His Glorious Greatness.', pos: 'center 25%', colors: ['#edeef0', '#e0c195', '#c9a876'] },
+      { id: 'guru-hargobind', name: 'Sri Guru Hargobind Sahib Ji', img: 'guruimages/guruhargobindsahebji.jpeg', pos: 'center 25%', colors: ['#ecedef', '#c0c0bf', '#916026'] },
+      { id: 'guru-har-rai', name: 'Sri Guru Har Rai Sahib Ji', img: 'guruimages/guruharraisahebji.jpeg', pos: 'center 25%', colors: ['#ac7d3d', '#afab85', '#875515'] },
+      { id: 'guru-harkrishan', name: 'Sri Guru Har Krishan Sahib Ji', img: 'guruimages/guruharkrishansahebji.jpeg', pos: 'center 25%', colors: ['#ece5d5', '#d9d0c0', '#c6bbab'] },
+      { id: 'guru-teg-bahadur', name: 'Sri Guru Tegh Bahadur Sahib Ji', img: 'guruimages/gurutegbahadursahebji.jpeg', pos: 'center 45%', colors: ['#2f3d46', '#4a5a63', '#5d6d76'] },
+      { id: 'guru-gobind', name: 'Sri Guru Gobind Singh Sahib Ji', img: 'guruimages/gurugobindsinghsahebji.jpeg', pos: 'center 25%', colors: ['#b77928', '#e1cdac', '#8e5f1f'] },
+      { id: 'sggs', name: 'Sri Guru Granth Sahib Ji', img: 'guruimages/gurugranthsahebji.jpeg', pos: 'center 25%', colors: ['#a06f2c', '#53371e', '#c89035'] }
     ],
 
     init() {
       const track = document.getElementById('guruSliderTrack');
-      if (!track) {
-        console.log('[PortraitSlider] Track element not found, skipping init');
-        return;
-      }
-
-      // Check cached upcoming gurpurab in localStorage to set initial index synchronously
-      try {
-        const cachedStr = localStorage.getItem('anhad_cached_upcoming_gurpurab');
-        if (cachedStr) {
-          const cached = JSON.parse(cachedStr);
-          const event = cached.events && cached.events[0];
-          const guruId = getGuruIdFromEvent(event);
-          if (guruId) {
-            const idx = this._gurus.findIndex(g => g.id === guruId);
-            if (idx !== -1) {
-              this._currentIndex = idx;
-            }
-          }
-        }
-      } catch (e) {
-        console.warn('[PortraitSlider] Failed to parse cached upcoming gurpurab on init:', e);
-      }
-
-      // Only rebuild when the track isn't already showing this exact set.
-      // init() runs on every SPA arrival at Home (via refreshAll ->
-      // reviveHomepageVisuals), and the unconditional wipe below blanked all 11
-      // portraits and re-injected them as loading="lazy" images — a visible
-      // empty-then-repopulate on every return to Home.
-      const alreadyBuilt = track.children.length === this._gurus.length;
-      if (!alreadyBuilt) {
+      if (!track) return;
+      
+      // If track has no slides, generate them
+      if (track.children.length === 0) {
         track.innerHTML = '';
         this._gurus.forEach((guru, i) => {
           const slide = document.createElement('div');
           slide.className = 'greeting__slide';
-          slide.dataset.index = i;
+          slide.setAttribute('data-guru', guru.id);
+          slide.setAttribute('data-index', i);
           slide.innerHTML = `
             <div class="greeting__guru-portrait">
-              <img class="greeting__guru-img" src="${guru.img}" alt="${guru.name}" loading="lazy" style="object-position: ${guru.pos || 'center 25%'} !important;">
+              <img src="${guru.img}" alt="${guru.name}" style="object-position: ${guru.pos || 'center 25%'}; pointer-events: none; -webkit-user-drag: none; user-select: none;" loading="lazy" draggable="false">
             </div>
           `;
           track.appendChild(slide);
         });
       }
 
+      // Bind click on all slides
+      const slides = track.querySelectorAll('.greeting__slide');
+      slides.forEach((slide, i) => {
+        slide.onclick = (e) => {
+          e.stopPropagation();
+          this._currentIndex = i;
+          this.update();
+        };
+      });
+
+      this._renderDots();
       this._bindEvents();
       this.update(true);
     },
 
+    _renderDots() {
+      const dotsContainer = document.getElementById('guruDots');
+      if (!dotsContainer) return;
+      dotsContainer.innerHTML = '';
+      this._gurus.forEach((_, i) => {
+        const dot = document.createElement('span');
+        dot.className = `greeting__dot ${i === this._currentIndex ? 'greeting__dot--active' : ''}`;
+        dot.setAttribute('data-index', i);
+        dot.addEventListener('click', (e) => {
+          e.stopPropagation();
+          this._currentIndex = i;
+          this.update();
+        });
+        dotsContainer.appendChild(dot);
+      });
+    },
+
     _bindEvents() {
       const slider = document.getElementById('guruSlider');
-      if (!slider) return;
 
-      // Element-level listeners: the slider node is recreated by each SPA
-      // content swap, so these die with it and must be rebound every time.
-      // Guarded so one swap can't double-bind a surviving node.
-      if (!slider._anhadSliderBound) {
-        slider._anhadSliderBound = true;
-        slider.addEventListener('touchstart', (e) => this._onDragStart(e.touches[0].clientX), { passive: true });
-        slider.addEventListener('mousedown', (e) => this._onDragStart(e.clientX));
-
-        // SCROLL FIX: passive:true on touchmove prevents the browser from waiting to
-        // see if we'll call preventDefault() — which would block page scroll on mobile.
-        slider.addEventListener('touchmove', (e) => this._onDragMove(e.touches[0].clientX), { passive: true });
+      // Re-bind arrow buttons directly on every call
+      const prevBtn = document.getElementById('guruSliderPrev');
+      const nextBtn = document.getElementById('guruSliderNext');
+      if (prevBtn) {
+        prevBtn.onclick = (e) => {
+          if (e) { e.preventDefault(); e.stopPropagation(); }
+          this.prev();
+        };
+      }
+      if (nextBtn) {
+        nextBtn.onclick = (e) => {
+          if (e) { e.preventDefault(); e.stopPropagation(); }
+          this.next();
+        };
       }
 
-      // Window-level listeners survive every DOM swap, so binding them per
-      // init() leaked four permanent listeners on every single return to Home —
-      // the app's largest listener leak. They only ever call back into this
-      // singleton, so one set per JS realm is all that is needed.
-      if (window.__anhadPortraitSliderWindowBound) return;
-      window.__anhadPortraitSliderWindowBound = true;
+      if (this._eventsBound || !slider) return;
+      this._eventsBound = true;
 
-      window.addEventListener('mousemove', (e) => this._onDragMove(e.clientX));
+      // Touch Events (Mobile/Tablet)
+      slider.addEventListener('touchstart', (e) => {
+        if (!e.touches || e.touches.length === 0) return;
+        this._startX = e.touches[0].clientX;
+        this._startY = e.touches[0].clientY;
+        this._isMoving = true;
+      }, { passive: true });
 
-      // SCROLL FIX: passive:true on window touchend is CRITICAL.
-      // A non-passive window touchend listener blocks scroll dispatch for the
-      // entire page on Android Chrome because the browser must wait to check if
-      // preventDefault() will be called — even if we never call it.
-      window.addEventListener('touchend', () => this._onDragEnd(), { passive: true });
-      window.addEventListener('touchcancel', () => this._onDragEnd(), { passive: true });
-      window.addEventListener('mouseup', () => this._onDragEnd());
-    },
+      slider.addEventListener('touchmove', (e) => {
+        if (!this._isMoving || !e.touches || e.touches.length === 0) return;
+        const currentX = e.touches[0].clientX;
+        const currentY = e.touches[0].clientY;
+        const deltaX = currentX - this._startX;
+        const deltaY = currentY - this._startY;
 
-    _onDragStart(x) {
-      this._startX = x;
-      this._isDragging = true;
-    },
+        if (Math.abs(deltaX) > 18 && Math.abs(deltaX) > Math.abs(deltaY)) {
+          if (deltaX < 0) {
+            this.next();
+          } else {
+            this.prev();
+          }
+          this._startX = currentX;
+          this._startY = currentY;
+          this._isMoving = false;
+        }
+      }, { passive: true });
 
-    _onDragMove(x) {
-      if (!this._isDragging) return;
-      const diff = this._startX - x;
-      if (Math.abs(diff) > 50) {
-        if (diff > 0) this.next();
-        else this.prev();
-        this._isDragging = false;
-      }
-    },
+      slider.addEventListener('touchend', () => {
+        this._isMoving = false;
+      }, { passive: true });
 
-    _onDragEnd() {
-      this._isDragging = false;
+      // Mouse Events (Desktop)
+      slider.addEventListener('mousedown', (e) => {
+        this._startX = e.clientX;
+        this._startY = e.clientY;
+        this._isMoving = true;
+      });
+
+      window.addEventListener('mousemove', (e) => {
+        if (!this._isMoving) return;
+        const deltaX = e.clientX - this._startX;
+        const deltaY = e.clientY - this._startY;
+
+        if (Math.abs(deltaX) > 18 && Math.abs(deltaX) > Math.abs(deltaY)) {
+          if (deltaX < 0) {
+            this.next();
+          } else {
+            this.prev();
+          }
+          this._startX = e.clientX;
+          this._startY = e.clientY;
+          this._isMoving = false;
+        }
+      });
+
+      window.addEventListener('mouseup', () => {
+        this._isMoving = false;
+      });
     },
 
     next() {
@@ -474,7 +501,7 @@
       } else if (typeof idOrEvent === 'string') {
         guruId = getGuruIdFromEvent({ id: idOrEvent });
         if (!guruId) {
-          guruId = idOrEvent; // fallback
+          guruId = idOrEvent;
         }
       }
       if (!guruId) return;
@@ -494,45 +521,50 @@
         slide.classList.remove('greeting__slide--active', 'greeting__slide--prev', 'greeting__slide--next', 'greeting__slide--far-prev', 'greeting__slide--far-next');
 
         let diff = i - this._currentIndex;
-        // Handle wrap around
         if (diff < -total / 2) diff += total;
         if (diff > total / 2) diff -= total;
 
-        if (diff === 0) slide.classList.add('greeting__slide--active');
-        else if (diff === -1) slide.classList.add('greeting__slide--prev');
-        else if (diff === 1) slide.classList.add('greeting__slide--next');
-        else if (diff < -1) slide.classList.add('greeting__slide--far-prev');
-        else if (diff > 1) slide.classList.add('greeting__slide--far-next');
+        if (diff === 0) {
+          slide.classList.add('greeting__slide--active');
+        } else if (diff === -1) {
+          slide.classList.add('greeting__slide--prev');
+        } else if (diff === 1) {
+          slide.classList.add('greeting__slide--next');
+        } else if (diff === -2) {
+          slide.classList.add('greeting__slide--far-prev');
+        } else if (diff === 2) {
+          slide.classList.add('greeting__slide--far-next');
+        }
+        // slides with Math.abs(diff) > 2 stay completely hidden with no active/prev/next class
       });
 
-      // Update background orb colors based on current Guru
-      this._updateOrbColors();
-      
-      this._syncText();
+      // Update dots
+      const dots = document.querySelectorAll('.greeting__dot');
+      dots.forEach((dot, i) => {
+        if (i === this._currentIndex) {
+          dot.classList.add('greeting__dot--active');
+        } else {
+          dot.classList.remove('greeting__dot--active');
+        }
+      });
+
+      const current = this._gurus[this._currentIndex];
+      if (current) {
+        const salEl = document.getElementById('greetingSalutation');
+        const gurEl = document.getElementById('greetingGurbani');
+        const transEl = document.getElementById('greetingTranslation');
+        if (salEl) salEl.textContent = current.name;
+        if (gurEl) gurEl.textContent = current.gurbani || 'ਏਕੋ ਨਾਮੁ ਹੁਕਮੁ ਹੈ ਨਾਨਕ ਸਤਿਗੁਰਿ ਦੀਆ ਬੁਝਾਇ ਜੀਉ ॥੫॥';
+        if (transEl) transEl.textContent = current.translation || "The One Name is the Lord's Command; O Nanak, the True Guru has given me this understanding.";
+      }
     },
 
     _updateOrbColors() {
-      // Disabled: Background light behind images removed
       return;
     },
 
     _syncText() {
-      const guru = this._gurus[this._currentIndex];
-      const salEl = document.getElementById('greetingSalutation');
-      const gurEl = document.getElementById('greetingGurbani');
-      const transEl = document.getElementById('greetingTranslation');
-
-      if (salEl) salEl.textContent = guru.name;
-      if (gurEl) {
-        if (guru.gurbani) {
-          gurEl.textContent = guru.gurbani;
-          if (transEl) transEl.textContent = guru.translation;
-        } else {
-          const tuk = Greeting.getTuk();
-          gurEl.textContent = tuk.gurmukhi;
-          if (transEl) transEl.textContent = tuk.translation;
-        }
-      }
+      this.update();
     }
   };
 
@@ -648,9 +680,24 @@
       try {
         const nameFilter = localStorage.getItem('gurpurab_name_filter') || 'guru-sahib';
         const dataUrl = (window.ANHAD_ROOT || '') + 'data/gurpurab-events-2026.json';
-        const response = await fetch(dataUrl);
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        const data = await response.json();
+        let data = null;
+        try {
+          const response = await fetch(dataUrl);
+          if (response.ok) data = await response.json();
+        } catch (e) {
+          console.warn('[DataManager] Fetch failed, using fallback calendar data:', e);
+        }
+        if (!data || !data.years) {
+          data = {
+            years: {
+              '2026': [
+                { id: 'sampuranta-sggs-2026', name_en: 'Sampuranta Diwas Sri Guru Granth Sahib Ji', name_pa: 'ਸੰਪੂਰਨਤਾ ਦਿਵਸ ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ', gregorian_date: '2026-08-30', type: 'historical' },
+                { id: 'first-parkash-sggs', name_en: 'First Parkash Sri Guru Granth Sahib Ji', name_pa: 'ਪਹਿਲਾ ਪ੍ਰਕਾਸ਼ ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ', gregorian_date: '2026-09-12', type: 'parkash' },
+                { id: 'gurpurab-guru-nanak', name_en: 'Prakash Purab Sri Guru Nanak Dev Ji', name_pa: 'ਪ੍ਰਕਾਸ਼ ਪੁਰਬ ਸ੍ਰੀ ਗੁਰੂ ਨਾਨਕ ਦੇਵ ਜੀ', gregorian_date: '2026-11-24', type: 'gurpurab' }
+              ]
+            }
+          };
+        }
         const guruNames = [
           'guru nanak', 'ਗੁਰੂ ਨਾਨਕ', 
           'guru angad', 'ਗੁਰੂ ਅੰਗਦ', 

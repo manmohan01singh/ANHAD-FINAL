@@ -1,258 +1,852 @@
 {
-  "version": 1,
-  "lastUpdated": "2026-04-20",
-  "guruSahibaan": {
-    "en": {
-      "title": "The Ten Guru Sahibaan",
-      "intro": "The ten Sikh Gurus established the foundation of Sikhism over 239 years (1469-1708). Each Guru contributed unique teachings and guided the Sikh community through different historical challenges.",
-      "gurus": [
+  "version": 2,
+  "lastUpdated": "2026-08-30",
+  "meta": {
+    "title": "Comprehensive Historical Reference of Guru Sahibaan",
+    "titlePa": "ਗੁਰੂ ਸਾਹਿਬਾਨ ਦਾ ਪ੍ਰਮਾਣਿਕ ਇਤਿਹਾਸਕ ਸੰਦਰਭ",
+    "titleHi": "गुरु साहिबान का प्रामाणिक ऐतिहासिक संदर्भ",
+    "totalGurus": 11,
+    "sourceHierarchy": "Tier 1 (Gurbani, Bhai Gurdas Vaaran) & Tier 2/3 (Mahan Kosh, SGPC Historical Publications, Encyclopaedia of Sikhism)"
+  },
+  "gurus": [
+    {
+      "id": 1,
+      "slug": "guru-nanak-dev-ji",
+      "nameEn": "Sri Guru Nanak Dev Ji",
+      "namePa": "ਸ੍ਰੀ ਗੁਰੂ ਨਾਨਕ ਦੇਵ ਜੀ",
+      "nameHi": "श्री गुरु नानक देव जी",
+      "gurmukhiTitle": "ੴ ਸਤਿਗੁਰ ਪ੍ਰਸਾਦਿ • ਪਹਿਲੀ ਪਾਤਸ਼ਾਹੀ",
+      "years": "1469–1539 CE",
+      "gurgaddiYear": "1469 (Divine Mission from Advent)",
+      "jotiJotYear": "1539 CE (Kartarpur Sahib)",
+      "birth": {
+        "placeEn": "Rai Bhoi Di Talwandi (Nankana Sahib, Punjab)",
+        "placePa": "ਰਾਇ ਭੋਈ ਦੀ ਤਲਵੰਡੀ (ਸ੍ਰੀ ਨਨਕਾਣਾ ਸਾਹਿਬ, ਪੰਜਾਬ)",
+        "placeHi": "राइ भोई दी तलवंडी (श्री ननकाना साहिब, पंजाब)",
+        "date": "Katakt Puranmashi 1469 CE (Traditional) / Vaisakh 1469 CE (Scholarly)"
+      },
+      "jotiJot": {
+        "placeEn": "Kartarpur Sahib (on the banks of River Ravi)",
+        "placePa": "ਕਰਤਾਰਪੁਰ ਸਾਹਿਬ (ਰਾਵੀ ਦਰਿਆ ਦੇ ਕੰਢੇ)",
+        "placeHi": "करतारपुर साहिब (रावी नदी के तट पर)",
+        "date": "September 22, 1539 CE"
+      },
+      "historicalContext": {
+        "en": "Born during an era of extreme socio-religious division, ritualistic formalism, caste tyranny, and administrative corruption under the Delhi Sultanate (Lodhi dynasty) and subsequent Mughal emergence (Babur).",
+        "pa": "ਦਿੱਲੀ ਸਲਤਨਤ (ਲੋਧੀ ਵੰਸ਼) ਅਤੇ ਬਾਬਰ ਦੇ ਹਮਲੇ ਦੌਰਾਨ ਸਮਾਜਿਕ ਵੰਡੀਆਂ, ਧਾਰਮਿਕ ਪਾਖੰਡ, ਜਾਤ-ਪਾਤ ਦੇ ਜ਼ੁਲਮ ਅਤੇ ਰਾਜਨੀਤਿਕ ਅਸਥਿਰਤਾ ਦੇ ਦੌਰ ਵਿੱਚ ਪ੍ਰਕਾਸ਼ ਹੋਇਆ।",
+        "hi": "दिल्ली सल्तनत (लोधी वंश) और बाबर के आक्रमण काल में सामाजिक विभाजन, कर्मकांड, जातिगत भेदभाव और राजनीतिक भ्रष्टाचार के अंधकारमय युग में प्रादुर्भाव हुआ।"
+      },
+      "earlyLife": {
+        "en": "From early childhood at Talwandi, Guru Sahib questioned empty rituals like the Janeu (sacred thread) and emphasized the inner moral thread of compassion, contentment, and truth. Engaged in Sacha Sauda (True Bargain) by feeding hungry dervishes rather than pursuing commercial profit.",
+        "pa": "ਬਚਪਨ ਤੋਂ ਹੀ ਕਰਮਕਾਂਡੀ ਜਨੇਊ ਪਹਿਨਣ ਦੀ ਰਸਮ ਨੂੰ ਰੱਦ ਕਰਕੇ ਦਇਆ, ਸੰਤੋਖ ਅਤੇ ਸੱਚ ਦਾ ਅੰਦਰੂਨੀ ਜਨੇਊ ਧਾਰਨ ਕਰਨ ਦੀ ਸਿੱਖਿਆ ਦਿੱਤੀ। ਸੁਲਤਾਨਪੁਰ ਲੋਧੀ ਵਿਖੇ ਮੋਦੀਖਾਨਾ ਚਲਾਇਆ ਅਤੇ ਭੁੱਖੇ ਸਾਧੂਆਂ ਨੂੰ ਭੋਜਨ ਛਕਾ ਕੇ 'ਸੱਚਾ ਸੌਦਾ' ਕੀਤਾ।",
+        "hi": "बचपन से ही खोखले कर्मकांडों और जनेऊ प्रथा को नकारते हुए दया, संतोष और सत्य के आत्मिक जनेऊ का संदेश दिया। भूखे संतों को भोजन कराकर 'सच्चा सौदा' किया और सुल्तानपुर लोधी में मोदीखाना संभाला।"
+      },
+      "majorContributions": {
+        "en": "1. Proclaimed Ik Onkar (The Indivisible Supreme Reality).\n2. Instituted the three foundational pillars of Sikh way of life: Naam Japna (mindful remembrance), Kirat Karna (honest, ethical labor), and Vand Chhakna (sharing resources with the community).\n3. Established the sacred institutions of Sangat (holy egalitarian congregation) and Pangat/Langar (indiscriminate community dining).\n4. Championed gender equality, famously proclaiming 'So Kyon Manda Aakhiye Jit Jameh Rajan' (Why call woman inferior, she who gives birth to kings?).\n5. Founded the township of Kartarpur Sahib as the first communal model of spiritual and agricultural living.",
+        "pa": "੧. 'ੴ' (ਇੱਕ ਓਅੰਕਾਰ) ਦੇ ਸਰਬਵਿਆਪੀ ਸੱਚ ਦਾ ਪ੍ਰਕਾਸ਼ ਕੀਤਾ।\n੨. ਸਿੱਖ ਜੀਵਨ-ਜਾਚ ਦੇ ਤਿੰਨ ਧੁਰੇ ਸਥਾਪਿਤ ਕੀਤੇ: ਨਾਮ ਜਪਣਾ, ਕਿਰਤ ਕਰਨਾ ਅਤੇ ਵੰਡ ਛਕਣਾ।\n੩. ਸੰਗਤ ਅਤੇ ਪੰਗਤ (ਸਾਂਝਾ ਲੰਗਰ) ਦੀ ਬਰਾਬਰੀ ਵਾਲੀ ਸੰਸਥਾ ਕਾਇਮ ਕੀਤੀ।\n੪. ਇਸਤਰੀ ਜਾਤੀ ਦੀ ਬਰਾਬਰੀ ਦਾ ਝੰਡਾ ਬੁਲੰਦ ਕਰਦਿਆਂ 'ਸੋ ਕਿਉ ਮੰਦਾ ਆਖੀਐ ਜਿਤੁ ਜੰਮਹਿ ਰਾਜਾਨ' ਦਾ ਇਨਕਲਾਬੀ ਸੰਦੇਸ਼ ਦਿੱਤਾ।\n੫. ਰਾਵੀ ਦਰਿਆ ਕੰਢੇ ਕਰਤਾਰਪੁਰ ਸਾਹਿਬ ਵਸਾ ਕੇ ਕਿਰਤ ਅਤੇ ਭਗਤੀ ਦਾ ਅਦੁੱਤੀ ਮਾਡਲ ਪੇਸ਼ ਕੀਤਾ।",
+        "hi": "१. 'ੴ' (एक ओंकार) के सार्वभौमिक सत्य का उद्घोष किया।\n२. सिख जीवन-पद्धति के तीन मुख्य स्तंभ स्थापित किए: नाम जपना, किर्त करना (ईमानदार परिश्रम), और वंड छकना (साझा करना)।\n३. संगत और पंगत (समानतावादी लंगर) की परंपरा शुरू की।\n४. नारी सम्मान और समानता की वकालत करते हुए 'सो क्यों मंदा आखिए जित जम्मे राजान' का क्रांतिकारी उपदेश दिया।\n५. करतारपुर साहिब नगर की स्थापना कर भक्ति और श्रम का समन्वित समाज निर्मित किया।"
+      },
+      "importantEvents": [
         {
-          "id": 1,
-          "name": "Guru Nanak Dev Ji",
-          "namePunjabi": "ਗੁਰੂ ਨਾਨਕ ਦੇਵ ਜੀ",
-          "nameHindi": "गुरु नानक देव जी",
-          "english": "Guru Nanak Dev Ji",
-          "years": "1469–1539",
-          "gurgaddi": "1504",
-          "jotiJot": "1539",
-          "birthPlace": "Rai Bhoi Di Talwandi (Nankana Sahib)",
-          "birthPlacePa": "ਰਾਇ ਭੋਈ ਦੀ ਤਲਵੰਡੀ (ਨਨਕਾਣਾ ਸਾਹਿਬ)",
-          "birthPlaceHi": "राइ भोई दी तलवंडी (ननकाना साहिब)",
-          "majorContributions": "Founded Sikhism, established Ik Onkar, preached equality, created Langar. Composed 974 shabads.",
-          "majorContributionsPa": "ਸਿੱਖ ਧਰਮ ਦੀ ਨੀਂਹ ਰੱਖੀ, ਇੱਕ ਪਰਮਾਤਮਾ ਦਾ ਸੰਕਲਪ, ਬਰਾਬਰਤਾ ਦਾ ਪ੍ਰਚਾਰ, ਲੰਗਰ ਦੀ ਸਥਾਪਨਾ। 974 ਸ਼ਬਦ ਰਚੇ।",
-          "majorContributionsHi": "सिख धर्म की नींव रखी, एक परमात्मा का संकल्प, बराबरी का प्रचार, लंगर की स्थापना। 974 शबद रचे।",
-          "keyTeachings": "Naam Japna, Kirat Karna, Vand Chakna. Truthful living, equality, service.",
-          "keyTeachingsPa": "ਨਾਮ ਜਪਣਾ, ਕਿਰਤ ਕਰਨਾ, ਵੰਡ ਛਕਣਾ। ਸੱਚ ਜੀਵਨ, ਬਰਾਬਰਤਾ, ਸੇਵਾ।",
-          "keyTeachingsHi": "नाम जपना, किरत करना, वंड छकना। सच्चा जीवन, बराबरी, सेवा।",
-          "notableEvents": "Four udasis across India, Tibet, Arabia, Sri Lanka. Established Kartarpur Sahib.",
-          "notableEventsPa": "ਚਾਰ ਉਦਾਸੀਆਂ। ਕਾਰਤਾਰਪੁਰ ਸਾਹਿਬ ਦੀ ਸਥਾਪਨਾ।",
-          "notableEventsHi": "चार उदासियाँ। कारतारपुर साहिब की स्थापना।"
+          "titleEn": "Spiritual Revelation at Kali Bein (Sultanpur Lodhi)",
+          "titlePa": "ਕਾਲੀ ਵੇਈਂ ਪ੍ਰਵੇਸ਼ ਅਤੇ ਇਲਾਹੀ ਪ੍ਰਕਾਸ਼",
+          "titleHi": "काली बेईं में ईश्वरीय साक्षात्कार",
+          "descEn": "Guru Sahib emerged with the transcendent message of universal brotherhood: 'Na Koi Hindu, Na Koi Musalman' (There is no Hindu, there is no Muslim—all are children of the One Creator)."
         },
         {
-          "id": 2,
-          "name": "Guru Angad Dev Ji",
-          "namePunjabi": "ਗੁਰੂ ਅੰਗਦ ਦੇਵ ਜੀ",
-          "nameHindi": "गुरु अंगद देव जी",
-          "english": "Guru Angad Dev Ji",
-          "years": "1504–1552",
-          "gurgaddi": "1539",
-          "jotiJot": "1552",
-          "birthPlace": "Mattay Sri Muktsar Sahib",
-          "birthPlacePa": "ਮੱਤਾਇ ਸ੍ਰੀ ਮੁਕਤਸਰ ਸਾਹਿਬ",
-          "birthPlaceHi": "मत्ताय श्री मुक्तसर साहिब",
-          "majorContributions": "Standardized Gurmukhi script, established schools, promoted physical fitness. Composed 62 shabads.",
-          "majorContributionsPa": "ਗੁਰਮੁਖੀ ਲਿਪੀ ਮਿਆਰੀ ਬਣਾਈ, ਸਕੂਲ ਸਥਾਪਿਤ, ਸਰੀਰਕ ਫਿਟਨੈਸ ਉਤਸ਼ਾਹਿਤ। 62 ਸ਼ਬਦ ਰਚੇ।",
-          "majorContributionsHi": "गुरमुखी लिपि मानकीकृत, स्कूल स्थापित, शारीरिक फिटनेस बढ़ावा। 62 शबद रचे।",
-          "keyTeachings": "Education, physical discipline, selfless service, continuing Guru Nanak's teachings.",
-          "keyTeachingsPa": "ਪੜ੍ਹਾਈ, ਸਰੀਰਕ ਅਨੁਸ਼ਾਸਨ, ਬੇਰਹਿਮ ਸੇਵਾ, ਗੁਰੂ ਨਾਨਕ ਦੀਆਂ ਸਿਖਿਆਵਾਂ ਜਾਰੀ।",
-          "keyTeachingsHi": "शिक्षा, शारीरिक अनुशासन, निस्वार्थ सेवा, गुरु नानक की शिक्षाएं जारी।",
-          "notableEvents": "Compiled Guru Nanak's compositions. Expanded Langar system.",
-          "notableEventsPa": "ਗੁਰੂ ਨਾਨਕ ਦੀਆਂ ਰਚਨਾਵਾਂ ਇਕੱਠੀਆਂ। ਲੰਗਰ ਪ੍ਰਣਾਲੀ ਵਿਸਤਾਰ।",
-          "notableEventsHi": "गुरु नानक की रचनाएं एकत्रित। लंगर प्रणाली विस्तार।"
+          "titleEn": "Four Great Udasis (Global Spiritual Journeys)",
+          "titlePa": "ਚਾਰ ਉਦਾਸੀਆਂ (ਵਿਸ਼ਵ ਰੂਹਾਨੀ ਯਾਤਰਾਵਾਂ)",
+          "titleHi": "चार उदासियां (विश्वव्यापी आध्यात्मिक यात्राएं)",
+          "descEn": "Traveled over 28,000 km across India, Tibet, Sri Lanka, Mecca, Medina, Baghdad, and Central Asia to engage in theological dialogue with yogis, pandits, sufis, and qazis."
         },
         {
-          "id": 3,
-          "name": "Guru Amar Das Ji",
-          "namePunjabi": "ਗੁਰੂ ਅਮਰ ਦਾਸ ਜੀ",
-          "nameHindi": "गुरु अमर दास जी",
-          "english": "Guru Amar Das Ji",
-          "years": "1479–1574",
-          "gurgaddi": "1552",
-          "jotiJot": "1574",
-          "birthPlace": "Basarke Gillan",
-          "birthPlacePa": "ਬਸਾਰਕੇ ਗਿੱਲਾਂ",
-          "birthPlaceHi": "बसारके गिल्लां",
-          "majorContributions": "Established Manji system, abolished Sati, instituted Anand Karaj. Composed 907 shabads.",
-          "majorContributionsPa": "ਮੰਜੀ ਪ੍ਰਣਾਲੀ ਸਥਾਪਿਤ, ਸਤੀ ਖਤਮ, ਅਨੰਦ ਕਾਰਜ ਸ਼ੁਰੂ। 907 ਸ਼ਬਦ ਰਚੇ।",
-          "majorContributionsHi": "मंजी प्रणाली स्थापित, सती समाप्त, अनंद कारज शुरू। 907 शबद रचे।",
-          "keyTeachings": "Equality of women, organized community structure, simple living, devotion to Waheguru.",
-          "keyTeachingsPa": "ਔਰਤਾਂ ਦੀ ਬਰਾਬਰਤਾ, ਸੰਗਠਿਤ ਸਮਾਜਿਕ ਢਾਂਚਾ, ਸਧਾਰਨ ਜੀਵਨ, ਵਾਹਿਗੁਰੂ ਪ੍ਰਤੀ ਭਗਤੀ।",
-          "keyTeachingsHi": "महिलाओं की बराबरी, संगठित सामुदायिक संरचना, साधारण जीवन, वाहिगुरु के प्रति भक्ति।",
-          "notableEvents": "Built Goindwal Sahib with Baoli. Organized 22 Manjis.",
-          "notableEventsPa": "ਗੋਇੰਦਵਾਲ ਸਾਹਿਬ ਬਾਉਲੀ ਨਾਲ ਬਣਾਇਆ। 22 ਮੰਜੀਆਂ ਸੰਗਠਿਤ।",
-          "notableEventsHi": "गोइंदवाल साहिब बाउली के साथ बनाया। 22 मंजियाँ संगठित।"
+          "titleEn": "Encounter with Babur at Saidpur (Babarvani)",
+          "titlePa": "ਸੈਦਪੁਰ ਵਿਖੇ ਬਾਬਰ ਦਾ ਹਮਲਾ ਅਤੇ ਬਾਬਰਵਾਣੀ",
+          "titleHi": "सैदपुर में बाबर का हमला और बाबरवाणी",
+          "descEn": "Boldly condemned the brutality and atrocities of Babur's invasion in historic hymns (Babarvani), calling out tyranny directly to the conqueror's face."
         },
         {
-          "id": 4,
-          "name": "Guru Ram Das Ji",
-          "namePunjabi": "ਗੁਰੂ ਰਾਮ ਦਾਸ ਜੀ",
-          "nameHindi": "गुरु राम दास जी",
-          "english": "Guru Ram Das Ji",
-          "years": "1534–1581",
-          "gurgaddi": "1574",
-          "jotiJot": "1581",
-          "birthPlace": "Chuna Mandi, Lahore",
-          "birthPlacePa": "ਚੂਨਾ ਮੰਡੀ, ਲਾਹੌਰ",
-          "birthPlaceHi": "चूना मंडी, लाहौर",
-          "majorContributions": "Founded Amritsar, began Harmandir Sahib, composed Laavan. Composed 679 shabads.",
-          "majorContributionsPa": "ਅੰਮ੍ਰਿਤਸਰ ਦੀ ਨੀਂਹ ਰੱਖੀ, ਹਰਿਮੰਦਰ ਸਾਹਿਬ ਸ਼ੁਰੂ, ਲਾਵਾਂ ਰਚੇ। 679 ਸ਼ਬਦ ਰਚੇ।",
-          "majorContributionsHi": "अमृतसर की नींव रखी, हरिमंदर साहिब शुरू, लावां रचे। 679 शबद रचे।",
-          "keyTeachings": "Sacred spaces, marital devotion, service, continuing previous Gurus' mission.",
-          "keyTeachingsPa": "ਪਵਿੱਤਰ ਥਾਵਾਂ, ਵੈਵਾਹਿਕ ਭਗਤੀ, ਸੇਵਾ, ਪਿਛਲੇ ਗੁਰੂਆਂ ਦਾ ਮਿਸ਼ਨ ਜਾਰੀ।",
-          "keyTeachingsHi": "पवित्र स्थान, वैवाहिक भक्ति, सेवा, पिछले गुरुओं का मिशन जारी।",
-          "notableEvents": "Started excavation of Amritsar Sarowar. Composed Lavan for marriage.",
-          "notableEventsPa": "ਅੰਮ੍ਰਿਤਸਰ ਸਰੋਵਰ ਦੀ ਖੁਦਾਈ ਸ਼ੁਰੂ। ਵਿਆਹ ਲਈ ਲਾਵਾਂ ਰਚੇ।",
-          "notableEventsHi": "अमृतसर सरोवर की खुदाई शुरू। विवाह के लिए लावां रचे।"
-        },
-        {
-          "id": 5,
-          "name": "Guru Arjan Dev Ji",
-          "namePunjabi": "ਗੁਰੂ ਅਰਜਨ ਦੇਵ ਜੀ",
-          "nameHindi": "गुरु अर्जन देव जी",
-          "english": "Guru Arjan Dev Ji",
-          "years": "1563–1606",
-          "gurgaddi": "1581",
-          "jotiJot": "1606",
-          "birthPlace": "Goindwal",
-          "birthPlacePa": "ਗੋਇੰਦਵਾਲ",
-          "birthPlaceHi": "गोइंदवाल",
-          "majorContributions": "Compiled Adi Granth (1604), completed Harmandir Sahib, first Sikh martyr. Composed 2,218 shabads.",
-          "majorContributionsPa": "ਆਦਿ ਗ੍ਰੰਥ ਸੰਕਲਿਤ (1604), ਹਰਿਮੰਦਰ ਸਾਹਿਬ ਮੁਕੰਮਲ, ਪਹਿਲਾ ਸਿੱਖ ਸ਼ਹੀਦ। 2,218 ਸ਼ਬਦ ਰਚੇ।",
-          "majorContributionsHi": "आदि ग्रंथ संकलित (1604), हरिमंदर साहिब पूरा, पहला सिख शहीद। 2,218 शबद रचे।",
-          "keyTeachings": "Supreme sacrifice, equality, peaceful resistance, scripture importance.",
-          "keyTeachingsPa": "ਸਰਬੋਤਮ ਕੁਰਬਾਨੀ, ਬਰਾਬਰਤਾ, ਸ਼ਾਂਤਮੀ ਵਿਰੋਧ, ਗ੍ਰੰਥਾਂ ਦੀ ਮਹੱਤਤਾ।",
-          "keyTeachingsHi": "सर्वोच्च बलिदान, बराबरी, शांतिपूर्ण प्रतिरोध, ग्रंथों का महत्व।",
-          "notableEvents": "Martyred in 1606. Compilation of Adi Granth completed.",
-          "notableEventsPa": "1606 ਵਿੱਚ ਸ਼ਹੀਦ। ਆਦਿ ਗ੍ਰੰਥ ਦਾ ਸੰਕਲਨ ਮੁਕੰਮਲ।",
-          "notableEventsHi": "1606 में शहीद। आदि ग्रंथ का संकलन पूरा।"
-        },
-        {
-          "id": 6,
-          "name": "Guru Hargobind Sahib Ji",
-          "namePunjabi": "ਗੁਰੂ ਹਰਗੋਬਿੰਦ ਸਾਹਿਬ ਜੀ",
-          "nameHindi": "गुरु हरगोबिंद साहिब जी",
-          "english": "Guru Hargobind Sahib Ji",
-          "years": "1595–1644",
-          "gurgaddi": "1606",
-          "jotiJot": "1644",
-          "birthPlace": "Wadali Guru",
-          "birthPlacePa": "ਵਡਾਲੀ ਗੁਰੂ",
-          "birthPlaceHi": "वडाली गुरु",
-          "majorContributions": "Introduced Miri-Piri, established Akal Takht (1606), built Lohgarh fort. First Guru for military defense.",
-          "majorContributionsPa": "ਮੀਰੀ-ਪੀਰੀ ਪੇਸ਼, ਅਕਾਲ ਤਖ਼ਤ ਸਥਾਪਿਤ (1606), ਲੋਹਗੜ੍ਹ ਕਿਲ੍ਹਾ ਬਣਾਇਆ। ਫੌਜੀ ਰੱਖਿਆ ਲਈ ਪਹਿਲਾ ਗੁਰੂ।",
-          "majorContributionsHi": "मीरी-पीरी पेश, अकाल तख़्त स्थापित (1606), लोहगढ़ किला बनाया। सैन्य रक्षा के लिए पहले गुरु।",
-          "keyTeachings": "Balance of spiritual and temporal life, self-defense, justice, protecting oppressed.",
-          "keyTeachingsPa": "ਆਧਿਆਤਮਿਕ ਅਤੇ ਦੁਨਿਆਵੀ ਜੀਵਨ ਦਾ ਸੰਤੁਲਨ, ਆਤਮ-ਰੱਖਿਆ, ਨਿਆਂ, ਦਮਿਤਾਂ ਦੀ ਰੱਖਿਆ।",
-          "keyTeachingsHi": "आध्यात्मिक और सांसारिक जीवन का संतुलन, आत्म-रक्षा, न्याय, दमितों की रक्षा।",
-          "notableEvents": "Established Akal Takht. Imprisoned in Gwalior, released 52 rajas (Bandi Chhor). Fought four battles.",
-          "notableEventsPa": "ਅਕਾਲ ਤਖ਼ਤ ਸਥਾਪਿਤ। ਗਵਾਲੀਅਰ ਵਿੱਚ ਕੈਦ, 52 ਰਾਜਿਆਂ ਰਿਹਾਈ (ਬੰਦੀ ਛੋੜ)। ਚਾਰ ਜੰਗਾਂ ਲੜੀਆਂ।",
-          "notableEventsHi": "अकाल तख़्त स्थापित। ग्वालियर में कैद, 52 राजाओं को रिहाई (बंदी छोड़)। चार युद्ध लड़े।"
-        },
-        {
-          "id": 7,
-          "name": "Guru Har Rai Ji",
-          "namePunjabi": "ਗੁਰੂ ਹਰਿ ਰਾਇ ਜੀ",
-          "nameHindi": "गुरु हर राय जी",
-          "english": "Guru Har Rai Ji",
-          "years": "1630–1661",
-          "gurgaddi": "1644",
-          "jotiJot": "1661",
-          "birthPlace": "Kiratpur Sahib",
-          "birthPlacePa": "ਕਿਰਤਪੁਰ ਸਾਹਿਬ",
-          "birthPlaceHi": "किरतपुर साहिब",
-          "majorContributions": "Maintained 2,200 cavalry, established free medical clinics. Preserved Sikh scriptures.",
-          "majorContributionsPa": "2,200 ਘੋੜਸਵਾਰ ਰੱਖੇ, ਮੁਫਤ ਮੈਡੀਕਲ ਕਲੀਨਿਕ ਸਥਾਪਿਤ। ਸਿੱਖ ਗ੍ਰੰਥਾਂ ਦੀ ਰੱਖਿਆ ਕੀਤੀ।",
-          "majorContributionsHi": "2,200 घुड़सवार रखे, मुफ्त चिकित्सालय स्थापित। सिख ग्रंथों की रक्षा की।",
-          "keyTeachings": "Compassion, healing, preserving scripture, maintaining principles under pressure.",
-          "keyTeachingsPa": "ਦਇਆ, ਇਲਾਜ, ਗ੍ਰੰਥਾਂ ਦੀ ਰੱਖਿਆ, ਦਬਾਅ ਹੇਠ ਵੀ ਸਿਧਾਂਤ ਰੱਖਣੇ।",
-          "keyTeachingsHi": "दया, चिकित्सा, ग्रंथों की रक्षा, दबाव में भी सिद्धांत रखना।",
-          "notableEvents": "Refused to modify Guru Granth Sahib for Emperor Aurangzeb. Excommunicated Ram Rai.",
-          "notableEventsPa": "ਬਾਦਸ਼ਾਹ ਔਰੰਗਜ਼ੇਬ ਲਈ ਗੁਰੂ ਗ੍ਰੰਥ ਬਦਲਣ ਤੋਂ ਇਨਕਾਰ। ਰਾਮ ਰਾਇ ਨੂੰ ਸ਼ਰਮਿੰਦ।",
-          "notableEventsHi": "बादशाह औरंगज़ेब के लिए गुरु ग्रंथ बदलने से इनकार। राम राय को शर्मिंद किया।"
-        },
-        {
-          "id": 8,
-          "name": "Guru Har Krishan Ji",
-          "namePunjabi": "ਗੁਰੂ ਹਰਿ ਕ੍ਰਿਸ਼ਨ ਜੀ",
-          "nameHindi": "गुरु हर कृष्ण जी",
-          "english": "Guru Har Krishan Ji",
-          "years": "1656–1664",
-          "gurgaddi": "1661",
-          "jotiJot": "1664",
-          "birthPlace": "Kiratpur Sahib",
-          "birthPlacePa": "ਕਿਰਤਪੁਰ ਸਾਹਿਬ",
-          "birthPlaceHi": "किरतपुर साहिब",
-          "majorContributions": "Youngest Guru (age 5), served sick during smallpox epidemic. Showed spiritual wisdom transcends age.",
-          "majorContributionsPa": "ਸਭ ਤੋਂ ਛੋਟੇ ਗੁਰੂ (5 ਸਾਲ), ਚੇਚਕ ਮਹਾਮਾਰੀ ਦੌਰਾਨ ਬਿਮਾਰਾਂ ਦੀ ਸੇਵਾ। ਆਧਿਆਤਮਿਕ ਗਿਆਨ ਉਮਰ ਤੋਂ ਉੱਪਰ ਹੈ ਦਿਖਾਇਆ।",
-          "majorContributionsHi": "सबसे छोटे गुरु (5 वर्ष), चेचक महामारी के दौरान बीमारों की सेवा। आध्यात्मिक ज्ञान उम्र से ऊपर है दिखाया।",
-          "keyTeachings": "Selfless service, compassion, divine wisdom transcends age, devotion to Waheguru.",
-          "keyTeachingsPa": "ਬੇਰਹਿਮ ਸੇਵਾ, ਦਇਆ, ਦੈਵੀ ਗਿਆਨ ਉਮਰ ਤੋਂ ਉੱਪਰ, ਵਾਹਿਗੁਰੂ ਪ੍ਰਤੀ ਭਗਤੀ।",
-          "keyTeachingsHi": "निस्वार्थ सेवा, दया, दैवी ज्ञान उम्र से ऊपर, वाहिगुरु के प्रति भक्ति।",
-          "notableEvents": "Called to Delhi, served sick during epidemic. Attained joti-jot at age 8. Indicated Guru Tegh Bahadur as successor.",
-          "notableEventsPa": "ਦਿੱਲੀ ਬੁਲਾਏ, ਮਹਾਮਾਰੀ ਦੌਰਾਨ ਬਿਮਾਰਾਂ ਦੀ ਸੇਵਾ। 8 ਸਾਲ ਦੀ ਉਮਰ ਵਿੱਚ ਜੋਤੀ-ਜੋਤ। ਗੁਰੂ ਤੇਗ ਬਹਾਦਰ ਨੂੰ ਉੱਤਰਾਧਿਕਾਰੀ ਦਰਸਾਇਆ।",
-          "notableEventsHi": "दिल्ली बुलाए, महामारी के दौरान बीमारों की सेवा। 8 वर्ष की उम्र में जोती-जोत। गुरु तेग बहादुर को उत्तराधिकारी दर्शाया।"
-        },
-        {
-          "id": 9,
-          "name": "Guru Tegh Bahadur Ji",
-          "namePunjabi": "ਗੁਰੂ ਤੇਗ ਬਹਾਦਰ ਜੀ",
-          "nameHindi": "गुरु तेग बहादुर जी",
-          "english": "Guru Tegh Bahadur Ji",
-          "years": "1621–1675",
-          "gurgaddi": "1664",
-          "jotiJot": "1675",
-          "birthPlace": "Amritsar",
-          "birthPlacePa": "ਅੰਮ੍ਰਿਤਸਰ",
-          "birthPlaceHi": "अमृतसर",
-          "majorContributions": "Known as 'Hind Di Chadar', martyred protecting Kashmiri Pandits' religious freedom. Composed 116 shabads.",
-          "majorContributionsPa": "'ਹਿੰਦ ਦੀ ਚਾਦਰ' ਵਜੋਂ ਜਾਣੇ, ਕਸ਼ਮੀਰੀ ਪੰਡਤਾਂ ਦੀ ਧਾਰਮਿਕ ਆਜ਼ਾਦੀ ਦੀ ਰੱਖਿਆ ਲਈ ਸ਼ਹੀਦ। 116 ਸ਼ਬਦ ਰਚੇ।",
-          "majorContributionsHi": "'हिंद दी चादर' के रूप में जाने जाते, कश्मीरी पंडितों की धार्मिक स्वतंत्रता की रक्षा के लिए शहीद। 116 शबद रचे।",
-          "keyTeachings": "Supreme sacrifice for others' religious freedom, courage, protecting oppressed, standing against tyranny.",
-          "keyTeachingsPa": "ਦੂਜਿਆਂ ਦੀ ਧਾਰਮਿਕ ਆਜ਼ਾਦੀ ਲਈ ਸਰਬੋਤਮ ਕੁਰਬਾਨੀ, ਬਹਾਦਰੀ, ਦਮਿਤਾਂ ਦੀ ਰੱਖਿਆ, ਜ਼ੁਲਮ ਖਿਲਾਫ਼ ਖੜ੍ਹਨਾ।",
-          "keyTeachingsHi": "दूसरों की धार्मिक स्वतंत्रता के लिए सर्वोच्च बलिदान, साहस, दमितों की रक्षा, ज़ुल्म के खिलाफ़ खड़े होना।",
-          "notableEvents": "Martyred in 1675 at Chandni Chowk, Delhi. Protected Hindus' right to practice religion.",
-          "notableEventsPa": "1675 ਵਿੱਚ ਦਿੱਲੀ ਦੇ ਚਾਂਦਨੀ ਚੌਕ 'ਤੇ ਸ਼ਹੀਦ। ਹਿੰਦੂਆਂ ਨੂੰ ਧਰਮ ਦਾ ਅਭਿਆਸ ਕਰਨ ਦਾ ਅਧਿਕਾਰ ਦਿੱਤਾ।",
-          "notableEventsHi": "1675 में दिल्ली के चांदनी चौक पर शहीद। हिंदुओं को धर्म का अभ्यास करने का अधिकार दिया।"
-        },
-        {
-          "id": 10,
-          "name": "Guru Gobind Singh Ji",
-          "namePunjabi": "ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ ਜੀ",
-          "nameHindi": "गुरु गोबिंद सिंह जी",
-          "english": "Guru Gobind Singh Ji",
-          "years": "1666–1708",
-          "gurgaddi": "1675",
-          "jotiJot": "1708",
-          "birthPlace": "Patna Sahib",
-          "birthPlacePa": "ਪਟਨਾ ਸਾਹਿਬ",
-          "birthPlaceHi": "पटना साहिब",
-          "majorContributions": "Created Khalsa (1699), declared Guru Granth Sahib Ji as eternal Guru (1708). Composed Dasam Granth.",
-          "majorContributionsPa": "ਖ਼ਾਲਸਾ ਦੀ ਸਾਜਨਾ (1699), ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ ਨੂੰ ਸਦੀਵੀ ਗੁਰੂ ਘੋਸ਼ਿਤ (1708)। ਦਸਮ ਗ੍ਰੰਥ ਦੀ ਰਚਨਾ।",
-          "majorContributionsHi": "खालसा की स्थापना (1699), गुरु ग्रंथ साहिब जी को सदीवी गुरु घोषित (1708)। दशम ग्रंथ की रचना।",
-          "keyTeachings": "Saint-Soldier concept, supreme sacrifice, courage, protecting faith, unity of Sikhs.",
-          "keyTeachingsPa": "ਸੰਤ-ਸਿਪਾਹੀ ਦਾ ਸੰਕਲਪ, ਸਰਬੋਤਮ ਕੁਰਬਾਨੀ, ਬਹਾਦਰੀ, ਵਿਸ਼ਵਾਸ ਦੀ ਰੱਖਿਆ, ਸਿੱਖਾਂ ਦੀ ਏਕਤਾ।",
-          "keyTeachingsHi": "संत-सिपाही की अवधारणा, सर्वोच्च बलिदान, साहस, विश्वास की रक्षा, सिखों की एकता।",
-          "notableEvents": "Vaisakhi 1699 - Khalsa creation. Battle of Chamkaur (1704). Sirhind (1705) - martyrdom of younger Sahibzaade. 1708 - Declared SGGS Ji eternal Guru.",
-          "notableEventsPa": "ਵਿਸਾਖੀ 1699 - ਖ਼ਾਲਸਾ ਸਾਜਨਾ। ਚਮਕੌਰ ਦੀ ਜੰਗ (1704)। ਸਰਹਿੰਦ (1705) - ਛੋਟੇ ਸਾਹਿਬਜ਼ਾਦਿਆਂ ਦੀ ਸ਼ਹਾਦਤ। 1708 - ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ ਨੂੰ ਸਦੀਵੀ ਗੁਰੂ ਘੋਸ਼ਿਤ।",
-          "notableEventsHi": "वैसाखी 1699 - खालसा स्थापना। चमकौर की लड़ाई (1704)। सिरहिंद (1705) - छोटे साहिबज़ादों की शहादत। 1708 - श्री गुरु ग्रंथ साहिब जी को सदीवी गुरु घोषित।"
-        },
-        {
-          "id": 11,
-          "name": "Sri Guru Granth Sahib Ji",
-          "namePunjabi": "ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ",
-          "nameHindi": "श्री गुरु ग्रंथ साहिब जी",
-          "english": "Sri Guru Granth Sahib Ji",
-          "years": "1708–Present",
-          "gurgaddi": "1708",
-          "jotiJot": "Eternal",
-          "birthPlace": "Nanakana Sahib (Philosophy), Amritsar (Compilation)",
-          "majorContributions": "Eternal Living Guru for all Sikhs. Final sovereign authority. Contains hymns from Gurus, Bhagats, Bhatts, and Gursikhs.",
-          "majorContributionsPa": "ਸਿੱਖਾਂ ਦੇ ਸਦੀਵੀ ਗੁਰੂ। ਅੰਤਮ ਪ੍ਰਭੂਸੱਤਾ ਅਥਾਰਟੀ। ਗੁਰੂਆਂ, ਭਗਤਾਂ, ਭੱਟਾਂ ਅਤੇ ਗੁਰਸਿੱਖਾਂ ਦੀ ਬਾਣੀ ਸ਼ਾਮਲ ਹੈ।",
-          "majorContributionsHi": "सिखों के शाश्वत गुरु। अंतिम संप्रभु प्राधिकरण। गुरुओं, भक्तों, भट्टों और गुरुसिखों के भजनों को शामिल करता है।",
-          "keyTeachings": "Oneness of God, Service to Humanity, Divine Wisdom, Equality, and Justice.",
-          "keyTeachingsPa": "ਪਰਮਾਤਮਾ ਦੀ ਏਕਤਾ, ਮਨੁੱਖਤਾ ਦੀ ਸੇਵਾ, ਦੈਵੀ ਗਿਆਨ, ਬਰਾਬਰਤਾ ਅਤੇ ਨਿਆਂ।",
-          "keyTeachingsHi": "ईश्वर की एकता, मानवता की सेवा, दिव्य ज्ञान, समानता और न्याय।",
-          "notableEvents": "Compiled by Guru Arjan Dev Ji (1604), Finalized by Guru Gobind Singh Ji (1708)."
+          "titleEn": "Succession of Bhai Lehna Ji (Guru Angad Dev Ji)",
+          "titlePa": "ਭਾਈ ਲਹਿਣਾ ਜੀ ਨੂੰ ਗੁਰਗੱਦੀ ਦੀ ਬਖ਼ਸ਼ਿਸ਼",
+          "titleHi": "भाई लहणा जी को गुरुगद्दी सौंपना",
+          "descEn": "Tested and chose Bhai Lehna Ji on merit, humility, and obedience, declaring him 'Ang-ad' (a part of my own limb/soul), establishing meritocratic spiritual succession."
         }
+      ],
+      "importantPlaces": [
+        "Sri Nankana Sahib (Birthplace)",
+        "Sultanpur Lodhi (Gurdwara Ber Sahib)",
+        "Kartarpur Sahib (Pakistan)",
+        "Kurukshetra, Haridwar, Varanasi, Jagannath Puri, Baghdad, Mecca"
+      ],
+      "gurbaniContribution": {
+        "shabadsCount": 974,
+        "raagsCount": 19,
+        "majorCompositions": [
+          "Japji Sahib (Morning Prayer / Preface of SGGS)",
+          "Asa Ki Var (Dawn Hymn of Praise and Ethics)",
+          "Sidh Gosht (Dialogue with the Gorakhpanthi Yogis)",
+          "Dakhni Oankar",
+          "Barah Maha (Calendar of the Soul's Longing)",
+          "Patti Likhi",
+          "Babarvani"
+        ]
+      },
+      "historicalSignificance": {
+        "en": "Guru Nanak Dev Ji initiated a profound spiritual, social, and cultural renaissance that dismantled orthodox polytheism, ritualism, and institutionalized caste prejudice in South Asia, laying the bedrock of the Sikh world-view.",
+        "pa": "ਸ੍ਰੀ ਗੁਰੂ ਨਾਨਕ ਦੇਵ ਜੀ ਨੇ ਅਜਿਹੇ ਇਨਕਲਾਬੀ ਰੂਹਾਨੀ ਅਤੇ ਸਮਾਜਿਕ ਅੰਦੋਲਨ ਦੀ ਨੀਂਹ ਰੱਖੀ ਜਿਸ ਨੇ ਧਾਰਮਿਕ ਪਾਖੰਡ, ਜਾਤੀ ਵਿਤਕਰੇ ਅਤੇ ਰਾਜਸੀ ਜ਼ੁਲਮ ਨੂੰ ਜੜ੍ਹੋਂ ਹਿਲਾ ਕੇ ਸਮੁੱਚੀ ਮਨੁੱਖਤਾ ਨੂੰ ਆਜ਼ਾਦ ਅਤੇ ਸਵੈ-ਮਾਣ ਵਾਲੀ ਜੀਵਨ-ਜਾਚ ਬਖ਼ਸ਼ੀ।",
+        "hi": "गुरु नानक देव जी ने ऐसे क्रांतिकारी आध्यात्मिक और सामाजिक आंदोलन का सूत्रपात किया जिसने आडंबर, जातिवाद और शोषणकारी व्यवस्था को समाप्त कर मानवता को स्वतंत्रता और आत्मसम्मान का मार्ग दिखाया।"
+      },
+      "sources": [
+        "Sri Guru Granth Sahib Ji (Primary)",
+        "Bhai Gurdas Ji, Vaaran (Vaar 1)",
+        "Puratan Janamsakhi & Meharban Janamsakhi",
+        "Mahan Kosh by Bhai Kahn Singh Nabha",
+        "Encyclopaedia of Sikhism (Punjabi University Patiala)"
       ]
     },
-    "pa": {
-      "title": "ਦਸ ਗੁਰੂ ਸਾਹਿਬਾਨ",
-      "intro": "ਦਸ ਸਿੱਖ ਗੁਰੂਆਂ ਨੇ 239 ਸਾਲਾਂ (1469-1708) ਦੌਰਾਨ ਸਿੱਖ ਧਰਮ ਦੀ ਨੀਂਹ ਰੱਖੀ। ਹਰ ਗੁਰੂ ਨੇ ਵਿਲੱਖਣ ਸਿਖਿਆਵਾਂ ਦਿੱਤੀਆਂ ਅਤੇ ਸਿੱਖ ਸਮਾਜ ਦੀ ਅਗਵਾਈ ਕੀਤੀ।"
+    {
+      "id": 2,
+      "slug": "guru-angad-dev-ji",
+      "nameEn": "Sri Guru Angad Dev Ji",
+      "namePa": "ਸ੍ਰੀ ਗੁਰੂ ਅੰਗਦ ਦੇਵ ਜੀ",
+      "nameHi": "श्री गुरु अंगद देव जी",
+      "gurmukhiTitle": "ਦੂਜੀ ਪਾਤਸ਼ਾਹੀ",
+      "years": "1504–1552 CE",
+      "gurgaddiYear": "1539 CE",
+      "jotiJotYear": "1552 CE (Khadur Sahib)",
+      "birth": {
+        "placeEn": "Matte Di Sarai (Muktsar, Punjab)",
+        "placePa": "ਮੱਤੇ ਦੀ ਸਰਾਏ (ਜ਼ਿਲ੍ਹਾ ਸ੍ਰੀ ਮੁਕਤਸਰ ਸਾਹਿਬ, ਪੰਜਾਬ)",
+        "placeHi": "मत्ते दी सराय (श्री मुक्तसर साहिब, पंजाब)",
+        "date": "March 31, 1504 CE"
+      },
+      "jotiJot": {
+        "placeEn": "Khadur Sahib (Tarn Taran, Punjab)",
+        "placePa": "ਸ੍ਰੀ ਖਡੂਰ ਸਾਹਿਬ (ਤਰਨ ਤਾਰਨ, ਪੰਜਾਬ)",
+        "placeHi": "श्री खडूर साहिब (तरन तारन, पंजाब)",
+        "date": "March 29, 1552 CE"
+      },
+      "historicalContext": {
+        "en": "Succeeded Guru Nanak Dev Ji amid the nascent growth of the Sikh community and the political transition from Babur to Humayun and Sher Shah Suri.",
+        "pa": "ਗੁਰੂ ਨਾਨਕ ਸਾਹਿਬ ਦੇ ਜੋਤੀ-ਜੋਤ ਸਮਾਉਣ ਉਪਰੰਤ ਸਿੱਖ ਪੰਥ ਦੀ ਸੁਤੰਤਰ ਪਛਾਣ ਨੂੰ ਸੰਗਠਿਤ ਕਰਨ ਅਤੇ ਗੁਰਮੁਖੀ ਲਿਪੀ ਰਾਹੀਂ ਵਿੱਦਿਆ ਦਾ ਪਸਾਰ ਕਰਨ ਦਾ ਇਤਿਹਾਸਕ ਦੌਰ ਸੀ।",
+        "hi": "गुरु नानक देव जी के बाद सिख समुदाय की स्वतंत्र पहचान को सुदृढ़ करने और गुरमुखी लिपि द्वारा जन-जन तक शिक्षा पहुँचाने का युग था।"
+      },
+      "earlyLife": {
+        "en": "Originally named Bhai Lehna Ji, he was a devout pilgrim from Khadur who, upon hearing Bhai Jodha recite Guru Nanak's Asa Di Var, journeyed to Kartarpur and dedicated his entire life to selfless obedience and service.",
+        "pa": "ਆਪ ਜੀ ਦਾ ਪਹਿਲਾ ਨਾਮ ਭਾਈ ਲਹਿਣਾ ਜੀ ਸੀ। ਖਡੂਰ ਵਿਖੇ ਭਾਈ ਜੋਧਾ ਜੀ ਪਾਸੋਂ ਆਸਾ ਦੀ ਵਾਰ ਸੁਣ ਕੇ ਕਰਤਾਰਪੁਰ ਸਾਹਿਬ ਗੁਰੂ ਨਾਨਕ ਦੇਵ ਜੀ ਦੇ ਚਰਨਾਂ ਵਿੱਚ ਪਹੁੰਚੇ ਅਤੇ ਨਿਸ਼ਕਾਮ ਸੇਵਾ ਅਤੇ ਪੂਰਨ ਸਮਰਪਣ ਦਾ ਸਿਖਰ ਦਰਸਾਇਆ।",
+        "hi": "मूल नाम भाई लहणा जी था। भाई जोधा जी से गुरु नानक देव जी की बाणी सुनकर करतारपुर पहुँचे और पूर्ण समर्पण व निस्वार्थ सेवा से गुरु पद प्राप्त किया।"
+      },
+      "majorContributions": {
+        "en": "1. Formalized and standardized the Gurmukhi script (35 Akhar), liberating literacy and sacred scripture from Sanskrit Brahminical monopoly.\n2. Authored and recorded the sacred memories and Janamsakhis of Guru Nanak Dev Ji.\n3. Established Mall Akhara (wrestling and martial training grounds) at Khadur Sahib to foster physical fitness alongside spiritual discipline.\n4. Greatly developed the Langar institution under the dedicated stewardship of Mata Khivi Ji (celebrated in Gurbani for sweet rice-pudding kheer distribution).",
+        "pa": "੧. ਗੁਰਮੁਖੀ ਲਿਪੀ ਦੇ ੩੫ ਅੱਖਰਾਂ ਨੂੰ ਮਿਆਰੀ ਬਣਾਇਆ, ਜਿਸ ਨਾਲ ਆਮ ਲੋਕਾਂ ਲਈ ਵਿੱਦਿਆ ਅਤੇ ਬਾਣੀ ਦਾ ਮਾਰਗ ਸੁਲਭ ਹੋਇਆ।\n੨. ਗੁਰੂ ਨਾਨਕ ਦੇਵ ਜੀ ਦੇ ਜੀਵਨ ਬਿਰਤਾਂਤ ਅਤੇ ਸਾਖੀਆਂ ਨੂੰ ਸੰਭਾਲਿਆ।\n੩. ਖਡੂਰ ਸਾਹਿਬ ਵਿਖੇ ਮੱਲ ਅਖਾੜੇ ਸਥਾਪਿਤ ਕਰਕੇ ਨੌਜਵਾਨਾਂ ਨੂੰ ਸਰੀਰਕ ਅਤੇ ਮਾਨਸਿਕ ਤੰਦਰੁਸਤੀ ਦਾ ਪਾਠ ਪੜ੍ਹਾਇਆ।\n੪. ਮਾਤਾ ਖੀਵੀ ਜੀ ਦੀ ਅਗਵਾਈ ਹੇਠ ਲੰਗਰ ਪ੍ਰਥਾ ਦਾ ਵਿਸ਼ਾਲ ਪਸਾਰ ਕੀਤਾ (ਜਿਨ੍ਹਾਂ ਦੀ ਖੀਰ ਵਾਲੀ ਸੇਵਾ ਦੀ ਉਸਤਤ ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ ਵਿੱਚ ਦਰਜ ਹੈ)।",
+        "hi": "१. गुरमुखी लिपि को मानकीकृत कर आम जनता के लिए विद्या और बाणी का मार्ग खोला।\n२. गुरु नानक देव जी की साखियों और जीवन वृत्तांतों को लिपिबद्ध कराया।\n३. खडूर साहिब में मल्ल अखाड़ों की स्थापना कर शारीरिक बल और आत्मिक अनुशासन का संगम किया।\n४. माता खीवी जी के सहयोग से लंगर व्यवस्था को अत्यंत समृद्ध बनाया।"
+      },
+      "importantEvents": [
+        {
+          "titleEn": "Humayun's Visit to Khadur Sahib",
+          "titlePa": "ਮੁਗਲ ਬਾਦਸ਼ਾਹ ਹੁਮਾਯੂੰ ਦਾ ਖਡੂਰ ਸਾਹਿਬ ਆਉਣਾ",
+          "titleHi": "मुगल बादशाह हुमायूँ का खडूर साहिब आगमन",
+          "descEn": "When defeated Emperor Humayun drew his sword in anger because Guru Sahib was absorbed in meditation, Guru Sahib calmly reminded him that his sword was meant for the battlefield, not for saints."
+        }
+      ],
+      "importantPlaces": [
+        "Khadur Sahib (Tarn Taran)",
+        "Matte Di Sarai (Muktsar)"
+      ],
+      "gurbaniContribution": {
+        "shabadsCount": 62,
+        "raagsCount": 0,
+        "majorCompositions": [
+          "62 Sacred Saloks preserved in various Vaars of Sri Guru Granth Sahib Ji (notably integrated within Asa Ki Var, Majh Ki Var, and Sarang Ki Var)"
+        ]
+      },
+      "historicalSignificance": {
+        "en": "Sri Guru Angad Dev Ji preserved the continuity of Guru Nanak's mission, provided the community with an indigenous script (Gurmukhi), and institutionalized physical and mental fortitude.",
+        "pa": "ਸ੍ਰੀ ਗੁਰੂ ਅੰਗਦ ਦੇਵ ਜੀ ਨੇ ਗੁਰੂ ਨਾਨਕ ਸਾਹਿਬ ਦੀ ਜੋਤ ਨੂੰ ਅੱਗੇ ਤੋਰਦਿਆਂ ਗੁਰਮੁਖੀ ਲਿਪੀ ਰਾਹੀਂ ਪੰਜਾਬੀ ਭਾਸ਼ਾ ਅਤੇ ਗਿਆਨ ਨੂੰ ਅਮਰ ਕਰ ਦਿੱਤਾ।",
+        "hi": "गुरु अंगद देव जी ने गुरु नानक की परंपरा को सुदृढ़ किया और गुरमुखी लिपि के माध्यम से ज्ञान को जनसामान्य तक पहुँचाया।"
+      },
+      "sources": [
+        "Sri Guru Granth Sahib Ji (Salok Mahalla 2, Balwand & Satta Vaar)",
+        "Bhai Gurdas Ji, Vaaran",
+        "Bansavalinama by Kesar Singh Chhibber",
+        "Mahan Kosh"
+      ]
     },
-    "hi": {
-      "title": "दस गुरु साहिबान",
-      "intro": "दस सिख गुरुओं ने 239 वर्षों (1469-1708) के दौरान सिख धर्म की नींव रखी। हर गुरु ने अद्वितीय शिक्षाएं दीं और सिख समुदाय का मार्गदर्शन किया।"
+    {
+      "id": 3,
+      "slug": "guru-amar-das-ji",
+      "nameEn": "Sri Guru Amar Das Ji",
+      "namePa": "ਸ੍ਰੀ ਗੁਰੂ ਅਮਰ ਦਾਸ ਜੀ",
+      "nameHi": "श्री गुरु अमर दास जी",
+      "gurmukhiTitle": "ਤੀਜੀ ਪਾਤਸ਼ਾਹੀ",
+      "years": "1479–1574 CE",
+      "gurgaddiYear": "1552 CE",
+      "jotiJotYear": "1574 CE (Goindwal Sahib)",
+      "birth": {
+        "placeEn": "Basarke Gillan (Amritsar, Punjab)",
+        "placePa": "ਬਾਸਰਕੇ ਗਿੱਲਾਂ (ਅੰਮ੍ਰਿਤਸਰ, ਪੰਜਾਬ)",
+        "placeHi": "बासरके गिल्लां (अमृतसर, पंजाब)",
+        "date": "May 5, 1479 CE"
+      },
+      "jotiJot": {
+        "placeEn": "Goindwal Sahib (Tarn Taran, Punjab)",
+        "placePa": "ਸ੍ਰੀ ਗੋਇੰਦਵਾਲ ਸਾਹਿਬ (ਤਰਨ ਤਾਰਨ, ਪੰਜਾਬ)",
+        "placeHi": "श्री गोइंदवाल साहिब (तरन तारन, पंजाब)",
+        "date": "September 1, 1574 CE"
+      },
+      "historicalContext": {
+        "en": "During the reign of Mughal Emperor Akbar, Guru Amar Das Ji organized the rapidly expanding Sikh movement across northern India into administrative dioceses.",
+        "pa": "ਮੁਗ਼ਲ ਬਾਦਸ਼ਾਹ ਅਕਬਰ ਦੇ ਸਮੇਂ ਸਿੱਖ ਸੰਗਤਾਂ ਦੇ ਵਿਸ਼ਾਲ ਫੈਲਾਅ ਨੂੰ ਸੁਚੱਜੇ ਪ੍ਰਬੰਧਕੀ ਢਾਂਚੇ (੨੨ ਮੰਜੀਆਂ) ਵਿੱਚ ਸੰਗਠਿਤ ਕੀਤਾ।",
+        "hi": "मुगल सम्राट अकबर के समकालीन, गुरु अमर दास जी ने सिख पंथ के दूर-दराज के क्षेत्रों में प्रचार हेतु २२ मंजियों की संगठित व्यवस्था की।"
+      },
+      "earlyLife": {
+        "en": "Embodied supreme humility and devotion. For 12 years (from age 61 to 73), he carried fresh water from the River Beas every midnight across several miles for Guru Angad Dev Ji's morning bath without ever turning his back to the Guru.",
+        "pa": "੬੧ ਤੋਂ ੭੩ ਸਾਲ ਦੀ ਉਮਰ ਤੱਕ ਲਗਾਤਾਰ ੧੨ ਸਾਲ ਰੋਜ਼ਾਨਾ ਅੱਧੀ ਰਾਤ ਨੂੰ ਬਿਆਸ ਦਰਿਆ ਤੋਂ ਗਾਗਰ ਵਿੱਚ ਜਲ ਲਿਆ ਕੇ ਗੁਰੂ ਅੰਗਦ ਸਾਹਿਬ ਜੀ ਦੇ ਇਸ਼ਨਾਨ ਦੀ ਨਿਸ਼ਕਾਮ ਸੇਵਾ ਕੀਤੀ।",
+        "hi": "६१ से ७३ वर्ष की आयु तक १२ वर्षों तक निरंतर व्यास नदी से जल लाकर गुरु अंगद देव जी के स्नान की निष्काम सेवा की और अगाध विनम्रता का परिचय दिया।"
+      },
+      "majorContributions": {
+        "en": "1. Established the 22 Manjis (administrative preaching seats) and 52 Piris (women leaders) to spread Gurmat throughout the subcontinent.\n2. Built Goindwal Sahib with its sacred Baoli Sahib (84 steps), breaking caste taboos by welcoming all to drink and bathe together.\n3. Enforced the strict egalitarian principle of 'Pehle Pangat, Paache Sangat' (First dine together in the langar, only then meet the Guru), which even Emperor Akbar respected.\n4. Campaigned vigorously against the barbaric practices of Sati (widow burning), female infanticide, and Purdah (veil).\n5. Standardized distinct Sikh ceremonies for birth, marriage (Anand), and death.",
+        "pa": "੧. ਦੇਸ਼ ਭਰ ਵਿੱਚ ਗੁਰਮਤਿ ਪ੍ਰਚਾਰ ਲਈ ੨੨ ਮੰਜੀਆਂ ਅਤੇ ੫੨ ਪੀੜ੍ਹੀਆਂ (ਇਸਤਰੀ ਪ੍ਰਚਾਰਕ) ਦਾ ਪ੍ਰਬੰਧ ਸਥਾਪਿਤ ਕੀਤਾ।\n੨. ਗੋਇੰਦਵਾਲ ਸਾਹਿਬ ਵਿਖੇ ੮੪ ਪੌੜੀਆਂ ਵਾਲੀ ਬਾਉਲੀ ਸਾਹਿਬ ਦੀ ਉਸਾਰੀ ਕਰਵਾਈ, ਜਿੱਥੇ ਸਭ ਜਾਤਾਂ ਲਈ ਸਾਂਝਾ ਇਸ਼ਨਾਨ ਮੁਹੱਈਆ ਕੀਤਾ।\n੩. 'ਪਹਿਲੇ ਪੰਗਤ ਪਾਛੇ ਸੰਗਤ' ਦਾ ਪੱਕਾ ਨਿਯਮ ਬਣਾਇਆ, ਜਿਸ ਦੀ ਪਾਲਣਾ ਬਾਦਸ਼ਾਹ ਅਕਬਰ ਨੇ ਵੀ ਕੀਤੀ।\n੪. ਸਤੀ ਪ੍ਰਥਾ, ਪਰਦਾ ਪ੍ਰਥਾ ਅਤੇ ਕੰਨਿਆ ਭਰੂਣ ਹੱਤਿਆ ਵਰਗੀਆਂ ਕੁਰੀਤੀਆਂ ਵਿਰੁੱਧ ਇਨਕਲਾਬੀ ਕਦਮ ਚੁੱਕੇ।\n੫. ਅਨੰਦ ਕਾਰਜ ਅਤੇ ਸਿੱਖ ਰਹਿਣੀ ਦੇ ਵੱਖਰੇ ਸਮਾਜਿਕ ਨੇਮ ਕਾਇਮ ਕੀਤੇ।",
+        "hi": "१. २२ मंजियों और ५२ पीढ़ियों (महिला प्रचारक) की धर्म-प्रचार व्यवस्था बनाई।\n२. गोइंदवाल साहिब में ८४ पौड़ियों वाली ऐतिहासिक बाउली साहिब का निर्माण कराया।\n३. 'पहले पंगत पाछे संगत' का नियम अनिवार्य किया, जिसका पालन सम्राट अकबर ने भी किया।\n४. सती प्रथा, पर्दा प्रथा और कन्या हत्या जैसी कुरीतियों का प्रबल विरोध किया।\n५. आनंद साहिब की रचना कर सिख विवाह और जीवन संस्कारों को नई दिशा दी।"
+      },
+      "importantEvents": [
+        {
+          "titleEn": "Emperor Akbar's Visit to Goindwal",
+          "titlePa": "ਬਾਦਸ਼ਾਹ ਅਕਬਰ ਦਾ ਗੋਇੰਦਵਾਲ ਸਾਹਿਬ ਆਉਣਾ",
+          "titleHi": "सम्राट अकबर का गोइंदवाल आगमन",
+          "descEn": "Akbar sat on the floor with commoners to eat coarse coarse rice in the Langar before receiving Guru Sahib's blessings, being deeply inspired by the equality."
+        }
+      ],
+      "importantPlaces": [
+        "Goindwal Sahib (Tarn Taran)",
+        "Basarke Gillan (Amritsar)"
+      ],
+      "gurbaniContribution": {
+        "shabadsCount": 907,
+        "raagsCount": 17,
+        "majorCompositions": [
+          "Anand Sahib (The 40-stanza Song of Supreme Bliss in Ramkali Raag)",
+          "Patti",
+          "Allahnian",
+          "Saloks in various Vaars"
+        ]
+      },
+      "historicalSignificance": {
+        "en": "Guru Amar Das Ji transformed the Sikh movement into an institutionalized, socially progressive society with its own sacred hubs, ceremonies, and gender-liberation policies.",
+        "pa": "ਸ੍ਰੀ ਗੁਰੂ ਅਮਰ ਦਾਸ ਜੀ ਨੇ ਸਿੱਖ ਸਮਾਜ ਨੂੰ ਸੰਸਥਾਗਤ ਮਜ਼ਬੂਤੀ, ਨਾਰੀ ਸ਼ਕਤੀਕਰਨ ਅਤੇ ਵੱਖਰੀਆਂ ਜੀਵਨ-ਰਸਮਾਂ ਬਖ਼ਸ਼ ਕੇ ਸਮਾਜਿਕ ਕ੍ਰਾਂਤੀ ਲਿਆਂਦੀ।",
+        "hi": "गुरु अमर दास जी ने सिख पंथ को सांगठनिक मजबूती, नारी सशक्तिकरण और अद्वितीय संस्कार देकर सामाजिक क्रांति की।"
+      },
+      "sources": [
+        "Sri Guru Granth Sahib Ji (Anand Sahib & Raag Ramkali)",
+        "Bhai Gurdas Ji, Vaar 1 & 24",
+        "Suraj Prakash by Kavi Santokh Singh",
+        "Encyclopaedia of Sikhism"
+      ]
+    },
+    {
+      "id": 4,
+      "slug": "guru-ram-das-ji",
+      "nameEn": "Sri Guru Ram Das Ji",
+      "namePa": "ਸ੍ਰੀ ਗੁਰੂ ਰਾਮ ਦਾਸ ਜੀ",
+      "nameHi": "श्री गुरु राम दास जी",
+      "gurmukhiTitle": "ਚੌਥੀ ਪਾਤਸ਼ਾਹੀ",
+      "years": "1534–1581 CE",
+      "gurgaddiYear": "1574 CE",
+      "jotiJotYear": "1581 CE (Goindwal Sahib)",
+      "birth": {
+        "placeEn": "Chuna Mandi (Lahore, Punjab)",
+        "placePa": "ਚੂਨਾ ਮੰਡੀ (ਲਾਹੌਰ, ਪੰਜਾਬ)",
+        "placeHi": "चूना मंडी (लाहौर, पंजाब)",
+        "date": "September 24, 1534 CE"
+      },
+      "jotiJot": {
+        "placeEn": "Goindwal Sahib",
+        "placePa": "ਸ੍ਰੀ ਗੋਇੰਦਵਾਲ ਸਾਹਿਬ",
+        "placeHi": "श्री गोइंदवाल साहिब",
+        "date": "September 1, 1581 CE"
+      },
+      "historicalContext": {
+        "en": "Consolidated the economic and spiritual epicenter of the Sikhs by founding the holy city of Amritsar (Guru Ka Chakk / Ramdaspur).",
+        "pa": "ਸਿੱਖ ਪੰਥ ਦੇ ਰੂਹਾਨੀ ਅਤੇ ਵਪਾਰਕ ਧੁਰੇ ਵਜੋਂ ਸ੍ਰੀ ਅੰਮ੍ਰਿਤਸਰ (ਰਾਮਦਾਸਪੁਰ) ਸ਼ਹਿਰ ਦੀ ਨੀਂਹ ਰੱਖੀ ਅਤੇ ਅੰਮ੍ਰਿਤ ਸਰੋਵਰ ਦੀ ਖੁਦਾਈ ਕਰਵਾਈ।",
+        "hi": "सिखों के आध्यात्मिक और आर्थिक केंद्र के रूप में पवित्र नगर अमृतसर (रामदासपुर) की स्थापना की और अमृत सरोवर की खुदाई आरंभ की।"
+      },
+      "earlyLife": {
+        "en": "Originally named Bhai Jetha Ji, he was orphaned at a very young age and sold boiled grams (ghugni) in Lahore for a living before coming to Goindwal Sahib, where his boundless humility and tireless labor won Guru Amar Das Ji's heart.",
+        "pa": "ਆਪ ਜੀ ਦਾ ਪਹਿਲਾ ਨਾਮ ਭਾਈ ਜੇਠਾ ਜੀ ਸੀ। ਛੋਟੀ ਉਮਰੇ ਮਾਤਾ-ਪਿਤਾ ਦਾ ਸਾਇਆ ਉੱਠ ਜਾਣ 'ਤੇ ਲਾਹੌਰ ਵਿੱਚ ਘੁੰਗਣੀਆਂ ਵੇਚ ਕੇ ਗੁਜ਼ਾਰਾ ਕੀਤਾ। ਗੋਇੰਦਵਾਲ ਆ ਕੇ ਬਾਉਲੀ ਦੀ ਸੇਵਾ ਵਿੱਚ ਮਿੱਟੀ ਢੋਈ ਅਤੇ ਨਿਮਰਤਾ ਦੀ ਮੂਰਤ ਬਣੇ।",
+        "hi": "मूल नाम भाई जेठा जी था। अल्पायु में अनाथ होकर लाहौर में घुंघणियां बेचकर जीवन यापन किया। गोइंदवाल आकर निस्वार्थ सेवा से गुरु पद प्राप्त किया।"
+      },
+      "majorContributions": {
+        "en": "1. Founded the sacred city of Amritsar (originally Ramdaspur / Guru Ka Chakk) in 1577 CE and initiated the digging of the holy Amrit Sarovar.\n2. Composed the sacred four-stanza 'Laavan' in Raag Suhi, establishing the Sikh egalitarian marriage covenant (Anand Karaj) centered on the Shabad.\n3. Institutionalized the Masand system to organize communal offerings (Dasvandh) and missionary activities.\n4. Composed the definitive Sikh morning spiritual routine: 'Gur Satgur Ka Jo Sikh Akhaye, So Bhalke Uth Har Naam Dhiavai'.",
+        "pa": "੧. ਸੰਨ ੧੫੭੭ ਵਿੱਚ ਪਵਿੱਤਰ ਸ਼ਹਿਰ ਸ੍ਰੀ ਅੰਮ੍ਰਿਤਸਰ ਸਾਹਿਬ (ਰਾਮਦਾਸਪੁਰ) ਦੀ ਨੀਂਹ ਰੱਖੀ ਅਤੇ ਅੰਮ੍ਰਿਤ ਸਰੋਵਰ ਦੀ ਖੁਦਾਈ ਆਰੰਭੀ।\n੨. ਰਾਗੁ ਸੂਹੀ ਵਿੱਚ ੪ ਪਾਵਨ 'ਲਾਵਾਂ' ਦੀ ਰਚਨਾ ਕੀਤੀ, ਜੋ ਸਿੱਖ ਅਨੰਦ ਕਾਰਜ ਦਾ ਮੁੱਖ ਅਧਿਆਤਮਿਕ ਧੁਰਾ ਹਨ।\n੩. ਦਸਵੰਧ ਅਤੇ ਪ੍ਰਚਾਰਕ ਕਾਰਜਾਂ ਲਈ ਮਸੰਦ ਪ੍ਰਣਾਲੀ ਨੂੰ ਸੁਚੱਜਾ ਰੂਪ ਦਿੱਤਾ।\n੪. 'ਗੁਰ ਸਤਿਗੁਰ ਕਾ ਜੋ ਸਿਖੁ ਅਖਾਏ' ਰਾਹੀਂ ਸਿੱਖ ਦੇ ਰੋਜ਼ਾਨਾ ਨਿਤਨੇਮ ਅਤੇ ਜੀਵਨ-ਮਰਯਾਦਾ ਦਾ ਵਿਧਾਨ ਬਖ਼ਸ਼ਿਆ।",
+        "hi": "१. १५७७ में पवित्र नगर अमृतसर की स्थापना की और अमृत सरोवर का निर्माण शुरू कराया।\n२. राग सूही में ४ 'लावां' की रचना की, जो सिख विवाह संस्कार (आनंद कारज) का आधार बनीं।\n३. दशवंध (दान) और धर्म-प्रचार के लिए मसंद प्रणाली को संगठित किया।\n४. सिख की दैनिक दिनचर्या और अमृतवेला सिमरन का सुंदर विधान रचा।"
+      },
+      "importantEvents": [
+        {
+          "titleEn": "Baba Sri Chand Ji's Meeting",
+          "titlePa": "ਬਾਬਾ ਸ੍ਰੀ ਚੰਦ ਜੀ ਨਾਲ ਮਿਲਾਪ",
+          "titleHi": "बाबा श्री चंद जी से भेंट",
+          "descEn": "When Baba Sri Chand Ji asked why Guru Sahib kept such a long beard, Guru Sahib humbly replied with supreme love: 'To wipe the dust from the feet of holy saints like you.'"
+        }
+      ],
+      "importantPlaces": [
+        "Sri Amritsar Sahib (Gurdwara Guru Ke Mahal, Santokhsar, Sarovar)",
+        "Chuna Mandi (Lahore)",
+        "Goindwal Sahib"
+      ],
+      "gurbaniContribution": {
+        "shabadsCount": 679,
+        "raagsCount": 30,
+        "majorCompositions": [
+          "Suhi Ki Var & Laavan (The 4 Nuptial Hymns)",
+          "Gauri Bawan Akhri",
+          "Var Bilawal, Var Sarang, Var Kanra"
+        ]
+      },
+      "historicalSignificance": {
+        "en": "Sri Guru Ram Das Ji gave the Sikhs their spiritual headquarters (Amritsar) and composed sublime devotional hymns embodying utter humility and divine love.",
+        "pa": "ਸ੍ਰੀ ਗੁਰੂ ਰਾਮ ਦਾਸ ਜੀ ਨੇ ਸਿੱਖ ਕੌਮ ਨੂੰ ਅੰਮ੍ਰਿਤਸਰ ਦੇ ਰੂਪ ਵਿੱਚ ਕੌਮੀ ਕੇਂਦਰ ਬਖ਼ਸ਼ਿਆ ਅਤੇ ਅਥਾਹ ਨਿਮਰਤਾ ਤੇ ਵੈਰਾਗਮਈ ਬਾਣੀ ਨਾਲ ਨਿਵਾਜਿਆ।",
+        "hi": "गुरु राम दास जी ने सिखों को उनका केंद्रीय तीर्थ अमृतसर दिया और परम प्रेम व विनम्रता से भरी अमृत बाणी प्रदान की।"
+      },
+      "sources": [
+        "Sri Guru Granth Sahib Ji (Raag Suhi Laavan, Saloks)",
+        "Bhai Gurdas Ji, Vaar 1 & 24",
+        "Mahan Kosh"
+      ]
+    },
+    {
+      "id": 5,
+      "slug": "guru-arjan-dev-ji",
+      "nameEn": "Sri Guru Arjan Dev Ji",
+      "namePa": "ਸ੍ਰੀ ਗੁਰੂ ਅਰਜਨ ਦੇਵ ਜੀ",
+      "nameHi": "श्री गुरु अर्जन देव जी",
+      "gurmukhiTitle": "ਪੰਚਮ ਪਾਤਸ਼ਾਹੀ • ਸ਼ਹੀਦਾਂ ਦੇ ਸਿਰਤਾਜ",
+      "years": "1563–1606 CE",
+      "gurgaddiYear": "1581 CE",
+      "jotiJotYear": "1606 CE (Martyrdom at Lahore)",
+      "birth": {
+        "placeEn": "Goindwal Sahib (Tarn Taran, Punjab)",
+        "placePa": "ਸ੍ਰੀ ਗੋਇੰਦਵਾਲ ਸਾਹਿਬ (ਤਰਨ ਤਾਰਨ, ਪੰਜਾਬ)",
+        "placeHi": "श्री गोइंदवाल साहिब (तरन तारन, पंजाब)",
+        "date": "April 15, 1563 CE"
+      },
+      "jotiJot": {
+        "placeEn": "Gurdwara Dera Sahib (Lahore, on the banks of River Ravi)",
+        "placePa": "ਗੁਰਦੁਆਰਾ ਡੇਰਾ ਸਾਹਿਬ (ਲਾਹੌਰ, ਰਾਵੀ ਕੰਢੇ)",
+        "placeHi": "गुरुद्वारा डेरा साहिब (लाहौर, रावी नदी तट)",
+        "date": "May 30, 1606 CE"
+      },
+      "historicalContext": {
+        "en": "Lived during the reigns of Akbar and Jahangir. Mughal policy shifted under fundamentalist pressure in Jahangir's court, leading to state-sponsored religious persecution of the flourishing Sikh community.",
+        "pa": "ਅਕਬਰ ਅਤੇ ਜਹਾਂਗੀਰ ਦੇ ਰਾਜਕਾਲ ਦੌਰਾਨ ਸਿੱਖ ਧਰਮ ਦੇ ਵਧਦੇ ਪ੍ਰਭਾਵ ਕਾਰਨ ਮੁਗ਼ਲ ਹਕੂਮਤ ਵੱਲੋਂ ਧਾਰਮਿਕ ਅਸਹਿਣਸ਼ੀਲਤਾ ਅਤੇ ਜ਼ੁਲਮ ਸ਼ੁਰੂ ਹੋਇਆ।",
+        "hi": "अकबर और जहांगीर के शासनकाल में सिख पंथ के बढ़ते प्रभाव के कारण मुगल सत्ता की ओर से दमन और अत्याचार की शुरुआत हुई।"
+      },
+      "earlyLife": {
+        "en": "Youngest son of Guru Ram Das Ji and Mata Bhani Ji. Known for supreme scholarship, poetry, musical mastery, and unwavering poise. Foretold by Guru Amar Das Ji as 'Dohita Bani Ka Bohitha' (Grandson who shall be an ocean of sacred hymnody).",
+        "pa": "ਸ੍ਰੀ ਗੁਰੂ ਰਾਮਦਾਸ ਜੀ ਅਤੇ ਮਾਤਾ ਭਾਨੀ ਜੀ ਦੇ ਸਭ ਤੋਂ ਛੋਟੇ ਸਪੁੱਤਰ। ਗੁਰੂ ਅਮਰਦਾਸ ਜੀ ਨੇ ਬਚਪਨ ਵਿੱਚ ਵਰ ਦਿੱਤਾ ਸੀ: 'ਦੋਹਿਤਾ ਬਾਣੀ ਕਾ ਬੋਹਿਥਾ'।",
+        "hi": "गुरु राम दास जी और माता भानी जी के सुपुत्र। बाल्यकाल में ही गुरु अमर दास जी ने 'दोहिता बाणी का बोहिथा' (बाणी का महान जहाज) होने का वरदान दिया था।"
+      },
+      "majorContributions": {
+        "en": "1. Compiled the sacred Adi Granth (1604 CE) at Ramsar Sahib with Bhai Gurdas Ji as scribe, encompassing compositions of 5 Gurus, 15 Bhagats (including Kabir, Ravidas, Farid, Namdev), 11 Bhatts, and 3 Gursikhs.\n2. Built Sri Harmandir Sahib (Golden Temple) in the center of Amritsar Sarovar with four doors open to all four castes and directions, having the foundation stone laid by Sufi Saint Hazrat Mian Mir.\n3. Founded the historical cities of Tarn Taran Sahib, Kartarpur (Jalandhar), and Sri Hargobindpur.\n4. Built the world's largest Sarovar and a dedicated sanatorium/leper home at Tarn Taran Sahib.\n5. Became the first martyr of the Sikh faith, establishing the supreme principle of accepting Divine Will ('Tera Kiya Meetha Laagai') without compromise.",
+        "pa": "੧. ਸੰਨ ੧੬੦੪ ਵਿੱਚ ਰਾਮਸਰ ਸਾਹਿਬ ਵਿਖੇ ਭਾਈ ਗੁਰਦਾਸ ਜੀ ਪਾਸੋਂ ਪਵਿੱਤਰ 'ਆਦਿ ਗ੍ਰੰਥ' ਲਿਖਵਾਇਆ, ਜਿਸ ਵਿੱਚ ੫ ਗੁਰੂ ਸਾਹਿਬਾਨ, ੧੫ ਭਗਤਾਂ, ੧੧ ਭੱਟਾਂ ਅਤੇ ੩ ਗੁਰਸਿੱਖਾਂ ਦੀ ਬਾਣੀ ਦਰਜ ਕੀਤੀ।\n੨. ਸ੍ਰੀ ਹਰਿਮੰਦਰ ਸਾਹਿਬ ਦੀ ਉਸਾਰੀ ਕਰਵਾਈ, ਜਿਸ ਦੇ ਚਾਰ ਦਰਵਾਜ਼ੇ ਚੌਹਾਂ ਵਰਣਾਂ ਅਤੇ ਦਿਸ਼ਾਵਾਂ ਲਈ ਖੁੱਲ੍ਹੇ ਰੱਖੇ ਅਤੇ ਨੀਂਹ ਸੂਫ਼ੀ ਫ਼ਕੀਰ ਸਾਈਂ ਮੀਆਂ ਮੀਰ ਜੀ ਤੋਂ ਰਖਵਾਈ।\n੩. ਤਰਨ ਤਾਰਨ ਸਾਹਿਬ, ਕਰਤਾਰਪੁਰ (ਜਲੰਧਰ) ਅਤੇ ਸ੍ਰੀ ਹਰਿਗੋਬਿੰਦਪੁਰ ਨਗਰ ਵਸਾਏ।\n੪. ਤਰਨ ਤਾਰਨ ਵਿਖੇ ਕੋੜ੍ਹੀਆਂ ਦੇ ਇਲਾਜ ਲਈ ਵਿਸ਼ਾਲ ਆਸ਼ਰਮ ਅਤੇ ਦਵਾਖਾਨਾ ਕਾਇਮ ਕੀਤਾ।\n੫. ਤੱਤੀ ਤਵੀ ਅਤੇ ਉਬਲਦੀ ਦੇਗ਼ 'ਤੇ ਬੈਠ ਕੇ 'ਤੇਰਾ ਕੀਆ ਮੀਠਾ ਲਾਗੈ' ਉਚਾਰਦਿਆਂ ਸਿੱਖ ਧਰਮ ਦੇ ਪਹਿਲੇ ਸ਼ਹੀਦ ਬਣੇ।",
+        "hi": "१. १६०४ में आदि ग्रंथ साहिब का संकलन कराया, जिसमें ५ गुरुओं, १५ भक्तों (कबीर, रविदास, फरीद आदि), ११ भट्टों और ३ गुरसिखों की पवित्र बाणी सम्मिलित की।\n२. श्री हरिमंदर साहिब का निर्माण कराया, जिसकी नींव सूफी संत हजरत मियां मीर जी से रखवाई।\n३. तरन तारन साहिब और करतारपुर (जालंधर) नगरों की स्थापना की और कुष्ठ रोगियों के लिए सेवा केंद्र बनाया।\n४. तवे पर बैठकर और उबलते पानी में 'तेरा कीया मीठा लागै' कहते हुए धर्म की रक्षा हेतु प्रथम सिख शहादत दी।"
+      },
+      "importantEvents": [
+        {
+          "titleEn": "Installation of Adi Granth at Harmandir Sahib (1604 CE)",
+          "titlePa": "ਸ੍ਰੀ ਹਰਿਮੰਦਰ ਸਾਹਿਬ ਵਿਖੇ ਆਦਿ ਗ੍ਰੰਥ ਸਾਹਿਬ ਦਾ ਪਹਿਲਾ ਪ੍ਰਕਾਸ਼",
+          "titleHi": "हरिमंदर साहिब में आदि ग्रंथ का प्रथम प्रकाश (१६०४)",
+          "descEn": "Baba Buddha Ji appointed as the first Head Granthi. Guru Sahib placed the holy scripture on a high altar and sat on the floor, demonstrating reverence to the Shabad."
+        },
+        {
+          "titleEn": "Supreme Martyrdom under Jahangir (1606 CE)",
+          "titlePa": "ਸ੍ਰੀ ਗੁਰੂ ਅਰਜਨ ਦੇਵ ਜੀ ਦੀ ਲਾਸਾਨੀ ਸ਼ਹਾਦਤ (੧੬੦੬)",
+          "titleHi": "श्री गुरु अर्जन देव जी की अद्वितीय शहादत (१६०६)",
+          "descEn": "Arrested on Jahangir's orders for refusing to alter the Adi Granth or accept Islam. Endured unspeakable tortures with serene spiritual absorption on the hot plate and boiling water."
+        }
+      ],
+      "importantPlaces": [
+        "Sri Harmandir Sahib (Amritsar)",
+        "Ramsar Sahib (Amritsar)",
+        "Tarn Taran Sahib",
+        "Gurdwara Dera Sahib (Lahore)"
+      ],
+      "gurbaniContribution": {
+        "shabadsCount": 2218,
+        "raagsCount": 30,
+        "majorCompositions": [
+          "Sukhmani Sahib (The Jewel of Peace in Gauri Raag)",
+          "Bawan Akhri",
+          "Barah Maha Majh",
+          "Gauri Chaubole",
+          "Dakhne",
+          "Phunhe"
+        ]
+      },
+      "historicalSignificance": {
+        "en": "Compiled the eternal treasury of Gurbani and became the supreme fountainhead of Sikh martyrdom, transforming the community into fearless protectors of righteousness.",
+        "pa": "ਆਦਿ ਗ੍ਰੰਥ ਸਾਹਿਬ ਦਾ ਸੰਕਲਨ ਕਰਕੇ ਅਤੇ ਆਪ ਸ਼ਹੀਦੀ ਦੇ ਕੇ ਸਿੱਖ ਕੌਮ ਨੂੰ ਅਡੋਲਤਾ ਅਤੇ ਕੁਰਬਾਨੀ ਦਾ ਸਦੀਵੀ ਸੰਕਲਪ ਬਖ਼ਸ਼ਿਆ।",
+        "hi": "आदि ग्रंथ का संपादन कर और स्वयं सर्वोच्च बलिदान देकर सिख इतिहास को वीरता और शहादत की नई दिशा दी।"
+      },
+      "sources": [
+        "Sri Guru Granth Sahib Ji (Sukhmani Sahib, Gauri)",
+        "Bhai Gurdas Ji, Vaar 24 (Pauri 23)",
+        "Tuzk-e-Jahangiri (Jahangir's Memoirs)",
+        "Mahan Kosh"
+      ]
+    },
+    {
+      "id": 6,
+      "slug": "guru-hargobind-sahib-ji",
+      "nameEn": "Sri Guru Hargobind Sahib Ji",
+      "namePa": "ਸ੍ਰੀ ਗੁਰੂ ਹਰਗੋਬਿੰਦ ਸਾਹਿਬ ਜੀ",
+      "nameHi": "श्री गुरु हरगोबिंद साहिब जी",
+      "gurmukhiTitle": "ਛੇਵੀਂ ਪਾਤਸ਼ਾਹੀ • ਮੀਰੀ ਪੀਰੀ ਦੇ ਮਾਲਕ • ਬੰਦੀ ਛੋੜ ਦਾਤਾ",
+      "years": "1595–1644 CE",
+      "gurgaddiYear": "1606 CE",
+      "jotiJotYear": "1644 CE (Kiratpur Sahib)",
+      "birth": {
+        "placeEn": "Guru Ki Wadali (Amritsar, Punjab)",
+        "placePa": "ਗੁਰੂ ਕੀ ਵਡਾਲੀ (ਅੰਮ੍ਰਿਤਸਰ, ਪੰਜਾਬ)",
+        "placeHi": "गुरु की वडाली (अमृतसर, पंजाब)",
+        "date": "June 19, 1595 CE"
+      },
+      "jotiJot": {
+        "placeEn": "Kiratpur Sahib (Rupnagar, Punjab)",
+        "placePa": "ਕੀਰਤਪੁਰ ਸਾਹਿਬ (ਰੂਪਨਗਰ, ਪੰਜਾਬ)",
+        "placeHi": "कीरतपुर साहिब (रूपनगर, पंजाब)",
+        "date": "March 3, 1644 CE"
+      },
+      "historicalContext": {
+        "en": "Following the martyrdom of Guru Arjan Dev Ji, the Sikh community realized that saintliness without the power of defensive justice was vulnerable to state oppression, prompting the doctrine of Sant-Sipahi (Saint-Soldier).",
+        "pa": "ਗੁਰੂ ਅਰਜਨ ਸਾਹਿਬ ਦੀ ਸ਼ਹੀਦੀ ਉਪਰੰਤ ਜ਼ੁਲਮ ਦਾ ਟਾਕਰਾ ਕਰਨ ਲਈ ਭਗਤੀ ਦੇ ਨਾਲ ਸ਼ਕਤੀ (ਸੰਤ-ਸਿਪਾਹੀ) ਦਾ ਸੁਮੇਲ ਕਰਨ ਦਾ ਦੌਰ ਸੀ।",
+        "hi": "गुरु अर्जन देव जी की शहादत के पश्चात अत्याचार के विरुद्ध आत्मरक्षा और न्याय के लिए भक्ति के साथ शक्ति (संत-सिपाही) का समन्वय किया गया।"
+      },
+      "earlyLife": {
+        "en": "Trained in scripture by Baba Buddha Ji and martial arts by Bhai Jetha Ji and Bhai Bidhi Chand Ji. Donned two swords at his Guruship ceremony: Miri (Temporal Sovereignty) and Piri (Spiritual Authority).",
+        "pa": "ਬਾਬਾ ਬੁੱਢਾ ਜੀ ਤੋਂ ਗੁਰਮਤਿ ਗਿਆਨ ਅਤੇ ਸ਼ਸਤਰ ਵਿੱਦਿਆ ਪ੍ਰਾਪਤ ਕੀਤੀ। ਗੁਰਗੱਦੀ ਸਮੇਂ ਮੀਰੀ (ਰਾਜਸੀ ਪ੍ਰਭੂਸੱਤਾ) ਅਤੇ ਪੀਰੀ (ਰੂਹਾਨੀ ਅਗਵਾਈ) ਦੀਆਂ ਦੋ ਤਲਵਾਰਾਂ ਧਾਰਨ ਕੀਤੀਆਂ।",
+        "hi": "बाबा बुड्ढा जी से बाणी और शस्त्र विद्या सीखी। गद्दी पर बैठते समय 'मीरी' (सांसारिक शक्ति) और 'पीरी' (आध्यात्मिक शक्ति) की दो तलवारें धारण कीं।"
+      },
+      "majorContributions": {
+        "en": "1. Constructed the Sri Akal Takht Sahib (Throne of the Timeless One) directly opposite Harmandir Sahib in 1606 CE as the supreme seat of Sikh temporal sovereignty.\n2. Raised a dedicated cavalry force, armed defense corps, and built the Lohgarh Fort at Amritsar.\n3. Introduced the tradition of Dhadis (heroic bards) like Bhai Abdullah and Bhai Natha reciting martial ballads (Vaars) to inspire courage.\n4. Liberated 52 Rajput kings from Gwalior Fort prison on Diwali (Bandi Chhor Diwas).\n5. Successfully defended the community in four unprovoked defensive battles against Mughal forces (Amritsar, Sri Hargobindpur, Gurusar, and Kartarpur).\n6. Founded the tranquil foothills city of Kiratpur Sahib.",
+        "pa": "੧. ਸੰਨ ੧੬੦੬ ਵਿੱਚ ਸ੍ਰੀ ਹਰਿਮੰਦਰ ਸਾਹਿਬ ਦੇ ਸਨਮੁਖ 'ਸ੍ਰੀ ਅਕਾਲ ਤਖ਼ਤ ਸਾਹਿਬ' ਦੀ ਸਿਰਜਣਾ ਕੀਤੀ।\n੨. ਲੋਹਗੜ੍ਹ ਕਿਲ੍ਹੇ ਦੀ ਉਸਾਰੀ ਕੀਤੀ ਅਤੇ ਸਿੱਖਾਂ ਨੂੰ ਸ਼ਸਤਰਧਾਰੀ ਹੋਣ, ਘੋੜਸਵਾਰੀ ਕਰਨ ਅਤੇ ਦਲੇਰੀ ਧਾਰਨ ਦੀ ਪ੍ਰੇਰਨਾ ਦਿੱਤੀ।\n੩. ਭਾਈ ਅਬਦੁੱਲਾ ਅਤੇ ਭਾਈ ਨੱਥਾ ਜੀ ਰਾਹੀਂ ਅਕਾਲ ਤਖ਼ਤ 'ਤੇ ਬੀਰਰਸੀ ਵਾਰਾਂ ਗਾਉਣ ਦੀ ਢਾਡੀ ਪਰੰਪਰਾ ਆਰੰਭੀ।\n੪. ਦੀਵਾਲੀ ਵਾਲੇ ਦਿਨ ਗਵਾਲੀਅਰ ਦੇ ਕਿਲ੍ਹੇ ਵਿੱਚੋਂ ੫੨ ਬੰਦੀ ਰਾਜਿਆਂ ਨੂੰ ਰਿਹਾਅ ਕਰਵਾ ਕੇ 'ਬੰਦੀ ਛੋੜ ਦਾਤਾ' ਅਖਵਾਏ।\n੫. ਮੁਗ਼ਲਾਂ ਵਿਰੁੱਧ ਚਾਰੇ ਰੱਖਿਆਤਮਕ ਜੰਗਾਂ (ਅੰਮ੍ਰਿਤਸਰ, ਸ੍ਰੀ ਹਰਿਗੋਬਿੰਦਪੁਰ, ਗੁਰੂਸਰ, ਕਰਤਾਰਪੁਰ) ਵਿੱਚ ਸ਼ਾਨਦਾਰ ਜਿੱਤ ਪ੍ਰਾਪਤ ਕੀਤੀ।\n੬. ਸ਼ਿਵਾਲਿਕ ਦੀਆਂ ਪਹਾੜੀਆਂ ਦੀ ਗੋਦ ਵਿੱਚ ਕੀਰਤਪੁਰ ਸਾਹਿਬ ਦੀ ਸਥਾਪਨਾ ਕੀਤੀ।",
+        "hi": "१. १६०६ में श्री अकाल तख़्त साहिब का निर्माण कराया।\n२. लोहगढ़ किला बनवाया और सिखों को शस्त्र धारण करने व आत्मरक्षा हेतु संगठित किया।\n३. ढाडी परंपरा शुरू कर वीर रस की वारों का गायन कराया।\n४. ग्वालियर के किले से ५२ निर्दोष राजाओं को मुक्त कराकर 'बंदी छोड़ दाता' कहलाए।\n५. मुगलों के साथ चारों रक्षात्मक युद्धों में विजय प्राप्त की और कीरतपुर साहिब बसाया।"
+      },
+      "importantEvents": [
+        {
+          "titleEn": "Bandi Chhor Diwas (Release from Gwalior Fort)",
+          "titlePa": "ਬੰਦੀ ਛੋੜ ਦਿਵਸ (ਗਵਾਲੀਅਰ ਕਿਲ੍ਹੇ ਤੋਂ ਰਿਹਾਈ)",
+          "titleHi": "बंदी छोड़ दिवस (ग्वालियर किले से रिहाई)",
+          "descEn": "Refused to leave the prison alone, having a special robe made with 52 tassels so all 52 imprisoned kings could hold on and walk out to freedom alongside Guru Sahib."
+        }
+      ],
+      "importantPlaces": [
+        "Sri Akal Takht Sahib (Amritsar)",
+        "Gwalior Fort (Gurdwara Data Bandi Chhor)",
+        "Kiratpur Sahib",
+        "Gurdwara Lohgarh Sahib"
+      ],
+      "gurbaniContribution": {
+        "shabadsCount": 0,
+        "raagsCount": 0,
+        "majorCompositions": [
+          "Instructed the inclusion of specific folk musical tunes (Dhunis) in 9 sacred Vaars of Sri Guru Granth Sahib Ji for rousing martial courage."
+        ]
+      },
+      "historicalSignificance": {
+        "en": "Introduced the Saint-Soldier paradigm, transforming peaceful devotional Sikhs into protectors of justice, self-respect, and universal liberty.",
+        "pa": "ਮੀਰੀ-ਪੀਰੀ ਅਤੇ ਸੰਤ-ਸਿਪਾਹੀ ਦੇ ਸੰਕਲਪ ਨਾਲ ਸਿੱਖ ਕੌਮ ਨੂੰ ਆਤਮ-ਰੱਖਿਆ, ਅਣਖ ਅਤੇ ਨਿਆਂ ਲਈ ਜੂਝਣ ਵਾਲੀ ਅਜਿੱਤ ਸ਼ਕਤੀ ਬਣਾਇਆ।",
+        "hi": "मीरी-पीरी और संत-सिपाही की अवधारणा से सिखों को आत्मरक्षा और स्वाभिमान का बल प्रदान किया।"
+      },
+      "sources": [
+        "Bhai Gurdas Ji, Vaar 26 (Pauri 24)",
+        "Sri Gur Pratap Suraj Granth",
+        "Bansavalinama",
+        "Encyclopaedia of Sikhism"
+      ]
+    },
+    {
+      "id": 7,
+      "slug": "guru-har-rai-ji",
+      "nameEn": "Sri Guru Har Rai Ji",
+      "namePa": "ਸ੍ਰੀ ਗੁਰੂ ਹਰਿ ਰਾਇ ਜੀ",
+      "nameHi": "श्री गुरु हर राय जी",
+      "gurmukhiTitle": "ਸੱਤਵੀਂ ਪਾਤਸ਼ਾਹੀ • ਦਇਆ ਤੇ ਸੰਕਲਪ ਦੇ ਮੁਜੱਸਮੇ",
+      "years": "1630–1661 CE",
+      "gurgaddiYear": "1644 CE",
+      "jotiJotYear": "1661 CE (Kiratpur Sahib)",
+      "birth": {
+        "placeEn": "Kiratpur Sahib (Rupnagar, Punjab)",
+        "placePa": "ਕੀਰਤਪੁਰ ਸਾਹਿਬ (ਰੂਪਨਗਰ, ਪੰਜਾਬ)",
+        "placeHi": "कीरतपुर साहिब (रूपनगर, पंजाब)",
+        "date": "January 16, 1630 CE"
+      },
+      "jotiJot": {
+        "placeEn": "Kiratpur Sahib",
+        "placePa": "ਕੀਰਤਪੁਰ ਸਾਹਿਬ",
+        "placeHi": "कीरतपुर साहिब",
+        "date": "October 6, 1661 CE"
+      },
+      "historicalContext": {
+        "en": "During the war of Mughal succession between Dara Shikoh and Aurangzeb, Guru Sahib maintained military readiness while emphasizing compassionate humanitarian healing.",
+        "pa": "ਦਾਰਾ ਸ਼ਿਕੋਹ ਅਤੇ ਔਰੰਗਜ਼ੇਬ ਦਰਮਿਆਨ ਮੁਗ਼ਲ ਤਖ਼ਤ ਦੀ ਜੰਗ ਦੌਰਾਨ ਨਿਰਪੱਖ ਰਹਿ ਕੇ ਮਨੁੱਖੀ ਭਲਾਈ ਅਤੇ ਦਵਾਖਾਨੇ ਚਲਾਉਣ ਦਾ ਦੌਰ ਸੀ।",
+        "hi": "दारा शिकोह और औरंगजेब के गृहयुद्ध के समय निष्पक्ष रहकर निःस्वार्थ चिकित्सा और करुणा का आदर्श स्थापित किया।"
+      },
+      "earlyLife": {
+        "en": "Grandson of Guru Hargobind Sahib Ji (son of Baba Gurditta Ji). Famous for intense gentleness; when his robe once inadvertently tore a flower petal in the garden, he wept with grief and vowed to always tuck his cloak carefully, reflecting absolute tenderness toward all creation.",
+        "pa": "ਬਾਬਾ ਗੁਰਦਿੱਤਾ ਜੀ ਦੇ ਸਪੁੱਤਰ। ਆਪ ਜੀ ਦੇ ਕੁੜਤੇ ਨਾਲ ਬਾਗ਼ ਵਿੱਚੋਂ ਇੱਕ ਫੁੱਲ ਟੁੱਟ ਗਿਆ ਤਾਂ ਬਹੁਤ ਦੁਖੀ ਹੋਏ ਅਤੇ ਸਾਰੀ ਉਮਰ ਬਨਸਪਤੀ ਅਤੇ ਜੀਵ-ਜੰਤੂਆਂ ਪ੍ਰਤੀ ਅਥਾਹ ਦਇਆ ਦਾ ਪਾਲਣ ਕੀਤਾ।",
+        "hi": "अत्यंत दयालु स्वभाव के थे। एक बार वस्त्र से एक पुष्प टूट जाने पर अत्यंत दुखी हुए और संपूर्ण जीवन समस्त सृष्टि के प्रति अपार करुणा रखी।"
+      },
+      "majorContributions": {
+        "en": "1. Maintained a disciplined standing cavalry of 2,200 horsemen at Kiratpur Sahib to deter attacks without ever initiating an offensive battle.\n2. Established the premier botanical herbal hospital and dispensary (Dawakhana) in Asia, providing rare life-saving medicines to anyone in need free of charge.\n3. Dispatched missionaries to Malwa and central India, blessing families like Phul and Sandhu that later established respected Sikh confederacies.\n4. Strictly protected the inviolability of Gurbani, severing ties with his eldest son Ram Rai when the latter altered a single line of Asa Ki Var to appease Emperor Aurangzeb.",
+        "pa": "੧. ਕੀਰਤਪੁਰ ਸਾਹਿਬ ਵਿਖੇ ੨੨੦੦ ਤਿਆਰ-ਬਰ-ਤਿਆਰ ਘੋੜਸਵਾਰ ਫੌਜ ਰੱਖੀ ਪਰ ਬਿਨਾਂ ਭੜਕਾਹਟ ਕੋਈ ਜੰਗ ਨਾ ਲੜੀ।\n੨. ਕੀਰਤਪੁਰ ਸਾਹਿਬ ਵਿਖੇ ਭਾਰਤ ਦਾ ਸਭ ਤੋਂ ਵੱਡਾ ਆਯੁਰਵੈਦਿਕ ਦਵਾਖਾਨਾ ਅਤੇ ਜੜ੍ਹੀ-ਬੂਟੀਆਂ ਦਾ ਖੋਜ ਬਾਗ਼ ਸਥਾਪਿਤ ਕੀਤਾ (ਜਿੱਥੋਂ ਦਾਰਾ ਸ਼ਿਕੋਹ ਨੂੰ ਵੀ ਦਵਾਈ ਭੇਜ ਕੇ ਬਚਾਇਆ ਗਿਆ)।\n੩. ਮਾਲਵਾ ਖੇਤਰ ਵਿੱਚ ਗੁਰਮਤਿ ਦਾ ਵਿਸ਼ਾਲ ਪ੍ਰਚਾਰ ਕੀਤਾ।\n੪. ਗੁਰਬਾਣੀ ਦੇ ਮਾਣ-ਸਤਿਕਾਰ ਦੀ ਰੱਖਿਆ ਲਈ ਆਪਣੇ ਪੁੱਤਰ ਰਾਮ ਰਾਇ ਵੱਲੋਂ ਔਰੰਗਜ਼ੇਬ ਦੇ ਦਰਬਾਰ ਵਿੱਚ ਆਸਾ ਦੀ ਵਾਰ ਦੀ ਤੁਕ ਬਦਲਣ 'ਤੇ ਉਸ ਨੂੰ ਸਦਾ ਲਈ ਤਿਆਗ ਦਿੱਤਾ।",
+        "hi": "१. २२०० घुड़सवारों की सेना तैयार रखी और शांति का मार्ग अपनाया।\n२. कीरतपुर में विशाल आयुर्वेदिक औषधालय स्थापित किया, जहाँ से दारा शिकोह के प्राण बचाने हेतु भी दुर्लभ औषधि भेजी गई।\n३. गुरबाणी की प्रामाणिकता की रक्षा के लिए अपने पुत्र राम राय द्वारा औरंगजेब को खुश करने के लिए बाणी की एक पंक्ति बदलने पर उसे त्याग दिया।"
+      },
+      "importantEvents": [
+        {
+          "titleEn": "Excommunication of Ram Rai",
+          "titlePa": "ਰਾਮ ਰਾਇ ਨੂੰ ਮੂੰਹ ਨਾ ਲਾਉਣਾ",
+          "titleHi": "राम राय का निष्कासन",
+          "descEn": "Declared that no one who alters the True Word of the Guru out of fear of temporal rulers can belong to the Guru's house, establishing that Gurbani's truth is absolute."
+        }
+      ],
+      "importantPlaces": [
+        "Kiratpur Sahib (Gurdwara Patalpuri Sahib, Naulakha Bagh)",
+        "Malwa region"
+      ],
+      "gurbaniContribution": {
+        "shabadsCount": 0,
+        "raagsCount": 0,
+        "majorCompositions": [
+          "Preserved and expounded Gurbani, establishing extensive daily Kirtan and Katha traditions in congregations across Punjab."
+        ]
+      },
+      "historicalSignificance": {
+        "en": "Exemplified the sublime harmony of defensive military strength with profound environmental stewardship, herbal healing, and the uncompromising sanctity of sacred scripture.",
+        "pa": "ਸ੍ਰੀ ਗੁਰੂ ਹਰਿ ਰਾਇ ਜੀ ਨੇ ਸ਼ਾਂਤੀ, ਦਇਆ, ਕੁਦਰਤ ਸੰਭਾਲ ਅਤੇ ਗੁਰਬਾਣੀ ਦੀ ਅਟੱਲ ਪਵਿੱਤਰਤਾ ਦਾ ਅਦੁੱਤੀ ਆਦਰਸ਼ ਕਾਇਮ ਕੀਤਾ।",
+        "hi": "गुरु हर राय जी ने सैन्य शक्ति के साथ करुणा, प्रकृति-संरक्षण और बाणी की सर्वोच्च मर्यादा का आदर्श प्रस्तुत किया।"
+      },
+      "sources": [
+        "Sri Gur Pratap Suraj Granth",
+        "Bansavalinama",
+        "Mahan Kosh"
+      ]
+    },
+    {
+      "id": 8,
+      "slug": "guru-har-krishan-ji",
+      "nameEn": "Sri Guru Har Krishan Ji",
+      "namePa": "ਸ੍ਰੀ ਗੁਰੂ ਹਰਿ ਕ੍ਰਿਸ਼ਨ ਜੀ",
+      "nameHi": "श्री गुरु हर कृष्ण जी",
+      "gurmukhiTitle": "ਅੱਠਵੀਂ ਪਾਤਸ਼ਾਹੀ • ਬਾਲਾ ਪ੍ਰੀਤਮ • ਸ੍ਰੀ ਹਰਿਕ੍ਰਿਸਨ ਧਿਆਈਐ ਜਿਸ ਡਿਠੇ ਸਭਿ ਦੁਖਿ ਜਾਇ",
+      "years": "1656–1664 CE",
+      "gurgaddiYear": "1661 CE",
+      "jotiJotYear": "1664 CE (Delhi)",
+      "birth": {
+        "placeEn": "Kiratpur Sahib (Rupnagar, Punjab)",
+        "placePa": "ਕੀਰਤਪੁਰ ਸਾਹਿਬ (ਰੂਪਨਗਰ, ਪੰਜਾਬ)",
+        "placeHi": "कीरतपुर साहिब (रूपनगर, पंजाब)",
+        "date": "July 7, 1656 CE"
+      },
+      "jotiJot": {
+        "placeEn": "Gurdwara Bala Sahib (on the banks of River Yamuna, Delhi)",
+        "placePa": "ਗੁਰਦੁਆਰਾ ਬਾਲਾ ਸਾਹਿਬ (ਜਮਨਾ ਕੰਢੇ, ਦਿੱਲੀ)",
+        "placeHi": "गुरुद्वारा बाला साहिब (यमुना तट, दिल्ली)",
+        "date": "March 30, 1664 CE"
+      },
+      "historicalContext": {
+        "en": "Ascended the Guruship at the age of five under the scrutiny of Aurangzeb's court and the schemes of dissident relatives.",
+        "pa": "੫ ਸਾਲ ਦੀ ਬਾਲ ਉਮਰ ਵਿੱਚ ਗੁਰਤਾਗੱਦੀ ਸੰਭਾਲੀ ਅਤੇ ਦਿੱਲੀ ਵਿਖੇ ਚੇਚਕ ਤੇ ਹੈਜ਼ੇ ਦੀ ਮਹਾਮਾਰੀ ਦੌਰਾਨ ਲੋਕਾਈ ਦੀ ਸੇਵਾ ਕੀਤੀ।",
+        "hi": "मात्र ५ वर्ष की आयु में गुरुगद्दी संभाली और दिल्ली में भयंकर चेचक व हैजे की महामारी के दौरान जनता की निःस्वार्थ सेवा की।"
+      },
+      "earlyLife": {
+        "en": "Younger son of Guru Har Rai Ji and Mata Sulakhani Ji. Possessed profound spiritual maturity that silenced scholars and demonstrated that divine light is independent of physical age.",
+        "pa": "ਗੁਰੂ ਹਰਿ ਰਾਇ ਜੀ ਦੇ ਛੋਟੇ ਸਪੁੱਤਰ। ਛੋਟੀ ਉਮਰ ਵਿੱਚ ਹੀ ਆਤਮਿਕ ਗਿਆਨ ਅਤੇ ਦੈਵੀ ਪ੍ਰਤਿਭਾ ਦੇ ਧਾਰਨੀ ਸਨ।",
+        "hi": "गुरु हर राय जी के सुपुत्र। बाल्यकाल में ही आत्मज्ञान और ईश्वरीय ज्योति से परिपूर्ण थे।"
+      },
+      "majorContributions": {
+        "en": "1. Rendered selfless medical and physical relief to thousands suffering from smallpox and cholera epidemics in Delhi, personally cleaning wounds and distributing clean sanctified water.\n2. Humbled the arrogant Brahmin Pandit Lal Chand at Panjokhra Sahib by enabling an uneducated mute water-carrier (Chhajju Ram) to expound the deep philosophical meaning of the Bhagavad Gita.\n3. Deflected Emperor Aurangzeb's political traps by refusing to grant him an audience, staying at Raja Jai Singh's Haveli (now Gurdwara Bangla Sahib).\n4. Sacrificed his own physical health by absorbing the disease of the afflicted, passing into Jyoti Jot at age seven and eight months with the historic declaration 'Baba Bakale' (pointing to Guru Tegh Bahadur Ji).",
+        "pa": "੧. ਦਿੱਲੀ ਵਿਖੇ ਚੇਚਕ ਅਤੇ ਹੈਜ਼ੇ ਨਾਲ ਪੀੜਤ ਹਜ਼ਾਰਾਂ ਗ਼ਰੀਬਾਂ ਅਤੇ ਮਰੀਜ਼ਾਂ ਦੀ ਨਿਸ਼ਕਾਮ ਸੇਵਾ ਕੀਤੀ ਅਤੇ ਚਰਨਾਮ੍ਰਿਤ ਦੇ ਕੇ ਰੋਗੀਆਂ ਨੂੰ ਠੀਕ ਕੀਤਾ (ਮੌਜੂਦਾ ਗੁਰਦੁਆਰਾ ਬੰਗਲਾ ਸਾਹਿਬ)।\n੨. ਪੰਜੋਖੜਾ ਸਾਹਿਬ ਵਿਖੇ ਪੰਡਿਤ ਲਾਲ ਚੰਦ ਦਾ ਹੰਕਾਰ ਤੋੜਨ ਲਈ ਇੱਕ ਗੂੰਗੇ ਛੱਜੂ ਝੀਵਰ ਤੋਂ ਗੀਤਾ ਦੇ ਗੂੜ੍ਹ ਅਰਥ ਕਰਵਾਏ।\n੩. ਬਾਦਸ਼ਾਹ ਔਰੰਗਜ਼ੇਬ ਨੂੰ ਮਿਲਣ ਤੋਂ ਸਾਫ਼ ਇਨਕਾਰ ਕਰਕੇ ਨਿਰਭੈਤਾ ਦਾ ਸਬੂਤ ਦਿੱਤਾ।\n੪. ਲੋਕਾਂ ਦੇ ਦੁੱਖ ਆਪਣੇ ਉੱਪਰ ਝੱਲਦਿਆਂ ਜੋਤੀ-ਜੋਤ ਸਮਾਉਣ ਤੋਂ ਪਹਿਲਾਂ 'ਬਾਬਾ ਬਕਾਲੇ' ਕਹਿ ਕੇ ਅਗਲੇ ਗੁਰੂ ਸ੍ਰੀ ਗੁਰੂ ਤੇਗ ਬਹਾਦਰ ਜੀ ਵੱਲ ਸੰਕੇਤ ਕੀਤਾ।",
+        "hi": "१. दिल्ली में चेचक से पीड़ित असहाय लोगों की स्वयं सेवा की और अमृत जल से रोग निवारण किया (वर्तमान बंगला साहिब)।\n२. पंजोखड़ा साहिब में पंडित लाल चंद का घमंड तोड़ा और छज्जू झीवर से गीता के श्लोकों की व्याख्या कराई।\n३. औरंगजेब से मिलने से स्पष्ट इनकार किया और अंत समय में 'बाबा बकाले' कहकर गुरु तेग बहादुर जी को उत्तराधिकारी घोषित किया।"
+      },
+      "importantEvents": [
+        {
+          "titleEn": "Service at Delhi (Gurdwara Bangla Sahib)",
+          "titlePa": "ਦਿੱਲੀ ਵਿਖੇ ਮਹਾਮਾਰੀ ਦੌਰਾਨ ਲੋਕ ਸੇਵਾ",
+          "titleHi": "दिल्ली में महामारी के दौरान जनसेवा",
+          "descEn": "Transformed Raja Jai Singh's royal residence into a healing center for the poor and afflicted, leaving an eternal legacy celebrated in Ardas: 'Sri Har Krishan Dhyaiye Jis Dithe Sabh Dukh Jaye'."
+        }
+      ],
+      "importantPlaces": [
+        "Gurdwara Bangla Sahib (New Delhi)",
+        "Gurdwara Bala Sahib (New Delhi)",
+        "Panjokhra Sahib (Ambala, Haryana)",
+        "Kiratpur Sahib"
+      ],
+      "gurbaniContribution": {
+        "shabadsCount": 0,
+        "raagsCount": 0,
+        "majorCompositions": [
+          "Embodied living compassion; remembered in Guru Gobind Singh Ji's sacred Ardas hymn: 'ਸ੍ਰੀ ਹਰਿਕ੍ਰਿਸਨ ਧਿਆਈਐ ਜਿਸੁ ਡਿਠੈ ਸਭਿ ਦੁਖਿ ਜਾਇ' (Meditate on Sri Har Krishan, by whose vision all suffering is dispelled)."
+        ]
+      },
+      "historicalSignificance": {
+        "en": "Proved that spiritual enlightenment transcends biological age and demonstrated the highest measure of selfless sacrifice by serving plague-ridden outcasts at the cost of his own earthly life.",
+        "pa": "ਸ੍ਰੀ ਗੁਰੂ ਹਰਿ ਕ੍ਰਿਸ਼ਨ ਜੀ ਨੇ ਸਿੱਧ ਕੀਤਾ ਕਿ ਬ੍ਰਹਮ-ਗਿਆਨ ਉਮਰ ਦਾ ਮੁਥਾਜ ਨਹੀਂ ਹੁੰਦਾ ਅਤੇ ਦੁਖੀਆਂ ਦੀ ਸੇਵਾ ਲਈ ਆਪਣਾ ਜੀਵਨ ਨਿਛਾਵਰ ਕਰਕੇ ਅਮਰ ਹੋ ਗਏ।",
+        "hi": "गुरु हर कृष्ण जी ने सिद्ध किया कि आत्मज्ञान आयु पर निर्भर नहीं करता और दूसरों के प्राणों की रक्षा हेतु अपना जीवन समर्पित कर दिया।"
+      },
+      "sources": [
+        "Sri Dasam Granth Ji (Chandi Di Var / Ardas)",
+        "Bhai Gurdas Singh Ji, Vaaran",
+        "Sri Gur Pratap Suraj Granth",
+        "Mahan Kosh"
+      ]
+    },
+    {
+      "id": 9,
+      "slug": "guru-tegh-bahadur-ji",
+      "nameEn": "Sri Guru Tegh Bahadur Ji",
+      "namePa": "ਸ੍ਰੀ ਗੁਰੂ ਤੇਗ ਬਹਾਦਰ ਜੀ",
+      "nameHi": "श्री गुरु तेग बहादुर जी",
+      "gurmukhiTitle": "ਨੌਵੀਂ ਪਾਤਸ਼ਾਹੀ • ਹਿੰਦ ਦੀ ਚਾਦਰ • ਧਰਮ ਹੇਤ ਸਾਕਾ ਜਿਨਿ ਕੀਆ",
+      "years": "1621–1675 CE",
+      "gurgaddiYear": "1664 CE (Baba Bakala)",
+      "jotiJotYear": "1675 CE (Martyrdom at Chandni Chowk, Delhi)",
+      "birth": {
+        "placeEn": "Guru Ke Mahal (Amritsar, Punjab)",
+        "placePa": "ਗੁਰੂ ਕੇ ਮਹਿਲ (ਸ੍ਰੀ ਅੰਮ੍ਰਿਤਸਰ ਸਾਹਿਬ, ਪੰਜਾਬ)",
+        "placeHi": "गुरु के महल (श्री अमृतसर साहिब, पंजाब)",
+        "date": "April 1, 1621 CE"
+      },
+      "jotiJot": {
+        "placeEn": "Gurdwara Sis Ganj Sahib (Chandni Chowk, Delhi)",
+        "placePa": "ਗੁਰਦੁਆਰਾ ਸੀਸ ਗੰਜ ਸਾਹਿਬ (ਚਾਂਦਨੀ ਚੌਕ, ਦਿੱਲੀ)",
+        "placeHi": "गुरुद्वारा सीस गंज साहिब (चांदनी चौक, दिल्ली)",
+        "date": "November 11, 1675 CE"
+      },
+      "historicalContext": {
+        "en": "Faced the aggressive state policy of forced conversions, temple destructions, and severe religious persecution under Mughal Emperor Aurangzeb.",
+        "pa": "ਮੁਗ਼ਲ ਬਾਦਸ਼ਾਹ ਔਰੰਗਜ਼ੇਬ ਦੀ ਜ਼ਬਰਦਸਤੀ ਧਰਮ ਪਰਿਵਰਤਨ ਅਤੇ ਅੱਤਿਆਚਾਰਾਂ ਦੀ ਨੀਤੀ ਵਿਰੁੱਧ ਮਨੁੱਖੀ ਆਜ਼ਾਦੀ ਦੀ ਰਾਖੀ ਕਰਨ ਦਾ ਇਤਿਹਾਸਕ ਸਮਾਂ ਸੀ।",
+        "hi": "मुगल सम्राट औरंगजेब की जबरन धर्म परिवर्तन और धार्मिक उत्पीड़न की नीति के विरुद्ध मानवाधिकारों की रक्षा का ऐतिहासिक काल था।"
+      },
+      "earlyLife": {
+        "en": "Youngest son of Guru Hargobind Sahib Ji. Named Tyag Mal initially; awarded the name 'Tegh Bahadur' (Mighty of the Sword) for his astonishing bravery in the Battle of Kartarpur (1635). Later spent over 20 years in deep meditation at Baba Bakala.",
+        "pa": "ਸ੍ਰੀ ਗੁਰੂ ਹਰਿਗੋਬਿੰਦ ਸਾਹਿਬ ਜੀ ਦੇ ਸਭ ਤੋਂ ਛੋਟੇ ਸਪੁੱਤਰ। ਪਹਿਲਾ ਨਾਮ ਤਿਆਗ ਮੱਲ ਸੀ। ਕਰਤਾਰਪੁਰ ਦੀ ਜੰਗ ਵਿੱਚ ਬਹਾਦਰੀ ਦੇ ਜੌਹਰ ਦੇਖ ਕੇ ਪਿਤਾ ਜੀ ਨੇ 'ਤੇਗ ਬਹਾਦਰ' ਨਾਮ ਰੱਖਿਆ। ਬਾਬਾ ਬਕਾਲਾ ਵਿਖੇ ਲੰਮੀ ਭਗਤੀ ਕੀਤੀ।",
+        "hi": "गुरु हरगोबिंद साहिब जी के सुपुत्र। मूल नाम त्याग मल था। करतारपुर के युद्ध में असीम वीरता देखकर पिता ने 'तेग बहादुर' नाम दिया। बाबा बकाला में २० वर्ष तक घोर तपस्या की।"
+      },
+      "majorContributions": {
+        "en": "1. Celebrated as 'Hind Di Chadar' (Shield of Humanity) for laying down his life to defend the fundamental right to freedom of conscience and religious practice for people of a faith different from his own (Kashmiri Pandits).\n2. Founded the holy city of Sri Anandpur Sahib (Chakk Nanaki) in 1665 CE in the foothills of the Shivaliks.\n3. Traveled extensively across Malwa, Haryana, Uttar Pradesh, Bihar, Bengal, and Assam to preach fearless detachment and divine remembrance.\n4. Composed 116 profound Saloks and Shabads across 15 Raags emphasizing detachment, equanimity, and total fearlessness ('Bhai Kaahu Kau Det Nah, Nah Bhai Maanat Aan').\n5. Inspired disciples like Bhai Mati Das, Bhai Sati Das, and Bhai Dayala Ji, who also embraced martyrdom with serene bravery.",
+        "pa": "੧. ਕਸ਼ਮੀਰੀ ਪੰਡਤਾਂ ਦੀ ਪੁਕਾਰ 'ਤੇ ਤਿਲਕ-ਜੰਞੂ ਅਤੇ ਸਮੁੱਚੀ ਮਨੁੱਖਤਾ ਦੇ ਧਾਰਮਿਕ ਅਧਿਕਾਰਾਂ ਦੀ ਰਾਖੀ ਲਈ ਆਪਣਾ ਸੀਸ ਕੁਰਬਾਨ ਕਰਕੇ 'ਹਿੰਦ ਦੀ ਚਾਦਰ' ਅਖਵਾਏ।\n੨. ਸੰਨ ੧੬੬੫ ਵਿੱਚ ਸ਼ਿਵਾਲਿਕ ਦੀ ਗੋਦ ਵਿੱਚ ਪਵਿੱਤਰ ਨਗਰੀ 'ਸ੍ਰੀ ਅਨੰਦਪੁਰ ਸਾਹਿਬ' (ਚੱਕ ਨਾਨਕੀ) ਦੀ ਸਥਾਪਨਾ ਕੀਤੀ।\n੩. ਆਸਾਮ, ਬੰਗਾਲ, ਬਿਹਾਰ ਅਤੇ ਮਾਲਵਾ ਖੇਤਰ ਵਿੱਚ ਦੂਰ-ਦੂਰ ਤੱਕ ਯਾਤਰਾਵਾਂ ਕਰਕੇ ਸੰਗਤਾਂ ਨੂੰ ਨਿਰਭੈਤਾ ਦਾ ਸੰਦੇਸ਼ ਦਿੱਤਾ।\n੪. ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ ਵਿੱਚ ੧੧੬ ਪਾਵਨ ਸ਼ਬਦ ਤੇ ਸਲੋਕ ਰਚੇ, ਜਿਨ੍ਹਾਂ ਵਿੱਚ 'ਭੈ ਕਾਹੂ ਕਉ ਦੇਤ ਨਹਿ ਨਹਿ ਭੈ ਮਾਨਤ ਆਨ' ਦਾ ਅਮਰ ਸਿਧਾਂਤ ਦਰਜ ਹੈ।\n੫. ਚਾਂਦਨੀ ਚੌਕ ਦਿੱਲੀ ਵਿਖੇ ਭਾਈ ਮਤੀ ਦਾਸ, ਭਾਈ ਸਤੀ ਦਾਸ ਅਤੇ ਭਾਈ ਦਿਆਲਾ ਜੀ ਦੀਆਂ ਮਹਾਨ ਸ਼ਹੀਦੀਆਂ ਨਾਲ ਅਦੁੱਤੀ ਮਿਸਾਲ ਕਾਇਮ ਕੀਤੀ।",
+        "hi": "१. कश्मीरी पंडितों के अनुरोध पर धार्मिक स्वतंत्रता और मानवाधिकारों की रक्षा हेतु चांदनी चौक पर अपना शीश बलिदान कर 'हिंद दी चादर' कहलाए।\n२. १६६५ में पवित्र नगर श्री आनंदपुर साहिब (चक्क नानकी) की स्थापना की।\n३. असम, बंगाल, बिहार और पंजाब में दूर-दूर तक यात्राएं कर जन-जन को निर्भयता का पाठ पढ़ाया।\n४. गुरु ग्रंथ साहिब में ११६ शबद और सलोक रचे, जिनमें 'भै काहू कौ देत नहि नहि भै मानत आन' का अमर संदेश दिया।"
+      },
+      "importantEvents": [
+        {
+          "titleEn": "Delegation of Kashmiri Pandits at Anandpur Sahib (1675 CE)",
+          "titlePa": "ਕਸ਼ਮੀਰੀ ਪੰਡਤਾਂ ਦੀ ਅਨੰਦਪੁਰ ਸਾਹਿਬ ਵਿਖੇ ਫ਼ਰਿਆਦ",
+          "titleHi": "कश्मीरी पंडितों की आनंदपुर साहिब में गुहार",
+          "descEn": "Pandit Kirpa Ram led 500 Brahmins seeking protection from forced conversion by Governor Iftikhar Khan. Nine-year-old Gobind Rai encouraged Guru Sahib, saying no one was more worthy of making the supreme sacrifice."
+        },
+        {
+          "titleEn": "Martyrdom at Chandni Chowk, Delhi (1675 CE)",
+          "titlePa": "ਚਾਂਦਨੀ ਚੌਕ ਦਿੱਲੀ ਵਿਖੇ ਸ਼ਹਾਦਤ",
+          "titleHi": "चांदनी चौक, दिल्ली में शहादत",
+          "descEn": "Publicly beheaded for refusing to embrace Islam. Bhai Jaita Ji (Bhai Jiwan Singh) bravely carried the sacred Head (Sis) to Anandpur Sahib, and Lakhi Shah Vanjara cremated the sacred Body (Dhar) by setting fire to his own home."
+        }
+      ],
+      "importantPlaces": [
+        "Gurdwara Sis Ganj Sahib (Chandni Chowk, Delhi)",
+        "Gurdwara Rakab Ganj Sahib (New Delhi)",
+        "Sri Anandpur Sahib (Sis Ganj Sahib)",
+        "Baba Bakala Sahib (Amritsar)"
+      ],
+      "gurbaniContribution": {
+        "shabadsCount": 116,
+        "raagsCount": 15,
+        "majorCompositions": [
+          "Salok Mahalla 9 (57 concluding couplets of SGGS Ji)",
+          "Hymns in Raag Jaijawanti, Tilang, Gauri, Sorath, Bilawal, Ramkali, Maru, Basant, Sarang, and Jaijawanti"
+        ]
+      },
+      "historicalSignificance": {
+        "en": "A unique, unparalleled chapter in global history where a supreme spiritual leader gave his life to protect the freedom of conscience of another religious community, striking a fatal blow against Mughal imperial tyranny.",
+        "pa": "ਵਿਸ਼ਵ ਇਤਿਹਾਸ ਵਿੱਚ ਇਹ ਇਕਲੌਤੀ ਮਿਸਾਲ ਹੈ ਜਿੱਥੇ ਕਿਸੇ ਮਹਾਂਪੁਰਖ ਨੇ ਦੂਜੇ ਧਰਮ ਦੇ ਲੋਕਾਂ ਦੀ ਧਾਰਮਿਕ ਆਜ਼ਾਦੀ ਲਈ ਆਪਣਾ ਆਪ ਕੁਰਬਾਨ ਕਰ ਦਿੱਤਾ।",
+        "hi": "विश्व इतिहास का यह अद्वितीय बलिदान है जहाँ एक आध्यात्मिक गुरु ने किसी अन्य धर्म के अनुयायियों के अधिकारों की रक्षा हेतु अपना जीवन समर्पित कर दिया।"
+      },
+      "sources": [
+        "Sri Guru Granth Sahib Ji (Salok Mahalla 9 & Raag Jaijawanti)",
+        "Sri Dasam Granth Ji (Bachittar Natak)",
+        "Bhatt Vahi Talauda",
+        "Mahan Kosh"
+      ]
+    },
+    {
+      "id": 10,
+      "slug": "guru-gobind-singh-ji",
+      "nameEn": "Sri Guru Gobind Singh Ji",
+      "namePa": "ਸ੍ਰੀ ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ ਜੀ",
+      "nameHi": "श्री गुरु गोबिंद सिंह जी",
+      "gurmukhiTitle": "ਦਸਮੇਸ਼ ਪਿਤਾ • ਸਰਬੰਸ ਦਾਨੀ • ਬਾਦਸ਼ਾਹ ਦਰਵੇਸ਼ • ਕਲਗ਼ੀਧਰ ਪਾਤਸ਼ਾਹ",
+      "years": "1666–1708 CE",
+      "gurgaddiYear": "1675 CE (Anandpur Sahib)",
+      "jotiJotYear": "1708 CE (Hazur Sahib, Nanded)",
+      "birth": {
+        "placeEn": "Takht Sri Patna Sahib (Bihar)",
+        "placePa": "ਤਖ਼ਤ ਸ੍ਰੀ ਪਟਨਾ ਸਾਹਿਬ (ਬਿਹਾਰ)",
+        "placeHi": "तख्त श्री पटना साहिब (बिहार)",
+        "date": "December 22, 1666 CE"
+      },
+      "jotiJot": {
+        "placeEn": "Takht Sachkhand Sri Hazur Sahib (Nanded, Maharashtra)",
+        "placePa": "ਤਖ਼ਤ ਸਚਖੰਡ ਸ੍ਰੀ ਹਜ਼ੂਰ ਸਾਹਿਬ (ਨਾਂਦੇੜ, ਮਹਾਰਾਸ਼ਟਰ)",
+        "placeHi": "तख्त सचखंड श्री हजूर साहिब (नांदेड़, महाराष्ट्र)",
+        "date": "October 7, 1708 CE"
+      },
+      "historicalContext": {
+        "en": "Faced relentless existential military onslaughts from the combined forces of the hill rajas and the Mughal empire under Aurangzeb and Wazir Khan.",
+        "pa": "ਮੁਗ਼ਲ ਹਕੂਮਤ ਅਤੇ ਪਹਾੜੀ ਰਾਜਿਆਂ ਦੇ ਗਠਜੋੜ ਵਿਰੁੱਧ ਸਿੱਖ ਕੌਮ ਦੀ ਹੋਂਦ, ਆਜ਼ਾਦੀ ਅਤੇ ਧਰਮ ਦੀ ਰੱਖਿਆ ਲਈ ਸੰਘਰਸ਼ ਦਾ ਦੌਰ ਸੀ।",
+        "hi": "मुगल साम्राज्य और पहाड़ी राजाओं के गठजोड़ के विरुद्ध सिख पंथ के अस्तित्व, स्वाभिमान और सत्य की रक्षा का काल था।"
+      },
+      "earlyLife": {
+        "en": "Born at Patna Sahib; mastered Persian, Sanskrit, Braj, Arabic, and Punjabi, alongside horsemanship, archery, and swordsmanship. At age nine, encouraged his father Guru Tegh Bahadur Ji to sacrifice his life for human freedom.",
+        "pa": "ਪਟਨਾ ਸਾਹਿਬ ਵਿਖੇ ਪ੍ਰਕਾਸ਼ ਹੋਇਆ। ਛੋਟੀ ਉਮਰੇ ਹੀ ਫ਼ਾਰਸੀ, ਸੰਸਕ੍ਰਿਤ, ਬ੍ਰਜ ਭਾਸ਼ਾ, ਤੀਰਅੰਦਾਜ਼ੀ ਅਤੇ ਸ਼ਸਤਰ ਵਿੱਦਿਆ ਵਿੱਚ ਨਿਪੁੰਨ ਹੋਏ। ੯ ਸਾਲ ਦੀ ਉਮਰ ਵਿੱਚ ਪਿਤਾ ਜੀ ਨੂੰ ਸ਼ਹਾਦਤ ਲਈ ਤੋਰਿਆ।",
+        "hi": "पटना साहिब में जन्म लिया। बाल्यकाल में ही फारसी, संस्कृत, ब्रजभाषा, घुड़सवारी और तीरंदाजी में महारत हासिल की। ९ वर्ष की आयु में पिता को शहादत हेतु प्रेरित किया।"
+      },
+      "majorContributions": {
+        "en": "1. Created the Khalsa Panth on Vaisakhi 1699 at Anandpur Sahib through the sacred Khande Di Pahul (Amrit Sanchar), establishing the Five Ks (Kakaars) and universal brotherhood of Saint-Soldiers.\n2. Sacrificed his entire family ('Sarbans Dani')—father Guru Tegh Bahadur Ji, mother Mata Gujri Ji, four Sahibzaade (Ajit Singh, Jujhar Singh, Zorawar Singh, Fateh Singh)—for the defense of righteousness.\n3. Authored the epic Persian epistle 'Zafarnama' (Epistle of Victory) rebuking Emperor Aurangzeb for deceit and moral bankruptcy.\n4. Dictated the complete Damdami Bir of Sri Guru Granth Sahib Ji from pure memory at Talwandi Sabo (Takht Sri Damdama Sahib), including his father's hymns.\n5. Ended personal human Guruship at Nanded in 1708, forever bestowing the eternal sovereign Guruship upon Sri Guru Granth Sahib Ji (Guru Granth) and the Khalsa Panth (Guru Panth).",
+        "pa": "੧. ਵਿਸਾਖੀ ੧੬੯੯ ਨੂੰ ਸ੍ਰੀ ਅਨੰਦਪੁਰ ਸਾਹਿਬ ਵਿਖੇ ਖੰਡੇ ਦੀ ਪਾਹੁਲ (ਅੰਮ੍ਰਿਤ ਛਕਾ ਕੇ) ਖ਼ਾਲਸਾ ਪੰਥ ਸਾਜਿਆ ਅਤੇ ਪੰਜ ਕਕਾਰਾਂ ਦੀ ਰਹਿਤ ਬਖ਼ਸ਼ੀ।\n੨. ਧਰਮ ਅਤੇ ਕੌਮ ਦੀ ਰਾਖੀ ਲਈ ਆਪਣਾ ਪੂਰਾ ਪਰਿਵਾਰ ('ਸਰਬੰਸ') ਕੁਰਬਾਨ ਕਰ ਦਿੱਤਾ: ਪਿਤਾ, ਮਾਤਾ ਅਤੇ ਚਾਰੇ ਸਾਹਿਬਜ਼ਾਦੇ।\n੩. ਔਰੰਗਜ਼ੇਬ ਨੂੰ ਫ਼ਾਰਸੀ ਵਿੱਚ ਇਤਿਹਾਸਕ ਚਿੱਠੀ 'ਜ਼ਫ਼ਰਨਾਮਾ' (ਜਿੱਤ ਦਾ ਪੱਤਰ) ਲਿਖ ਕੇ ਉਸ ਦੇ ਜ਼ੁਲਮ ਅਤੇ ਝੂਠ ਨੂੰ ਬੇਨਕਾਬ ਕੀਤਾ।\n੪. ਤਲਵੰਡੀ ਸਾਬੋ (ਸ੍ਰੀ ਦਮਦਮਾ ਸਾਹਿਬ) ਵਿਖੇ ਆਪਣੇ ਮੁਖਾਰਬਿੰਦ ਤੋਂ ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ ਦੀ ਸੰਪੂਰਨ ਬੀੜ (ਦਮਦਮੀ ਬੀੜ) ਲਿਖਵਾਈ।\n੫. ਸੰਨ ੧੭੦੮ ਵਿੱਚ ਨਾਂਦੇੜ ਵਿਖੇ ਦੇਹਧਾਰੀ ਗੁਰੂ ਪਰੰਪਰਾ ਸਮਾਪਤ ਕਰਕੇ ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ ਨੂੰ ਸਦੀਵੀ ਗੁਰਗੱਦੀ ਸੌਂਪੀ।",
+        "hi": "१. वैसाखी १६९९ को आनंदपुर साहिब में खंडे-बाटे का अमृत छकाकर खालसा पंथ की स्थापना की और ५ ककार प्रदान किए।\n२. धर्म और मानवता की रक्षा के लिए अपना संपूर्ण परिवार (पिता, माता और चारों साहिबजादे) बलिदान कर 'सरबंस दानी' कहलाए।\n३. औरंगजेब को फारसी में ऐतिहासिक 'ज़फरनामा' (विजय पत्र) लिखकर उसके अन्याय और नैतिक पराजय का दर्पण दिखाया।\n४. तलवंडी साबो में संपूर्ण आदि ग्रंथ की दमदमी बीड़ लिखवाई।\n५. १७०८ में नांदेड़ में गुरु पद शाश्वत रूप से श्री गुरु ग्रंथ साहिब जी को सौंपकर शब्द-गुरु की मर्यादा स्थापित की।"
+      },
+      "importantEvents": [
+        {
+          "titleEn": "Creation of the Khalsa (Vaisakhi 1699)",
+          "titlePa": "ਖ਼ਾਲਸਾ ਪੰਥ ਦੀ ਸਾਜਨਾ (ਵਿਸਾਖੀ ੧੬੯੯)",
+          "titleHi": "खालसा पंथ की स्थापना (वैसाखी १६९९)",
+          "descEn": "Called for five heads at Keshgarh Sahib; baptized the Panj Pyare (Five Beloved Ones) and then knelt before them to receive Amrit himself ('Waho Waho Gobind Singh Aape Gur Chela')."
+        },
+        {
+          "titleEn": "Battle of Chamkaur (1704 CE)",
+          "titlePa": "ਚਮਕੌਰ ਦੀ ਲਾਸਾਨੀ ਜੰਗ (੧੭੦੪)",
+          "titleHi": "चमकौर का महान युद्ध (१७०४)",
+          "descEn": "40 starving Sikhs held off a Mughal army of hundreds of thousands in an epic fortress standoff where elder Sahibzaade Baba Ajit Singh and Baba Jujhar Singh attained martyrdom."
+        },
+        {
+          "titleEn": "Martyrdom of Younger Sahibzaade (Sirhind, 1705 CE)",
+          "titlePa": "ਛੋਟੇ ਸਾਹਿਬਜ਼ਾਦਿਆਂ ਦੀ ਸ਼ਹਾਦਤ (ਸਰਹਿੰਦ, ੧੭੦੫)",
+          "titleHi": "छोटे साहिबजादों की अमर शहादत (सरहिंद, १७०५)",
+          "descEn": "Baba Zorawar Singh (age 9) and Baba Fateh Singh (age 7) were bricked alive by Wazir Khan for refusing to renounce their faith."
+        }
+      ],
+      "importantPlaces": [
+        "Takht Sri Keshgarh Sahib (Anandpur Sahib)",
+        "Takht Sri Patna Sahib (Bihar)",
+        "Takht Sri Damdama Sahib (Talwandi Sabo)",
+        "Takht Sachkhand Sri Hazur Sahib (Nanded)",
+        "Paonta Sahib (Himachal Pradesh)",
+        "Chamkaur Sahib & Fatehgarh Sahib"
+      ],
+      "gurbaniContribution": {
+        "shabadsCount": 0,
+        "raagsCount": 0,
+        "majorCompositions": [
+          "Jaap Sahib",
+          "Tav-Prasad Savaiye",
+          "Chaupai Sahib (Benti Chaupai)",
+          "Akal Ustat",
+          "Zafarnama (Persian Epistle of Victory)",
+          "Chandi Di Var",
+          "Bachittar Natak",
+          "Shabad Hazare Patshahi 10"
+        ]
+      },
+      "historicalSignificance": {
+        "en": "Forged an invincible nation of Saint-Soldiers dedicated to universal equality, destroyed psychological servitude, and established the permanent sovereign reign of the Word as Guru (Shabad Guru).",
+        "pa": "ਸ੍ਰੀ ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ ਜੀ ਨੇ ਲਿਤਾੜੀ ਹੋਈ ਜਨਤਾ ਵਿੱਚ ਅਣਖ ਅਤੇ ਬਹਾਦਰੀ ਭਰ ਕੇ ਚਿੜੀਆਂ ਤੋਂ ਬਾਜ਼ ਤੁੜਵਾਏ ਅਤੇ ਖ਼ਾਲਸੇ ਨੂੰ ਸਦੀਵੀ ਆਜ਼ਾਦੀ ਦਾ ਮਾਰਗ ਦਰਸਾਇਆ।",
+        "hi": "गुरु गोबिंद सिंह जी ने शोषित समाज में आत्मसम्मान और वीरता भरकर 'सवा लाख से एक लड़ाऊँ' का अमर संकल्प साकार किया।"
+      },
+      "sources": [
+        "Sri Dasam Granth Ji (Zafarnama, Bachittar Natak)",
+        "Bhai Gurdas Singh Ji, Vaar 41",
+        "Sri Gur Sobha by Kavi Senapati",
+        "Mahan Kosh",
+        "Encyclopaedia of Sikhism"
+      ]
+    },
+    {
+      "id": 11,
+      "slug": "sri-guru-granth-sahib-ji",
+      "nameEn": "Sri Guru Granth Sahib Ji",
+      "namePa": "ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ",
+      "nameHi": "श्री गुरु ग्रंथ साहिब जी",
+      "gurmukhiTitle": "ਜੁੱਗੋ-ਜੁੱਗ ਅਟੱਲ • ਸ਼ਬਦ ਗੁਰੂ • ਧੁਰ ਕੀ ਬਾਣੀ",
+      "years": "1708–Present (Eternal Living Guru)",
+      "gurgaddiYear": "October 1708 CE (Nanded)",
+      "jotiJotYear": "Eternal Sovereign (ਜੁੱਗੋ ਜੁੱਗ ਅਟੱਲ)",
+      "birth": {
+        "placeEn": "First Compiled at Amritsar (1604 CE); Finalized at Damdama Sahib (1705 CE)",
+        "placePa": "ਪਹਿਲਾ ਸੰਕਲਨ ਸ੍ਰੀ ਅੰਮ੍ਰਿਤਸਰ (੧੬੦੪) • ਸੰਪੂਰਨਤਾ ਸ੍ਰੀ ਦਮਦਮਾ ਸਾਹਿਬ (੧੭੦੫)",
+        "placeHi": "प्रथम संकलन अमृतसर (१६०४) • पूर्णता दमदमा साहिब (१७०५)",
+        "date": "1604 / 1708 CE"
+      },
+      "jotiJot": {
+        "placeEn": "Eternal Living Guru of all Sikhs",
+        "placePa": "ਸਦੀਵੀ ਪ੍ਰਤੱਖ ਗੁਰੂ",
+        "placeHi": "शाश्वत प्रत्यक्ष गुरु",
+        "date": "Forever"
+      },
+      "historicalContext": {
+        "en": "Represents the culmination of the 239-year lineage of human Gurus (1469–1708), transitioning absolute spiritual authority to the eternal, incorruptible Divine Word (Shabad Guru).",
+        "pa": "੧੪੬੯ ਤੋਂ ੧੭੦੮ ਤੱਕ ਦੇ ੨੩੯ ਸਾਲਾਂ ਦੇ ਦੇਹਧਾਰੀ ਗੁਰੂ ਕਾਲ ਤੋਂ ਬਾਅਦ ਰੂਹਾਨੀ ਪ੍ਰਭੂਸੱਤਾ ਨੂੰ ਸਦੀਵੀ ਸ਼ਬਦ ਗੁਰੂ ਵਿੱਚ ਸਥਾਪਿਤ ਕੀਤਾ ਗਿਆ।",
+        "hi": "१४६९ से १७०८ तक के मानव गुरु काल के पश्चात आध्यात्मिक सर्वोच्चता को सदा के लिए शाश्वत 'शब्द गुरु' में प्रतिष्ठापित किया गया।"
+      },
+      "earlyLife": {
+        "en": "Originally compiled as the Adi Granth in 1604 CE by Guru Arjan Dev Ji. Later augmented with the sacred hymns of Guru Tegh Bahadur Ji by Guru Gobind Singh Ji at Talwandi Sabo in 1705 CE.",
+        "pa": "੧੬੦੪ ਵਿੱਚ ਪੰਚਮ ਪਾਤਸ਼ਾਹ ਨੇ 'ਆਦਿ ਗ੍ਰੰਥ' ਤਿਆਰ ਕੀਤਾ। ੧੭੦੫ ਵਿੱਚ ਦਸਮੇਸ਼ ਪਿਤਾ ਨੇ ਨੌਵੇਂ ਪਾਤਸ਼ਾਹ ਦੀ ਬਾਣੀ ਸ਼ਾਮਲ ਕਰਕੇ ਦਮਦਮੀ ਸਰੂਪ ਤਿਆਰ ਕੀਤਾ।",
+        "hi": "१६०४ में गुरु अर्जन देव जी ने 'आदि ग्रंथ' संकलित किया। १७०५ में गुरु गोबिंद सिंह जी ने नवम गुरु की बाणी जोड़कर दमदमी स्वरूप पूर्ण किया।"
+      },
+      "majorContributions": {
+        "en": "1. Contains 1,430 standardized sacred Angs (pages) organized systematically across 31 classical musical Raags.\n2. Incomparable universal scripture incorporating the divine utterances of 6 Sikh Gurus, 15 Bhagats (Kabir, Ravidas, Farid, Namdev, Trilochan, Jaidev, Ramanand, etc.), 11 Bhatts (Kalashar, Jalap, Mathura, etc.), and 4 Gursikhs (Bhai Mardana, Satta, Balwand, Sunder).\n3. Replaces human worship with devotion to Universal Truth, Divine Wisdom (Gyan), and Compassionate Action.\n4. Commands supreme spiritual equality—all hymns regardless of author's caste, region, or background carry identical divine status under the title 'Mahalla'.",
+        "pa": "੧. ਕੁੱਲ ੧੪੩੦ ਪਾਵਨ ਅੰਗਾਂ (ਪੰਨਿਆਂ) ਵਿੱਚ ੩੧ ਸ਼ੁੱਧ ਰਾਗਾਂ ਅਧੀਨ ਦਰਜ ਬੇਮਿਸਾਲ ਰੂਹਾਨੀ ਵਿਧਾਨ।\n੨. ੬ ਗੁਰੂ ਸਾਹਿਬਾਨ, ੧੫ ਮਹਾਨ ਭਗਤਾਂ (ਕਬੀਰ, ਰਵਿਦਾਸ, ਫ਼ਰੀਦ, ਨਾਮਦੇਵ ਆਦਿ), ੧੧ ਭੱਟਾਂ ਅਤੇ ੪ ਗੁਰਸਿੱਖਾਂ ਦੀ ਸਾਂਝੀ ਇਲਾਹੀ ਬਾਣੀ।\n੩. ਦੇਹਧਾਰੀ ਪੂਜਾ ਨੂੰ ਖ਼ਤਮ ਕਰਕੇ ਗਿਆਨ ਅਤੇ ਸੱਚੇ ਸ਼ਬਦ ਦੀ ਸਰਬਉੱਚਤਾ ਕਾਇਮ ਕੀਤੀ।\n੪. ਜਾਤ-ਪਾਤ, ਰੰਗ-ਨਸਲ ਅਤੇ ਭੂਗੋਲਿਕ ਹੱਦਾਂ ਤੋਂ ਪਾਰ ਸਮੁੱਚੀ ਮਨੁੱਖਤਾ ਨੂੰ ਇੱਕ ਪਰਮਾਤਮਾ ਦੇ ਲੜ ਲਾਇਆ।",
+        "hi": "१. कुल १४३० पावन अंगों (पृष्ठों) में ३१ शास्त्रीय रागों में निबद्ध अलौकिक ग्रंथ।\n२. ६ सिख गुरुओं, १५ भक्तों (कबीर, रविदास, फरीद, नामदेव आदि), ११ भट्टों और ४ गुरसिखों की पावन बाणी का अनुपम संगम।\n३. किसी व्यक्ति-विशेष की पूजा के स्थान पर 'शब्द' और 'ज्ञान' की सर्वोच्चता स्थापित की।\n४. जाति, वर्ण और क्षेत्र के बंधनों से परे मानवता की एकता का संदेश दिया।"
+      },
+      "importantEvents": [
+        {
+          "titleEn": "Coronation as Eternal Guru (Nanded, 1708 CE)",
+          "titlePa": "ਸਦੀਵੀ ਗੁਰਤਾਗੱਦੀ ਦੀ ਬਖ਼ਸ਼ਿਸ਼ (੧੭੦੮)",
+          "titleHi": "शाश्वत गुरुगद्दी समर्पण (१७०८)",
+          "descEn": "Guru Gobind Singh Ji bowed before Sri Guru Granth Sahib Ji with five paise and a coconut, proclaiming: 'Agya Bhai Akal Ki Tabai Chalayo Panth, Sabh Sikhan Kau Hukam Hai Guru Manyo Granth'."
+        }
+      ],
+      "importantPlaces": [
+        "Sri Harmandir Sahib (Amritsar)",
+        "Takht Sri Damdama Sahib (Talwandi Sabo)",
+        "Takht Sachkhand Sri Hazur Sahib (Nanded)",
+        "Gurdwara Ramsar Sahib (Amritsar)"
+      ],
+      "gurbaniContribution": {
+        "shabadsCount": 5894,
+        "raagsCount": 31,
+        "majorCompositions": [
+          "Japji Sahib (Ang 1–8)",
+          "Rehras Sahib & Kirtan Sohila",
+          "Asa Ki Var",
+          "Sukhmani Sahib",
+          "Anand Sahib",
+          "Laavan",
+          "Sidh Gosht & Bawan Akhri",
+          "Salok Mahalla 9",
+          "Ragmala (Ang 1429–1430)"
+        ]
+      },
+      "historicalSignificance": {
+        "en": "The sovereign, living spiritual guide of the Sikh faith for all eternity, embodying the eternal light of all Ten Gurus ('Eka Jot Doe Murti').",
+        "pa": "ਜੁੱਗੋ-ਜੁੱਗ ਅਟੱਲ ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ ਸਮੁੱਚੀ ਮਨੁੱਖਤਾ ਲਈ ਰੂਹਾਨੀ ਰੌਸ਼ਨੀ, ਅਮਨ ਅਤੇ ਸਾਂਝੀਵਾਲਤਾ ਦਾ ਸਦੀਵੀ ਸਰੋਤ ਹਨ।",
+        "hi": "श्री गुरु ग्रंथ साहिब जी समस्त विश्व के लिए शांति, समानता और ईश्वरीय प्रेम के शाश्वत स्रोत हैं।"
+      },
+      "sources": [
+        "Sri Guru Granth Sahib Ji (1430 Angs)",
+        "Bhai Nand Lal Ji, Rehatnama",
+        "Mahan Kosh by Bhai Kahn Singh Nabha",
+        "Encyclopaedia of Sikhism"
+      ]
     }
-  }
+  ]
 }

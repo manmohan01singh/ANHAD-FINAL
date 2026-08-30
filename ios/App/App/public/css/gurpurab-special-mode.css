@@ -485,233 +485,26 @@ body.dark-mode .gurpurab-mode--remembrance .event-card {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════
-   5-DAY PROGRESSIVE DECORATION SYSTEM — Divine Buildup to Gurpurab
+   5-DAY PROGRESSIVE DECORATION SYSTEM — Subtle Divine Elegance
 ═══════════════════════════════════════════════════════════════════════════════ */
-
-/* Day 5: Subtle hint - gentle golden glow */
-.gurpurab-decor-day-5 .event-card {
-  box-shadow: 
-    0 8px 32px rgba(212, 148, 58, 0.15),
-    0 2px 8px rgba(212, 148, 58, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.7),
-    0 0 0 1px rgba(212, 148, 58, 0.15) !important;
-}
-.gurpurab-decor-day-5 .event-card__guru-img-wrapper {
-  box-shadow: 
-    0 0 0 3px rgba(255, 255, 255, 0.95),
-    0 0 0 5px rgba(212, 168, 83, 0.3),
-    0 4px 16px rgba(0, 0, 0, 0.1) !important;
-}
-
-/* Day 4: Growing anticipation - stronger glow + single diya */
-.gurpurab-decor-day-4 .event-card {
-  box-shadow: 
-    0 8px 32px rgba(212, 148, 58, 0.2),
-    0 2px 8px rgba(212, 148, 58, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.7),
-    0 0 0 1.5px rgba(212, 148, 58, 0.2),
-    0 0 30px rgba(255, 215, 0, 0.1) !important;
-  position: relative;
-}
-.gurpurab-decor-day-4 .event-card::after {
-  content: '🪔';
-  position: absolute;
-  top: -8px;
-  right: 20px;
-  font-size: 18px;
-  animation: diyaFlicker 2s ease-in-out infinite;
-  filter: drop-shadow(0 0 8px rgba(255, 150, 0, 0.6));
-}
-.gurpurab-decor-day-4 .event-card__guru-img-wrapper {
-  box-shadow: 
-    0 0 0 3px rgba(255, 255, 255, 0.95),
-    0 0 0 6px rgba(212, 168, 83, 0.4),
-    0 6px 20px rgba(0, 0, 0, 0.12),
-    0 0 25px rgba(255, 215, 0, 0.2) !important;
-}
-
-/* Day 3: Festive energy - multiple diyas + sparkles */
-.gurpurab-decor-day-3 .event-card {
-  box-shadow: 
-    0 8px 32px rgba(212, 148, 58, 0.25),
-    0 2px 8px rgba(212, 148, 58, 0.12),
-    inset 0 1px 0 rgba(255, 255, 255, 0.7),
-    0 0 0 1.5px rgba(212, 148, 58, 0.25),
-    0 0 40px rgba(255, 215, 0, 0.15) !important;
-  position: relative;
-}
-.gurpurab-decor-day-3 .event-card::before {
-  content: '✨';
-  position: absolute;
-  top: 10px;
-  left: 15px;
-  font-size: 14px;
-  animation: sparkleTwinkle 1.5s ease-in-out infinite;
-}
-.gurpurab-decor-day-3 .event-card::after {
-  content: '🪔🪔';
-  position: absolute;
-  top: -10px;
-  right: 15px;
-  font-size: 16px;
-  letter-spacing: 4px;
-  animation: diyaFlicker 1.8s ease-in-out infinite;
-  filter: drop-shadow(0 0 10px rgba(255, 150, 0, 0.7));
-}
-.gurpurab-decor-day-3 .event-card__guru-img-wrapper {
-  box-shadow: 
-    0 0 0 3px rgba(255, 255, 255, 0.95),
-    0 0 0 7px rgba(212, 168, 83, 0.45),
-    0 8px 28px rgba(0, 0, 0, 0.15),
-    0 0 35px rgba(255, 215, 0, 0.3) !important;
-  animation: frameGlowStrong 3s ease-in-out infinite !important;
-}
-
-/* Day 2: Near celebration - abundant decorations */
-.gurpurab-decor-day-2 .event-card {
-  box-shadow: 
-    0 8px 32px rgba(212, 148, 58, 0.3),
-    0 2px 8px rgba(212, 148, 58, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.7),
-    0 0 0 2px rgba(212, 148, 58, 0.3),
-    0 0 50px rgba(255, 215, 0, 0.2),
-    inset 0 0 30px rgba(255, 248, 220, 0.15) !important;
-  position: relative;
-}
-.gurpurab-decor-day-2 .event-card::before {
-  content: '✨🌸';
-  position: absolute;
-  top: 8px;
-  left: 12px;
-  font-size: 16px;
-  letter-spacing: 2px;
-  animation: sparkleTwinkle 1.2s ease-in-out infinite;
-}
-.gurpurab-decor-day-2 .event-card::after {
-  content: '🪔🪔🪔';
-  position: absolute;
-  top: -12px;
-  right: 10px;
-  font-size: 18px;
-  letter-spacing: 2px;
-  animation: diyaFlicker 1.5s ease-in-out infinite;
-  filter: drop-shadow(0 0 12px rgba(255, 150, 0, 0.8));
-}
-.gurpurab-decor-day-2 .event-card__eyebrow {
-  background: linear-gradient(90deg, transparent, rgba(212, 148, 58, 0.2), transparent);
-  padding: 2px 8px;
-  border-radius: 4px;
-}
-.gurpurab-decor-day-2 .event-card__guru-img-wrapper {
-  box-shadow: 
-    0 0 0 4px rgba(255, 255, 255, 0.95),
-    0 0 0 8px rgba(212, 168, 83, 0.5),
-    0 0 0 12px rgba(255, 215, 0, 0.2),
-    0 10px 32px rgba(0, 0, 0, 0.18),
-    0 0 45px rgba(255, 215, 0, 0.4) !important;
-  animation: frameGlowStrong 2.5s ease-in-out infinite !important;
-}
-
-/* Day 1: Eve of celebration - maximum anticipation */
-.gurpurab-decor-day-1 .event-card {
-  box-shadow: 
-    0 8px 32px rgba(212, 148, 58, 0.35),
-    0 2px 8px rgba(212, 148, 58, 0.18),
-    inset 0 1px 0 rgba(255, 255, 255, 0.7),
-    0 0 0 2px rgba(212, 148, 58, 0.35),
-    0 0 0 5px rgba(255, 215, 0, 0.15),
-    0 0 60px rgba(255, 215, 0, 0.25),
-    inset 0 0 40px rgba(255, 248, 220, 0.2) !important;
-  position: relative;
-  animation: cardPulse 2s ease-in-out infinite;
-}
-@keyframes cardPulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.01); }
-}
-.gurpurab-decor-day-1 .event-card::before {
-  content: '✨🌸✨';
-  position: absolute;
-  top: 6px;
-  left: 10px;
-  font-size: 18px;
-  letter-spacing: 3px;
-  animation: sparkleTwinkle 1s ease-in-out infinite;
-}
-.gurpurab-decor-day-1 .event-card::after {
-  content: '🪔🙏🪔';
-  position: absolute;
-  top: -14px;
-  right: 8px;
-  font-size: 20px;
-  letter-spacing: 4px;
-  animation: diyaFlicker 1.2s ease-in-out infinite;
-  filter: drop-shadow(0 0 15px rgba(255, 150, 0, 0.9));
-}
-.gurpurab-decor-day-1 .event-card__eyebrow {
-  background: linear-gradient(90deg, transparent, rgba(212, 148, 58, 0.3), transparent);
-  color: #B8860B !important;
-  font-weight: 600 !important;
-}
-.gurpurab-decor-day-1 .event-card__guru-img-wrapper {
-  box-shadow: 
-    0 0 0 4px rgba(255, 255, 255, 0.95),
-    0 0 0 9px rgba(212, 168, 83, 0.55),
-    0 0 0 15px rgba(255, 215, 0, 0.25),
-    0 12px 40px rgba(0, 0, 0, 0.2),
-    0 0 55px rgba(255, 215, 0, 0.5) !important;
-  animation: frameGlowStrong 2s ease-in-out infinite !important;
-}
-
-/* Today: Full celebration - divine illumination */
+.gurpurab-decor-day-5 .event-card,
+.gurpurab-decor-day-4 .event-card,
+.gurpurab-decor-day-3 .event-card,
+.gurpurab-decor-day-2 .event-card,
+.gurpurab-decor-day-1 .event-card,
 .gurpurab-decor-today .event-card {
-  box-shadow: 
-    0 16px 60px rgba(212, 148, 58, 0.45),
-    0 0 0 4px rgba(212, 148, 58, 0.35),
-    0 0 0 8px rgba(255, 215, 0, 0.2),
-    0 0 80px rgba(255, 215, 0, 0.35),
-    inset 0 0 40px rgba(255, 248, 220, 0.5) !important;
   position: relative;
-  animation: cardGlow 1.5s ease-in-out infinite;
 }
-@keyframes cardGlow {
-  0%, 100% { box-shadow: 0 16px 60px rgba(212, 148, 58, 0.45), 0 0 0 4px rgba(212, 148, 58, 0.35), 0 0 0 8px rgba(255, 215, 0, 0.2), 0 0 80px rgba(255, 215, 0, 0.35), inset 0 0 40px rgba(255, 248, 220, 0.5); }
-  50% { box-shadow: 0 20px 70px rgba(212, 148, 58, 0.55), 0 0 0 4px rgba(212, 148, 58, 0.4), 0 0 0 8px rgba(255, 215, 0, 0.25), 0 0 100px rgba(255, 215, 0, 0.45), inset 0 0 50px rgba(255, 248, 220, 0.6); }
-}
-.gurpurab-decor-today .event-card::before {
-  content: '✨🌺✨🌸✨';
-  position: absolute;
-  top: 4px;
-  left: 8px;
-  font-size: 20px;
-  letter-spacing: 4px;
-  animation: sparkleTwinkle 0.8s ease-in-out infinite;
-}
-.gurpurab-decor-today .event-card::after {
-  content: '🪔🙏✨🙏🪔';
-  position: absolute;
-  top: -16px;
-  right: 5px;
-  font-size: 22px;
-  letter-spacing: 3px;
-  animation: diyaFlicker 1s ease-in-out infinite;
-  filter: drop-shadow(0 0 20px rgba(255, 150, 0, 1));
-}
-.gurpurab-decor-today .event-card__eyebrow {
-  background: linear-gradient(90deg, rgba(212, 148, 58, 0.3), rgba(255, 215, 0, 0.3), rgba(212, 148, 58, 0.3));
-  color: #8B6914 !important;
-  font-weight: 700 !important;
-  letter-spacing: 2px !important;
-}
+
+.gurpurab-decor-day-5 .event-card__guru-img-wrapper,
+.gurpurab-decor-day-4 .event-card__guru-img-wrapper,
+.gurpurab-decor-day-3 .event-card__guru-img-wrapper,
+.gurpurab-decor-day-2 .event-card__guru-img-wrapper,
+.gurpurab-decor-day-1 .event-card__guru-img-wrapper,
 .gurpurab-decor-today .event-card__guru-img-wrapper {
-  box-shadow: 
-    0 0 0 5px rgba(255, 255, 255, 0.95),
-    0 0 0 10px rgba(212, 168, 83, 0.6),
-    0 0 0 18px rgba(255, 215, 0, 0.3),
-    0 0 0 25px rgba(255, 215, 0, 0.15),
-    0 15px 50px rgba(0, 0, 0, 0.25),
-    0 0 70px rgba(255, 215, 0, 0.6) !important;
-  animation: frameGlowDivine 1.5s ease-in-out infinite !important;
+  border: 3px solid #D4943A !important;
+  box-shadow: 0 6px 20px rgba(212, 148, 58, 0.28) !important;
+  background: #FFFFFF !important;
 }
 
 /* Animation keyframes for decorations */

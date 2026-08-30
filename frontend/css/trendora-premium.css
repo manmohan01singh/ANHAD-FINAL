@@ -2159,15 +2159,15 @@ html.dark-mode .practice-card--hukam,
 }
 
 .practice-card--nitnem .practice-card__ring-fill {
-  stroke: var(--accent);
+  stroke: #D4860A;
 }
 
 .practice-card--sehaj .practice-card__ring-fill {
-  stroke: var(--purple);
+  stroke: #D4943A;
 }
 
 .practice-card--hukam .practice-card__ring-fill {
-  stroke: #FF9500;
+  stroke: #E11D48;
 }
 
 .practice-card__ring-icon {
@@ -2184,22 +2184,22 @@ html.dark-mode .practice-card--hukam,
   height: 24px;
   color: var(--text-secondary);
   opacity: 0.75;
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+  filter: none;
 }
 
 .practice-card--nitnem .practice-card__ring-icon svg {
-  color: var(--accent);
-  opacity: 0.85;
+  color: #D4860A;
+  opacity: 0.95;
 }
 
 .practice-card--sehaj .practice-card__ring-icon svg {
-  color: var(--purple);
-  opacity: 0.85;
+  color: #D4943A;
+  opacity: 0.95;
 }
 
 .practice-card--hukam .practice-card__ring-icon svg {
-  color: #FF9500;
-  opacity: 0.85;
+  color: #E11D48;
+  opacity: 0.95;
 }
 
 .practice-card__title {

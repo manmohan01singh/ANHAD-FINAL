@@ -504,90 +504,6 @@
       }
     }
 
-    /* ─── 5. GURPURAB CALENDAR CARD - COMPACT & ELEGANT TYPOGRAPHY ─── */
-    .event-card {
-      padding: 12px 16px !important;
-      border-radius: 20px !important;
-      min-height: auto !important;
-      border: none !important;
-      box-shadow: 
-        5px 7px 18px rgba(212, 168, 83, 0.12),
-        -3px -3px 8px rgba(255, 255, 255, 0.98),
-        inset 1.5px 1.5px 3px rgba(255, 255, 255, 1),
-        inset -1.5px -1.5px 3px rgba(212, 168, 83, 0.05) !important;
-      background: linear-gradient(135deg, #FFFFFF 0%, #FFFDF8 50%, #FAF2DE 100%) !important;
-      overflow: hidden !important;
-      margin-bottom: 16px !important;
-    }
-    html.dark-mode .event-card,
-    [data-theme="dark"] .event-card,
-    [data-time-of-day="night"] .event-card {
-      background: linear-gradient(150deg, #18181B 0%, #101012 100%) !important;
-      border: none !important;
-      box-shadow: 
-        5px 6px 16px rgba(0, 0, 0, 0.65),
-        -2px -2px 6px rgba(255, 255, 255, 0.03),
-        inset 2px 2px 4px rgba(212, 148, 58, 0.18),
-        inset -2px -2px 5px rgba(0, 0, 0, 0.45) !important;
-    }
-    .event-card__content {
-      display: flex !important;
-      flex-direction: row !important;
-      align-items: center !important;
-      justify-content: space-between !important;
-      gap: 14px !important;
-      width: 100% !important;
-    }
-    .event-card__left {
-      flex: 1 1 auto !important;
-      min-width: 0 !important;
-    }
-    .event-card__title {
-      font-size: 0.95rem !important;
-      line-height: 1.3 !important;
-      font-weight: 700 !important;
-      margin: 0 0 6px 0 !important;
-      white-space: normal !important;
-      word-wrap: break-word !important;
-      color: #1A1A1A !important;
-      letter-spacing: -0.3px !important;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
-    }
-    html.dark-mode .event-card__title,
-    [data-theme="dark"] .event-card__title,
-    [data-time-of-day="night"] .event-card__title {
-      color: #F5E6C8 !important;
-    }
-    .event-card__badge-row {
-      display: flex !important;
-      align-items: center !important;
-      gap: 8px !important;
-      flex-wrap: wrap !important;
-      margin-top: 2px !important;
-    }
-    .event-card__guru-wrapper {
-      width: 70px !important;
-      height: 70px !important;
-      min-width: 70px !important;
-      min-height: 70px !important;
-      border-radius: 50% !important;
-      padding: 2.5px !important;
-      background: linear-gradient(145deg, #F5E6C8 0%, #D4A84B 50%, #B8860B 100%) !important;
-      box-shadow: 0 3px 12px rgba(212, 168, 83, 0.3) !important;
-      display: flex !important;
-      align-items: center !important;
-      justify-content: center !important;
-      flex-shrink: 0 !important;
-    }
-    .event-card__guru-img {
-      width: 100% !important;
-      height: 100% !important;
-      object-fit: cover !important;
-      object-position: center 25% !important;
-      border-radius: 50% !important;
-      opacity: 1 !important;
-      display: block !important;
-    }
   
     /* ═══════════════════════════════════════════════════════════════════════════
        DARK MODE GURU CAROUSEL — CENTERED SLIDER
@@ -4322,9 +4238,9 @@
       fill: none !important;
       transition: stroke-dashoffset 0.6s cubic-bezier(0.25, 1, 0.5, 1) !important;
     }
-    .practice-card--nitnem .practice-card__ring-fill { stroke: #D4A84B !important; }
-    .practice-card--sehaj .practice-card__ring-fill { stroke: #9333EA !important; }
-    .practice-card--hukam .practice-card__ring-fill { stroke: #EA580C !important; }
+    .practice-card--nitnem .practice-card__ring-fill { stroke: #D4860A !important; }
+    .practice-card--sehaj .practice-card__ring-fill { stroke: #D4943A !important; }
+    .practice-card--hukam .practice-card__ring-fill { stroke: #E11D48 !important; }
 
     /* Icon sits perfectly centred above the SVG ring */
     .practice-card__ring-icon {
@@ -4354,16 +4270,16 @@
       flex-shrink: 0 !important;
     }
     .practice-card--nitnem .practice-card__ring-icon svg {
-      color: #D4A84B !important;
-      filter: drop-shadow(0 1px 3px rgba(212, 168, 75, 0.40)) !important;
+      color: #D4860A !important;
+      filter: none !important;
     }
     .practice-card--sehaj .practice-card__ring-icon svg {
-      color: #9333EA !important;
-      filter: drop-shadow(0 1px 3px rgba(147, 51, 234, 0.35)) !important;
+      color: #D4943A !important;
+      filter: none !important;
     }
     .practice-card--hukam .practice-card__ring-icon svg {
-      color: #EA580C !important;
-      filter: drop-shadow(0 1px 3px rgba(234, 88, 12, 0.35)) !important;
+      color: #E11D48 !important;
+      filter: none !important;
     }
     .practice-card__title {
       font-weight: 700 !important;
@@ -4380,51 +4296,35 @@
 
     /* Distinct Claymorphism Pastel Palettes with Color-matched Orbs */
     .practice-card--nitnem {
-      background: linear-gradient(150deg, #FFFFFF 0%, #FFF9EB 45%, #FBEBCE 100%) !important;
-      border: 1.5px solid rgba(255, 255, 255, 0.95) !important;
+      background: linear-gradient(150deg, #FFFFFF 0%, #FFFDF8 45%, #FEEAD0 100%) !important;
+      border: none !important;
       box-shadow: 
-        6px 8px 20px rgba(212, 168, 83, 0.16),
-        -4px -4px 12px rgba(255, 255, 255, 0.98),
-        inset 2.5px 2.5px 5px rgba(255, 255, 255, 1),
-        inset -2.5px -2.5px 5px rgba(212, 168, 83, 0.10) !important;
+        0 10px 24px -3px rgba(212, 148, 58, 0.18),
+        0 3px 8px rgba(0, 0, 0, 0.02),
+        -3px -3px 8px rgba(255, 255, 255, 0.98),
+        inset 2.5px 2.5px 6px rgba(255, 255, 255, 1),
+        inset -2.5px -2.5px 6px rgba(212, 148, 58, 0.10) !important;
     }
     .practice-card--nitnem .practice-card__ring {
-      background: linear-gradient(145deg, #FFFFFF 0%, #FFF3DB 100%) !important;
-      box-shadow: 
-        0 4px 12px rgba(212, 168, 83, 0.20),
-        -2px -2px 6px rgba(255, 255, 255, 0.98),
-        inset 2px 2px 4px rgba(255, 255, 255, 1),
-        inset -1.5px -1.5px 3px rgba(212, 168, 83, 0.12) !important;
-    }
-    .practice-card--nitnem:active {
-      box-shadow: 
-        2px 3px 8px rgba(212, 168, 83, 0.22),
-        inset 3px 3px 6px rgba(212, 168, 83, 0.16),
-        inset -2px -2px 4px rgba(255, 255, 255, 0.9) !important;
+      background: rgba(212, 148, 58, 0.12) !important;
+      border-radius: 50% !important;
+      box-shadow: none !important;
     }
 
     .practice-card--sehaj {
-      background: linear-gradient(150deg, #FFFFFF 0%, #FAF5FF 45%, #F0E3FE 100%) !important;
-      border: 1.5px solid rgba(255, 255, 255, 0.95) !important;
+      background: linear-gradient(150deg, #FFFFFF 0%, #FFFDF8 45%, #FEEFD8 100%) !important;
+      border: none !important;
       box-shadow: 
-        6px 8px 20px rgba(168, 85, 247, 0.15),
-        -4px -4px 12px rgba(255, 255, 255, 0.98),
-        inset 2.5px 2.5px 5px rgba(255, 255, 255, 1),
-        inset -2.5px -2.5px 5px rgba(168, 85, 247, 0.10) !important;
+        0 10px 24px -3px rgba(212, 148, 58, 0.16),
+        0 3px 8px rgba(0, 0, 0, 0.02),
+        -3px -3px 8px rgba(255, 255, 255, 0.98),
+        inset 2.5px 2.5px 6px rgba(255, 255, 255, 1),
+        inset -2.5px -2.5px 6px rgba(212, 148, 58, 0.10) !important;
     }
     .practice-card--sehaj .practice-card__ring {
-      background: linear-gradient(145deg, #FFFFFF 0%, #F3EBFF 100%) !important;
-      box-shadow: 
-        0 4px 12px rgba(168, 85, 247, 0.18),
-        -2px -2px 6px rgba(255, 255, 255, 0.98),
-        inset 2px 2px 4px rgba(255, 255, 255, 1),
-        inset -1.5px -1.5px 3px rgba(168, 85, 247, 0.12) !important;
-    }
-    .practice-card--sehaj:active {
-      box-shadow: 
-        2px 3px 8px rgba(168, 85, 247, 0.22),
-        inset 3px 3px 6px rgba(168, 85, 247, 0.16),
-        inset -2px -2px 4px rgba(255, 255, 255, 0.9) !important;
+      background: rgba(212, 148, 58, 0.12) !important;
+      border-radius: 50% !important;
+      box-shadow: none !important;
     }
 
     .practice-card--hukam {
@@ -4496,42 +4396,7 @@
       background: linear-gradient(145deg, #FFFFFF 0%, #F3FEFD 55%, #E1FAF5 100%) !important;
     }
 
-    /* ─── DYNAMIC THEME CLAYMORPHISM FOR PRACTICE CARDS (MORNING / DAY / EVENING) ─── */
-    /* Morning Dawn: Luminous Golden Amber Cushion Clay */
-    [data-theme-mode="auto"][data-time-of-day="morning"] .practice-card,
-    [data-time-of-day="morning"] .practice-card {
-      background: linear-gradient(150deg, #FFFFFF 0%, #FFF8EC 45%, #FDE9CF 100%) !important;
-      border: 1.5px solid rgba(255, 255, 255, 0.95) !important;
-      box-shadow: 
-        6px 8px 20px rgba(212, 148, 58, 0.16),
-        -4px -4px 12px rgba(255, 255, 255, 0.98),
-        inset 2.5px 2.5px 5px rgba(255, 255, 255, 1),
-        inset -2.5px -2.5px 5px rgba(212, 148, 58, 0.10) !important;
-    }
-    
-    /* Day Sky: Fresh Radiant Azure Cushion Clay */
-    [data-theme-mode="auto"][data-time-of-day="day"] .practice-card,
-    [data-time-of-day="day"] .practice-card {
-      background: linear-gradient(150deg, #FFFFFF 0%, #EEF6FF 45%, #DCEEFF 100%) !important;
-      border: 1.5px solid rgba(255, 255, 255, 0.95) !important;
-      box-shadow: 
-        6px 8px 20px rgba(80, 145, 220, 0.18),
-        -4px -4px 12px rgba(255, 255, 255, 1),
-        inset 2.5px 2.5px 5px rgba(255, 255, 255, 1),
-        inset -2.5px -2.5px 5px rgba(80, 145, 220, 0.10) !important;
-    }
-
-    /* Evening Twilight: Warm Amber-Dusk Cushion Clay */
-    [data-theme-mode="auto"][data-time-of-day="evening"] .practice-card,
-    [data-time-of-day="evening"] .practice-card {
-      background: linear-gradient(150deg, #FFFFFF 0%, #FFF1EB 45%, #FDE1D4 100%) !important;
-      border: 1.5px solid rgba(255, 255, 255, 0.95) !important;
-      box-shadow: 
-        6px 8px 20px rgba(234, 88, 12, 0.16),
-        -4px -4px 12px rgba(255, 255, 255, 0.98),
-        inset 2.5px 2.5px 5px rgba(255, 255, 255, 1),
-        inset -2.5px -2.5px 5px rgba(234, 88, 12, 0.10) !important;
-    }
+    /* ─── DYNAMIC THEME SYSTEM MASTERED BELOW IN VISUAL OVERRIDES ─── */
 
     /* ─── PURE DEEP OBSIDIAN BLACK CLAY FOR ALL CARDS (DARK MODE & DYNAMIC NIGHT) ─── */
     html.dark-mode .practice-card,
@@ -4631,24 +4496,25 @@
     }
 
     /* ════════════════════════════════════════════════════════════════
-       2. LIGHT MODE HERO ARTWORK — GRAND SCALE & FULL UNCROPPED TITLE
+       2. LIGHT MODE HERO ARTWORK — GRAND FULL SCALE, MOVED UP & SOFT BOTTOM FADE
        ════════════════════════════════════════════════════════════════ */
     html body .greeting__hero-banner {
       display: flex !important;
       flex-direction: column !important;
-      width: calc(100% + 40px) !important;
-      max-width: none !important;
-      margin-left: -20px !important;
-      margin-right: -20px !important;
-      margin-top: 0 !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      margin-left: auto !important;
+      margin-right: auto !important;
+      margin-top: -18px !important; /* Move image up to equalize padding from header and bottom */
       margin-bottom: 0 !important;
       overflow: visible !important;
-      padding: 6px 12px 14px 12px !important;
+      padding: 0 !important;
       box-sizing: border-box !important;
       justify-content: center !important;
       align-items: center !important;
-      -webkit-mask-image: none !important;
-      mask-image: none !important;
+      border: none !important;
+      outline: none !important;
+      box-shadow: none !important;
     }
     html body .greeting__hero-banner picture {
       width: 100% !important;
@@ -4657,17 +4523,24 @@
       justify-content: center !important;
       align-items: center !important;
       margin: 0 auto !important;
+      overflow: visible !important;
+      border: none !important;
     }
     html body .greeting__hero-artwork {
-      width: 100% !important;
-      max-width: 100% !important;
+      width: 140% !important;
+      max-width: 1400px !important;
       height: auto !important;
       aspect-ratio: 1906 / 650 !important;
       object-fit: contain !important;
+      object-position: center !important;
       display: block !important;
       margin: 0 auto !important;
-      transform: translateX(8px) scale(1.15) !important;
-      transform-origin: center top !important;
+      transform: none !important;
+      border: none !important;
+      outline: none !important;
+      box-shadow: none !important;
+      -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 88%, rgba(0,0,0,0.7) 91%, rgba(0,0,0,0.3) 93.5%, rgba(0,0,0,0.06) 94.8%, transparent 95.5%) !important;
+      mask-image: linear-gradient(to bottom, #000 0%, #000 88%, rgba(0,0,0,0.7) 91%, rgba(0,0,0,0.3) 93.5%, rgba(0,0,0,0.06) 94.8%, transparent 95.5%) !important;
       image-rendering: -webkit-optimize-contrast !important;
       image-rendering: high-quality !important;
     }
@@ -4676,8 +4549,8 @@
     html body .progress-inline,
     html body #nitnemTrackerCard,
     html body .nitnem-progress {
-      margin-top: 22px !important;
-      margin-bottom: 16px !important;
+      margin-top: 14px !important;
+      margin-bottom: 18px !important;
     }
 
     /* Dark Mode: Hide Light Hero */
@@ -4697,14 +4570,9 @@
     html.dark-mode .greeting__dark-carousel-container,
     [data-theme="dark"] .greeting__dark-carousel-container,
     [data-time-of-day="night"] .greeting__dark-carousel-container {
-      display: flex !important;
-      flex-direction: column !important;
-      align-items: center !important;
-      justify-content: center !important;
-      gap: 2px !important;
-      width: 100% !important;
-      padding: 0 !important;
-      margin: 0 !important;
+      display: block !important;
+      opacity: 1 !important;
+      visibility: visible !important;
     }
 
     /* Hide side arrows & dots */
@@ -4744,15 +4612,15 @@
       visibility: visible !important;
     }
 
-    /* Slides: Dead center */
+    /* Slides: 3D Arc Carousel Layout */
     html body .greeting__slide {
       position: absolute !important;
-      width: 120px !important;
-      height: 120px !important;
+      width: 124px !important;
+      height: 124px !important;
       top: 50% !important;
       left: 50% !important;
-      margin-top: -60px !important;
-      margin-left: -60px !important;
+      margin-top: -62px !important;
+      margin-left: -62px !important;
       display: flex !important;
       align-items: center !important;
       justify-content: center !important;
@@ -4770,7 +4638,7 @@
     html body .greeting__slide--active {
       opacity: 1 !important;
       visibility: visible !important;
-      transform: scale(1.18) translateX(0px) !important;
+      transform: scale(1.16) translateX(0px) !important;
       z-index: 10 !important;
       pointer-events: auto !important;
       filter: none !important;
@@ -4808,260 +4676,486 @@
       filter: none !important;
     }
 
-    /* Guru Circle Frame — ZERO Glow Aura */
+    /* Guru Portrait in Dark Mode: Clean circle with thin gold accent, no harsh glow */
     html body .greeting__guru-portrait {
       width: 120px !important;
       height: 120px !important;
       min-width: 120px !important;
       min-height: 120px !important;
-      max-width: 120px !important;
-      max-height: 120px !important;
       border-radius: 50% !important;
+      border: 2px solid rgba(212, 148, 58, 0.4) !important;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6) !important;
+      object-fit: cover !important;
+      object-position: center 20% !important;
+      margin: 0 auto !important;
+      display: block !important;
+      background: #141218 !important;
       overflow: hidden !important;
-      border: 2.5px solid #D4943A !important;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.6) !important;
-      background: #141414 !important;
-      margin: 0 !important;
-      padding: 0 !important;
-      pointer-events: none !important;
-    }
-    html body .greeting__guru-portrait::before,
-    html body .greeting__guru-portrait::after {
-      display: none !important;
-      content: none !important;
-      box-shadow: none !important;
-      background: none !important;
     }
     html body .greeting__guru-portrait img {
       width: 100% !important;
       height: 100% !important;
       object-fit: cover !important;
       display: block !important;
-      opacity: 1 !important;
-      visibility: visible !important;
       border-radius: 50% !important;
-      pointer-events: none !important;
-    }
-
-    /* Dark Mode Text */
-    html body .greeting__text {
-      margin-top: 2px !important;
-      margin-bottom: 0 !important;
-      padding-bottom: 0 !important;
-      display: flex !important;
-      flex-direction: column !important;
-      align-items: center !important;
-      text-align: center !important;
-    }
-    html body .greeting__salutation {
-      margin-bottom: 2px !important;
-    }
-    html body .greeting__gurbani {
-      margin: 0 0 2px 0 !important;
-    }
-    html body .greeting__translation {
-      margin-top: 2px !important;
-      margin-bottom: 2px !important;
-      line-height: 1.35 !important;
     }
 
     /* ════════════════════════════════════════════════════════════════
-       4. GURPURAB CALENDAR CARD (EVENT CARD) — ENLARGED GURU AVATAR & UNIFIED PILLS
+       4. RECONSTRUCTED GURPURAB CALENDAR CARD (HARMONIOUS SACRED CLAYMORPHISM)
        ════════════════════════════════════════════════════════════════ */
-    html body .event-card,
-    html body .event-card.event-today,
-    html[data-theme-mode] body .event-card {
-      padding: 14px 18px !important;
-      border-radius: 24px !important;
-      border: 1px solid rgba(212, 168, 58, 0.18) !important;
-      background: linear-gradient(135deg, #FFFFFF 0%, #FFFDF8 45%, #FFF2D6 100%) !important;
-      box-shadow:
-        5px 8px 20px rgba(212, 168, 58, 0.14),
-        -4px -4px 10px rgba(255, 255, 255, 1),
-        inset 2px 2px 4px rgba(255, 255, 255, 0.9),
-        inset -1.5px -1.5px 4px rgba(212, 168, 58, 0.08) !important;
-      margin-bottom: 18px !important;
-      position: relative !important;
+    .event-card,
+    html body .event-card {
+      padding: 20px 22px !important;
+      border-radius: 26px !important;
+      min-height: auto !important;
+      border: none !important;
+      background: linear-gradient(135deg, #FFFDF8 0%, #FFF5E4 40%, #FEEDD2 100%) !important;
+      box-shadow: 
+        0 12px 28px -4px rgba(212, 148, 58, 0.16),
+        0 4px 10px rgba(0, 0, 0, 0.02),
+        -4px -4px 10px rgba(255, 255, 255, 0.98),
+        inset 2.5px 2.5px 6px rgba(255, 255, 255, 1),
+        inset -2.5px -2.5px 6px rgba(212, 148, 58, 0.08) !important;
       overflow: hidden !important;
+      margin-bottom: 22px !important;
+      transition: transform 0.25s var(--ease-spring), box-shadow 0.25s ease !important;
+      position: relative !important;
     }
-    html body .event-card__main {
+    .event-card__main {
       display: flex !important;
+      flex-direction: row !important;
       align-items: center !important;
       justify-content: space-between !important;
-      gap: 14px !important;
+      gap: 18px !important;
+      width: 100% !important;
     }
-    html body .event-card__info {
-      flex: 1 !important;
+    .event-card__info {
+      flex: 1 1 auto !important;
       min-width: 0 !important;
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: flex-start !important;
+      gap: 4px !important;
     }
-    html body .event-card__eyebrow {
-      font-size: 0.68rem !important;
+    .event-card__eyebrow {
+      font-size: 0.72rem !important;
       font-weight: 800 !important;
-      letter-spacing: 0.8px !important;
+      letter-spacing: 0.06em !important;
       text-transform: uppercase !important;
-      color: #C68A2C !important;
+      color: #A3640E !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 5px !important;
+      padding: 3px 9px !important;
+      background: rgba(212, 148, 58, 0.12) !important;
+      border-radius: 8px !important;
       margin-bottom: 2px !important;
     }
-    html body .event-card__title {
-      font-size: 1.02rem !important;
-      font-weight: 700 !important;
-      line-height: 1.25 !important;
-      letter-spacing: -0.1px !important;
-      color: #1C1C1E !important;
-      margin: 2px 0 8px 0 !important;
+    html.dark-mode .event-card__eyebrow,
+    [data-theme="dark"] .event-card__eyebrow {
+      background: rgba(212, 148, 58, 0.22) !important;
+      color: #F7C634 !important;
     }
-
-    /* UNIFIED BOTTOM ROW PILLS & BUTTONS (SAME HEIGHT, MATCHING PROPORTIONS) */
-    html body .event-card__bottom-row {
+    .event-card__title {
+      font-size: 1.12rem !important;
+      line-height: 1.35 !important;
+      font-weight: 800 !important;
+      margin: 2px 0 8px 0 !important;
+      color: #1A171D !important;
+      letter-spacing: -0.2px !important;
+    }
+    html.dark-mode .event-card__title,
+    [data-theme="dark"] .event-card__title {
+      color: #FFFDF8 !important;
+    }
+    .event-card__bottom-row {
       display: flex !important;
       align-items: center !important;
       gap: 8px !important;
       flex-wrap: wrap !important;
     }
-    html body .event-card__date-pill {
-      height: 26px !important;
-      padding: 0 10px !important;
-      font-size: 0.74rem !important;
+    .event-card__date-pill {
+      font-size: 0.76rem !important;
       font-weight: 700 !important;
-      border-radius: 9px !important;
+      padding: 5px 11px !important;
+      border-radius: 12px !important;
       background: rgba(212, 148, 58, 0.12) !important;
-      color: #9E6B18 !important;
+      color: #7D4C00 !important;
       display: inline-flex !important;
       align-items: center !important;
-      justify-content: center !important;
-      box-sizing: border-box !important;
-      line-height: 1 !important;
     }
-    html body .event-card__badge-pill {
-      height: 26px !important;
-      padding: 0 10px !important;
+    html.dark-mode .event-card__date-pill,
+    [data-theme="dark"] .event-card__date-pill {
+      background: rgba(255, 255, 255, 0.08) !important;
+      color: #F7C634 !important;
+    }
+    .event-card__badge-pill {
       font-size: 0.74rem !important;
-      font-weight: 700 !important;
-      border-radius: 9px !important;
-      background: linear-gradient(135deg, #FF6B6B, #FF8E53) !important;
+      font-weight: 800 !important;
+      padding: 5px 11px !important;
+      border-radius: 12px !important;
+      background: linear-gradient(135deg, #FF6B4A 0%, #FF416C 100%) !important;
       color: #FFFFFF !important;
-      box-shadow: 0 2px 6px rgba(255, 107, 107, 0.3) !important;
+      box-shadow: 0 2px 8px rgba(255, 75, 90, 0.35) !important;
       display: inline-flex !important;
       align-items: center !important;
-      justify-content: center !important;
-      box-sizing: border-box !important;
-      line-height: 1 !important;
     }
-    html body .event-card__learn-btn {
-      height: 26px !important;
-      padding: 0 10px !important;
-      font-size: 0.74rem !important;
-      font-weight: 700 !important;
-      color: #AF7D14 !important;
-      background: rgba(212, 148, 58, 0.12) !important;
-      border-radius: 9px !important;
+    .event-card__actions {
+      display: flex !important;
+      justify-content: center !important;
+      align-items: center !important;
+      width: 100% !important;
+      margin-top: 14px !important;
+    }
+    .event-card__learn-btn {
       display: inline-flex !important;
       align-items: center !important;
       justify-content: center !important;
-      gap: 3px !important;
+      gap: 6px !important;
+      padding: 8px 28px !important;
+      border-radius: 9999px !important;
+      background: linear-gradient(135deg, #D4943A 0%, #B8781E 100%) !important;
+      color: #FFFFFF !important;
+      font-size: 0.82rem !important;
+      font-weight: 700 !important;
+      letter-spacing: 0.2px !important;
       border: none !important;
       cursor: pointer !important;
-      box-sizing: border-box !important;
-      line-height: 1 !important;
-      white-space: nowrap !important;
+      box-shadow: 0 4px 14px rgba(212, 148, 58, 0.32), inset 0 1px 2px rgba(255, 255, 255, 0.4) !important;
+      transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+      margin: 0 auto !important;
+    }
+    .event-card__learn-btn:hover {
+      transform: translateY(-1px) scale(1.03) !important;
+      box-shadow: 0 6px 18px rgba(212, 148, 58, 0.42) !important;
     }
 
-    /* ENLARGED GURU AVATAR (74px x 74px) */
-    html body .event-card__guru-img-wrapper {
-      width: 74px !important;
-      height: 74px !important;
-      min-width: 74px !important;
-      min-height: 74px !important;
+    /* ENLARGED GURU AVATAR (104px) WITH CLEAN GOLD RIM */
+    .event-card__guru-img-wrapper {
+      width: 104px !important;
+      height: 104px !important;
+      min-width: 104px !important;
+      min-height: 104px !important;
       border-radius: 50% !important;
-      border: 2.5px solid #D4943A !important;
-      box-shadow: 0 4px 14px rgba(212, 148, 58, 0.25) !important;
-      overflow: hidden !important;
+      border: 3.5px solid #D4943A !important;
+      box-shadow: 0 6px 22px rgba(212, 148, 58, 0.30) !important;
       display: flex !important;
       align-items: center !important;
       justify-content: center !important;
       flex-shrink: 0 !important;
+      overflow: hidden !important;
+      background: #FFFFFF !important;
     }
-    html body .event-card__guru-img {
+    .event-card__guru-img {
       width: 100% !important;
       height: 100% !important;
       object-fit: cover !important;
-    }
-
-    /* Dark Mode Event Card */
-    html.dark-mode body .event-card,
-    html.dark-mode body .event-card.event-today,
-    html[data-theme="dark"] body .event-card,
-    html[data-time-of-day="night"] body .event-card {
-      background: linear-gradient(150deg, #1C1A16 0%, #12110E 100%) !important;
-      border: 1px solid rgba(212, 148, 58, 0.20) !important;
-      box-shadow:
-        6px 10px 24px rgba(0, 0, 0, 0.75),
-        -2px -2px 8px rgba(255, 255, 255, 0.03),
-        inset 2px 2px 6px rgba(212, 148, 58, 0.15),
-        inset -2px -2px 6px rgba(0, 0, 0, 0.6) !important;
-    }
-    html.dark-mode body .event-card__title,
-    html[data-theme="dark"] body .event-card__title,
-    html[data-time-of-day="night"] body .event-card__title {
-      color: #F5F5F7 !important;
-    }
-    html.dark-mode body .event-card__date-pill,
-    html[data-theme="dark"] body .event-card__date-pill,
-    html[data-time-of-day="night"] body .event-card__date-pill {
-      background: rgba(255, 255, 255, 0.08) !important;
-      color: #E8B84A !important;
-    }
-    html.dark-mode body .event-card__learn-btn,
-    html[data-theme="dark"] body .event-card__learn-btn,
-    html[data-time-of-day="night"] body .event-card__learn-btn {
-      background: rgba(212, 148, 58, 0.16) !important;
-      color: #E8B84A !important;
+      object-position: center 25% !important;
+      border-radius: 50% !important;
+      display: block !important;
     }
 
     /* ════════════════════════════════════════════════════════════════
-       5. PRACTICE CARDS — DISTINCT PASTEL CUSHION CLAY & CIRCULAR ICONS
+       5. PRACTICE CARDS & QUICK ACCESS — UNIFIED DYNAMIC CUSHION CLAYMORPHISM
        ════════════════════════════════════════════════════════════════ */
-    html body .practice-card,
-    html[data-theme-mode] body .practice-card {
-      padding: 14px 8px 12px !important;
+    html body .practice-card {
+      padding: 18px 12px 15px !important;
       border-radius: 26px !important;
+      border: none !important;
       display: flex !important;
       flex-direction: column !important;
       align-items: center !important;
       text-align: center !important;
+      cursor: pointer !important;
+      transition: transform 0.22s var(--ease-spring), box-shadow 0.22s ease !important;
+      position: relative !important;
+      overflow: hidden !important;
     }
-    html body .practice-card--nitnem,
-    html[data-theme-mode] body .practice-card--nitnem {
-      background: linear-gradient(165deg, #FFFDFB 0%, #FFEFD8 50%, #FFE5C0 100%) !important;
-      border: 1px solid rgba(212,148,58,0.24) !important;
-      box-shadow:
-        6px 10px 20px rgba(212,148,58,0.16),
-        2px 4px 8px rgba(139,69,19,0.06),
-        inset 2px 2px 4px rgba(255,255,255,0.92),
-        inset -3px -3px 6px rgba(212,148,58,0.15) !important;
+    html body .practice-card:hover {
+      transform: translateY(-3px) scale(1.02) !important;
     }
-    html body .practice-card--sehaj,
-    html[data-theme-mode] body .practice-card--sehaj {
-      background: linear-gradient(165deg, #FBF9FF 0%, #F0EBFF 50%, #E4DCFF 100%) !important;
-      border: 1px solid rgba(88,86,214,0.24) !important;
-      box-shadow:
-        6px 10px 20px rgba(88,86,214,0.16),
-        2px 4px 8px rgba(45,0,135,0.06),
-        inset 2px 2px 4px rgba(255,255,255,0.92),
-        inset -3px -3px 6px rgba(88,86,214,0.15) !important;
-    }
-    html body .practice-card--hukam,
-    html[data-theme-mode] body .practice-card--hukam {
-      background: linear-gradient(165deg, #FFFDFB 0%, #FFF0E8 50%, #FFE0CC 100%) !important;
-      border: 1px solid rgba(255,110,74,0.24) !important;
-      box-shadow:
-        6px 10px 20px rgba(255,110,74,0.16),
-        2px 4px 8px rgba(139,45,0,0.06),
-        inset 2px 2px 4px rgba(255,255,255,0.92),
-        inset -3px -3px 6px rgba(255,110,74,0.15) !important;
+    html body .practice-card:active {
+      transform: scale(0.97) !important;
     }
 
-    /* PRACTICE CARD ICONS: CIRCULAR SOFT SQUIRCLE / PILL — NO SQUARE BOX */
+    html body .quick-card {
+      border-radius: 20px !important;
+      border: none !important;
+      transition: transform 0.22s var(--ease-spring), box-shadow 0.22s ease !important;
+      position: relative !important;
+      overflow: hidden !important;
+    }
+    html body .quick-card:hover {
+      transform: translateY(-2px) scale(1.01) !important;
+    }
+    html body .quick-card:active {
+      transform: scale(0.98) !important;
+    }
+
+    /* ─── A. EVENING / SUNSET: #F29A2E AMBER-GOLD CUSHION CLAYMORPHISM (ALL CARDS + GURPURAB CARD + NITNEM BAR) ─── */
+    html[data-time-of-day="evening"]:not(.dark-mode):not([data-theme="dark"]) body .practice-card,
+    html[data-time-of-day="evening"]:not(.dark-mode):not([data-theme="dark"]) body .practice-card--nitnem,
+    html[data-time-of-day="evening"]:not(.dark-mode):not([data-theme="dark"]) body .practice-card--sehaj,
+    html[data-time-of-day="evening"]:not(.dark-mode):not([data-theme="dark"]) body .practice-card--hukam,
+    html[data-time-of-day="evening"]:not(.dark-mode):not([data-theme="dark"]) body .quick-card,
+    html[data-time-of-day="evening"]:not(.dark-mode):not([data-theme="dark"]) body .event-card,
+    html[data-time-of-day="evening"]:not(.dark-mode):not([data-theme="dark"]) body .progress-inline {
+      background: linear-gradient(135deg, #FFFDF8 0%, #FFF3DC 45%, #FEE5BE 100%) !important;
+      border: none !important;
+      box-shadow:
+        0 12px 28px -3px rgba(242, 154, 46, 0.24),
+        0 4px 10px rgba(0, 0, 0, 0.02),
+        -3px -3px 9px rgba(255, 255, 255, 0.98),
+        inset 2.5px 2.5px 6px rgba(255, 255, 255, 1),
+        inset -2.5px -2.5px 6px rgba(242, 154, 46, 0.14) !important;
+    }
+    html[data-time-of-day="evening"]:not(.dark-mode):not([data-theme="dark"]) body .practice-card__ring-fill {
+      stroke: #F29A2E !important;
+    }
+    html[data-time-of-day="evening"]:not(.dark-mode):not([data-theme="dark"]) body .practice-card__ring-icon svg,
+    html[data-time-of-day="evening"]:not(.dark-mode):not([data-theme="dark"]) body .quick-card__icon svg {
+      color: #F29A2E !important;
+    }
+    html[data-time-of-day="evening"]:not(.dark-mode):not([data-theme="dark"]) body .practice-card__title,
+    html[data-time-of-day="evening"]:not(.dark-mode):not([data-theme="dark"]) body .quick-card__title,
+    html[data-time-of-day="evening"]:not(.dark-mode):not([data-theme="dark"]) body .event-card__title,
+    html[data-time-of-day="evening"]:not(.dark-mode):not([data-theme="dark"]) body .progress-inline__label {
+      color: #5C3200 !important;
+    }
+    html[data-time-of-day="evening"]:not(.dark-mode):not([data-theme="dark"]) body .practice-card__status,
+    html[data-time-of-day="evening"]:not(.dark-mode):not([data-theme="dark"]) body .quick-card__subtitle,
+    html[data-time-of-day="evening"]:not(.dark-mode):not([data-theme="dark"]) body .quick-card__meta,
+    html[data-time-of-day="evening"]:not(.dark-mode):not([data-theme="dark"]) body .quick-card__meta-value,
+    html[data-time-of-day="evening"]:not(.dark-mode):not([data-theme="dark"]) body .quick-card__progress,
+    html[data-time-of-day="evening"]:not(.dark-mode):not([data-theme="dark"]) body .progress-inline__text {
+      color: #B86B07 !important;
+    }
+    html[data-time-of-day="evening"]:not(.dark-mode):not([data-theme="dark"]) body .practice-card__ring {
+      background: rgba(242, 154, 46, 0.12) !important;
+      border-radius: 50% !important;
+    }
+    html[data-time-of-day="evening"]:not(.dark-mode):not([data-theme="dark"]) body .event-card__learn-btn {
+      background: linear-gradient(135deg, #F29A2E 0%, #D48218 100%) !important;
+      box-shadow: 0 4px 14px rgba(242, 154, 46, 0.35) !important;
+    }
+    html[data-time-of-day="evening"]:not(.dark-mode):not([data-theme="dark"]) body .event-card__eyebrow,
+    html[data-time-of-day="evening"]:not(.dark-mode):not([data-theme="dark"]) body .event-card__date-pill {
+      background: rgba(242, 154, 46, 0.12) !important;
+      color: #7D4C00 !important;
+    }
+
+    /* ─── B. MORNING: DAWN PEACH CUSHION CLAYMORPHISM (ALL CARDS + GURPURAB CARD + NITNEM BAR) ─── */
+    html[data-time-of-day="morning"]:not(.dark-mode):not([data-theme="dark"]) body .practice-card,
+    html[data-time-of-day="morning"]:not(.dark-mode):not([data-theme="dark"]) body .practice-card--nitnem,
+    html[data-time-of-day="morning"]:not(.dark-mode):not([data-theme="dark"]) body .practice-card--sehaj,
+    html[data-time-of-day="morning"]:not(.dark-mode):not([data-theme="dark"]) body .practice-card--hukam,
+    html[data-time-of-day="morning"]:not(.dark-mode):not([data-theme="dark"]) body .quick-card,
+    html[data-time-of-day="morning"]:not(.dark-mode):not([data-theme="dark"]) body .event-card,
+    html[data-time-of-day="morning"]:not(.dark-mode):not([data-theme="dark"]) body .progress-inline {
+      background: linear-gradient(135deg, #FFFDFB 0%, #FFF4EB 45%, #FDE4D2 100%) !important;
+      border: none !important;
+      box-shadow:
+        0 10px 24px -3px rgba(235, 110, 60, 0.18),
+        0 3px 8px rgba(0, 0, 0, 0.02),
+        -3px -3px 8px rgba(255, 255, 255, 0.98),
+        inset 2.5px 2.5px 6px rgba(255, 255, 255, 1),
+        inset -2.5px -2.5px 6px rgba(235, 110, 60, 0.08) !important;
+    }
+    html[data-time-of-day="morning"]:not(.dark-mode):not([data-theme="dark"]) body .practice-card__ring-fill {
+      stroke: #EB6834 !important;
+    }
+    html[data-time-of-day="morning"]:not(.dark-mode):not([data-theme="dark"]) body .practice-card__ring-icon svg,
+    html[data-time-of-day="morning"]:not(.dark-mode):not([data-theme="dark"]) body .quick-card__icon svg {
+      color: #EB6834 !important;
+    }
+    html[data-time-of-day="morning"]:not(.dark-mode):not([data-theme="dark"]) body .practice-card__title,
+    html[data-time-of-day="morning"]:not(.dark-mode):not([data-theme="dark"]) body .quick-card__title,
+    html[data-time-of-day="morning"]:not(.dark-mode):not([data-theme="dark"]) body .event-card__title,
+    html[data-time-of-day="morning"]:not(.dark-mode):not([data-theme="dark"]) body .progress-inline__label {
+      color: #4A1E08 !important;
+    }
+    html[data-time-of-day="morning"]:not(.dark-mode):not([data-theme="dark"]) body .practice-card__status,
+    html[data-time-of-day="morning"]:not(.dark-mode):not([data-theme="dark"]) body .quick-card__subtitle,
+    html[data-time-of-day="morning"]:not(.dark-mode):not([data-theme="dark"]) body .quick-card__meta,
+    html[data-time-of-day="morning"]:not(.dark-mode):not([data-theme="dark"]) body .quick-card__meta-value,
+    html[data-time-of-day="morning"]:not(.dark-mode):not([data-theme="dark"]) body .quick-card__progress,
+    html[data-time-of-day="morning"]:not(.dark-mode):not([data-theme="dark"]) body .progress-inline__text {
+      color: #9C4112 !important;
+    }
+    html[data-time-of-day="morning"]:not(.dark-mode):not([data-theme="dark"]) body .practice-card__ring {
+      background: rgba(235, 104, 52, 0.12) !important;
+      border-radius: 50% !important;
+    }
+    html[data-time-of-day="morning"]:not(.dark-mode):not([data-theme="dark"]) body .event-card__learn-btn {
+      background: linear-gradient(135deg, #EB6834 0%, #C84F1E 100%) !important;
+      box-shadow: 0 4px 14px rgba(235, 104, 52, 0.35) !important;
+    }
+    html[data-time-of-day="morning"]:not(.dark-mode):not([data-theme="dark"]) body .event-card__eyebrow,
+    html[data-time-of-day="morning"]:not(.dark-mode):not([data-theme="dark"]) body .event-card__date-pill {
+      background: rgba(235, 104, 52, 0.12) !important;
+      color: #9C4112 !important;
+    }
+
+    /* ─── C. AFTERNOON / DAY: LIGHT SKY BLUE WITH REFINED EDITORIAL CHARCOAL/SLATE TEXT (ZERO HYPERLINK LOOK) ─── */
+    html[data-time-of-day="day"]:not(.dark-mode):not([data-theme="dark"]) body .practice-card,
+    html[data-time-of-day="day"]:not(.dark-mode):not([data-theme="dark"]) body .practice-card--nitnem,
+    html[data-time-of-day="day"]:not(.dark-mode):not([data-theme="dark"]) body .practice-card--sehaj,
+    html[data-time-of-day="day"]:not(.dark-mode):not([data-theme="dark"]) body .practice-card--hukam,
+    html[data-time-of-day="day"]:not(.dark-mode):not([data-theme="dark"]) body .quick-card,
+    html[data-time-of-day="day"]:not(.dark-mode):not([data-theme="dark"]) body .event-card,
+    html[data-time-of-day="day"]:not(.dark-mode):not([data-theme="dark"]) body .progress-inline {
+      background: linear-gradient(145deg, #F8FAFF 0%, #EDF5FF 45%, #D6EAFF 100%) !important;
+      border: none !important;
+      box-shadow:
+        0 10px 24px -3px rgba(37, 99, 235, 0.14),
+        0 3px 8px rgba(0, 0, 0, 0.02),
+        -3px -3px 8px rgba(255, 255, 255, 0.98),
+        inset 2.5px 2.5px 6px rgba(255, 255, 255, 1),
+        inset -2.5px -2.5px 6px rgba(37, 99, 235, 0.08) !important;
+    }
+    html[data-time-of-day="day"]:not(.dark-mode):not([data-theme="dark"]) body .practice-card__ring-fill {
+      stroke: #3B82F6 !important;
+    }
+    html[data-time-of-day="day"]:not(.dark-mode):not([data-theme="dark"]) body .practice-card__ring-icon svg {
+      color: #3B82F6 !important;
+    }
+    html[data-time-of-day="day"]:not(.dark-mode):not([data-theme="dark"]) body .practice-card__title,
+    html[data-time-of-day="day"]:not(.dark-mode):not([data-theme="dark"]) body .quick-card__title,
+    html[data-time-of-day="day"]:not(.dark-mode):not([data-theme="dark"]) body .event-card__title,
+    html[data-time-of-day="day"]:not(.dark-mode):not([data-theme="dark"]) body .progress-inline__label,
+    html[data-time-of-day="day"]:not(.dark-mode):not([data-theme="dark"]) body h3.practice-card__title,
+    html[data-time-of-day="day"]:not(.dark-mode):not([data-theme="dark"]) body div.practice-card__title,
+    html[data-time-of-day="day"]:not(.dark-mode):not([data-theme="dark"]) body div.quick-card__title {
+      color: #1E293B !important;
+    }
+    html[data-time-of-day="day"]:not(.dark-mode):not([data-theme="dark"]) body .practice-card__status,
+    html[data-time-of-day="day"]:not(.dark-mode):not([data-theme="dark"]) body .quick-card__subtitle,
+    html[data-time-of-day="day"]:not(.dark-mode):not([data-theme="dark"]) body .quick-card__meta,
+    html[data-time-of-day="day"]:not(.dark-mode):not([data-theme="dark"]) body .quick-card__meta-value,
+    html[data-time-of-day="day"]:not(.dark-mode):not([data-theme="dark"]) body .quick-card__progress,
+    html[data-time-of-day="day"]:not(.dark-mode):not([data-theme="dark"]) body .progress-inline__text,
+    html[data-time-of-day="day"]:not(.dark-mode):not([data-theme="dark"]) body .event-card__date-pill {
+      color: #64748B !important;
+    }
+    html[data-time-of-day="day"]:not(.dark-mode):not([data-theme="dark"]) body .quick-card__chevron {
+      color: #94A3B8 !important;
+    }
+    html[data-time-of-day="day"]:not(.dark-mode):not([data-theme="dark"]) body .event-card__learn-btn {
+      background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%) !important;
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35) !important;
+    }
+
+    /* ─── D. STATIC LIGHT MODE: UNIFIED LUXURIOUS CREAM WHITE CUSHION CLAYMORPHISM (ALL CARDS + GURPURAB CARD + NITNEM BAR) ─── */
+    html:not(.dark-mode):not([data-theme="dark"]):not([data-time-of-day="night"]):not([data-time-of-day="morning"]):not([data-time-of-day="day"]):not([data-time-of-day="evening"]) body .practice-card,
+    html:not(.dark-mode):not([data-theme="dark"]):not([data-time-of-day="night"]):not([data-time-of-day="morning"]):not([data-time-of-day="day"]):not([data-time-of-day="evening"]) body .practice-card--nitnem,
+    html:not(.dark-mode):not([data-theme="dark"]):not([data-time-of-day="night"]):not([data-time-of-day="morning"]):not([data-time-of-day="day"]):not([data-time-of-day="evening"]) body .practice-card--sehaj,
+    html:not(.dark-mode):not([data-theme="dark"]):not([data-time-of-day="night"]):not([data-time-of-day="morning"]):not([data-time-of-day="day"]):not([data-time-of-day="evening"]) body .practice-card--hukam,
+    html:not(.dark-mode):not([data-theme="dark"]):not([data-time-of-day="night"]):not([data-time-of-day="morning"]):not([data-time-of-day="day"]):not([data-time-of-day="evening"]) body .quick-card,
+    html:not(.dark-mode):not([data-theme="dark"]):not([data-time-of-day="night"]):not([data-time-of-day="morning"]):not([data-time-of-day="day"]):not([data-time-of-day="evening"]) body .event-card,
+    html:not(.dark-mode):not([data-theme="dark"]):not([data-time-of-day="night"]):not([data-time-of-day="morning"]):not([data-time-of-day="day"]):not([data-time-of-day="evening"]) body .progress-inline {
+      background: linear-gradient(145deg, #FFFDF8 0%, #FFF8EE 45%, #FEEFD8 100%) !important;
+      border: none !important;
+      box-shadow: 
+        0 10px 24px -3px rgba(212, 148, 58, 0.16),
+        0 3px 8px rgba(0, 0, 0, 0.02),
+        -3px -3px 8px rgba(255, 255, 255, 0.98),
+        inset 2.5px 2.5px 6px rgba(255, 255, 255, 1),
+        inset -2.5px -2.5px 6px rgba(212, 148, 58, 0.10) !important;
+    }
+    html:not(.dark-mode):not([data-theme="dark"]):not([data-time-of-day="night"]):not([data-time-of-day="morning"]):not([data-time-of-day="day"]):not([data-time-of-day="evening"]) body .practice-card__title,
+    html:not(.dark-mode):not([data-theme="dark"]):not([data-time-of-day="night"]):not([data-time-of-day="morning"]):not([data-time-of-day="day"]):not([data-time-of-day="evening"]) body .quick-card__title,
+    html:not(.dark-mode):not([data-theme="dark"]):not([data-time-of-day="night"]):not([data-time-of-day="morning"]):not([data-time-of-day="day"]):not([data-time-of-day="evening"]) body .event-card__title,
+    html:not(.dark-mode):not([data-theme="dark"]):not([data-time-of-day="night"]):not([data-time-of-day="morning"]):not([data-time-of-day="day"]):not([data-time-of-day="evening"]) body .progress-inline__label {
+      color: #7D4C00 !important;
+    }
+    html:not(.dark-mode):not([data-theme="dark"]):not([data-time-of-day="night"]):not([data-time-of-day="morning"]):not([data-time-of-day="day"]):not([data-time-of-day="evening"]) body .practice-card__status,
+    html:not(.dark-mode):not([data-theme="dark"]):not([data-time-of-day="night"]):not([data-time-of-day="morning"]):not([data-time-of-day="day"]):not([data-time-of-day="evening"]) body .quick-card__subtitle,
+    html:not(.dark-mode):not([data-theme="dark"]):not([data-time-of-day="night"]):not([data-time-of-day="morning"]):not([data-time-of-day="day"]):not([data-time-of-day="evening"]) body .quick-card__meta,
+    html:not(.dark-mode):not([data-theme="dark"]):not([data-time-of-day="night"]):not([data-time-of-day="morning"]):not([data-time-of-day="day"]):not([data-time-of-day="evening"]) body .quick-card__meta-value,
+    html:not(.dark-mode):not([data-theme="dark"]):not([data-time-of-day="night"]):not([data-time-of-day="morning"]):not([data-time-of-day="day"]):not([data-time-of-day="evening"]) body .quick-card__progress,
+    html:not(.dark-mode):not([data-theme="dark"]):not([data-time-of-day="night"]):not([data-time-of-day="morning"]):not([data-time-of-day="day"]):not([data-time-of-day="evening"]) body .progress-inline__text,
+    html:not(.dark-mode):not([data-theme="dark"]):not([data-time-of-day="night"]):not([data-time-of-day="morning"]):not([data-time-of-day="day"]):not([data-time-of-day="evening"]) body .event-card__date-pill {
+      color: #A36B15 !important;
+    }
+    html:not(.dark-mode):not([data-theme="dark"]):not([data-time-of-day="night"]):not([data-time-of-day="morning"]):not([data-time-of-day="day"]):not([data-time-of-day="evening"]) body .practice-card--nitnem .practice-card__ring-fill {
+      stroke: #D4860A !important;
+    }
+    html:not(.dark-mode):not([data-theme="dark"]):not([data-time-of-day="night"]):not([data-time-of-day="morning"]):not([data-time-of-day="day"]):not([data-time-of-day="evening"]) body .practice-card--nitnem .practice-card__ring-icon svg {
+      color: #D4860A !important;
+    }
+    html:not(.dark-mode):not([data-theme="dark"]):not([data-time-of-day="night"]):not([data-time-of-day="morning"]):not([data-time-of-day="day"]):not([data-time-of-day="evening"]) body .practice-card--sehaj .practice-card__ring-fill,
+    html body .practice-card--sehaj .practice-card__ring-fill,
+    #sehajRing {
+      stroke: #D4943A !important;
+    }
+    html:not(.dark-mode):not([data-theme="dark"]):not([data-time-of-day="night"]):not([data-time-of-day="morning"]):not([data-time-of-day="day"]):not([data-time-of-day="evening"]) body .practice-card--sehaj .practice-card__ring-icon svg,
+    html body .practice-card--sehaj .practice-card__ring-icon svg,
+    html body .practice-card--sehaj .practice-card__ring-icon {
+      color: #D4943A !important;
+      filter: none !important;
+      text-shadow: none !important;
+    }
+    html:not(.dark-mode):not([data-theme="dark"]):not([data-time-of-day="night"]):not([data-time-of-day="morning"]):not([data-time-of-day="day"]):not([data-time-of-day="evening"]) body .practice-card--hukam .practice-card__ring-fill {
+      stroke: #E11D48 !important;
+    }
+    html:not(.dark-mode):not([data-theme="dark"]):not([data-time-of-day="night"]):not([data-time-of-day="morning"]):not([data-time-of-day="day"]):not([data-time-of-day="evening"]) body .practice-card--hukam .practice-card__ring-icon svg {
+      color: #E11D48 !important;
+    }
+
+    /* ─── E. DARK MODE & DYNAMIC NIGHT: PLUSH OBSIDIAN CUSHION CLAYMORPHISM (ALL CARDS + GURPURAB CARD) ─── */
+    html.dark-mode body .practice-card,
+    html.dark-mode body .practice-card--nitnem,
+    html.dark-mode body .practice-card--sehaj,
+    html.dark-mode body .practice-card--hukam,
+    html[data-theme="dark"] body .practice-card,
+    html[data-theme="dark"] body .practice-card--nitnem,
+    html[data-theme="dark"] body .practice-card--sehaj,
+    html[data-theme="dark"] body .practice-card--hukam,
+    html[data-time-of-day="night"] body .practice-card,
+    html[data-time-of-day="night"] body .practice-card--nitnem,
+    html[data-time-of-day="night"] body .practice-card--sehaj,
+    html[data-time-of-day="night"] body .practice-card--hukam,
+    html.dark-mode body .quick-card,
+    html[data-theme="dark"] body .quick-card,
+    html[data-time-of-day="night"] body .quick-card,
+    html.dark-mode body .event-card,
+    html[data-theme="dark"] body .event-card,
+    html[data-time-of-day="night"] body .event-card {
+      background: linear-gradient(150deg, #1C1A22 0%, #141218 50%, #0E0C10 100%) !important;
+      border: none !important;
+      box-shadow: 
+        0 12px 30px rgba(0, 0, 0, 0.7),
+        -2px -2px 6px rgba(255, 255, 255, 0.02),
+        inset 2px 2px 5px rgba(255, 255, 255, 0.07),
+        inset -2px -2px 6px rgba(0, 0, 0, 0.8) !important;
+    }
+    html.dark-mode body .practice-card__title,
+    html[data-theme="dark"] body .practice-card__title,
+    html[data-time-of-day="night"] body .practice-card__title,
+    html.dark-mode body .quick-card__title,
+    html[data-theme="dark"] body .quick-card__title,
+    html[data-time-of-day="night"] body .quick-card__title,
+    html.dark-mode body .event-card__title,
+    html[data-theme="dark"] body .event-card__title,
+    html[data-time-of-day="night"] body .event-card__title {
+      color: #F8FAFC !important;
+    }
+    html.dark-mode body .practice-card__status,
+    html[data-theme="dark"] body .practice-card__status,
+    html[data-time-of-day="night"] body .practice-card__status,
+    html.dark-mode body .quick-card__subtitle,
+    html[data-theme="dark"] body .quick-card__subtitle,
+    html[data-time-of-day="night"] body .quick-card__subtitle {
+      color: #94A3B8 !important;
+    }
+    html.dark-mode body .practice-card__ring,
+    html[data-theme="dark"] body .practice-card__ring,
+    html[data-time-of-day="night"] body .practice-card__ring {
+      background: rgba(255, 255, 255, 0.06) !important;
+      border-radius: 50% !important;
+    }
+
+    /* PRACTICE CARD ICONS: CIRCULAR SOFT SQUIRCLE / PILL — NO GLOW */
     html body .practice-card__ring {
       width: 52px !important;
       height: 52px !important;
@@ -5070,6 +5164,8 @@
       align-items: center !important;
       justify-content: center !important;
       margin-bottom: 8px !important;
+      box-shadow: none !important;
+      filter: none !important;
     }
     html body .practice-card__ring::before {
       display: none !important;
@@ -5087,27 +5183,48 @@
       align-items: center !important;
       justify-content: center !important;
       box-shadow: none !important;
+      filter: none !important;
     }
-    html body .practice-card--nitnem .practice-card__ring-icon {
-      background: transparent !important;
-      border: none !important;
-      color: #D4A84B !important;
+    html body .practice-card__ring-fill {
+      filter: none !important;
     }
-    html body .practice-card--sehaj .practice-card__ring-icon {
-      background: transparent !important;
-      border: none !important;
-      color: #9333EA !important;
-    }
-    html body .practice-card--hukam .practice-card__ring-icon {
-      background: transparent !important;
-      border: none !important;
-      color: #EA580C !important;
+    html body .practice-card__ring-icon svg {
+      filter: none !important;
     }
     /* ════════════════════════════════════════════════════════════════
-       6. FLOATING MINI PLAYER + BOTTOM NAV GAP
+       6. FLOATING MINI PLAYER + BOTTOM NAV GAP & THEME FIXES
        ════════════════════════════════════════════════════════════════ */
+    .gmp,
+    .mini-player,
+    .global-mini-player,
     .mini-player--visible {
-      bottom: calc(var(--nav-height, 84px) + var(--safe-bottom, 0px) + 20px) !important;
+      bottom: calc(104px + max(env(safe-area-inset-bottom, 0px), 4px)) !important;
+    }
+
+    html.dark-mode .gmp,
+    html.dark-mode .mini-player,
+    html.dark-mode .global-mini-player,
+    [data-theme="dark"] .gmp,
+    [data-theme="dark"] .mini-player,
+    [data-theme="dark"] .global-mini-player,
+    [data-time-of-day="night"] .gmp,
+    [data-time-of-day="night"] .mini-player,
+    [data-time-of-day="night"] .global-mini-player {
+      background: linear-gradient(150deg, rgba(28, 28, 34, 0.96), rgba(16, 16, 20, 0.96)) !important;
+      border: 1px solid rgba(255, 255, 255, 0.08) !important;
+      box-shadow: 
+        0 16px 40px rgba(0, 0, 0, 0.75),
+        -2px -2px 8px rgba(255, 255, 255, 0.04),
+        inset 2px 2px 4px rgba(212, 148, 58, 0.2),
+        inset -2px -2px 5px rgba(0, 0, 0, 0.6) !important;
+    }
+
+    html.dark-mode .tab-bar,
+    [data-theme="dark"] .tab-bar,
+    [data-time-of-day="night"] .tab-bar {
+      background: rgba(18, 18, 22, 0.92) !important;
+      border: 1px solid rgba(255, 255, 255, 0.12) !important;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.75), inset 0 1px 1px rgba(255, 255, 255, 0.06) !important;
     }
   </style>
 </head>
@@ -5706,15 +5823,17 @@
           <div class="event-card__bottom-row">
             <span class="event-card__date-pill" id="eventDate">30 August</span>
             <span class="event-card__badge-pill" id="eventBadgePill">TODAY ✨</span>
-            <button class="event-card__learn-btn" onclick="event.stopPropagation(); if (window.navigateTo) window.navigateTo('Calendar/GurpurabCalendar-ios.html'); else window.location.href='Calendar/GurpurabCalendar-ios.html'">
-              Learn More
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-            </button>
           </div>
         </div>
         <div class="event-card__guru-img-wrapper" id="eventGuruImgWrapper">
           <img decoding="async" class="event-card__guru-img loaded" id="eventGuruImg" src="guruimages/gurugranthsahebji.jpeg" alt="Sri Guru Granth Sahib Ji" width="72" height="72">
         </div>
+      </div>
+      <div class="event-card__actions">
+        <button class="event-card__learn-btn" onclick="event.stopPropagation(); if (window.navigateTo) window.navigateTo('Calendar/GurpurabCalendar-ios.html'); else window.location.href='Calendar/GurpurabCalendar-ios.html'">
+          Learn More
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
       </div>
     </article>
 
@@ -6701,19 +6820,38 @@
       function syncGreetingHeroArtwork() {
         var img = document.getElementById('greetingHeroArtwork');
         var source = document.getElementById('greetingHeroSource');
-        if (!img) return;
-        var targetWebp = 'guruimages/guru-greeting-hero.webp';
+        var heroBanner = document.getElementById('greetingHeroBanner');
+        var darkCarousel = document.getElementById('greetingDarkCarousel');
         
-        if (source && source.srcset !== targetWebp) {
-          source.srcset = targetWebp;
+        var themeMode = document.documentElement.getAttribute('data-theme-mode');
+        var isDark = document.documentElement.classList.contains('dark-mode') ||
+                     document.documentElement.getAttribute('data-theme') === 'dark' ||
+                     themeMode === 'dark';
+        var timeOfDay = document.documentElement.getAttribute('data-time-of-day');
+        var showDark = isDark || timeOfDay === 'night';
+
+        if (heroBanner) {
+          heroBanner.style.setProperty('display', showDark ? 'none' : 'flex', 'important');
         }
-        if (img && !img.src.endsWith('guru-greeting-hero.webp')) {
-          img.src = targetWebp;
+        if (darkCarousel) {
+          darkCarousel.style.setProperty('display', showDark ? 'flex' : 'none', 'important');
+        }
+
+        if (img) {
+          var targetWebp = 'guruimages/guru-greeting-hero.webp';
+          if (source && source.srcset !== targetWebp) {
+            source.srcset = targetWebp;
+          }
+          if (!img.src.endsWith('guru-greeting-hero.webp')) {
+            img.src = targetWebp;
+          }
         }
       }
       window.syncGreetingHeroArtwork = syncGreetingHeroArtwork;
       syncGreetingHeroArtwork();
       window.addEventListener('anhad_theme_changed', syncGreetingHeroArtwork);
+      window.addEventListener('anhadThemeChanged', syncGreetingHeroArtwork);
+      window.addEventListener('themechange', syncGreetingHeroArtwork);
       window.addEventListener('storage', syncGreetingHeroArtwork);
       var observer = new MutationObserver(syncGreetingHeroArtwork);
       observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class', 'data-theme', 'data-theme-mode', 'data-time-of-day'] });
