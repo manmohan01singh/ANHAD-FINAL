@@ -2515,61 +2515,48 @@ html {
    Specificity is html + two attributes + class = (0,3,1), one higher than the
    day rule it has to beat, and it is last in the file.
    ═══════════════════════════════════════════════════════════════════════════ */
-html .practice-card--nitnem,
-html .practice-card--sehaj,
-html .practice-card--hukam,
-html[data-theme-mode] .practice-card--nitnem,
-html[data-theme-mode] .practice-card--sehaj,
-html[data-theme-mode] .practice-card--hukam,
-html[data-theme-mode][data-time-of-day] .practice-card--nitnem,
-html[data-theme-mode][data-time-of-day] .practice-card--sehaj,
-html[data-theme-mode][data-time-of-day] .practice-card--hukam,
-html[data-theme] .practice-card--nitnem,
-html[data-theme] .practice-card--sehaj,
-html[data-theme] .practice-card--hukam,
+/* Dynamic Night Mode & Dark Mode Practice Cards — Supreme Deep Obsidian Clay */
+html.dark-mode .practice-card,
+html[data-theme="dark"] .practice-card,
+html[data-time-of-day="night"] .practice-card,
 html.dark-mode .practice-card--nitnem,
 html.dark-mode .practice-card--sehaj,
-html.dark-mode .practice-card--hukam {
-  border: none !important;
-  /* Flat, neutral elevation — no glow.
-
-     The winning rule (the day-auto block above) stacked a COLOURED outer
-     bloom on top of a near-opaque white outer halo:
-
-       6px 10px 24px rgba(<accent>, .12)      <- coloured bloom
-       -4px -4px 14px rgba(255,255,255,.95)   <- white halo
-
-     Together those two read as a lit edge around each card, which is the
-     'glow' that kept coming back however many times the border was removed.
-     Neutral grey, tight radius, no accent, no white halo: the cards keep the
-     gradient fills that give them their identity and simply sit on the page
-     instead of emitting light. */
-  box-shadow:
-    0 1px 2px rgba(16, 24, 40, 0.04),
-    0 4px 12px rgba(16, 24, 40, 0.06) !important;
-}
-
-html .practice-card--nitnem,
-html .practice-card--sehaj,
-html .practice-card--hukam,
-html[data-theme-mode] .practice-card--nitnem,
-html[data-theme-mode] .practice-card--sehaj,
-html[data-theme-mode] .practice-card--hukam,
-html[data-theme-mode][data-time-of-day] .practice-card--nitnem,
-html[data-theme-mode][data-time-of-day] .practice-card--sehaj,
-html[data-theme-mode][data-time-of-day] .practice-card--hukam {
-  box-shadow:
-    0 1px 2px rgba(16, 24, 40, 0.04),
-    0 4px 12px rgba(16, 24, 40, 0.06) !important;
-}
-
+html.dark-mode .practice-card--hukam,
 html[data-theme="dark"] .practice-card--nitnem,
 html[data-theme="dark"] .practice-card--sehaj,
 html[data-theme="dark"] .practice-card--hukam,
-html.dark-mode .practice-card--nitnem,
-html.dark-mode .practice-card--sehaj,
-html.dark-mode .practice-card--hukam {
-  box-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.3),
-    0 4px 14px rgba(0, 0, 0, 0.35) !important;
+html[data-time-of-day="night"] .practice-card--nitnem,
+html[data-time-of-day="night"] .practice-card--sehaj,
+html[data-time-of-day="night"] .practice-card--hukam {
+  background: linear-gradient(150deg, #1C1C20 0%, #121215 50%, #0B0B0D 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 
+    6px 8px 22px rgba(0, 0, 0, 0.75),
+    -2px -2px 6px rgba(255, 255, 255, 0.03),
+    inset 2px 2px 4px rgba(255, 255, 255, 0.08),
+    inset -2px -2px 5px rgba(0, 0, 0, 0.65) !important;
+}
+
+html.dark-mode .practice-card__title,
+html[data-theme="dark"] .practice-card__title,
+html[data-time-of-day="night"] .practice-card__title {
+  color: #F8FAFC !important;
+}
+
+html.dark-mode .practice-card__status,
+html[data-theme="dark"] .practice-card__status,
+html[data-time-of-day="night"] .practice-card__status {
+  color: #94A3B8 !important;
+}
+
+html.dark-mode .practice-card__ring,
+html[data-theme="dark"] .practice-card__ring,
+html[data-time-of-day="night"] .practice-card__ring {
+  background: linear-gradient(145deg, #24242A 0%, #151518 100%) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.09) !important;
+  box-shadow: 
+    0 4px 14px rgba(0, 0, 0, 0.6),
+    -1.5px -1.5px 4px rgba(255, 255, 255, 0.03),
+    inset 2px 2px 4px rgba(255, 255, 255, 0.08),
+    inset -1.5px -1.5px 3px rgba(0, 0, 0, 0.6) !important;
 }

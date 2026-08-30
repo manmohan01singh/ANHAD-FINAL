@@ -5021,8 +5021,7 @@
     /* ════════════════════════════════════════════════════════════════
        5. PRACTICE CARDS — DISTINCT PASTEL CUSHION CLAY & CIRCULAR ICONS
        ════════════════════════════════════════════════════════════════ */
-    html body .practice-card,
-    html[data-theme-mode] body .practice-card {
+    html body .practice-card {
       padding: 14px 8px 12px !important;
       border-radius: 26px !important;
       display: flex !important;
@@ -5030,8 +5029,9 @@
       align-items: center !important;
       text-align: center !important;
     }
-    html body .practice-card--nitnem,
-    html[data-theme-mode] body .practice-card--nitnem {
+
+    /* Light / Daytime Mode Practice Cards */
+    html:not(.dark-mode):not([data-theme="dark"]):not([data-time-of-day="night"]) body .practice-card--nitnem {
       background: linear-gradient(165deg, #FFFDFB 0%, #FFEFD8 50%, #FFE5C0 100%) !important;
       border: 1px solid rgba(212,148,58,0.24) !important;
       box-shadow:
@@ -5040,8 +5040,7 @@
         inset 2px 2px 4px rgba(255,255,255,0.92),
         inset -3px -3px 6px rgba(212,148,58,0.15) !important;
     }
-    html body .practice-card--sehaj,
-    html[data-theme-mode] body .practice-card--sehaj {
+    html:not(.dark-mode):not([data-theme="dark"]):not([data-time-of-day="night"]) body .practice-card--sehaj {
       background: linear-gradient(165deg, #FBF9FF 0%, #F0EBFF 50%, #E4DCFF 100%) !important;
       border: 1px solid rgba(88,86,214,0.24) !important;
       box-shadow:
@@ -5050,8 +5049,7 @@
         inset 2px 2px 4px rgba(255,255,255,0.92),
         inset -3px -3px 6px rgba(88,86,214,0.15) !important;
     }
-    html body .practice-card--hukam,
-    html[data-theme-mode] body .practice-card--hukam {
+    html:not(.dark-mode):not([data-theme="dark"]):not([data-time-of-day="night"]) body .practice-card--hukam {
       background: linear-gradient(165deg, #FFFDFB 0%, #FFF0E8 50%, #FFE0CC 100%) !important;
       border: 1px solid rgba(255,110,74,0.24) !important;
       box-shadow:
@@ -5059,6 +5057,59 @@
         2px 4px 8px rgba(139,45,0,0.06),
         inset 2px 2px 4px rgba(255,255,255,0.92),
         inset -3px -3px 6px rgba(255,110,74,0.15) !important;
+    }
+
+    /* Dark Mode & Dynamic Night Mode Practice Cards — Pure Deep Obsidian Clay */
+    html.dark-mode body .practice-card,
+    html.dark-mode body .practice-card--nitnem,
+    html.dark-mode body .practice-card--sehaj,
+    html.dark-mode body .practice-card--hukam,
+    html[data-theme="dark"] body .practice-card,
+    html[data-theme="dark"] body .practice-card--nitnem,
+    html[data-theme="dark"] body .practice-card--sehaj,
+    html[data-theme="dark"] body .practice-card--hukam,
+    html[data-time-of-day="night"] body .practice-card,
+    html[data-time-of-day="night"] body .practice-card--nitnem,
+    html[data-time-of-day="night"] body .practice-card--sehaj,
+    html[data-time-of-day="night"] body .practice-card--hukam,
+    body.dark-mode .practice-card,
+    body.dark-mode .practice-card--nitnem,
+    body.dark-mode .practice-card--sehaj,
+    body.dark-mode .practice-card--hukam {
+      background: linear-gradient(150deg, #1C1C20 0%, #121215 50%, #0B0B0D 100%) !important;
+      border: 1px solid rgba(255, 255, 255, 0.08) !important;
+      box-shadow: 
+        6px 8px 22px rgba(0, 0, 0, 0.75),
+        -2px -2px 6px rgba(255, 255, 255, 0.03),
+        inset 2px 2px 4px rgba(255, 255, 255, 0.08),
+        inset -2px -2px 5px rgba(0, 0, 0, 0.65) !important;
+    }
+
+    html.dark-mode body .practice-card__title,
+    html[data-theme="dark"] body .practice-card__title,
+    html[data-time-of-day="night"] body .practice-card__title,
+    body.dark-mode .practice-card__title {
+      color: #F8FAFC !important;
+    }
+
+    html.dark-mode body .practice-card__status,
+    html[data-theme="dark"] body .practice-card__status,
+    html[data-time-of-day="night"] body .practice-card__status,
+    body.dark-mode .practice-card__status {
+      color: #94A3B8 !important;
+    }
+
+    html.dark-mode body .practice-card__ring,
+    html[data-theme="dark"] body .practice-card__ring,
+    html[data-time-of-day="night"] body .practice-card__ring,
+    body.dark-mode .practice-card__ring {
+      background: linear-gradient(145deg, #24242A 0%, #151518 100%) !important;
+      border: 1.5px solid rgba(255, 255, 255, 0.09) !important;
+      box-shadow: 
+        0 4px 14px rgba(0, 0, 0, 0.6),
+        -1.5px -1.5px 4px rgba(255, 255, 255, 0.03),
+        inset 2px 2px 4px rgba(255, 255, 255, 0.08),
+        inset -1.5px -1.5px 3px rgba(0, 0, 0, 0.6) !important;
     }
 
     /* PRACTICE CARD ICONS: CIRCULAR SOFT SQUIRCLE / PILL — NO SQUARE BOX */
