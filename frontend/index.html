@@ -250,7 +250,8 @@
     .greeting__portrait-slider-wrap {
       position: relative !important;
       width: 100% !important;
-      max-width: 440px !important;
+      max-width: 400px !important;
+      height: 140px !important;
       display: flex !important;
       align-items: center !important;
       justify-content: center !important;
@@ -262,7 +263,7 @@
     .greeting__portrait-slider {
       position: relative !important;
       width: 100% !important;
-      height: 150px !important;
+      height: 140px !important;
       overflow: visible !important;
       touch-action: pan-y !important;
       display: flex !important;
@@ -338,11 +339,11 @@
       box-shadow: 0 0 10px rgba(212, 148, 58, 0.6) !important;
     }
   
-    /* ─── DARK MODE / DYNAMIC NIGHT: GURU SLIDER VISIBILITY OVERRIDES ─── */
+    /* ─── DARK MODE / DYNAMIC NIGHT: GURU SLIDER - NO EXTRA GAP ─── */
     .greeting__portrait-slider {
       position: relative !important;
       width: 100% !important;
-      height: 160px !important;
+      height: 140px !important;
       overflow: visible !important;
       touch-action: pan-y !important;
       display: flex !important;
@@ -365,6 +366,12 @@
     }
     .greeting__slide {
       position: absolute !important;
+      width: 85px !important;
+      height: 85px !important;
+      top: 50% !important;
+      left: 50% !important;
+      margin-top: -42.5px !important;
+      margin-left: -42.5px !important;
       transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.3s ease, filter 0.3s ease !important;
       opacity: 0 !important;
       visibility: hidden !important;
@@ -374,53 +381,55 @@
       user-select: none !important;
       -webkit-user-select: none !important;
       -webkit-user-drag: none !important;
-      display: block !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
     }
     .greeting__slide--active {
       opacity: 1 !important;
       visibility: visible !important;
-      transform: scale(1.22) translateX(0) !important;
+      transform: scale(1.15) translateX(0) !important;
       z-index: 10 !important;
       pointer-events: auto !important;
-      filter: drop-shadow(0 8px 24px rgba(212, 148, 58, 0.45)) !important;
+      filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4)) !important;
     }
     .greeting__slide--prev {
-      opacity: 0.72 !important;
+      opacity: 0.75 !important;
       visibility: visible !important;
-      transform: scale(0.85) translateX(-96px) !important;
+      transform: scale(0.80) translateX(-95px) !important;
       z-index: 5 !important;
       pointer-events: auto !important;
-      filter: drop-shadow(0 4px 14px rgba(0,0,0,0.4)) !important;
+      filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3)) !important;
     }
     .greeting__slide--next {
-      opacity: 0.72 !important;
+      opacity: 0.75 !important;
       visibility: visible !important;
-      transform: scale(0.85) translateX(96px) !important;
+      transform: scale(0.80) translateX(95px) !important;
       z-index: 5 !important;
       pointer-events: auto !important;
-      filter: drop-shadow(0 4px 14px rgba(0,0,0,0.4)) !important;
+      filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3)) !important;
     }
     .greeting__slide--far-prev {
-      opacity: 0.28 !important;
+      opacity: 0.3 !important;
       visibility: visible !important;
-      transform: scale(0.62) translateX(-160px) !important;
+      transform: scale(0.58) translateX(-155px) !important;
       z-index: 1 !important;
       pointer-events: auto !important;
     }
     .greeting__slide--far-next {
-      opacity: 0.28 !important;
+      opacity: 0.3 !important;
       visibility: visible !important;
-      transform: scale(0.62) translateX(160px) !important;
+      transform: scale(0.58) translateX(155px) !important;
       z-index: 1 !important;
       pointer-events: auto !important;
     }
     .greeting__guru-portrait {
-      width: 104px !important;
-      height: 104px !important;
+      width: 85px !important;
+      height: 85px !important;
       border-radius: 50% !important;
       overflow: hidden !important;
-      border: 3px solid #D4943A !important;
-      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4), 0 0 16px rgba(212, 148, 58, 0.3) !important;
+      border: 2.5px solid #D4943A !important;
+      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.45) !important;
       background: #1C1C1E !important;
       pointer-events: none !important;
       user-select: none !important;
@@ -436,7 +445,7 @@
       user-select: none !important;
     }
 
-    /* ─── SACRED HERO ARTWORK (LIGHT/DYNAMIC): FULL CLEARANCE WITHOUT BOTTOM CLIPPING ─── */
+    /* ─── SACRED HERO ARTWORK (LIGHT/DYNAMIC): PERFECTLY CENTERED ─── */
     .greeting {
       margin-top: -8px !important;
       margin-bottom: 28px !important;
@@ -450,13 +459,13 @@
     .greeting__hero-banner {
       position: relative !important;
       width: 100% !important;
-      max-width: 1100px !important;
+      max-width: none !important;
       margin: 0 auto !important;
       display: flex !important;
       justify-content: center !important;
       align-items: center !important;
       overflow: visible !important;
-      padding-bottom: 10px !important;
+      padding: 0 !important;
       box-sizing: border-box !important;
     }
     @media (max-width: 767px) {
@@ -467,19 +476,23 @@
         margin-right: calc(-50vw + 50%) !important;
         overflow: visible !important;
       }
-      .greeting__hero-banner {
-        transform: scale(1.08) !important;
-      }
     }
     .greeting__hero-artwork {
-      width: 100% !important;
-      max-width: 100% !important;
+      width: 120% !important;
+      max-width: 1200px !important;
       height: auto !important;
       aspect-ratio: 1906 / 825 !important;
       object-fit: contain !important;
+      object-position: 55% center !important;
       display: block !important;
+      margin: 0 auto !important;
       image-rendering: -webkit-optimize-contrast !important;
       image-rendering: high-quality !important;
+    }
+    @media (max-width: 768px) {
+      .greeting__hero-artwork {
+        width: 125% !important;
+      }
     }
 
     /* ─── 5. GURPURAB CALENDAR CARD (PREMIUM CUSHION CLAY & TYPOGRAPHY) ─── */
@@ -567,13 +580,13 @@
     }
   
     /* ═══════════════════════════════════════════════════════════════════════════
-       DARK MODE GURU CAROUSEL — BULLETPROOF CENTERED SLIDER
+       DARK MODE GURU CAROUSEL — CENTERED SLIDER
        ═══════════════════════════════════════════════════════════════════════════ */
     .greeting__portrait-slider-wrap {
       position: relative !important;
       width: 100% !important;
-      max-width: 460px !important;
-      height: 165px !important;
+      max-width: 400px !important;
+      height: 140px !important;
       display: flex !important;
       align-items: center !important;
       justify-content: center !important;
@@ -585,7 +598,7 @@
     .greeting__portrait-slider {
       position: relative !important;
       width: 100% !important;
-      height: 165px !important;
+      height: 140px !important;
       overflow: visible !important;
       touch-action: pan-y !important;
       display: flex !important;
@@ -608,12 +621,12 @@
 
     .greeting__slide {
       position: absolute !important;
-      width: 104px !important;
-      height: 104px !important;
+      width: 85px !important;
+      height: 85px !important;
       top: 50% !important;
       left: 50% !important;
-      margin-top: -52px !important;
-      margin-left: -52px !important;
+      margin-top: -42.5px !important;
+      margin-left: -42.5px !important;
       display: flex !important;
       align-items: center !important;
       justify-content: center !important;
@@ -631,53 +644,55 @@
     .greeting__slide--active {
       opacity: 1 !important;
       visibility: visible !important;
-      transform: scale(1.22) translateX(0) !important;
+      transform: scale(1.15) translateX(0) !important;
       z-index: 10 !important;
       pointer-events: auto !important;
-      filter: drop-shadow(0 8px 24px rgba(212, 148, 58, 0.5)) !important;
+      /* Removed glow effect */
+      filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4)) !important;
     }
 
     .greeting__slide--prev {
-      opacity: 0.72 !important;
+      opacity: 0.75 !important;
       visibility: visible !important;
-      transform: scale(0.85) translateX(-105px) !important;
+      transform: scale(0.80) translateX(-95px) !important;
       z-index: 5 !important;
       pointer-events: auto !important;
-      filter: drop-shadow(0 4px 14px rgba(0, 0, 0, 0.5)) !important;
+      filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3)) !important;
     }
 
     .greeting__slide--next {
-      opacity: 0.72 !important;
+      opacity: 0.75 !important;
       visibility: visible !important;
-      transform: scale(0.85) translateX(105px) !important;
+      transform: scale(0.80) translateX(95px) !important;
       z-index: 5 !important;
       pointer-events: auto !important;
-      filter: drop-shadow(0 4px 14px rgba(0, 0, 0, 0.5)) !important;
+      filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3)) !important;
     }
 
     .greeting__slide--far-prev {
-      opacity: 0.25 !important;
+      opacity: 0.3 !important;
       visibility: visible !important;
-      transform: scale(0.62) translateX(-175px) !important;
+      transform: scale(0.58) translateX(-155px) !important;
       z-index: 1 !important;
       pointer-events: auto !important;
     }
 
     .greeting__slide--far-next {
-      opacity: 0.25 !important;
+      opacity: 0.3 !important;
       visibility: visible !important;
-      transform: scale(0.62) translateX(175px) !important;
+      transform: scale(0.58) translateX(155px) !important;
       z-index: 1 !important;
       pointer-events: auto !important;
     }
 
     .greeting__guru-portrait {
-      width: 104px !important;
-      height: 104px !important;
+      width: 85px !important;
+      height: 85px !important;
       border-radius: 50% !important;
       overflow: hidden !important;
-      border: 3px solid #D4943A !important;
-      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4), 0 0 16px rgba(212, 148, 58, 0.3) !important;
+      border: 2.5px solid #D4943A !important;
+      /* Removed glow effect */
+      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.45) !important;
       background: #1C1C1E !important;
       pointer-events: none !important;
       user-select: none !important;
@@ -934,7 +949,7 @@
       image-rendering: high-quality !important;
     }
 
-    /* 2. Dark Mode Guru Slider: Centered, Visible & Responsive */
+    /* 2. Dark Mode Guru Slider: Centered, Visible & Responsive - NO GAP */
     html.dark-mode .greeting__hero-banner,
     [data-theme="dark"] .greeting__hero-banner,
     [data-time-of-day="night"] .greeting__hero-banner {
@@ -947,9 +962,10 @@
       display: flex !important;
       flex-direction: column !important;
       align-items: center !important;
-      gap: 12px !important;
+      gap: 6px !important;
       width: 100% !important;
-      padding: 6px 0 !important;
+      padding: 0 !important;
+      margin-top: -10px !important;
     }
 
     .greeting__portrait-slider-wrap {
@@ -3953,7 +3969,7 @@
     
     .greeting__dark-carousel-container { display: none; width: 100%; max-width: 600px; margin: 0 auto; }
 
-    /* ─── DARK MODE / DYNAMIC NIGHT: INTERACTIVE GURU CAROUSEL + GURBANI SECTION ─── */
+    /* ─── DARK MODE / DYNAMIC NIGHT: INTERACTIVE GURU CAROUSEL - NO GAP ─── */
     html.dark-mode .greeting__hero-banner,
     [data-theme="dark"] .greeting__hero-banner,
     [data-time-of-day="night"] .greeting__hero-banner {
@@ -3966,9 +3982,10 @@
       display: flex !important;
       flex-direction: column !important;
       align-items: center !important;
-      gap: 12px !important;
+      gap: 6px !important;
       width: 100% !important;
-      padding: 6px 0 !important;
+      padding: 0 !important;
+      margin-top: -10px !important;
     }
 
     .greeting__portrait-slider-wrap {
@@ -4433,15 +4450,15 @@
       color: #94A3B8 !important;
     }
   </style>
-  <!-- ANHAD MASTER VISUAL OVERRIDES v10.64.0 -->
+  <!-- ANHAD MASTER VISUAL OVERRIDES v10.66.0 -->
   <style id="anhad-master-overrides">
     /* ════════════════════════════════════════════════════════════════
-       1. GREETING SECTION — MINIMAL GAP WITH START NITNEM BAR
+       1. GREETING SECTION & CLEAN BALANCED GAP
        ════════════════════════════════════════════════════════════════ */
     .greeting {
-      margin-top: -10px !important;
-      margin-bottom: 6px !important;
-      padding-bottom: 2px !important;
+      margin-top: -8px !important;
+      margin-bottom: 8px !important;
+      padding-bottom: 0px !important;
       position: relative !important;
       overflow: visible !important;
       width: 100% !important;
@@ -4455,29 +4472,36 @@
       width: 100% !important;
     }
     .greeting__text {
-      margin-top: -4px !important;
+      margin-top: 2px !important;
       margin-bottom: 0 !important;
       padding-bottom: 0 !important;
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      text-align: center !important;
+    }
+    .greeting__salutation {
+      margin-bottom: 2px !important;
     }
     .greeting__gurbani {
       margin: 0 0 2px 0 !important;
     }
     .greeting__translation {
       margin-top: 2px !important;
-      margin-bottom: 4px !important;
+      margin-bottom: 2px !important;
       line-height: 1.35 !important;
     }
 
-    /* Minimal gap before the Nitnem progress banner */
+    /* Minimal clean gap before the Nitnem progress banner */
     .progress-inline,
     #nitnemTrackerCard,
     .nitnem-progress {
-      margin-top: 4px !important;
-      margin-bottom: 14px !important;
+      margin-top: 8px !important;
+      margin-bottom: 12px !important;
     }
 
     /* ════════════════════════════════════════════════════════════════
-       2. LIGHT MODE HERO ARTWORK — WIDE, ENLARGED, CENTERED & 4-SIDED SEAMLESS BLEND
+       2. LIGHT MODE HERO ARTWORK — CENTERED, ENLARGED, NO UNNECESSARY GAP
        ════════════════════════════════════════════════════════════════ */
     .greeting__hero-banner {
       display: flex !important;
@@ -4489,18 +4513,18 @@
       box-sizing: border-box !important;
       justify-content: center !important;
       align-items: center !important;
-      /* 4-sided smooth vignette so top, bottom, left, right all dissolve into pure white */
-      -webkit-mask-image: radial-gradient(ellipse 92% 86% at 50% 50%, black 55%, rgba(0,0,0,0.85) 75%, transparent 100%) !important;
-      mask-image: radial-gradient(ellipse 92% 86% at 50% 50%, black 55%, rgba(0,0,0,0.85) 75%, transparent 100%) !important;
+      -webkit-mask-image: none !important;
+      mask-image: none !important;
     }
     .greeting__hero-banner picture {
       width: 100% !important;
       display: flex !important;
       justify-content: center !important;
+      align-items: center !important;
     }
     .greeting__hero-artwork {
       width: 100% !important;
-      max-width: 100% !important;
+      max-width: 580px !important;
       height: auto !important;
       transform: scale(1.18) !important;
       object-fit: contain !important;
@@ -4518,7 +4542,7 @@
     }
 
     /* ════════════════════════════════════════════════════════════════
-       3. DARK MODE GURU CAROUSEL — ENLARGED PORTRAITS & ARROWS REMOVED
+       3. DARK MODE GURU CAROUSEL — COMPACT HEIGHT, NO GLOW, ZERO DEAD GAP
        ════════════════════════════════════════════════════════════════ */
     .greeting__dark-carousel-container {
       display: none;
@@ -4531,25 +4555,29 @@
       flex-direction: column !important;
       align-items: center !important;
       justify-content: center !important;
-      gap: 10px !important;
+      gap: 2px !important;
       width: 100% !important;
-      padding: 4px 0 8px !important;
+      padding: 0 !important;
+      margin: 0 !important;
     }
 
-    /* Remove side arrow buttons in dark mode as requested */
+    /* Remove side arrows & dots for clean touch swipe */
     .greeting__slider-arrow,
     #guruSliderPrev,
-    #guruSliderNext {
+    #guruSliderNext,
+    .greeting__dots,
+    #guruDots {
       display: none !important;
       visibility: hidden !important;
       pointer-events: none !important;
     }
 
+    /* Compact slider wrap: exactly matches circle height, removing dead vertical space */
     .greeting__portrait-slider-wrap {
       position: relative !important;
       width: 100% !important;
-      max-width: 500px !important;
-      height: 230px !important;
+      max-width: 440px !important;
+      height: 148px !important;
       margin: 0 auto !important;
       display: flex !important;
       align-items: center !important;
@@ -4558,7 +4586,7 @@
     .greeting__portrait-slider {
       position: relative !important;
       width: 100% !important;
-      height: 230px !important;
+      height: 148px !important;
       overflow: visible !important;
       touch-action: pan-y !important;
     }
@@ -4571,15 +4599,15 @@
       visibility: visible !important;
     }
 
-    /* Slides: Larger dimensions & centered offsets */
+    /* Perfectly centered slides with ZERO glow */
     .greeting__slide {
       position: absolute !important;
-      width: 156px !important;
-      height: 156px !important;
+      width: 120px !important;
+      height: 120px !important;
       top: 50% !important;
       left: 50% !important;
-      margin-top: -78px !important;
-      margin-left: -78px !important;
+      margin-top: -60px !important;
+      margin-left: -60px !important;
       display: flex !important;
       align-items: center !important;
       justify-content: center !important;
@@ -4592,60 +4620,72 @@
       user-select: none !important;
       -webkit-user-drag: none !important;
       will-change: transform, opacity !important;
+      filter: none !important;
     }
     .greeting__slide--active {
       opacity: 1 !important;
       visibility: visible !important;
-      transform: scale(1.22) translateX(0px) !important;
+      transform: scale(1.18) translateX(0px) !important;
       z-index: 10 !important;
       pointer-events: auto !important;
-      filter: drop-shadow(0 12px 32px rgba(212,148,58,0.7)) !important;
+      filter: none !important;
     }
     .greeting__slide--prev {
       opacity: 0.80 !important;
       visibility: visible !important;
-      transform: scale(0.82) translateX(-132px) !important;
+      transform: scale(0.82) translateX(-112px) !important;
       z-index: 6 !important;
       pointer-events: auto !important;
+      filter: none !important;
     }
     .greeting__slide--next {
       opacity: 0.80 !important;
       visibility: visible !important;
-      transform: scale(0.82) translateX(132px) !important;
+      transform: scale(0.82) translateX(112px) !important;
       z-index: 6 !important;
       pointer-events: auto !important;
+      filter: none !important;
     }
     .greeting__slide--far-prev {
-      opacity: 0.32 !important;
+      opacity: 0.30 !important;
       visibility: visible !important;
-      transform: scale(0.56) translateX(-210px) !important;
+      transform: scale(0.56) translateX(-180px) !important;
       z-index: 2 !important;
       pointer-events: auto !important;
+      filter: none !important;
     }
     .greeting__slide--far-next {
-      opacity: 0.32 !important;
+      opacity: 0.30 !important;
       visibility: visible !important;
-      transform: scale(0.56) translateX(210px) !important;
+      transform: scale(0.56) translateX(180px) !important;
       z-index: 2 !important;
       pointer-events: auto !important;
+      filter: none !important;
     }
 
-    /* Guru Circle Frame — Enlarged */
+    /* Guru Circle Frame — Clean Crisp Gold Ring, Absolutely NO Glow/Aura */
     .greeting__guru-portrait {
-      width: 156px !important;
-      height: 156px !important;
-      min-width: 156px !important;
-      min-height: 156px !important;
-      max-width: 156px !important;
-      max-height: 156px !important;
+      width: 120px !important;
+      height: 120px !important;
+      min-width: 120px !important;
+      min-height: 120px !important;
+      max-width: 120px !important;
+      max-height: 120px !important;
       border-radius: 50% !important;
       overflow: hidden !important;
-      border: 3.5px solid #D4943A !important;
-      box-shadow: 0 4px 22px rgba(0,0,0,0.65), 0 0 28px rgba(212,148,58,0.45) !important;
-      background: #151515 !important;
+      border: 2.5px solid #D4943A !important;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.6) !important;
+      background: #141414 !important;
       margin: 0 !important;
       padding: 0 !important;
       pointer-events: none !important;
+    }
+    .greeting__guru-portrait::before,
+    .greeting__guru-portrait::after {
+      display: none !important;
+      content: none !important;
+      box-shadow: none !important;
+      background: none !important;
     }
     .greeting__guru-portrait img {
       width: 100% !important;
@@ -5064,8 +5104,8 @@
         <!-- Light Mode / Day: Sacred Devotional Hero Artwork -->
         <div class="greeting__hero-banner" id="greetingHeroBanner" aria-label="Sacred Guru Darbar">
           <picture id="greetingHeroPicture">
-            <source id="greetingHeroSource" srcset="assets/guru-greeting-hero.webp" type="image/webp">
-            <img class="greeting__hero-artwork" id="greetingHeroArtwork" src="assets/guru-greeting-hero.png" alt="Sri Guru Granth Sahib Ji with Sri Guru Gobind Singh Ji and Sri Guru Nanak Dev Ji" width="1906" height="825" loading="eager" fetchpriority="high" decoding="async">
+            <source id="greetingHeroSource" srcset="guruimages/guru-greeting-hero.webp" type="image/webp">
+            <img class="greeting__hero-artwork" id="greetingHeroArtwork" src="guruimages/guru-greeting-hero.webp" alt="Sri Guru Granth Sahib Ji with Sri Guru Gobind Singh Ji and Sri Guru Nanak Dev Ji" width="1906" height="825" loading="eager" fetchpriority="high" decoding="async">
           </picture>
         </div>
 
@@ -6356,7 +6396,7 @@
                      document.documentElement.getAttribute('data-time-of-day') === 'night' ||
                      document.documentElement.getAttribute('data-time-of-day') === 'evening';
         
-        var targetWebp = isDark ? 'assets/guru-greeting-hero-dark.webp' : 'assets/guru-greeting-hero.webp';
+        var targetWebp = isDark ? 'assets/guru-greeting-hero-dark.webp' : 'guruimages/guru-greeting-hero.webp';
         var targetPng = isDark ? 'assets/guru-greeting-hero-dark.png' : 'assets/guru-greeting-hero.png';
         
         if (source && source.srcset !== targetWebp) {
