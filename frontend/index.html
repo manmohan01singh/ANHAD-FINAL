@@ -3010,7 +3010,7 @@
     }
   
 
-                                            /* ─── SACRED DEVOTIONAL HERO ARTWORK (FULL CINEMATIC VIEWPORT BLEED) ─── */
+                                                /* ─── SACRED DEVOTIONAL HERO ARTWORK (MAXIMUM CRYSTAL CLARITY) ─── */
     .greeting {
       margin-top: -10px !important;
       margin-bottom: 20px !important;
@@ -3032,10 +3032,10 @@
       justify-content: center;
       align-items: center;
       overflow: visible;
-      transform: scale(1.14);
+      transform: scale(1.12);
       /* 4-sided natural soft edge dissolve */
-      mask-image: radial-gradient(ellipse 98% 95% at 50% 50%, #000000 88%, rgba(0,0,0,0.85) 96%, transparent 100%);
-      -webkit-mask-image: radial-gradient(ellipse 98% 95% at 50% 50%, #000000 88%, rgba(0,0,0,0.85) 96%, transparent 100%);
+      mask-image: radial-gradient(ellipse 98% 95% at 50% 50%, #000000 90%, rgba(0,0,0,0.85) 96%, transparent 100%);
+      -webkit-mask-image: radial-gradient(ellipse 98% 95% at 50% 50%, #000000 90%, rgba(0,0,0,0.85) 96%, transparent 100%);
     }
     .greeting__hero-artwork {
       width: 100%;
@@ -3044,7 +3044,8 @@
       object-fit: contain;
       display: block;
       transition: opacity 0.35s ease;
-      filter: contrast(1.04) saturate(1.04);
+      image-rendering: -webkit-optimize-contrast;
+      image-rendering: crisp-edges;
     }
     
     .greeting__dark-carousel-container {
@@ -3175,35 +3176,34 @@
       line-height: 1.35;
     }
     
-    /* ─── SLIM SLEEK GURPURAB CARD (SKY BLUE CUSHION CLAY) ─── */
+    /* ─── SLIM SLEEK GURPURAB CARD (FULLY READABLE SACRED TITLE) ─── */
     .event-card {
       position: relative !important;
       opacity: 1 !important;
       visibility: visible !important;
-      border-radius: 22px !important;
-      padding: 12px 16px !important;
-      margin-bottom: 16px !important;
-      background: linear-gradient(145deg, #F0F8FF 0%, #E3F2FD 50%, #D8ECF8 100%) !important;
+      border-radius: 24px !important;
+      padding: 14px 18px !important;
+      margin-bottom: 18px !important;
+      background: linear-gradient(145deg, #FFFFFF 0%, #FAF6F0 100%) !important;
       border: none !important;
       box-shadow: 
-        5px 6px 15px rgba(100, 160, 220, 0.14),
+        5px 6px 16px rgba(0, 0, 0, 0.06),
         -3px -3px 8px rgba(255, 255, 255, 0.95),
         inset 2px 2px 4px rgba(255, 255, 255, 0.9),
-        inset -2px -2px 4px rgba(100, 160, 220, 0.12) !important;
+        inset -2px -2px 4px rgba(0, 0, 0, 0.03) !important;
       display: flex !important;
       align-items: center !important;
       cursor: pointer !important;
       transition: transform 0.25s ease, box-shadow 0.25s ease !important;
       overflow: visible !important;
     }
-    .event-card:hover {
-      transform: translateY(-2px) !important;
-      box-shadow: 
-        6px 8px 20px rgba(100, 160, 220, 0.2),
-        -3px -3px 8px rgba(255, 255, 255, 0.95) !important;
+    [data-theme-mode="auto"][data-time-of-day="day"] .event-card {
+      background: linear-gradient(145deg, #F0F8FF 0%, #E3F2FD 50%, #D8ECF8 100%) !important;
+      box-shadow: 5px 6px 15px rgba(100, 160, 220, 0.14), -3px -3px 8px rgba(255, 255, 255, 0.95), inset 2px 2px 4px rgba(255, 255, 255, 0.9), inset -2px -2px 4px rgba(100, 160, 220, 0.12) !important;
     }
     html.dark-mode .event-card,
-    [data-theme="dark"] .event-card {
+    [data-theme="dark"] .event-card,
+    [data-time-of-day="night"] .event-card {
       background: linear-gradient(145deg, #1C232E 0%, #151A22 100%) !important;
       border: none !important;
       box-shadow: 
@@ -3217,38 +3217,43 @@
       align-items: center !important;
       justify-content: space-between !important;
       width: 100% !important;
-      gap: 12px !important;
+      gap: 14px !important;
     }
     .event-card__info {
       flex: 1 !important;
       min-width: 0 !important;
       display: flex !important;
       flex-direction: column !important;
-      gap: 2px !important;
+      gap: 3px !important;
     }
     .event-card__eyebrow {
       font-size: 10px !important;
       font-weight: 800 !important;
       letter-spacing: 0.6px !important;
-      color: #0284C7 !important;
+      color: #D4943A !important;
       text-transform: uppercase !important;
     }
+    [data-theme-mode="auto"][data-time-of-day="day"] .event-card__eyebrow {
+      color: #0284C7 !important;
+    }
     html.dark-mode .event-card__eyebrow,
-    [data-theme="dark"] .event-card__eyebrow {
+    [data-theme="dark"] .event-card__eyebrow,
+    [data-time-of-day="night"] .event-card__eyebrow {
       color: #38BDF8 !important;
     }
     .event-card__title {
-      font-size: 0.96rem !important;
+      font-size: 1.05rem !important;
       font-weight: 700 !important;
-      line-height: 1.25 !important;
-      color: #0F172A !important;
-      white-space: nowrap !important;
-      overflow: hidden !important;
-      text-overflow: ellipsis !important;
-      margin: 2px 0 4px !important;
+      line-height: 1.3 !important;
+      color: #1D1D1F !important;
+      white-space: normal !important;
+      overflow: visible !important;
+      text-overflow: clip !important;
+      margin: 2px 0 6px !important;
     }
     html.dark-mode .event-card__title,
-    [data-theme="dark"] .event-card__title {
+    [data-theme="dark"] .event-card__title,
+    [data-time-of-day="night"] .event-card__title {
       color: #F8FAFC !important;
     }
     .event-card__bottom-row {
@@ -3262,11 +3267,16 @@
       font-weight: 700 !important;
       padding: 3px 8px !important;
       border-radius: 10px !important;
+      background: rgba(212, 148, 58, 0.12) !important;
+      color: #D4943A !important;
+    }
+    [data-theme-mode="auto"][data-time-of-day="day"] .event-card__date-pill {
       background: rgba(2, 132, 199, 0.12) !important;
       color: #0284C7 !important;
     }
     html.dark-mode .event-card__date-pill,
-    [data-theme="dark"] .event-card__date-pill {
+    [data-theme="dark"] .event-card__date-pill,
+    [data-time-of-day="night"] .event-card__date-pill {
       background: rgba(56, 189, 248, 0.18) !important;
       color: #38BDF8 !important;
     }
@@ -3285,21 +3295,25 @@
       gap: 4px !important;
       font-size: 11px !important;
       font-weight: 700 !important;
-      color: #0284C7 !important;
+      color: #D4943A !important;
       background: transparent !important;
       border: none !important;
       padding: 2px 4px !important;
       cursor: pointer !important;
     }
+    [data-theme-mode="auto"][data-time-of-day="day"] .event-card__learn-btn {
+      color: #0284C7 !important;
+    }
     html.dark-mode .event-card__learn-btn,
-    [data-theme="dark"] .event-card__learn-btn {
+    [data-theme="dark"] .event-card__learn-btn,
+    [data-time-of-day="night"] .event-card__learn-btn {
       color: #38BDF8 !important;
     }
     .event-card__guru-img-wrapper {
-      width: 72px !important;
-      height: 72px !important;
-      min-width: 72px !important;
-      min-height: 72px !important;
+      width: 78px !important;
+      height: 78px !important;
+      min-width: 78px !important;
+      min-height: 78px !important;
       border-radius: 50% !important;
       padding: 2.5px !important;
       background: linear-gradient(145deg, #F5E6C8 0%, #D4A84B 50%, #B8860B 100%) !important;
@@ -3319,60 +3333,61 @@
       display: block !important;
     }
 
-    /* ─── SKY BLUE CUSHION CLAYMORPHISM FOR ALL PRACTICE & QUICK CARDS ─── */
-    .practice-card,
-    .practice-card--nitnem,
-    .practice-card--sehaj,
-    .practice-card--hukam {
-      background: linear-gradient(150deg, #F0F8FF 0%, #E3F2FD 55%, #D4EBF8 100%) !important;
+    /* ─── TIME-OF-DAY DYNAMIC PRACTICE & QUICK ACCESS CARDS ─── */
+    /* Static Light Mode: Classic Distinct Pastel Clay Tints */
+    .practice-card {
       border: none !important;
       border-radius: 24px !important;
-      box-shadow: 
-        5px 6px 14px rgba(100, 160, 220, 0.12),
-        -3px -3px 8px rgba(255, 255, 255, 0.95),
-        inset 2px 2px 4px rgba(255, 255, 255, 0.9),
-        inset -2px -2px 4px rgba(100, 160, 220, 0.12) !important;
+      box-shadow: 4px 5px 12px rgba(0, 0, 0, 0.06), -3px -3px 8px rgba(255, 255, 255, 0.9), inset 2px 2px 4px rgba(255, 255, 255, 0.9), inset -2px -2px 4px rgba(0, 0, 0, 0.03) !important;
       transition: transform 0.25s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.25s ease !important;
     }
-    .practice-card:active {
-      transform: scale(0.96) translateY(2px) !important;
+    .practice-card--nitnem {
+      background: linear-gradient(150deg, #FFFDF9 0%, #FFF5EC 55%, #FFEBD9 100%) !important;
     }
-    html.dark-mode .practice-card,
-    [data-theme="dark"] .practice-card {
-      background: linear-gradient(150deg, #1C232E 0%, #151A22 100%) !important;
+    .practice-card--sehaj {
+      background: linear-gradient(150deg, #FDFBFF 0%, #F5ECFF 55%, #EBD9FF 100%) !important;
+    }
+    .practice-card--hukam {
+      background: linear-gradient(150deg, #FFFBFA 0%, #FFF0EB 55%, #FFE0D6 100%) !important;
+    }
+    .quick-card {
+      background: linear-gradient(150deg, #FFFFFF 0%, #F8F6F2 100%) !important;
       border: none !important;
-      border-radius: 24px !important;
-      box-shadow: 
-        5px 6px 16px rgba(0, 0, 0, 0.5),
-        -2px -2px 6px rgba(255, 255, 255, 0.03),
-        inset 2px 2px 4px rgba(100, 180, 255, 0.12),
-        inset -2px -2px 5px rgba(0, 0, 0, 0.4) !important;
+      border-radius: 22px !important;
+      box-shadow: 4px 5px 12px rgba(0, 0, 0, 0.05), -3px -3px 8px rgba(255, 255, 255, 0.95), inset 2px 2px 4px rgba(255, 255, 255, 0.9), inset -2px -2px 4px rgba(0, 0, 0, 0.02) !important;
     }
 
-    .quick-card {
+    /* Dynamic Mode: Morning (Sunrise Amber Clay) */
+    [data-theme-mode="auto"][data-time-of-day="morning"] .practice-card,
+    [data-theme-mode="auto"][data-time-of-day="morning"] .quick-card {
+      background: linear-gradient(150deg, #FFFDF9 0%, #FFF5EC 55%, #FFEAD4 100%) !important;
+      box-shadow: 4px 5px 14px rgba(230, 160, 100, 0.12), -3px -3px 8px rgba(255, 255, 255, 0.95), inset 2px 2px 4px rgba(255, 255, 255, 0.9), inset -2px -2px 4px rgba(230, 160, 100, 0.08) !important;
+    }
+
+    /* Dynamic Mode: Day (Crisp Sky Blue Cushion Clay) */
+    [data-theme-mode="auto"][data-time-of-day="day"] .practice-card,
+    [data-theme-mode="auto"][data-time-of-day="day"] .quick-card {
       background: linear-gradient(150deg, #F0F8FF 0%, #E3F2FD 55%, #D4EBF8 100%) !important;
-      border: none !important;
-      border-radius: 22px !important;
-      box-shadow: 
-        5px 6px 14px rgba(100, 160, 220, 0.12),
-        -3px -3px 8px rgba(255, 255, 255, 0.95),
-        inset 2px 2px 4px rgba(255, 255, 255, 0.9),
-        inset -2px -2px 4px rgba(100, 160, 220, 0.12) !important;
-      transition: transform 0.25s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.25s ease !important;
+      box-shadow: 5px 6px 14px rgba(100, 160, 220, 0.12), -3px -3px 8px rgba(255, 255, 255, 0.95), inset 2px 2px 4px rgba(255, 255, 255, 0.9), inset -2px -2px 4px rgba(100, 160, 220, 0.12) !important;
     }
-    .quick-card:active {
-      transform: scale(0.97) translateY(1px) !important;
+
+    /* Dynamic Mode: Evening (Twilight Sunset Rose Clay) */
+    [data-theme-mode="auto"][data-time-of-day="evening"] .practice-card,
+    [data-theme-mode="auto"][data-time-of-day="evening"] .quick-card {
+      background: linear-gradient(150deg, #FFF8F5 0%, #FFEFE8 55%, #FFDFD4 100%) !important;
+      box-shadow: 4px 5px 14px rgba(220, 120, 100, 0.1), -3px -3px 8px rgba(255, 255, 255, 0.95), inset 2px 2px 4px rgba(255, 255, 255, 0.9), inset -2px -2px 4px rgba(220, 120, 100, 0.08) !important;
     }
+
+    /* Dark Mode & Dynamic Night: Deep Midnight Obsidian Clay */
+    html.dark-mode .practice-card,
+    [data-theme="dark"] .practice-card,
+    [data-time-of-day="night"] .practice-card,
     html.dark-mode .quick-card,
-    [data-theme="dark"] .quick-card {
+    [data-theme="dark"] .quick-card,
+    [data-time-of-day="night"] .quick-card {
       background: linear-gradient(150deg, #1C232E 0%, #151A22 100%) !important;
       border: none !important;
-      border-radius: 22px !important;
-      box-shadow: 
-        5px 6px 16px rgba(0, 0, 0, 0.5),
-        -2px -2px 6px rgba(255, 255, 255, 0.03),
-        inset 2px 2px 4px rgba(100, 180, 255, 0.12),
-        inset -2px -2px 5px rgba(0, 0, 0, 0.4) !important;
+      box-shadow: 5px 6px 16px rgba(0, 0, 0, 0.5), -2px -2px 6px rgba(255, 255, 255, 0.03), inset 2px 2px 4px rgba(100, 180, 255, 0.12), inset -2px -2px 5px rgba(0, 0, 0, 0.4) !important;
     }
   </style>
 
