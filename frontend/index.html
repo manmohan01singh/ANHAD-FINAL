@@ -483,7 +483,7 @@
       height: auto !important;
       aspect-ratio: 1906 / 825 !important;
       object-fit: contain !important;
-      object-position: 55% center !important;
+      object-position: 60% center !important;
       display: block !important;
       margin: 0 auto !important;
       image-rendering: -webkit-optimize-contrast !important;
@@ -4450,15 +4450,15 @@
       color: #94A3B8 !important;
     }
   </style>
-  <!-- ANHAD MASTER VISUAL OVERRIDES v10.67.0 -->
+  <!-- ANHAD MASTER VISUAL OVERRIDES v10.70.0 -->
   <style id="anhad-master-overrides">
     /* ════════════════════════════════════════════════════════════════
-       1. GREETING SECTION & OPTICAL CENTERING
+       1. GREETING SECTION & CLEAN PADDING BEFORE NITNEM BAR
        ════════════════════════════════════════════════════════════════ */
     .greeting {
       margin-top: -6px !important;
-      margin-bottom: 6px !important;
-      padding: 0 !important;
+      margin-bottom: 16px !important;
+      padding-bottom: 0px !important;
       position: relative !important;
       overflow: visible !important;
       width: 100% !important;
@@ -4480,10 +4480,11 @@
     }
 
     /* ════════════════════════════════════════════════════════════════
-       2. LIGHT MODE HERO ARTWORK — CENTERED, TEXTLESS, SOFT CONTRAST
+       2. LIGHT MODE HERO ARTWORK — CENTERED WITH INTEGRATED TITLE
        ════════════════════════════════════════════════════════════════ */
     .greeting__hero-banner {
       display: flex !important;
+      flex-direction: column !important;
       width: 100% !important;
       max-width: 100% !important;
       margin: 0 auto !important;
@@ -4507,21 +4508,21 @@
       width: 100% !important;
       max-width: 600px !important;
       height: auto !important;
-      aspect-ratio: 1906 / 536 !important;
+      aspect-ratio: 1906 / 612 !important;
       object-fit: contain !important;
       display: block !important;
       margin: 0 auto !important;
-      transform: none !important;
+      transform: translateX(8px) !important;
       image-rendering: -webkit-optimize-contrast !important;
       image-rendering: high-quality !important;
     }
 
-    /* Minimal clean gap before the Nitnem progress banner */
+    /* Gap before the Nitnem progress banner */
     .progress-inline,
     #nitnemTrackerCard,
     .nitnem-progress {
-      margin-top: 8px !important;
-      margin-bottom: 12px !important;
+      margin-top: 16px !important;
+      margin-bottom: 14px !important;
     }
 
     /* Dark Mode: Hide Light Hero */
@@ -4532,7 +4533,7 @@
     }
 
     /* ════════════════════════════════════════════════════════════════
-       3. DARK MODE GURU CAROUSEL — COMPACT, ZERO GLOW, CLEAN SPACING
+       3. DARK MODE GURU CAROUSEL — RIGHT-ALIGNED OPTICAL CENTERING, NO GLOW
        ════════════════════════════════════════════════════════════════ */
     .greeting__dark-carousel-container {
       display: none;
@@ -4588,13 +4589,13 @@
       visibility: visible !important;
     }
 
-    /* Slides: Centered with clean transforms and ZERO glow */
+    /* Slides: Symmetrically centered with rightward optical shift */
     .greeting__slide {
       position: absolute !important;
       width: 120px !important;
       height: 120px !important;
       top: 50% !important;
-      left: 50% !important;
+      left: calc(50% + 14px) !important;
       margin-top: -60px !important;
       margin-left: -60px !important;
       display: flex !important;
@@ -4622,7 +4623,7 @@
     .greeting__slide--prev {
       opacity: 0.80 !important;
       visibility: visible !important;
-      transform: scale(0.82) translateX(-112px) !important;
+      transform: scale(0.82) translateX(-114px) !important;
       z-index: 6 !important;
       pointer-events: auto !important;
       filter: none !important;
@@ -4630,7 +4631,7 @@
     .greeting__slide--next {
       opacity: 0.80 !important;
       visibility: visible !important;
-      transform: scale(0.82) translateX(112px) !important;
+      transform: scale(0.82) translateX(114px) !important;
       z-index: 6 !important;
       pointer-events: auto !important;
       filter: none !important;
@@ -4638,7 +4639,7 @@
     .greeting__slide--far-prev {
       opacity: 0.30 !important;
       visibility: visible !important;
-      transform: scale(0.56) translateX(-180px) !important;
+      transform: scale(0.56) translateX(-182px) !important;
       z-index: 2 !important;
       pointer-events: auto !important;
       filter: none !important;
@@ -4646,7 +4647,7 @@
     .greeting__slide--far-next {
       opacity: 0.30 !important;
       visibility: visible !important;
-      transform: scale(0.56) translateX(180px) !important;
+      transform: scale(0.56) translateX(182px) !important;
       z-index: 2 !important;
       pointer-events: auto !important;
       filter: none !important;
@@ -4741,7 +4742,7 @@
     }
 
     /* ════════════════════════════════════════════════════════════════
-       5. PRACTICE CARDS — ROCK SOLID CUSHION CLAY COLORS
+       5. PRACTICE CARDS — ROCK SOLID CUSHION CLAY & TINTED ICONS
        ════════════════════════════════════════════════════════════════ */
     .practice-card--nitnem {
       background: linear-gradient(165deg, #FFFDFB 0%, #FFEFD8 50%, #FFE5C0 100%) !important;
@@ -4774,7 +4775,27 @@
         inset -3px -3px 6px rgba(255,110,74,0.15) !important;
     }
 
-    /* Dark Mode Practice Cards */
+    /* PRACTICE CARD ICONS: NO STARK WHITE BG — SOFT TINTED BLEND */
+    .practice-card__ring-icon {
+      background: rgba(255, 255, 255, 0.45) !important;
+      backdrop-filter: blur(8px) !important;
+      border: 1px solid rgba(255, 255, 255, 0.6) !important;
+      box-shadow: none !important;
+    }
+    .practice-card--nitnem .practice-card__ring-icon {
+      background: rgba(212, 148, 58, 0.14) !important;
+      border: 1px solid rgba(212, 148, 58, 0.22) !important;
+    }
+    .practice-card--sehaj .practice-card__ring-icon {
+      background: rgba(88, 86, 214, 0.14) !important;
+      border: 1px solid rgba(88, 86, 214, 0.22) !important;
+    }
+    .practice-card--hukam .practice-card__ring-icon {
+      background: rgba(255, 110, 74, 0.14) !important;
+      border: 1px solid rgba(255, 110, 74, 0.22) !important;
+    }
+
+    /* Dark Mode Practice Cards & Icons */
     html.dark-mode .practice-card--nitnem,
     [data-theme="dark"] .practice-card--nitnem,
     [data-time-of-day="night"] .practice-card--nitnem {
@@ -4804,6 +4825,12 @@
         8px 12px 28px rgba(0,0,0,0.6),
         inset 2px 2px 4px rgba(255,255,255,0.12),
         inset -4px -4px 8px rgba(0,0,0,0.6) !important;
+    }
+    html.dark-mode .practice-card__ring-icon,
+    [data-theme="dark"] .practice-card__ring-icon,
+    [data-time-of-day="night"] .practice-card__ring-icon {
+      background: rgba(255, 255, 255, 0.08) !important;
+      border: 1px solid rgba(255, 255, 255, 0.12) !important;
     }
 
     /* ════════════════════════════════════════════════════════════════
@@ -5116,7 +5143,7 @@
         <div class="greeting__hero-banner" id="greetingHeroBanner" aria-label="Sacred Guru Darbar">
           <picture id="greetingHeroPicture">
             <source id="greetingHeroSource" srcset="guruimages/guru-greeting-hero.webp" type="image/webp">
-            <img class="greeting__hero-artwork" id="greetingHeroArtwork" src="guruimages/guru-greeting-hero.webp" alt="Sri Guru Granth Sahib Ji with Sri Guru Gobind Singh Ji and Sri Guru Nanak Dev Ji" width="1906" height="536" loading="eager" fetchpriority="high" decoding="async">
+            <img class="greeting__hero-artwork" id="greetingHeroArtwork" src="guruimages/guru-greeting-hero.webp" alt="Sri Guru Granth Sahib Ji with Sri Guru Gobind Singh Ji and Sri Guru Nanak Dev Ji" width="1906" height="612" loading="eager" fetchpriority="high" decoding="async">
           </picture>
         </div>
 
