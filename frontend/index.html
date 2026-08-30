@@ -4631,7 +4631,7 @@
     }
 
     /* ════════════════════════════════════════════════════════════════
-       2. LIGHT MODE HERO ARTWORK — GRAND SCALE & FULL UNCROPPED TITLE
+       2. LIGHT MODE HERO ARTWORK — GRAND FULL SCALE & ZERO CLIPPING (MOBILE & TABLET DEFAULT)
        ════════════════════════════════════════════════════════════════ */
     html body .greeting__hero-banner {
       display: flex !important;
@@ -4643,12 +4643,13 @@
       margin-top: 0 !important;
       margin-bottom: 0 !important;
       overflow: visible !important;
-      padding: 0 0 8px 0 !important;
+      padding: 0 !important;
       box-sizing: border-box !important;
       justify-content: center !important;
       align-items: center !important;
-      -webkit-mask-image: none !important;
-      mask-image: none !important;
+      border: none !important;
+      outline: none !important;
+      box-shadow: none !important;
     }
     html body .greeting__hero-banner picture {
       width: 100% !important;
@@ -4657,18 +4658,24 @@
       justify-content: center !important;
       align-items: center !important;
       margin: 0 auto !important;
+      overflow: visible !important;
+      border: none !important;
     }
     html body .greeting__hero-artwork {
-      width: 100% !important;
-      max-width: 1140px !important;
+      width: 140% !important;
+      max-width: 1400px !important;
       height: auto !important;
-      aspect-ratio: 1906 / 650 !important;
+      aspect-ratio: 1906 / 825 !important;
       object-fit: contain !important;
+      object-position: center !important;
       display: block !important;
       margin: 0 auto !important;
       transform: none !important;
-      -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 89%, rgba(0,0,0,0.3) 94%, transparent 100%) !important;
-      mask-image: linear-gradient(to bottom, #000 0%, #000 89%, rgba(0,0,0,0.3) 94%, transparent 100%) !important;
+      border: none !important;
+      outline: none !important;
+      box-shadow: none !important;
+      -webkit-mask-image: none !important;
+      mask-image: none !important;
       image-rendering: -webkit-optimize-contrast !important;
       image-rendering: high-quality !important;
     }
