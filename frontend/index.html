@@ -4433,40 +4433,65 @@
       color: #94A3B8 !important;
     }
   </style>
-  <!-- ANHAD MASTER VISUAL OVERRIDES v10.63.0 -->
+  <!-- ANHAD MASTER VISUAL OVERRIDES v10.64.0 -->
   <style id="anhad-master-overrides">
     /* ════════════════════════════════════════════════════════════════
-       1. GREETING SECTION & LIGHT MODE HERO ARTWORK
+       1. GREETING SECTION — MINIMAL GAP WITH START NITNEM BAR
        ════════════════════════════════════════════════════════════════ */
     .greeting {
-      margin-top: -6px !important;
-      margin-bottom: 48px !important;
-      padding-bottom: 30px !important;
+      margin-top: -10px !important;
+      margin-bottom: 6px !important;
+      padding-bottom: 2px !important;
       position: relative !important;
       overflow: visible !important;
       width: 100% !important;
     }
     .greeting__content {
       padding-top: 0 !important;
+      padding-bottom: 0 !important;
       display: flex !important;
       flex-direction: column !important;
       align-items: center !important;
       width: 100% !important;
     }
+    .greeting__text {
+      margin-top: -4px !important;
+      margin-bottom: 0 !important;
+      padding-bottom: 0 !important;
+    }
+    .greeting__gurbani {
+      margin: 0 0 2px 0 !important;
+    }
+    .greeting__translation {
+      margin-top: 2px !important;
+      margin-bottom: 4px !important;
+      line-height: 1.35 !important;
+    }
 
-    /* Light Mode Hero Banner: Wider, centered, side-feathered */
+    /* Minimal gap before the Nitnem progress banner */
+    .progress-inline,
+    #nitnemTrackerCard,
+    .nitnem-progress {
+      margin-top: 4px !important;
+      margin-bottom: 14px !important;
+    }
+
+    /* ════════════════════════════════════════════════════════════════
+       2. LIGHT MODE HERO ARTWORK — WIDE, ENLARGED, CENTERED & 4-SIDED SEAMLESS BLEND
+       ════════════════════════════════════════════════════════════════ */
     .greeting__hero-banner {
       display: flex !important;
       width: 100% !important;
       max-width: 100% !important;
       margin: 0 auto !important;
       overflow: visible !important;
-      padding: 0 0 16px 0 !important;
+      padding: 0 !important;
       box-sizing: border-box !important;
       justify-content: center !important;
       align-items: center !important;
-      -webkit-mask-image: linear-gradient(to right, transparent 0%, rgba(0,0,0,0.85) 12%, black 20%, black 80%, rgba(0,0,0,0.85) 88%, transparent 100%) !important;
-      mask-image: linear-gradient(to right, transparent 0%, rgba(0,0,0,0.85) 12%, black 20%, black 80%, rgba(0,0,0,0.85) 88%, transparent 100%) !important;
+      /* 4-sided smooth vignette so top, bottom, left, right all dissolve into pure white */
+      -webkit-mask-image: radial-gradient(ellipse 92% 86% at 50% 50%, black 55%, rgba(0,0,0,0.85) 75%, transparent 100%) !important;
+      mask-image: radial-gradient(ellipse 92% 86% at 50% 50%, black 55%, rgba(0,0,0,0.85) 75%, transparent 100%) !important;
     }
     .greeting__hero-banner picture {
       width: 100% !important;
@@ -4475,9 +4500,9 @@
     }
     .greeting__hero-artwork {
       width: 100% !important;
-      max-width: 520px !important;
+      max-width: 100% !important;
       height: auto !important;
-      transform: scale(1.06) !important;
+      transform: scale(1.18) !important;
       object-fit: contain !important;
       display: block !important;
       margin: 0 auto !important;
@@ -4493,7 +4518,7 @@
     }
 
     /* ════════════════════════════════════════════════════════════════
-       2. DARK MODE GURU CAROUSEL & SLIDER ENGINE
+       3. DARK MODE GURU CAROUSEL — ENLARGED PORTRAITS & ARROWS REMOVED
        ════════════════════════════════════════════════════════════════ */
     .greeting__dark-carousel-container {
       display: none;
@@ -4506,16 +4531,25 @@
       flex-direction: column !important;
       align-items: center !important;
       justify-content: center !important;
-      gap: 12px !important;
+      gap: 10px !important;
       width: 100% !important;
-      padding: 8px 0 14px !important;
+      padding: 4px 0 8px !important;
+    }
+
+    /* Remove side arrow buttons in dark mode as requested */
+    .greeting__slider-arrow,
+    #guruSliderPrev,
+    #guruSliderNext {
+      display: none !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
     }
 
     .greeting__portrait-slider-wrap {
       position: relative !important;
       width: 100% !important;
-      max-width: 460px !important;
-      height: 210px !important;
+      max-width: 500px !important;
+      height: 230px !important;
       margin: 0 auto !important;
       display: flex !important;
       align-items: center !important;
@@ -4524,7 +4558,7 @@
     .greeting__portrait-slider {
       position: relative !important;
       width: 100% !important;
-      height: 210px !important;
+      height: 230px !important;
       overflow: visible !important;
       touch-action: pan-y !important;
     }
@@ -4537,15 +4571,15 @@
       visibility: visible !important;
     }
 
-    /* Slides: Absolute centering with margin offset */
+    /* Slides: Larger dimensions & centered offsets */
     .greeting__slide {
       position: absolute !important;
-      width: 126px !important;
-      height: 126px !important;
+      width: 156px !important;
+      height: 156px !important;
       top: 50% !important;
       left: 50% !important;
-      margin-top: -63px !important;
-      margin-left: -63px !important;
+      margin-top: -78px !important;
+      margin-left: -78px !important;
       display: flex !important;
       align-items: center !important;
       justify-content: center !important;
@@ -4562,52 +4596,52 @@
     .greeting__slide--active {
       opacity: 1 !important;
       visibility: visible !important;
-      transform: scale(1.24) translateX(0px) !important;
+      transform: scale(1.22) translateX(0px) !important;
       z-index: 10 !important;
       pointer-events: auto !important;
-      filter: drop-shadow(0 10px 28px rgba(212,148,58,0.65)) !important;
+      filter: drop-shadow(0 12px 32px rgba(212,148,58,0.7)) !important;
     }
     .greeting__slide--prev {
-      opacity: 0.78 !important;
+      opacity: 0.80 !important;
       visibility: visible !important;
-      transform: scale(0.82) translateX(-116px) !important;
+      transform: scale(0.82) translateX(-132px) !important;
       z-index: 6 !important;
       pointer-events: auto !important;
     }
     .greeting__slide--next {
-      opacity: 0.78 !important;
+      opacity: 0.80 !important;
       visibility: visible !important;
-      transform: scale(0.82) translateX(116px) !important;
+      transform: scale(0.82) translateX(132px) !important;
       z-index: 6 !important;
       pointer-events: auto !important;
     }
     .greeting__slide--far-prev {
-      opacity: 0.30 !important;
+      opacity: 0.32 !important;
       visibility: visible !important;
-      transform: scale(0.56) translateX(-186px) !important;
+      transform: scale(0.56) translateX(-210px) !important;
       z-index: 2 !important;
       pointer-events: auto !important;
     }
     .greeting__slide--far-next {
-      opacity: 0.30 !important;
+      opacity: 0.32 !important;
       visibility: visible !important;
-      transform: scale(0.56) translateX(186px) !important;
+      transform: scale(0.56) translateX(210px) !important;
       z-index: 2 !important;
       pointer-events: auto !important;
     }
 
-    /* Guru Circle Frame */
+    /* Guru Circle Frame — Enlarged */
     .greeting__guru-portrait {
-      width: 126px !important;
-      height: 126px !important;
-      min-width: 126px !important;
-      min-height: 126px !important;
-      max-width: 126px !important;
-      max-height: 126px !important;
+      width: 156px !important;
+      height: 156px !important;
+      min-width: 156px !important;
+      min-height: 156px !important;
+      max-width: 156px !important;
+      max-height: 156px !important;
       border-radius: 50% !important;
       overflow: hidden !important;
       border: 3.5px solid #D4943A !important;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.6), 0 0 24px rgba(212,148,58,0.4) !important;
+      box-shadow: 0 4px 22px rgba(0,0,0,0.65), 0 0 28px rgba(212,148,58,0.45) !important;
       background: #151515 !important;
       margin: 0 !important;
       padding: 0 !important;
@@ -4625,7 +4659,7 @@
     }
 
     /* ════════════════════════════════════════════════════════════════
-       3. GURPURAB CALENDAR CARD (EVENT CARD) CUSHION CLAY
+       4. GURPURAB CALENDAR CARD (EVENT CARD) CUSHION CLAY
        ════════════════════════════════════════════════════════════════ */
     .event-card,
     .event-card.event-today {
@@ -4656,9 +4690,8 @@
     }
 
     /* ════════════════════════════════════════════════════════════════
-       4. PRACTICE CARDS — ROCK SOLID CUSHION CLAY COLORS
+       5. PRACTICE CARDS — ROCK SOLID CUSHION CLAY COLORS
        ════════════════════════════════════════════════════════════════ */
-    /* Light Mode Practice Cards */
     .practice-card--nitnem {
       background: linear-gradient(165deg, #FFFDFB 0%, #FFEFD8 50%, #FFE5C0 100%) !important;
       border: 1px solid rgba(212,148,58,0.24) !important;
@@ -4723,7 +4756,7 @@
     }
 
     /* ════════════════════════════════════════════════════════════════
-       5. FLOATING MINI PLAYER + BOTTOM NAV GAP
+       6. FLOATING MINI PLAYER + BOTTOM NAV GAP
        ════════════════════════════════════════════════════════════════ */
     .mini-player--visible {
       bottom: calc(var(--nav-height, 84px) + var(--safe-bottom, 0px) + 20px) !important;
