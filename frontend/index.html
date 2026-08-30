@@ -3010,17 +3010,27 @@
     }
   
 
-        /* ─── SACRED DEVOTIONAL HERO ARTWORK INTEGRATION (REFINED) ─── */
+            /* ─── SACRED DEVOTIONAL HERO ARTWORK INTEGRATION (FINAL POLISH) ─── */
     .greeting {
-      margin-top: 4px !important;
-      margin-bottom: 24px !important;
-      padding: 0 16px !important;
+      margin-top: 6px !important;
+      margin-bottom: 20px !important;
+      padding: 0 12px !important;
       text-align: center !important;
+      position: relative !important;
+    }
+    .greeting__portrait-slider,
+    .greeting__guru-portrait,
+    .greeting__slide {
+      display: none !important;
+      visibility: hidden !important;
+      height: 0 !important;
+      margin: 0 !important;
+      padding: 0 !important;
     }
     .greeting__hero-banner {
       position: relative;
       width: 100%;
-      max-width: 660px;
+      max-width: 680px;
       margin: 0 auto 16px;
       display: flex;
       justify-content: center;
@@ -3037,7 +3047,7 @@
       object-fit: contain;
       display: block;
       transition: opacity 0.3s ease;
-      filter: contrast(1.03) saturate(1.02);
+      filter: contrast(1.02) saturate(1.02);
     }
     
     /* Dark Mode Seamless Dark-Surface Dissolve */
@@ -3063,12 +3073,12 @@
     
     /* Sacred Devotional Typography Hierarchy */
     .greeting__text {
-      max-width: 600px;
+      max-width: 620px;
       margin: 0 auto;
       padding: 0 8px;
     }
     .greeting__salutation {
-      font-size: 1.15rem !important;
+      font-size: 1.18rem !important;
       font-weight: 700 !important;
       letter-spacing: 0.6px !important;
       text-transform: uppercase !important;
@@ -3077,7 +3087,7 @@
     }
     .greeting__gurbani {
       font-family: var(--font-gurmukhi, 'Noto Sans Gurmukhi', serif) !important;
-      font-size: 1.25rem !important;
+      font-size: 1.32rem !important;
       line-height: 1.55 !important;
       font-weight: 600 !important;
       color: var(--text-primary, #1C1C1E) !important;
@@ -3088,11 +3098,11 @@
       color: #F5F5F7 !important;
     }
     .greeting__translation {
-      font-size: 0.94rem !important;
+      font-size: 0.96rem !important;
       line-height: 1.5 !important;
       color: var(--text-secondary, #636366) !important;
       font-style: italic !important;
-      max-width: 540px !important;
+      max-width: 560px !important;
       margin: 0 auto !important;
     }
     html.dark-mode .greeting__translation,
@@ -3102,22 +3112,22 @@
     
     @media (max-width: 480px) {
       .greeting {
-        margin-top: 0 !important;
-        margin-bottom: 18px !important;
-        padding: 0 12px !important;
+        margin-top: 2px !important;
+        margin-bottom: 16px !important;
+        padding: 0 10px !important;
       }
       .greeting__hero-banner {
         margin-bottom: 12px;
       }
       .greeting__salutation {
-        font-size: 1.05rem !important;
+        font-size: 1.08rem !important;
       }
       .greeting__gurbani {
-        font-size: 1.12rem !important;
+        font-size: 1.2rem !important;
         line-height: 1.45 !important;
       }
       .greeting__translation {
-        font-size: 0.88rem !important;
+        font-size: 0.9rem !important;
       }
     }
   </style>
@@ -3409,7 +3419,7 @@
     <!-- ════════════════════════════════════════════════════════════════════
          GREETING — iOS Large Title Inspired
     ════════════════════════════════════════════════════════════════════ -->
-    <section class="greeting" aria-label="Personal Greeting" style="position: relative; overflow: visible;">
+        <section class="greeting" aria-label="Personal Greeting">
       <div class="greeting__content">
         <!-- Sacred Devotional Hero Artwork: Sri Guru Gobind Singh Ji • Sri Guru Granth Sahib Ji • Sri Guru Nanak Dev Ji -->
         <div class="greeting__hero-banner" id="greetingHeroBanner" aria-label="Sacred Guru Darbar">
@@ -3423,9 +3433,9 @@
           </picture>
         </div>
 
-        <!-- Hidden container for Gurpurab campaign and background slider hooks to preserve JS compatibility -->
-        <div class="greeting__portrait-slider" id="guruSlider" data-campaign-state="a" style="display: none;">
-          <div class="greeting__slider-track" id="guruSliderTrack"></div>
+        <!-- Hidden container for campaign hooks -->
+        <div class="greeting__portrait-slider" id="guruSlider" data-campaign-state="a" style="display: none !important;">
+          <div class="greeting__slider-track" id="guruSliderTrack" style="display: none !important;"></div>
           <div class="greeting__announce" id="greetingAnnounce" hidden aria-hidden="true">
             <span class="greeting__announce-halo" aria-hidden="true"></span>
             <div class="greeting__announce-disc">
@@ -3440,9 +3450,9 @@
         
         <!-- Sacred Devotional Text & Dynamic Gurbani Pankti -->
         <div class="greeting__text">
-          <div class="greeting__salutation" id="greetingSalutation">Sri Guru Granth Sahib Ji</div>
-          <div class="greeting__gurbani" id="greetingGurbani" lang="pa">ਹਰਿ ਕੀ ਵਡਿਆਈ ਦੇਖਹੁ ਸੰਤਹੁ ਹਰਿ ਨਿਮਾਣਿਆ ਮਾਣੁ ਦੇਵਾਏ ॥</div>
-          <div class="greeting__translation" id="greetingTranslation" style="font-size: 0.92rem; opacity: 0.85; margin-top: 3px;">Behold the glorious greatness of the Lord, O Saints; the Lord bestows honor upon the dishonored.</div>
+          <div class="greeting__salutation" id="greetingSalutation">SRI GURU GRANTH SAHIB JI</div>
+          <div class="greeting__gurbani" id="greetingGurbani" lang="pa">ਏਕੋ ਨਾਮੁ ਹੁਕਮੁ ਹੈ ਨਾਨਕ ਸਤਿਗੁਰਿ ਦੀਆ ਬੁਝਾਇ ਜੀਉ ॥੫॥</div>
+          <div class="greeting__translation" id="greetingTranslation">The One Name is the Lord's Command; O Nanak, the True Guru has given me this understanding.</div>
 
           <div class="greeting__announce-text" id="greetingAnnounceText" hidden aria-hidden="true">
             <div class="greeting__announce-title" id="greetingAnnounceTitle"></div>

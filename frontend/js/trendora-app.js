@@ -354,53 +354,11 @@
     ],
 
     init() {
+      // Primary devotional artwork in greetingHeroBanner is now the authoritative hero visual.
+      // Duplicate circular portraits are disabled to maintain clean visual hierarchy.
       const track = document.getElementById('guruSliderTrack');
-      if (!track) {
-        console.log('[PortraitSlider] Track element not found, skipping init');
-        return;
-      }
-
-      // Check cached upcoming gurpurab in localStorage to set initial index synchronously
-      try {
-        const cachedStr = localStorage.getItem('anhad_cached_upcoming_gurpurab');
-        if (cachedStr) {
-          const cached = JSON.parse(cachedStr);
-          const event = cached.events && cached.events[0];
-          const guruId = getGuruIdFromEvent(event);
-          if (guruId) {
-            const idx = this._gurus.findIndex(g => g.id === guruId);
-            if (idx !== -1) {
-              this._currentIndex = idx;
-            }
-          }
-        }
-      } catch (e) {
-        console.warn('[PortraitSlider] Failed to parse cached upcoming gurpurab on init:', e);
-      }
-
-      // Only rebuild when the track isn't already showing this exact set.
-      // init() runs on every SPA arrival at Home (via refreshAll ->
-      // reviveHomepageVisuals), and the unconditional wipe below blanked all 11
-      // portraits and re-injected them as loading="lazy" images — a visible
-      // empty-then-repopulate on every return to Home.
-      const alreadyBuilt = track.children.length === this._gurus.length;
-      if (!alreadyBuilt) {
-        track.innerHTML = '';
-        this._gurus.forEach((guru, i) => {
-          const slide = document.createElement('div');
-          slide.className = 'greeting__slide';
-          slide.dataset.index = i;
-          slide.innerHTML = `
-            <div class="greeting__guru-portrait">
-              <img class="greeting__guru-img" src="${guru.img}" alt="${guru.name}" loading="lazy" style="object-position: ${guru.pos || 'center 25%'} !important;">
-            </div>
-          `;
-          track.appendChild(slide);
-        });
-      }
-
-      this._bindEvents();
-      this.update(true);
+      if (track) track.innerHTML = '';
+      this._syncText();
     },
 
     _bindEvents() {
@@ -517,21 +475,16 @@
     },
 
     _syncText() {
-      const guru = this._gurus[this._currentIndex];
       const salEl = document.getElementById('greetingSalutation');
       const gurEl = document.getElementById('greetingGurbani');
       const transEl = document.getElementById('greetingTranslation');
 
-      if (salEl) salEl.textContent = guru.name;
-      if (gurEl) {
-        if (guru.gurbani) {
-          gurEl.textContent = guru.gurbani;
-          if (transEl) transEl.textContent = guru.translation;
-        } else {
-          const tuk = Greeting.getTuk();
-          gurEl.textContent = tuk.gurmukhi;
-          if (transEl) transEl.textContent = tuk.translation;
-        }
+      if (salEl && (!salEl.textContent || salEl.textContent.trim() === '')) {
+        salEl.textContent = 'Sri Guru Granth Sahib Ji';
+      }
+      if (gurEl && (!gurEl.textContent || gurEl.textContent.trim() === '')) {
+        gurEl.textContent = 'ਏਕੋ ਨਾਮੁ ਹੁਕਮੁ ਹੈ ਨਾਨਕ ਸਤਿਗੁਰਿ ਦੀਆ ਬੁਝਾਇ ਜੀਉ ॥੫॥';
+        if (transEl) transEl.textContent = "The One Name is the Lord's Command; O Nanak, the True Guru has given me this understanding.";
       }
     }
   };
