@@ -250,6 +250,98 @@
     html {
       -webkit-overflow-scrolling: touch;
     }
+  
+    /* Carousel Wrap & Controls Positioning */
+    .greeting__portrait-slider-wrap {
+      position: relative !important;
+      width: 100% !important;
+      max-width: 440px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      margin: 0 auto !important;
+      padding: 0 10px !important;
+      box-sizing: border-box !important;
+    }
+
+    .greeting__portrait-slider {
+      position: relative !important;
+      width: 100% !important;
+      height: 150px !important;
+      overflow: visible !important;
+      touch-action: pan-y !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      user-select: none !important;
+      -webkit-user-select: none !important;
+      -webkit-user-drag: none !important;
+      cursor: grab !important;
+    }
+
+    .greeting__slider-arrow {
+      position: relative !important;
+      top: auto !important;
+      transform: none !important;
+      width: 40px !important;
+      height: 40px !important;
+      min-width: 40px !important;
+      min-height: 40px !important;
+      border-radius: 50% !important;
+      background: rgba(30, 30, 35, 0.85) !important;
+      backdrop-filter: blur(12px) !important;
+      -webkit-backdrop-filter: blur(12px) !important;
+      border: 1.5px solid rgba(212, 148, 58, 0.4) !important;
+      color: #D4943A !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      cursor: pointer !important;
+      z-index: 30 !important;
+      transition: all 0.2s ease !important;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5) !important;
+      padding: 0 !important;
+      flex-shrink: 0 !important;
+    }
+    .greeting__slider-arrow:hover {
+      background: rgba(212, 148, 58, 0.25) !important;
+      border-color: #D4943A !important;
+      transform: scale(1.1) !important;
+    }
+    .greeting__slider-arrow:active {
+      transform: scale(0.92) !important;
+    }
+    .greeting__slider-arrow--prev {
+      margin-right: 4px !important;
+      left: auto !important;
+    }
+    .greeting__slider-arrow--next {
+      margin-left: 4px !important;
+      right: auto !important;
+    }
+
+    /* 11-Dot Carousel Indicator */
+    .greeting__dots {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 6px !important;
+      margin: 6px 0 10px 0 !important;
+    }
+    .greeting__dot {
+      width: 7px !important;
+      height: 7px !important;
+      border-radius: 50% !important;
+      background: rgba(255, 255, 255, 0.2) !important;
+      cursor: pointer !important;
+      transition: all 0.25s ease !important;
+    }
+    .greeting__dot--active {
+      width: 22px !important;
+      border-radius: 10px !important;
+      background: #D4943A !important;
+      box-shadow: 0 0 10px rgba(212, 148, 58, 0.6) !important;
+    }
   </style>
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
@@ -3818,29 +3910,18 @@
             <button class="greeting__slider-arrow greeting__slider-arrow--prev" id="guruSliderPrev" aria-label="Previous Guru" type="button">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
             </button>
+
             <div class="greeting__portrait-slider" id="guruSlider" aria-label="Guru Portraits Carousel">
               <div class="greeting__slider-track" id="guruSliderTrack">
-                <div class="greeting__slide greeting__slide--active" data-guru="sggs">
-                  <div class="greeting__guru-portrait">
-                    <img src="guruimages/gurugranthsahebji.jpeg" alt="Sri Guru Granth Sahib Ji" style="object-position: center 25%;" loading="eager" draggable="false">
-                  </div>
-                </div>
-                <div class="greeting__slide greeting__slide--prev" data-guru="guru-gobind">
-                  <div class="greeting__guru-portrait">
-                    <img src="guruimages/gurugobindsinghsahebji.jpeg" alt="Sri Guru Gobind Singh Sahib Ji" style="object-position: center 25%;" loading="lazy" draggable="false">
-                  </div>
-                </div>
-                <div class="greeting__slide greeting__slide--next" data-guru="guru-nanak">
-                  <div class="greeting__guru-portrait">
-                    <img src="guruimages/gurunanakdevsahebji.jpeg" alt="Sri Guru Nanak Dev Sahib Ji" style="object-position: center 20%;" loading="lazy" draggable="false">
-                  </div>
-                </div>
               </div>
             </div>
+
             <button class="greeting__slider-arrow greeting__slider-arrow--next" id="guruSliderNext" aria-label="Next Guru" type="button">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
             </button>
           </div>
+
+          <div class="greeting__dots" id="guruDots" aria-label="Guru Selection Dots"></div>
           
           <div class="greeting__text" id="greetingText">
             <h2 class="greeting__salutation" id="greetingSalutation">Sri Guru Granth Sahib Ji</h2>

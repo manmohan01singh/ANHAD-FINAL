@@ -330,12 +330,11 @@
     return null;
   }
 
-    const PortraitSlider = {
+      const PortraitSlider = {
     _currentIndex: 10, // Default to Sri Guru Granth Sahib Ji
     _startX: 0,
     _startY: 0,
-    _isDragging: false,
-    _activePointerId: null,
+    _isMoving: false,
     _eventsBound: false,
     _gurus: [
       { id: 'guru-nanak', name: 'Sri Guru Nanak Dev Sahib Ji', img: 'guruimages/gurunanakdevsahebji.jpeg', pos: 'center 20%', colors: ['#ddcdb3', '#c9b89f', '#b8a88e'] },
@@ -366,115 +365,115 @@
           </div>
         `;
         slide.addEventListener('click', (e) => {
-          if (this._currentIndex !== i) {
-            e.stopPropagation();
-            this._currentIndex = i;
-            this.update();
-          }
+          e.stopPropagation();
+          this._currentIndex = i;
+          this.update();
         });
         track.appendChild(slide);
       });
+
+      this._renderDots();
       this._bindEvents();
       this.update(true);
     },
 
-    _bindEvents() {
-      if (this._eventsBound) return;
-      const slider = document.getElementById('guruSlider');
-      if (!slider) return;
-      this._eventsBound = true;
+    _renderDots() {
+      const dotsContainer = document.getElementById('guruDots');
+      if (!dotsContainer) return;
+      dotsContainer.innerHTML = '';
+      this._gurus.forEach((_, i) => {
+        const dot = document.createElement('span');
+        dot.className = `greeting__dot ${i === this._currentIndex ? 'greeting__dot--active' : ''}`;
+        dot.setAttribute('data-index', i);
+        dot.addEventListener('click', (e) => {
+          e.stopPropagation();
+          this._currentIndex = i;
+          this.update();
+        });
+        dotsContainer.appendChild(dot);
+      });
+    },
 
-      // Wire Prev/Next arrow buttons
+    _bindEvents() {
+      const slider = document.getElementById('guruSlider');
+
+      // Re-bind arrow buttons directly on every call
       const prevBtn = document.getElementById('guruSliderPrev');
       const nextBtn = document.getElementById('guruSliderNext');
       if (prevBtn) {
-        prevBtn.addEventListener('click', (e) => {
-          e.preventDefault();
-          e.stopPropagation();
+        prevBtn.onclick = (e) => {
+          if (e) { e.preventDefault(); e.stopPropagation(); }
           this.prev();
-        });
+        };
       }
       if (nextBtn) {
-        nextBtn.addEventListener('click', (e) => {
-          e.preventDefault();
-          e.stopPropagation();
+        nextBtn.onclick = (e) => {
+          if (e) { e.preventDefault(); e.stopPropagation(); }
           this.next();
-        });
+        };
       }
 
-      const handleStart = (clientX, clientY, pointerId = null) => {
-        this._startX = clientX;
-        this._startY = clientY;
-        this._isDragging = true;
-        this._activePointerId = pointerId;
-      };
+      if (this._eventsBound || !slider) return;
+      this._eventsBound = true;
 
-      const handleMove = (clientX, clientY, e = null) => {
-        if (!this._isDragging) return;
-        const deltaX = clientX - this._startX;
-        const deltaY = clientY - this._startY;
+      // Touch Events (Mobile/Tablet)
+      slider.addEventListener('touchstart', (e) => {
+        if (!e.touches || e.touches.length === 0) return;
+        this._startX = e.touches[0].clientX;
+        this._startY = e.touches[0].clientY;
+        this._isMoving = true;
+      }, { passive: true });
 
-        // Trigger slide if horizontal swipe exceeds 20px
-        if (Math.abs(deltaX) > 20 && Math.abs(deltaX) > Math.abs(deltaY)) {
-          if (e && e.cancelable) e.preventDefault();
+      slider.addEventListener('touchmove', (e) => {
+        if (!this._isMoving || !e.touches || e.touches.length === 0) return;
+        const currentX = e.touches[0].clientX;
+        const currentY = e.touches[0].clientY;
+        const deltaX = currentX - this._startX;
+        const deltaY = currentY - this._startY;
+
+        if (Math.abs(deltaX) > 18 && Math.abs(deltaX) > Math.abs(deltaY)) {
           if (deltaX < 0) {
             this.next();
           } else {
             this.prev();
           }
-          this._startX = clientX;
-          this._startY = clientY;
+          this._startX = currentX;
+          this._startY = currentY;
+          this._isMoving = false;
         }
-      };
+      }, { passive: true });
 
-      const handleEnd = () => {
-        this._isDragging = false;
-        this._activePointerId = null;
-      };
+      slider.addEventListener('touchend', () => {
+        this._isMoving = false;
+      }, { passive: true });
 
-      // Unified Pointer Events
-      if (window.PointerEvent) {
-        slider.addEventListener('pointerdown', (e) => {
-          handleStart(e.clientX, e.clientY, e.pointerId);
-          try { slider.setPointerCapture(e.pointerId); } catch(err) {}
-        });
-        slider.addEventListener('pointermove', (e) => {
-          if (this._isDragging && (this._activePointerId === null || e.pointerId === this._activePointerId)) {
-            handleMove(e.clientX, e.clientY, e);
-          }
-        });
-        slider.addEventListener('pointerup', (e) => {
-          try { slider.releasePointerCapture(e.pointerId); } catch(err) {}
-          handleEnd();
-        });
-        slider.addEventListener('pointercancel', (e) => {
-          try { slider.releasePointerCapture(e.pointerId); } catch(err) {}
-          handleEnd();
-        });
-      } else {
-        // Touch fallback
-        slider.addEventListener('touchstart', (e) => {
-          if (e.touches && e.touches.length > 0) {
-            handleStart(e.touches[0].clientX, e.touches[0].clientY);
-          }
-        }, { passive: true });
-        slider.addEventListener('touchmove', (e) => {
-          if (e.touches && e.touches.length > 0) {
-            handleMove(e.touches[0].clientX, e.touches[0].clientY, e);
-          }
-        }, { passive: true });
-        slider.addEventListener('touchend', handleEnd, { passive: true });
-        slider.addEventListener('touchcancel', handleEnd, { passive: true });
+      // Mouse Events (Desktop)
+      slider.addEventListener('mousedown', (e) => {
+        this._startX = e.clientX;
+        this._startY = e.clientY;
+        this._isMoving = true;
+      });
 
-        // Mouse fallback
-        slider.addEventListener('mousedown', (e) => {
-          handleStart(e.clientX, e.clientY);
-        });
-        window.addEventListener('mousemove', (e) => {
-          handleMove(e.clientX, e.clientY, e);
-        });
-        window.addEventListener('mouseup', handleEnd);
-      }
+      window.addEventListener('mousemove', (e) => {
+        if (!this._isMoving) return;
+        const deltaX = e.clientX - this._startX;
+        const deltaY = e.clientY - this._startY;
+
+        if (Math.abs(deltaX) > 18 && Math.abs(deltaX) > Math.abs(deltaY)) {
+          if (deltaX < 0) {
+            this.next();
+          } else {
+            this.prev();
+          }
+          this._startX = e.clientX;
+          this._startY = e.clientY;
+          this._isMoving = false;
+        }
+      });
+
+      window.addEventListener('mouseup', () => {
+        this._isMoving = false;
+      });
     },
 
     next() {
@@ -494,7 +493,7 @@
       } else if (typeof idOrEvent === 'string') {
         guruId = getGuruIdFromEvent({ id: idOrEvent });
         if (!guruId) {
-          guruId = idOrEvent; // fallback
+          guruId = idOrEvent;
         }
       }
       if (!guruId) return;
@@ -514,7 +513,6 @@
         slide.classList.remove('greeting__slide--active', 'greeting__slide--prev', 'greeting__slide--next', 'greeting__slide--far-prev', 'greeting__slide--far-next');
 
         let diff = i - this._currentIndex;
-        // Handle wrap around
         if (diff < -total / 2) diff += total;
         if (diff > total / 2) diff -= total;
 
@@ -523,6 +521,16 @@
         else if (diff === 1) slide.classList.add('greeting__slide--next');
         else if (diff < -1) slide.classList.add('greeting__slide--far-prev');
         else if (diff > 1) slide.classList.add('greeting__slide--far-next');
+      });
+
+      // Update dots
+      const dots = document.querySelectorAll('.greeting__dot');
+      dots.forEach((dot, i) => {
+        if (i === this._currentIndex) {
+          dot.classList.add('greeting__dot--active');
+        } else {
+          dot.classList.remove('greeting__dot--active');
+        }
       });
 
       const current = this._gurus[this._currentIndex];
