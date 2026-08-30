@@ -652,7 +652,12 @@ function _anhadHomepageDataInit() {
       if (themeLabel) themeLabel.textContent = 'Dark Mode';
     }
     if (themeIcon) {
-      themeIcon.textContent = mode === 'auto' ? '✨' : (isDark ? '☀️' : '🌙');
+      if (themeIcon.tagName && themeIcon.tagName.toLowerCase() === 'svg') {
+        const iconHref = isDark ? '#icon-sun-theme' : '#icon-moon-theme';
+        themeIcon.innerHTML = `<use href="${iconHref}"/>`;
+      } else {
+        themeIcon.textContent = mode === 'auto' ? '✨' : (isDark ? '☀️' : '🌙');
+      }
     }
   }
 

@@ -113,6 +113,9 @@
             _themeIcons.forEach(icon => {
                 if (icon.tagName === 'SPAN') {
                     icon.textContent = iconText;
+                } else if (icon.tagName && icon.tagName.toLowerCase() === 'svg') {
+                    const href = (effectiveTheme === 'dark' || theme === 'dark') ? '#icon-sun-theme' : '#icon-moon-theme';
+                    icon.innerHTML = `<use href="${href}"/>`;
                 } else {
                     icon.className = iconClass;
                 }
