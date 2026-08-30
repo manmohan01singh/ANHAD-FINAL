@@ -718,7 +718,7 @@
 
 
   /* ─────────────────────────────────────────────────────────────────────────────
-     4. HOMEPAGE HEADER (.home-header) — TIED TO 1200px CENTRAL CONTENT GRID
+     4. HOMEPAGE HEADER (.home-header) — TIED TO 1140px CENTRAL CONTENT GRID
      ───────────────────────────────────────────────────────────────────────────── */
   .home-header,
   .header.home-header {
@@ -730,7 +730,7 @@
     border-bottom: 1px solid rgba(0, 0, 0, 0.06) !important;
     background: transparent !important;
     width: 100% !important;
-    max-width: 1200px !important;
+    max-width: 1140px !important;
     min-height: 52px !important;
     position: relative !important;
     box-sizing: border-box !important;
@@ -826,7 +826,7 @@
   .greeting {
     text-align: center !important;
     margin: 0 auto 0 auto !important;
-    max-width: 1200px !important;
+    max-width: 1140px !important;
     width: 100% !important;
     box-sizing: border-box !important;
   }
@@ -844,10 +844,10 @@
     align-items: center !important;
     justify-content: center !important;
     width: 100% !important;
-    max-width: 1200px !important;
+    max-width: 1140px !important;
     margin: 0 auto 0 auto !important;
     padding: 0 !important;
-    overflow: visible !important;
+    overflow: hidden !important;
   }
 
   .greeting__hero-banner picture {
@@ -861,16 +861,17 @@
 
   .greeting__hero-artwork {
     width: 100% !important;
-    max-width: 1180px !important;
+    max-width: 1140px !important;
     height: auto !important;
-    aspect-ratio: 1906 / 650 !important;
-    object-fit: contain !important;
+    aspect-ratio: 1906 / 525 !important;
+    object-fit: cover !important;
+    object-position: center top !important;
     display: block !important;
     margin: 0 auto !important;
     transform: none !important;
-    filter: drop-shadow(0 8px 24px rgba(212, 148, 58, 0.08)) !important;
-    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 86%, rgba(0,0,0,0.35) 93%, transparent 100%) !important;
-    mask-image: linear-gradient(to bottom, #000 0%, #000 86%, rgba(0,0,0,0.35) 93%, transparent 100%) !important;
+    filter: drop-shadow(0 6px 20px rgba(212, 148, 58, 0.08)) !important;
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 74%, rgba(0,0,0,0.3) 83%, transparent 95%) !important;
+    mask-image: linear-gradient(to bottom, #000 0%, #000 74%, rgba(0,0,0,0.3) 83%, transparent 95%) !important;
   }
 
   .greeting__portrait-slider {
@@ -918,8 +919,8 @@
      ───────────────────────────────────────────────────────────────────────────── */
   .progress-inline {
     width: 100% !important;
-    max-width: 1200px !important;
-    margin: 24px auto 36px auto !important;
+    max-width: 1140px !important;
+    margin: 20px auto 30px auto !important;
     padding: 12px 22px !important;
     border-radius: 18px !important;
     background: rgba(255, 255, 255, 0.9) !important;
@@ -962,9 +963,9 @@
      6. HERO CAROUSEL (4 CARDS SYMMETRIC GRID)
      ───────────────────────────────────────────────────────────────────────────── */
   .hero-carousel {
-    margin: 0 auto 44px auto !important;
+    margin: 0 auto 36px auto !important;
     width: 100% !important;
-    max-width: 1200px !important;
+    max-width: 1140px !important;
   }
 
   .hero-carousel__track {
@@ -1086,8 +1087,8 @@
      ───────────────────────────────────────────────────────────────────────────── */
   .event-card {
     width: 100% !important;
-    max-width: 860px !important;
-    margin: 16px auto 32px auto !important;
+    max-width: 1140px !important;
+    margin: 0 auto 36px auto !important;
     padding: 24px 30px !important;
     border-radius: 24px !important;
     background: linear-gradient(135deg, #FFFDF8 0%, #FFF4E3 45%, #FEEAD0 100%) !important;
@@ -1280,8 +1281,10 @@
      8. YOUR PRACTICE GRID (3 COLUMNS SACRED CUSHION CLAYMORPHISM)
      ───────────────────────────────────────────────────────────────────────────── */
   .section-header {
-    margin: 32px 0 16px 0 !important;
+    margin: 32px auto 16px auto !important;
     width: 100% !important;
+    max-width: 1140px !important;
+    box-sizing: border-box !important;
   }
   .section-header__title {
     font-size: 1.35rem !important;
@@ -1293,8 +1296,9 @@
     display: grid !important;
     grid-template-columns: repeat(3, 1fr) !important;
     gap: 20px !important;
-    margin-bottom: 40px !important;
+    margin: 0 auto 40px auto !important;
     width: 100% !important;
+    max-width: 1140px !important;
     box-sizing: border-box !important;
   }
 
@@ -1378,12 +1382,14 @@
   /* ─────────────────────────────────────────────────────────────────────────────
      9. QUICK ACCESS GRID (4 COLUMNS SACRED CUSHION CLAYMORPHISM)
      ───────────────────────────────────────────────────────────────────────────── */
-  .quick-access-grid {
+  .quick-access-grid,
+  .quick-grid {
     display: grid !important;
     grid-template-columns: repeat(4, 1fr) !important;
     gap: 16px !important;
-    margin-bottom: 48px !important;
+    margin: 0 auto 48px auto !important;
     width: 100% !important;
+    max-width: 1140px !important;
     box-sizing: border-box !important;
   }
 
