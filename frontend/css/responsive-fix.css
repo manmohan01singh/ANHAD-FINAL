@@ -187,6 +187,7 @@ html.dark-mode .greeting__hero-banner,
     display: none !important;
 }
 
+#greetingDarkCarousel,
 html.dark-mode .greeting__dark-carousel-container,
 [data-theme="dark"] .greeting__dark-carousel-container,
 [data-time-of-day="night"] .greeting__dark-carousel-container {
@@ -199,7 +200,10 @@ html.dark-mode .greeting__dark-carousel-container,
     margin-top: -10px !important;
     margin-bottom: 0 !important;
     position: relative !important;
-    transform: translateX(25px) !important;
+    left: 0 !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    transform: none !important;
 }
 
 /* Portrait Slider Container */
