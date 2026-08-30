@@ -4631,7 +4631,7 @@
     }
 
     /* ════════════════════════════════════════════════════════════════
-       2. LIGHT MODE HERO ARTWORK — GRAND FULL SCALE & ZERO CLIPPING (MOBILE & TABLET DEFAULT)
+       2. LIGHT MODE HERO ARTWORK — GRAND FULL SCALE, MOVED UP & SOFT BOTTOM FADE
        ════════════════════════════════════════════════════════════════ */
     html body .greeting__hero-banner {
       display: flex !important;
@@ -4640,7 +4640,7 @@
       max-width: 100% !important;
       margin-left: auto !important;
       margin-right: auto !important;
-      margin-top: 0 !important;
+      margin-top: -18px !important; /* Move image up to equalize padding from header and bottom */
       margin-bottom: 0 !important;
       overflow: visible !important;
       padding: 0 !important;
@@ -4674,8 +4674,8 @@
       border: none !important;
       outline: none !important;
       box-shadow: none !important;
-      -webkit-mask-image: none !important;
-      mask-image: none !important;
+      -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 87%, rgba(0,0,0,0.15) 93%, transparent 98%) !important;
+      mask-image: linear-gradient(to bottom, #000 0%, #000 87%, rgba(0,0,0,0.15) 93%, transparent 98%) !important;
       image-rendering: -webkit-optimize-contrast !important;
       image-rendering: high-quality !important;
     }
