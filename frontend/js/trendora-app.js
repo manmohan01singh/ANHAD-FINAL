@@ -267,17 +267,12 @@
       return tuks[randomIndex];
     },
 
-    update() {
-      const salEl = document.getElementById('greetingSalutation');
-      const gurEl = document.getElementById('greetingGurbani');
-      const transEl = document.getElementById('greetingTranslation');
-      if (salEl) salEl.textContent = 'SAT SRI AKAL';
-      if (gurEl) gurEl.textContent = 'ਏ ਮਨ ਹਰਿ ਜੀ ਧਿਆਇ ਤੂ ਇਕ ਮਨਿ ਇਕ ਚਿਤਿ ਭਾਇ';
-      if (transEl) transEl.textContent = 'O mind, meditate on the Dear Lord, with single-minded consciousness and loving focus.';
+        update() {
       if (typeof window.syncGreetingHeroArtwork === 'function') {
         window.syncGreetingHeroArtwork();
       }
     }
+  };
   };
 
   // ═══════════════════════════════════════════════════════════════════════════

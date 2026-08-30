@@ -2872,7 +2872,7 @@
   </style>
 
   <!-- AUTHORITATIVE DESKTOP RESPONSIVE & SYMMETRY ENGINE (Last in <head> for priority) -->
-  <link rel="stylesheet" href="css/desktop-responsive.css?v=26">
+  <link rel="stylesheet" href="css/desktop-responsive.css?v=27">
 
   <!-- ═══════════════════════════════════════════════════════════════════════
        FORENSIC REMEDIATION: SVG Semantic Visibility & Layer Stability
@@ -3010,17 +3010,18 @@
     }
   
 
-                /* ─── SACRED DEVOTIONAL HERO ARTWORK (PERFECT HARMONIZATION) ─── */
+                    /* ─── SACRED DEVOTIONAL HERO ARTWORK (EXPANDED MAJESTIC EDITION) ─── */
     .greeting {
       margin-top: 8px !important;
-      margin-bottom: 24px !important;
-      padding: 0 12px !important;
+      margin-bottom: 20px !important;
+      padding: 0 8px !important;
       text-align: center !important;
       position: relative !important;
     }
     .greeting__portrait-slider,
     .greeting__guru-portrait,
     .greeting__slide,
+    .greeting__text,
     #guruSliderTrack,
     #guruSlider {
       display: none !important;
@@ -3036,15 +3037,15 @@
     .greeting__hero-banner {
       position: relative;
       width: 100%;
-      max-width: 720px;
-      margin: 0 auto 18px;
+      max-width: 780px;
+      margin: 0 auto;
       display: flex;
       justify-content: center;
       align-items: center;
       overflow: hidden;
       /* 4-sided ultra-soft natural gradient dissolve into cream/ivory background */
-      mask-image: radial-gradient(ellipse 92% 88% at 50% 50%, #000000 62%, rgba(0,0,0,0.7) 78%, transparent 100%);
-      -webkit-mask-image: radial-gradient(ellipse 92% 88% at 50% 50%, #000000 62%, rgba(0,0,0,0.7) 78%, transparent 100%);
+      mask-image: radial-gradient(ellipse 94% 90% at 50% 50%, #000000 68%, rgba(0,0,0,0.7) 84%, transparent 100%);
+      -webkit-mask-image: radial-gradient(ellipse 94% 90% at 50% 50%, #000000 68%, rgba(0,0,0,0.7) 84%, transparent 100%);
     }
     .greeting__hero-artwork {
       width: 100%;
@@ -3056,72 +3057,23 @@
       filter: contrast(1.02) saturate(1.02);
     }
     
-    /* Dark Mode Seamless Dark-Surface Dissolve */
+    /* Dark Mode Seamless Dark-Surface Dissolve (Expanded) */
     html.dark-mode .greeting__hero-banner,
     [data-theme="dark"] .greeting__hero-banner,
     [data-time-of-day="night"] .greeting__hero-banner {
-      mask-image: radial-gradient(ellipse 90% 86% at 50% 50%, #000000 56%, rgba(0,0,0,0.55) 76%, transparent 100%);
-      -webkit-mask-image: radial-gradient(ellipse 90% 86% at 50% 50%, #000000 56%, rgba(0,0,0,0.55) 76%, transparent 100%);
-      filter: drop-shadow(0 6px 28px rgba(212, 148, 58, 0.16));
-    }
-    
-    /* Sacred Devotional Typography Hierarchy */
-    .greeting__text {
-      max-width: 640px;
-      margin: 0 auto;
-      padding: 0 8px;
-    }
-    .greeting__salutation {
-      font-size: 1.18rem !important;
-      font-weight: 700 !important;
-      letter-spacing: 0.8px !important;
-      text-transform: uppercase !important;
-      color: var(--anhad-gold, #D4943A) !important;
-      margin-bottom: 8px !important;
-    }
-    .greeting__gurbani {
-      font-family: var(--font-gurmukhi, 'Noto Sans Gurmukhi', serif) !important;
-      font-size: 1.38rem !important;
-      line-height: 1.55 !important;
-      font-weight: 600 !important;
-      color: var(--text-primary, #1C1C1E) !important;
-      margin-bottom: 8px !important;
-    }
-    html.dark-mode .greeting__gurbani,
-    [data-theme="dark"] .greeting__gurbani {
-      color: #F5F5F7 !important;
-    }
-    .greeting__translation {
-      font-size: 0.98rem !important;
-      line-height: 1.5 !important;
-      color: var(--text-secondary, #636366) !important;
-      font-style: italic !important;
-      max-width: 580px !important;
-      margin: 0 auto !important;
-    }
-    html.dark-mode .greeting__translation,
-    [data-theme="dark"] .greeting__translation {
-      color: #A1A1A6 !important;
+      mask-image: radial-gradient(ellipse 92% 88% at 50% 50%, #000000 62%, rgba(0,0,0,0.6) 82%, transparent 100%);
+      -webkit-mask-image: radial-gradient(ellipse 92% 88% at 50% 50%, #000000 62%, rgba(0,0,0,0.6) 82%, transparent 100%);
+      filter: drop-shadow(0 6px 32px rgba(212, 148, 58, 0.2));
     }
     
     @media (max-width: 480px) {
       .greeting {
         margin-top: 4px !important;
-        margin-bottom: 18px !important;
-        padding: 0 10px !important;
+        margin-bottom: 16px !important;
+        padding: 0 4px !important;
       }
       .greeting__hero-banner {
-        margin-bottom: 14px;
-      }
-      .greeting__salutation {
-        font-size: 1.08rem !important;
-      }
-      .greeting__gurbani {
-        font-size: 1.22rem !important;
-        line-height: 1.45 !important;
-      }
-      .greeting__translation {
-        font-size: 0.92rem !important;
+        max-width: 100% !important;
       }
     }
   </style>
@@ -3413,7 +3365,7 @@
     <!-- ════════════════════════════════════════════════════════════════════
          GREETING — iOS Large Title Inspired
     ════════════════════════════════════════════════════════════════════ -->
-            <section class="greeting" aria-label="Personal Greeting">
+                <section class="greeting" aria-label="Personal Greeting">
       <div class="greeting__content">
         <!-- Sacred Devotional Hero Artwork: Sri Guru Gobind Singh Ji • Sri Guru Granth Sahib Ji • Sri Guru Nanak Dev Ji -->
         <div class="greeting__hero-banner" id="greetingHeroBanner" aria-label="Sacred Guru Darbar">
@@ -3425,13 +3377,6 @@
                  width="1024" height="516"
                  loading="eager" fetchpriority="high" decoding="async">
           </picture>
-        </div>
-
-        <!-- Sacred Devotional Text & Dynamic Gurbani Pankti -->
-        <div class="greeting__text">
-          <div class="greeting__salutation" id="greetingSalutation">SAT SRI AKAL</div>
-          <div class="greeting__gurbani" id="greetingGurbani" lang="pa">ਏ ਮਨ ਹਰਿ ਜੀ ਧਿਆਇ ਤੂ ਇਕ ਮਨਿ ਇਕ ਚਿਤਿ ਭਾਇ</div>
-          <div class="greeting__translation" id="greetingTranslation">O mind, meditate on the Dear Lord, with single-minded consciousness and loving focus.</div>
         </div>
       </div>
     </section>
@@ -3873,9 +3818,9 @@
   <script src="js/desktop-ui-fixes.js?v=1.0.0" defer></script>
   
   <!-- Core UI logic -->
-  <script src="js/trendora-app.js?v=4.0.4" defer></script>
-  <script src="js/homepage-data.js?v=2" defer></script>
-  <script src="pwa-register.js?v=4.0.4" defer></script>
+  <script src="js/trendora-app.js?v=4.0.6" defer></script>
+  <script src="js/homepage-data.js?v=3.0.1" defer></script>
+  <script src="pwa-register.js?v=4.0.6" defer></script>
   <script src="js/update-controller.js" defer></script>
 
   <!-- LAZY→IDLE LOAD: Audio engine (97KB) — preloaded via <head> link, fetched during
