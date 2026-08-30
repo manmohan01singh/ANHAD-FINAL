@@ -846,8 +846,8 @@
     margin: 0 auto !important;
     transform: none !important;
     filter: drop-shadow(0 6px 20px rgba(212, 148, 58, 0.08)) !important;
-    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 52%, rgba(0,0,0,0.1) 56%, transparent 58%) !important;
-    mask-image: linear-gradient(to bottom, #000 0%, #000 52%, rgba(0,0,0,0.1) 56%, transparent 58%) !important;
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 64%, rgba(0,0,0,0.15) 67%, transparent 68.5%) !important;
+    mask-image: linear-gradient(to bottom, #000 0%, #000 64%, rgba(0,0,0,0.15) 67%, transparent 68.5%) !important;
   }
 
   .greeting__portrait-slider {
