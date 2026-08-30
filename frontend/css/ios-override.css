@@ -443,6 +443,28 @@ body {
   filter: none;
 }
 
+/* ── GLOBAL RING ICON CENTERING FIX ── */
+.practice-card__ring-icon {
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  inset: auto !important;
+  width: 28px !important;
+  height: 28px !important;
+  z-index: 10 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  pointer-events: none !important;
+}
+.practice-card__ring-icon svg {
+  width: 22px !important;
+  height: 22px !important;
+  display: block !important;
+  flex-shrink: 0 !important;
+}
+
 /* ── Quick Access Cards — SQUARCLE CLAYMORPHISM ── */
 .quick-card {
   border-radius: 22px;

@@ -460,7 +460,7 @@
       position: relative !important;
       width: 100% !important;
       max-width: none !important;
-      margin: 0 auto !important;
+      margin: -14px auto 0 auto !important;
       display: flex !important;
       justify-content: center !important;
       align-items: center !important;
@@ -487,8 +487,8 @@
       }
     }
     .greeting__hero-artwork {
-      width: 120% !important;
-      max-width: 1200px !important;
+      width: 135% !important;
+      max-width: 1400px !important;
       height: auto !important;
       aspect-ratio: 1906 / 825 !important;
       object-fit: contain !important;
@@ -500,7 +500,7 @@
     }
     @media (max-width: 768px) {
       .greeting__hero-artwork {
-        width: 125% !important;
+        width: 140% !important;
       }
     }
 
@@ -4140,11 +4140,12 @@
       text-align: center;
     }
     .greeting__salutation {
-      font-size: 1.2rem;
-      font-weight: 700;
-      color: #D4943A;
-      margin-bottom: 4px;
-      letter-spacing: 0.2px;
+      font-size: 1.45rem !important;
+      font-weight: 800 !important;
+      color: #D4943A !important;
+      margin-bottom: 4px !important;
+      letter-spacing: 0.4px !important;
+      text-shadow: 0 1px 8px rgba(212, 148, 58, 0.25) !important;
     }
     .greeting__gurbani {
       font-family: 'Noto Sans Gurmukhi', sans-serif;
@@ -4306,8 +4307,9 @@
       top: 0 !important;
       left: 0 !important;
       transform: rotate(-90deg) !important;
-      transform-origin: center center !important;
+      transform-origin: 50% 50% !important;
       pointer-events: none !important;
+      z-index: 1 !important;
     }
     .practice-card__ring-bg {
       stroke: rgba(0, 0, 0, 0.05) !important;
@@ -4324,41 +4326,44 @@
     .practice-card--sehaj .practice-card__ring-fill { stroke: #9333EA !important; }
     .practice-card--hukam .practice-card__ring-fill { stroke: #EA580C !important; }
 
+    /* Icon sits perfectly centred above the SVG ring */
     .practice-card__ring-icon {
       position: absolute !important;
-      inset: 0 !important;
-      width: 100% !important;
-      height: 100% !important;
-      z-index: 5 !important;
+      top: 50% !important;
+      left: 50% !important;
+      transform: translate(-50%, -50%) !important;
+      z-index: 10 !important;
       display: flex !important;
       align-items: center !important;
       justify-content: center !important;
       pointer-events: none !important;
+      width: 28px !important;
+      height: 28px !important;
       margin: 0 !important;
       padding: 0 !important;
     }
     .practice-card__ring-icon svg {
-      width: 24px !important;
-      height: 24px !important;
+      width: 22px !important;
+      height: 22px !important;
       display: block !important;
       fill: none !important;
       stroke: currentColor !important;
       stroke-width: 2 !important;
       stroke-linecap: round !important;
       stroke-linejoin: round !important;
-      margin: 0 auto !important;
+      flex-shrink: 0 !important;
     }
     .practice-card--nitnem .practice-card__ring-icon svg {
       color: #D4A84B !important;
-      filter: drop-shadow(0 2px 4px rgba(212, 168, 75, 0.35)) !important;
+      filter: drop-shadow(0 1px 3px rgba(212, 168, 75, 0.40)) !important;
     }
     .practice-card--sehaj .practice-card__ring-icon svg {
       color: #9333EA !important;
-      filter: drop-shadow(0 2px 4px rgba(147, 51, 234, 0.30)) !important;
+      filter: drop-shadow(0 1px 3px rgba(147, 51, 234, 0.35)) !important;
     }
     .practice-card--hukam .practice-card__ring-icon svg {
       color: #EA580C !important;
-      filter: drop-shadow(0 2px 4px rgba(234, 88, 12, 0.30)) !important;
+      filter: drop-shadow(0 1px 3px rgba(234, 88, 12, 0.35)) !important;
     }
     .practice-card__title {
       font-weight: 700 !important;
@@ -4530,7 +4535,7 @@
       color: #94A3B8 !important;
     }
   </style>
-  <!-- ANHAD MASTER VISUAL OVERRIDES v10.78.0 -->
+  <!-- ANHAD MASTER VISUAL OVERRIDES v10.79.0 -->
   <style id="anhad-master-overrides">
     /* ════════════════════════════════════════════════════════════════
        1. GREETING SECTION & CLEAN SPACING BEFORE NITNEM BAR
@@ -4795,13 +4800,13 @@
     }
 
     /* ════════════════════════════════════════════════════════════════
-       4. GURPURAB CALENDAR CARD (EVENT CARD) — WARM COMPACT CUSHION CLAY
+       4. GURPURAB CALENDAR CARD (EVENT CARD) — ENLARGED GURU AVATAR & UNIFIED PILLS
        ════════════════════════════════════════════════════════════════ */
     html body .event-card,
     html body .event-card.event-today,
     html[data-theme-mode] body .event-card {
-      padding: 12px 16px !important;
-      border-radius: 22px !important;
+      padding: 14px 18px !important;
+      border-radius: 24px !important;
       border: 1px solid rgba(212, 168, 58, 0.18) !important;
       background: linear-gradient(135deg, #FFFFFF 0%, #FFFDF8 45%, #FFF2D6 100%) !important;
       box-shadow:
@@ -4817,10 +4822,11 @@
       display: flex !important;
       align-items: center !important;
       justify-content: space-between !important;
-      gap: 12px !important;
+      gap: 14px !important;
     }
     html body .event-card__info {
       flex: 1 !important;
+      min-width: 0 !important;
     }
     html body .event-card__eyebrow {
       font-size: 0.68rem !important;
@@ -4831,54 +4837,75 @@
       margin-bottom: 2px !important;
     }
     html body .event-card__title {
-      font-size: 0.98rem !important;
+      font-size: 1.02rem !important;
       font-weight: 700 !important;
-      line-height: 1.24 !important;
+      line-height: 1.25 !important;
       letter-spacing: -0.1px !important;
       color: #1C1C1E !important;
-      margin: 2px 0 6px 0 !important;
+      margin: 2px 0 8px 0 !important;
     }
+
+    /* UNIFIED BOTTOM ROW PILLS & BUTTONS (SAME HEIGHT, MATCHING PROPORTIONS) */
     html body .event-card__bottom-row {
       display: flex !important;
       align-items: center !important;
-      gap: 6px !important;
+      gap: 8px !important;
       flex-wrap: wrap !important;
     }
     html body .event-card__date-pill {
-      padding: 3px 9px !important;
+      height: 26px !important;
+      padding: 0 10px !important;
       font-size: 0.74rem !important;
       font-weight: 700 !important;
       border-radius: 9px !important;
       background: rgba(212, 148, 58, 0.12) !important;
       color: #9E6B18 !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      box-sizing: border-box !important;
+      line-height: 1 !important;
     }
     html body .event-card__badge-pill {
-      padding: 3px 9px !important;
+      height: 26px !important;
+      padding: 0 10px !important;
       font-size: 0.74rem !important;
       font-weight: 700 !important;
       border-radius: 9px !important;
       background: linear-gradient(135deg, #FF6B6B, #FF8E53) !important;
       color: #FFFFFF !important;
       box-shadow: 0 2px 6px rgba(255, 107, 107, 0.3) !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      box-sizing: border-box !important;
+      line-height: 1 !important;
     }
     html body .event-card__learn-btn {
-      font-size: 0.76rem !important;
+      height: 26px !important;
+      padding: 0 10px !important;
+      font-size: 0.74rem !important;
       font-weight: 700 !important;
       color: #AF7D14 !important;
       background: rgba(212, 148, 58, 0.12) !important;
-      padding: 3px 9px !important;
       border-radius: 9px !important;
       display: inline-flex !important;
       align-items: center !important;
+      justify-content: center !important;
       gap: 3px !important;
       border: none !important;
       cursor: pointer !important;
+      box-sizing: border-box !important;
+      line-height: 1 !important;
+      white-space: nowrap !important;
     }
+
+    /* ENLARGED GURU AVATAR (74px x 74px) */
     html body .event-card__guru-img-wrapper {
-      width: 60px !important;
-      height: 60px !important;
-      min-width: 60px !important;
-      min-height: 60px !important;
+      width: 74px !important;
+      height: 74px !important;
+      min-width: 74px !important;
+      min-height: 74px !important;
       border-radius: 50% !important;
       border: 2.5px solid #D4943A !important;
       box-shadow: 0 4px 14px rgba(212, 148, 58, 0.25) !important;
@@ -4911,6 +4938,18 @@
     html[data-theme="dark"] body .event-card__title,
     html[data-time-of-day="night"] body .event-card__title {
       color: #F5F5F7 !important;
+    }
+    html.dark-mode body .event-card__date-pill,
+    html[data-theme="dark"] body .event-card__date-pill,
+    html[data-time-of-day="night"] body .event-card__date-pill {
+      background: rgba(255, 255, 255, 0.08) !important;
+      color: #E8B84A !important;
+    }
+    html.dark-mode body .event-card__learn-btn,
+    html[data-theme="dark"] body .event-card__learn-btn,
+    html[data-time-of-day="night"] body .event-card__learn-btn {
+      background: rgba(212, 148, 58, 0.16) !important;
+      color: #E8B84A !important;
     }
 
     /* ════════════════════════════════════════════════════════════════
