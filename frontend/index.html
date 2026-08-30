@@ -3010,10 +3010,10 @@
     }
   
 
-                            /* ─── SACRED DEVOTIONAL HERO ARTWORK (FULL WIDTH CINEMATIC) ─── */
+                                /* ─── SACRED DEVOTIONAL HERO ARTWORK (MAXIMUM MAJESTIC CINEMATIC) ─── */
     .greeting {
-      margin-top: -2px !important;
-      margin-bottom: 20px !important;
+      margin-top: -8px !important;
+      margin-bottom: 16px !important;
       padding: 0 !important;
       text-align: center !important;
       position: relative !important;
@@ -3038,15 +3038,16 @@
     .greeting__hero-banner {
       position: relative;
       width: 100%;
-      max-width: 1000px;
+      max-width: 1100px;
       margin: 0 auto;
       display: flex;
       justify-content: center;
       align-items: center;
       overflow: hidden;
-      /* 4-sided natural soft edge dissolve */
-      mask-image: radial-gradient(ellipse 98% 94% at 50% 50%, #000000 84%, rgba(0,0,0,0.85) 94%, transparent 100%);
-      -webkit-mask-image: radial-gradient(ellipse 98% 94% at 50% 50%, #000000 84%, rgba(0,0,0,0.85) 94%, transparent 100%);
+      transform: scale(1.05);
+      /* 4-sided ultra-clean edge dissolve */
+      mask-image: radial-gradient(ellipse 98% 95% at 50% 50%, #000000 88%, rgba(0,0,0,0.85) 96%, transparent 100%);
+      -webkit-mask-image: radial-gradient(ellipse 98% 95% at 50% 50%, #000000 88%, rgba(0,0,0,0.85) 96%, transparent 100%);
     }
     .greeting__hero-artwork {
       width: 100%;
@@ -3055,16 +3056,16 @@
       object-fit: contain;
       display: block;
       transition: opacity 0.35s ease;
-      filter: contrast(1.02) saturate(1.02);
+      filter: contrast(1.03) saturate(1.03);
     }
     
     /* Dark Mode Seamless Dark-Surface Dissolve (Expanded) */
     html.dark-mode .greeting__hero-banner,
     [data-theme="dark"] .greeting__hero-banner,
     [data-time-of-day="night"] .greeting__hero-banner {
-      mask-image: radial-gradient(ellipse 96% 92% at 50% 50%, #000000 80%, rgba(0,0,0,0.7) 92%, transparent 100%);
-      -webkit-mask-image: radial-gradient(ellipse 96% 92% at 50% 50%, #000000 80%, rgba(0,0,0,0.7) 92%, transparent 100%);
-      filter: drop-shadow(0 8px 36px rgba(212, 148, 58, 0.22));
+      mask-image: radial-gradient(ellipse 97% 93% at 50% 50%, #000000 84%, rgba(0,0,0,0.7) 95%, transparent 100%);
+      -webkit-mask-image: radial-gradient(ellipse 97% 93% at 50% 50%, #000000 84%, rgba(0,0,0,0.7) 95%, transparent 100%);
+      filter: drop-shadow(0 8px 40px rgba(212, 148, 58, 0.25));
     }
     
     /* Event Card Guru Image Guarantee & Dark Contrast */
@@ -3126,12 +3127,13 @@
     
     @media (max-width: 480px) {
       .greeting {
-        margin-top: -4px !important;
-        margin-bottom: 14px !important;
+        margin-top: -6px !important;
+        margin-bottom: 12px !important;
         padding: 0 !important;
       }
       .greeting__hero-banner {
         max-width: 100% !important;
+        transform: scale(1.06);
       }
       .event-card__guru-img-wrapper {
         width: 110px !important;
@@ -3645,20 +3647,23 @@
         <!-- ════════════════════════════════════════════════════════════════════
          UPCOMING GURPURAB — Contextual Event Card
     ════════════════════════════════════════════════════════════════════ -->
-    <article class="event-card" id="eventCard" aria-label="Upcoming Gurpurab" data-href="Calendar/GurpurabCalendar-ios.html">
+        <!-- ════════════════════════════════════════════════════════════════════
+         UPCOMING GURPURAB — Contextual Event Card (Today / Upcoming)
+    ════════════════════════════════════════════════════════════════════ -->
+    <article class="event-card event-today" id="eventCard" aria-label="Upcoming Gurpurab" data-href="Calendar/GurpurabCalendar-ios.html">
       <!-- Celebration/Remembrance Badges (dynamic) -->
       <div class="gurpurab-celebration-badge" id="gurpurabCelebrationBadge" style="display:none;"></div>
       <div class="gurpurab-remembrance-badge" id="gurpurabRemembranceBadge" style="display:none;"></div>
       
       <div class="event-card__main">
         <div class="event-card__info">
-          <div class="event-card__eyebrow" id="eventEyebrow">✦ UPCOMING GURPURAB</div>
-          <div class="event-card__title" id="eventTitle">First Parkash Sri Guru Granth Sahib Ji</div>
+          <div class="event-card__eyebrow" id="eventEyebrow">✦ TODAY'S HISTORICAL DIWAS</div>
+          <div class="event-card__title" id="eventTitle">Sampuranta Diwas Sri Guru Granth Sahib Ji</div>
           <div class="event-card__meta-row">
-            <div class="event-card__date" id="eventDate">Sep 12</div>
+            <div class="event-card__date" id="eventDate">30 August</div>
             <div class="event-card__countdown-wrapper" id="eventCountdownWrapper">
-              <div class="event-card__countdown" id="eventCountdown">13</div>
-              <div class="event-card__countdown-label" id="eventCountdownLabel">days left</div>
+              <div class="event-card__countdown" id="eventCountdown">TODAY</div>
+              <div class="event-card__countdown-label" id="eventCountdownLabel">✨</div>
             </div>
           </div>
           <button class="event-card__learn-more" onclick="event.stopPropagation(); if (window.navigateTo) window.navigateTo('Calendar/GurpurabCalendar-ios.html'); else window.location.href='Calendar/GurpurabCalendar-ios.html'">
@@ -3670,8 +3675,8 @@
           <img decoding="async" class="event-card__guru-img loaded" id="eventGuruImg" src="guruimages/gurugranthsahebji.jpeg" alt="Sri Guru Granth Sahib Ji" width="130" height="130" style="width: 100%; height: 100%; object-fit: cover; object-position: center 25%; border-radius: 50%; opacity: 1 !important; display: block;">
         </div>
       </div>
-      <div class="event-card__days-badge" id="eventDaysBadge" style="display:none;">
-        <span id="eventCountdownBadgeValue">13</span> <span id="eventCountdownBadgeLabel">days left</span>
+      <div class="event-card__days-badge" id="eventDaysBadge" style="display:flex;">
+        <span id="eventCountdownBadgeValue">TODAY</span> <span id="eventCountdownBadgeLabel">✨</span>
       </div>
     </article>
 

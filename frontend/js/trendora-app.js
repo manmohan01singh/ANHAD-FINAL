@@ -607,6 +607,7 @@
           data = {
             years: {
               '2026': [
+                { id: 'sampuranta-sggs-2026', name_en: 'Sampuranta Diwas Sri Guru Granth Sahib Ji', name_pa: 'ਸੰਪੂਰਨਤਾ ਦਿਵਸ ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ', gregorian_date: '2026-08-30', type: 'historical' },
                 { id: 'first-parkash-sggs', name_en: 'First Parkash Sri Guru Granth Sahib Ji', name_pa: 'ਪਹਿਲਾ ਪ੍ਰਕਾਸ਼ ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ', gregorian_date: '2026-09-12', type: 'parkash' },
                 { id: 'gurpurab-guru-nanak', name_en: 'Prakash Purab Sri Guru Nanak Dev Ji', name_pa: 'ਪ੍ਰਕਾਸ਼ ਪੁਰਬ ਸ੍ਰੀ ਗੁਰੂ ਨਾਨਕ ਦੇਵ ਜੀ', gregorian_date: '2026-11-24', type: 'gurpurab' }
               ]
