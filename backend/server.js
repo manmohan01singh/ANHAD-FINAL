@@ -4396,6 +4396,53 @@ app.get('/api/sadhsangat/content-search', async (req, res) => {
     }
 });
 
+// ═══════════════════════════════════════════════════════════════════
+// 🤖 SADHSANGAT AI COMPANION — Groq openai/gpt-oss-120b Endpoint
+// ═══════════════════════════════════════════════════════════════════
+app.post('/api/sadhsangat/ai/chat', async (req, res) => {
+    const { messages, context } = req.body;
+
+    if (!messages || !Array.isArray(messages) || messages.length === 0) {
+        return res.status(400).json({ error: 'Messages array is required' });
+    }
+
+    try {
+        const systemPrompt = `You are "Sangat AI" (ਸੰਗਤ ਵਿਚਾਰ), a calm, respectful, intelligent, and scholarly spiritual companion for the ANHAD Sadhsangat Live platform.
+
+CORE PRINCIPLES:
+1. Tone & Demeanor: Calm, respectful, thoughtful, scholarly, peaceful, concise. Avoid corporate clichés, generic chatbot filler ("Certainly! I'd be happy to help"), and excessive emojis.
+2. Domain Expertise: Gurbani, Sri Guru Granth Sahib Ji, Sikh philosophy (Gurmat), Gurmukhi concepts, historical context, devotional Kirtan, Katha, Simran, and Amritvela practices. Also respect and understand broad interfaith spiritual philosophy.
+3. Content Context: ${context ? `The user is currently listening to / reflecting upon: "${context.title || ''}" by "${context.channelName || ''}". Provide relevant spiritual context if asked.` : 'General spiritual reflection.'}
+4. Response Format: Clear markdown with clean paragraph breaks and elegant Gurmukhi quotes where relevant with English/Punjabi transliteration and translation.
+5. Cultural Sensitivity: Always use respectful titles (e.g., Guru Nanak Dev Ji, Bhagat Kabir Ji, Bhai Gurdas Ji) and sacred humility.`;
+
+        const fullMessages = [
+            { role: 'system', content: systemPrompt },
+            ...messages.slice(-8) // Keep last 8 turns for conversational context
+        ];
+
+        // Call Groq AI with openai/gpt-oss-120b primary model
+        const { content, model } = await callGroqAI({
+            messages: fullMessages,
+            temperature: 0.3,
+            maxTokens: 1000,
+            timeout: 25000
+        });
+
+        res.json({
+            message: content,
+            model: model || 'openai/gpt-oss-120b',
+            timestamp: Date.now()
+        });
+
+    } catch (err) {
+        console.error('[Sadhsangat AI Chat] Error:', err.message);
+        res.status(500).json({
+            error: 'Sangat AI is currently contemplating. Please try your reflection again in a moment.'
+        });
+    }
+});
+
 // Helper to sort YouTube relative strings ("1 hour ago") and absolute dates ("1 Jun 2026")
 const parsePublishedTime = (timeStr) => {
     if (!timeStr) return 999999999;
