@@ -79,10 +79,7 @@
                    document.documentElement.getAttribute('data-theme') === 'dark' ||
                    themeMode === 'dark';
     if (isDark) return 'night';
-    if (themeMode === 'light') {
-      const s = getSlot();
-      return s === 'night' ? 'day' : s;
-    }
+    if (themeMode === 'light') return null;
     return getSlot();
   }
 
@@ -95,6 +92,11 @@
     }
 
     const slot = getEffectiveSlot();
+    if (!slot) {
+      document.documentElement.removeAttribute('data-time-of-day');
+      clearTimeAdaptiveCardColors();
+      return;
+    }
     const currentSlot = document.documentElement.getAttribute('data-time-of-day');
 
     const bgRestored = document.documentElement.style.getPropertyValue('--dynamic-bg-url');
