@@ -4450,58 +4450,37 @@
       color: #94A3B8 !important;
     }
   </style>
-  <!-- ANHAD MASTER VISUAL OVERRIDES v10.66.0 -->
+  <!-- ANHAD MASTER VISUAL OVERRIDES v10.67.0 -->
   <style id="anhad-master-overrides">
     /* ════════════════════════════════════════════════════════════════
-       1. GREETING SECTION & CLEAN BALANCED GAP
+       1. GREETING SECTION & OPTICAL CENTERING
        ════════════════════════════════════════════════════════════════ */
     .greeting {
-      margin-top: -8px !important;
-      margin-bottom: 8px !important;
-      padding-bottom: 0px !important;
+      margin-top: -6px !important;
+      margin-bottom: 6px !important;
+      padding: 0 !important;
       position: relative !important;
       overflow: visible !important;
       width: 100% !important;
+      max-width: 100% !important;
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      justify-content: center !important;
     }
     .greeting__content {
-      padding-top: 0 !important;
-      padding-bottom: 0 !important;
+      padding: 0 !important;
+      margin: 0 auto !important;
       display: flex !important;
       flex-direction: column !important;
       align-items: center !important;
+      justify-content: center !important;
       width: 100% !important;
-    }
-    .greeting__text {
-      margin-top: 2px !important;
-      margin-bottom: 0 !important;
-      padding-bottom: 0 !important;
-      display: flex !important;
-      flex-direction: column !important;
-      align-items: center !important;
-      text-align: center !important;
-    }
-    .greeting__salutation {
-      margin-bottom: 2px !important;
-    }
-    .greeting__gurbani {
-      margin: 0 0 2px 0 !important;
-    }
-    .greeting__translation {
-      margin-top: 2px !important;
-      margin-bottom: 2px !important;
-      line-height: 1.35 !important;
-    }
-
-    /* Minimal clean gap before the Nitnem progress banner */
-    .progress-inline,
-    #nitnemTrackerCard,
-    .nitnem-progress {
-      margin-top: 8px !important;
-      margin-bottom: 12px !important;
+      max-width: 100% !important;
     }
 
     /* ════════════════════════════════════════════════════════════════
-       2. LIGHT MODE HERO ARTWORK — CENTERED, ENLARGED, NO UNNECESSARY GAP
+       2. LIGHT MODE HERO ARTWORK — CENTERED, TEXTLESS, SOFT CONTRAST
        ════════════════════════════════════════════════════════════════ */
     .greeting__hero-banner {
       display: flex !important;
@@ -4518,20 +4497,31 @@
     }
     .greeting__hero-banner picture {
       width: 100% !important;
+      max-width: 100% !important;
       display: flex !important;
       justify-content: center !important;
       align-items: center !important;
+      margin: 0 auto !important;
     }
     .greeting__hero-artwork {
       width: 100% !important;
-      max-width: 580px !important;
+      max-width: 600px !important;
       height: auto !important;
-      transform: scale(1.18) !important;
+      aspect-ratio: 1906 / 536 !important;
       object-fit: contain !important;
       display: block !important;
       margin: 0 auto !important;
+      transform: none !important;
       image-rendering: -webkit-optimize-contrast !important;
       image-rendering: high-quality !important;
+    }
+
+    /* Minimal clean gap before the Nitnem progress banner */
+    .progress-inline,
+    #nitnemTrackerCard,
+    .nitnem-progress {
+      margin-top: 8px !important;
+      margin-bottom: 12px !important;
     }
 
     /* Dark Mode: Hide Light Hero */
@@ -4542,7 +4532,7 @@
     }
 
     /* ════════════════════════════════════════════════════════════════
-       3. DARK MODE GURU CAROUSEL — COMPACT HEIGHT, NO GLOW, ZERO DEAD GAP
+       3. DARK MODE GURU CAROUSEL — COMPACT, ZERO GLOW, CLEAN SPACING
        ════════════════════════════════════════════════════════════════ */
     .greeting__dark-carousel-container {
       display: none;
@@ -4561,7 +4551,7 @@
       margin: 0 !important;
     }
 
-    /* Remove side arrows & dots for clean touch swipe */
+    /* Hide side arrows & dots */
     .greeting__slider-arrow,
     #guruSliderPrev,
     #guruSliderNext,
@@ -4572,7 +4562,6 @@
       pointer-events: none !important;
     }
 
-    /* Compact slider wrap: exactly matches circle height, removing dead vertical space */
     .greeting__portrait-slider-wrap {
       position: relative !important;
       width: 100% !important;
@@ -4599,7 +4588,7 @@
       visibility: visible !important;
     }
 
-    /* Perfectly centered slides with ZERO glow */
+    /* Slides: Centered with clean transforms and ZERO glow */
     .greeting__slide {
       position: absolute !important;
       width: 120px !important;
@@ -4663,7 +4652,7 @@
       filter: none !important;
     }
 
-    /* Guru Circle Frame — Clean Crisp Gold Ring, Absolutely NO Glow/Aura */
+    /* Guru Circle Frame — ZERO Glow Aura */
     .greeting__guru-portrait {
       width: 120px !important;
       height: 120px !important;
@@ -4696,6 +4685,28 @@
       visibility: visible !important;
       border-radius: 50% !important;
       pointer-events: none !important;
+    }
+
+    /* Dark Mode Text */
+    .greeting__text {
+      margin-top: 2px !important;
+      margin-bottom: 0 !important;
+      padding-bottom: 0 !important;
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      text-align: center !important;
+    }
+    .greeting__salutation {
+      margin-bottom: 2px !important;
+    }
+    .greeting__gurbani {
+      margin: 0 0 2px 0 !important;
+    }
+    .greeting__translation {
+      margin-top: 2px !important;
+      margin-bottom: 2px !important;
+      line-height: 1.35 !important;
     }
 
     /* ════════════════════════════════════════════════════════════════
@@ -5105,7 +5116,7 @@
         <div class="greeting__hero-banner" id="greetingHeroBanner" aria-label="Sacred Guru Darbar">
           <picture id="greetingHeroPicture">
             <source id="greetingHeroSource" srcset="guruimages/guru-greeting-hero.webp" type="image/webp">
-            <img class="greeting__hero-artwork" id="greetingHeroArtwork" src="guruimages/guru-greeting-hero.webp" alt="Sri Guru Granth Sahib Ji with Sri Guru Gobind Singh Ji and Sri Guru Nanak Dev Ji" width="1906" height="825" loading="eager" fetchpriority="high" decoding="async">
+            <img class="greeting__hero-artwork" id="greetingHeroArtwork" src="guruimages/guru-greeting-hero.webp" alt="Sri Guru Granth Sahib Ji with Sri Guru Gobind Singh Ji and Sri Guru Nanak Dev Ji" width="1906" height="536" loading="eager" fetchpriority="high" decoding="async">
           </picture>
         </div>
 
