@@ -56,7 +56,7 @@
         // it live is not the takeover the old dismissible card would have been.
         // NOTE: startDate/endDate above still span all of 2026. Narrow them to
         // the real 40-day Chaliya window before release.
-        active: false,
+        active: true,
         content: {
           badgeText: 'CHALIYA 2026',
           heroTitle: 'Chaliya Amritvela 2026',

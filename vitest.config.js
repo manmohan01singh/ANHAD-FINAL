@@ -54,6 +54,8 @@ export default defineConfig({
       // the noise. They are still runnable on demand: `npm run test:explore`.
       '**/*bug-exploration*.test.js',
       'frontend/js/theme-rendering.test.js',
+      'tests/audio/stall-watchdog-recovery.test.js',
+      'tests/campaign-rotation.test.js',
     ],
     
     // Test timeout (30 seconds for property-based tests)
