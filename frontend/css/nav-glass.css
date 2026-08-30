@@ -40,12 +40,21 @@
 
 /* Light Theme Overrides - High Contrast Glass */
 [data-theme="light"] .tab-bar,
-html:not([data-theme="dark"]):not(.dark-mode) .tab-bar {
+html:not([data-theme="dark"]):not(.dark-mode):not([data-time-of-day="night"]) .tab-bar {
   background: rgba(255, 255, 255, 0.8) !important;
   border-color: rgba(0, 0, 0, 0.08) !important;
   box-shadow:
     0 20px 50px rgba(0, 0, 0, 0.15),
     0 0 0 1px rgba(255, 255, 255, 0.5) inset !important;
+}
+
+/* Dark Theme & Dynamic Night Tab Bar */
+[data-theme="dark"] .tab-bar,
+html.dark-mode .tab-bar,
+[data-time-of-day="night"] .tab-bar {
+  background: rgba(18, 18, 22, 0.92) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.75), inset 0 1px 1px rgba(255, 255, 255, 0.06) !important;
 }
 
 /* Tab Item Styles - Unified - BRIGHT ICONS */

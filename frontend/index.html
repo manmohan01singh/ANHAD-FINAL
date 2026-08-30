@@ -5104,10 +5104,39 @@
       color: #EA580C !important;
     }
     /* ════════════════════════════════════════════════════════════════
-       6. FLOATING MINI PLAYER + BOTTOM NAV GAP
+       6. FLOATING MINI PLAYER + BOTTOM NAV GAP & THEME FIXES
        ════════════════════════════════════════════════════════════════ */
+    .gmp,
+    .mini-player,
+    .global-mini-player,
     .mini-player--visible {
-      bottom: calc(var(--nav-height, 84px) + var(--safe-bottom, 0px) + 20px) !important;
+      bottom: calc(104px + max(env(safe-area-inset-bottom, 0px), 4px)) !important;
+    }
+
+    html.dark-mode .gmp,
+    html.dark-mode .mini-player,
+    html.dark-mode .global-mini-player,
+    [data-theme="dark"] .gmp,
+    [data-theme="dark"] .mini-player,
+    [data-theme="dark"] .global-mini-player,
+    [data-time-of-day="night"] .gmp,
+    [data-time-of-day="night"] .mini-player,
+    [data-time-of-day="night"] .global-mini-player {
+      background: linear-gradient(150deg, rgba(28, 28, 34, 0.96), rgba(16, 16, 20, 0.96)) !important;
+      border: 1px solid rgba(255, 255, 255, 0.08) !important;
+      box-shadow: 
+        0 16px 40px rgba(0, 0, 0, 0.75),
+        -2px -2px 8px rgba(255, 255, 255, 0.04),
+        inset 2px 2px 4px rgba(212, 148, 58, 0.2),
+        inset -2px -2px 5px rgba(0, 0, 0, 0.6) !important;
+    }
+
+    html.dark-mode .tab-bar,
+    [data-theme="dark"] .tab-bar,
+    [data-time-of-day="night"] .tab-bar {
+      background: rgba(18, 18, 22, 0.92) !important;
+      border: 1px solid rgba(255, 255, 255, 0.12) !important;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.75), inset 0 1px 1px rgba(255, 255, 255, 0.06) !important;
     }
   </style>
 </head>

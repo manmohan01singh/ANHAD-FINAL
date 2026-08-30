@@ -1383,41 +1383,87 @@ a,
 /* ═════════════════════════════════════════════════════════════════════════════
    § 16. AUTO MODE / DYNAMIC CARD PALETTE OVERRIDES
    ═════════════════════════════════════════════════════════════════════════════ */
-[data-theme-mode="auto"] .practice-card,
-[data-theme-mode="auto"] .practice-card--nitnem,
-[data-theme-mode="auto"] .practice-card--sehaj,
-[data-theme-mode="auto"] .practice-card--hukam {
-  background: var(--sky-card-bg-glass) !important;
-  border: 1.5px solid var(--sky-card-border) !important;
-  box-shadow: 0 8px 32px var(--sky-card-shadow),
-    inset 0 2px 0 rgba(255, 255, 255, 0.4) !important;
-  color: var(--sky-card-text) !important;
-  backdrop-filter: blur(24px) saturate(180%) !important;
-  -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+/* Dynamic Day / Sky Mode Practice Cards */
+[data-theme-mode="auto"][data-time-of-day="day"] .practice-card,
+[data-time-of-day="day"] .practice-card {
+  background: linear-gradient(150deg, #FFFFFF 0%, #EEF6FF 45%, #DCEEFF 100%) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.95) !important;
+  box-shadow: 
+    6px 8px 20px rgba(80, 145, 220, 0.18),
+    -4px -4px 12px rgba(255, 255, 255, 1),
+    inset 2.5px 2.5px 5px rgba(255, 255, 255, 1),
+    inset -2.5px -2.5px 5px rgba(80, 145, 220, 0.10) !important;
 }
 
-[data-theme-mode="auto"] .practice-card__title {
-  color: var(--sky-card-text) !important;
+/* Dynamic Morning Mode Practice Cards */
+[data-theme-mode="auto"][data-time-of-day="morning"] .practice-card,
+[data-time-of-day="morning"] .practice-card {
+  background: linear-gradient(150deg, #FFFFFF 0%, #FFF8EC 45%, #FDE9CF 100%) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.95) !important;
+  box-shadow: 
+    6px 8px 20px rgba(212, 148, 58, 0.16),
+    -4px -4px 12px rgba(255, 255, 255, 0.98),
+    inset 2.5px 2.5px 5px rgba(255, 255, 255, 1),
+    inset -2.5px -2.5px 5px rgba(212, 148, 58, 0.10) !important;
 }
 
-[data-theme-mode="auto"] .practice-card__status {
-  color: var(--sky-card-text2) !important;
+/* Dynamic Evening Mode Practice Cards */
+[data-theme-mode="auto"][data-time-of-day="evening"] .practice-card,
+[data-time-of-day="evening"] .practice-card {
+  background: linear-gradient(150deg, #FFFFFF 0%, #FFF1EB 45%, #FDE1D4 100%) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.95) !important;
+  box-shadow: 
+    6px 8px 20px rgba(234, 88, 12, 0.16),
+    -4px -4px 12px rgba(255, 255, 255, 0.98),
+    inset 2.5px 2.5px 5px rgba(255, 255, 255, 1),
+    inset -2.5px -2.5px 5px rgba(234, 88, 12, 0.10) !important;
 }
 
-[data-theme-mode="auto"] .practice-card__ring-bg {
-  stroke: var(--sky-card-border) !important;
+/* Dynamic Night Mode & Dark Mode Practice Cards — Pure Deep Obsidian Clay */
+[data-time-of-day="night"] .practice-card,
+[data-theme="dark"] .practice-card,
+html.dark-mode .practice-card,
+body.dark-mode .practice-card,
+[data-time-of-day="night"] .practice-card--nitnem,
+[data-time-of-day="night"] .practice-card--sehaj,
+[data-time-of-day="night"] .practice-card--hukam,
+[data-theme="dark"] .practice-card--nitnem,
+[data-theme="dark"] .practice-card--sehaj,
+[data-theme="dark"] .practice-card--hukam,
+html.dark-mode .practice-card--nitnem,
+html.dark-mode .practice-card--sehaj,
+html.dark-mode .practice-card--hukam {
+  background: linear-gradient(150deg, #1C1C20 0%, #121215 50%, #0B0B0D 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 
+    6px 8px 22px rgba(0, 0, 0, 0.75),
+    -2px -2px 6px rgba(255, 255, 255, 0.03),
+    inset 2px 2px 4px rgba(255, 255, 255, 0.08),
+    inset -2px -2px 5px rgba(0, 0, 0, 0.65) !important;
 }
 
-[data-theme-mode="auto"] .practice-card__ring-fill {
-  stroke: var(--sky-card-accent) !important;
+[data-time-of-day="night"] .practice-card__title,
+[data-theme="dark"] .practice-card__title,
+html.dark-mode .practice-card__title {
+  color: #F8FAFC !important;
 }
 
-[data-theme-mode="auto"] .practice-card__ring-icon {
-  color: var(--sky-card-accent) !important;
+[data-time-of-day="night"] .practice-card__status,
+[data-theme="dark"] .practice-card__status,
+html.dark-mode .practice-card__status {
+  color: #94A3B8 !important;
 }
 
-[data-theme-mode="auto"] .practice-card__ring-icon .ios-emoji {
-  filter: none !important;
+[data-time-of-day="night"] .practice-card__ring,
+[data-theme="dark"] .practice-card__ring,
+html.dark-mode .practice-card__ring {
+  background: linear-gradient(145deg, #24242A 0%, #151518 100%) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.09) !important;
+  box-shadow: 
+    0 4px 14px rgba(0, 0, 0, 0.6),
+    -1.5px -1.5px 4px rgba(255, 255, 255, 0.03),
+    inset 2px 2px 4px rgba(255, 255, 255, 0.08),
+    inset -1.5px -1.5px 3px rgba(0, 0, 0, 0.6) !important;
 }
 
 /* Quick Access Grid Overrides for Auto Mode */
