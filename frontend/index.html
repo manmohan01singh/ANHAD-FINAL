@@ -3951,12 +3951,7 @@
       filter: drop-shadow(0 6px 20px rgba(0, 0, 0, 0.05)) !important;
     }
     
-    .greeting__dark-carousel-container {
-      display: none !important;
-      width: 100%;
-      max-width: 600px;
-      margin: 0 auto;
-    }
+    .greeting__dark-carousel-container { display: none; width: 100%; max-width: 600px; margin: 0 auto; }
 
     /* ─── DARK MODE / DYNAMIC NIGHT: INTERACTIVE GURU CAROUSEL + GURBANI SECTION ─── */
     html.dark-mode .greeting__hero-banner,
@@ -4439,6 +4434,213 @@
     }
   </style>
 
+
+  <!-- ANHAD MASTER VISUAL OVERRIDES v10.61.0 — DO NOT REMOVE -->
+  <style id="anhad-master-overrides">
+    /* ── HERO BANNER: WIDE HORIZONTAL, SOFT CONTRAST, SIDE FADE ── */
+    .greeting {
+      margin-top: -10px !important;
+      margin-bottom: 52px !important;
+      padding-bottom: 32px !important;
+      position: relative !important;
+      width: 100% !important;
+      overflow: visible !important;
+    }
+    .greeting__hero-banner {
+      display: flex !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      margin: 0 auto !important;
+      overflow: visible !important;
+      padding-bottom: 20px !important;
+      box-sizing: border-box !important;
+    }
+    .greeting__hero-artwork {
+      width: 100% !important;
+      height: auto !important;
+      aspect-ratio: 1906 / 825 !important;
+      object-fit: contain !important;
+      display: block !important;
+      image-rendering: -webkit-optimize-contrast !important;
+      image-rendering: high-quality !important;
+    }
+
+    /* ── DARK MODE: HIDE HERO, SHOW CAROUSEL ── */
+    html.dark-mode .greeting__hero-banner,
+    [data-theme="dark"] .greeting__hero-banner,
+    html.dark-mode .greeting__dark-carousel-container ~ .greeting__hero-banner,
+    [data-time-of-day="night"] .greeting__hero-banner {
+      display: none !important;
+    }
+
+    /* ── DARK CAROUSEL: VISIBLE, CENTERED ── */
+    .greeting__dark-carousel-container {
+      display: none;
+      width: 100%;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    html.dark-mode .greeting__dark-carousel-container,
+    [data-theme="dark"] .greeting__dark-carousel-container,
+    [data-time-of-day="night"] .greeting__dark-carousel-container {
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 12px !important;
+      width: 100% !important;
+      padding: 8px 0 !important;
+    }
+
+    /* ── PORTRAIT SLIDER WRAP & TRACK ── */
+    .greeting__portrait-slider-wrap {
+      position: relative !important;
+      width: 100% !important;
+      max-width: 440px !important;
+      height: 200px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      margin: 0 auto !important;
+      box-sizing: border-box !important;
+    }
+    .greeting__portrait-slider {
+      position: relative !important;
+      width: 100% !important;
+      height: 200px !important;
+      overflow: visible !important;
+      touch-action: pan-y !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+    }
+    .greeting__slider-track {
+      position: relative !important;
+      width: 100% !important;
+      height: 100% !important;
+      display: block !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+    }
+
+    /* ── SLIDES: ABSOLUTE CENTERED ── */
+    .greeting__slide {
+      position: absolute !important;
+      width: 120px !important;
+      height: 120px !important;
+      top: 50% !important;
+      left: 50% !important;
+      margin-top: -60px !important;
+      margin-left: -60px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      opacity: 0 !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
+      transform: scale(0.6) translateX(0) !important;
+      transition: transform 0.35s cubic-bezier(0.25,1,0.5,1), opacity 0.3s ease, filter 0.3s ease !important;
+      cursor: pointer !important;
+      -webkit-user-drag: none !important;
+      user-select: none !important;
+    }
+    .greeting__slide--active {
+      opacity: 1 !important;
+      visibility: visible !important;
+      transform: scale(1.22) translateX(0) !important;
+      z-index: 10 !important;
+      pointer-events: auto !important;
+      filter: drop-shadow(0 8px 24px rgba(212,148,58,0.55)) !important;
+    }
+    .greeting__slide--prev {
+      opacity: 0.75 !important;
+      visibility: visible !important;
+      transform: scale(0.85) translateX(-110px) !important;
+      z-index: 5 !important;
+      pointer-events: auto !important;
+    }
+    .greeting__slide--next {
+      opacity: 0.75 !important;
+      visibility: visible !important;
+      transform: scale(0.85) translateX(110px) !important;
+      z-index: 5 !important;
+      pointer-events: auto !important;
+    }
+    .greeting__slide--far-prev {
+      opacity: 0.28 !important;
+      visibility: visible !important;
+      transform: scale(0.62) translateX(-175px) !important;
+      z-index: 1 !important;
+      pointer-events: auto !important;
+    }
+    .greeting__slide--far-next {
+      opacity: 0.28 !important;
+      visibility: visible !important;
+      transform: scale(0.62) translateX(175px) !important;
+      z-index: 1 !important;
+      pointer-events: auto !important;
+    }
+
+    /* ── GURU PORTRAIT CIRCLE ── */
+    .greeting__guru-portrait {
+      width: 120px !important;
+      height: 120px !important;
+      min-width: 120px !important;
+      min-height: 120px !important;
+      max-width: 120px !important;
+      max-height: 120px !important;
+      border-radius: 50% !important;
+      overflow: hidden !important;
+      border: 3px solid #D4943A !important;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.5), 0 0 20px rgba(212,148,58,0.35) !important;
+      background: #1C1C1E !important;
+      margin-bottom: 0 !important;
+      pointer-events: none !important;
+    }
+    .greeting__guru-portrait img {
+      width: 100% !important;
+      height: 100% !important;
+      object-fit: cover !important;
+      display: block !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+      pointer-events: none !important;
+    }
+
+    /* ── GURPURAB CALENDAR CARD: CUSHION CLAY ── */
+    .event-card {
+      padding: 16px 20px !important;
+      border-radius: 28px !important;
+      border: none !important;
+      background: linear-gradient(135deg, #FFFFFF 0%, #FFFDF8 45%, #FAF3DE 100%) !important;
+      box-shadow:
+        6px 8px 20px rgba(212,168,83,0.12),
+        -4px -4px 10px rgba(255,255,255,0.98),
+        inset 2px 2px 4px rgba(255,255,255,1),
+        inset -1.5px -1.5px 4px rgba(212,168,83,0.06) !important;
+      margin-bottom: 24px !important;
+    }
+    html.dark-mode .event-card,
+    [data-theme="dark"] .event-card,
+    [data-time-of-day="night"] .event-card {
+      background: linear-gradient(150deg, #1C1C1E 0%, #111113 100%) !important;
+      border: none !important;
+      box-shadow:
+        6px 8px 20px rgba(0,0,0,0.7),
+        -3px -3px 8px rgba(255,255,255,0.04),
+        inset 2px 2px 5px rgba(212,148,58,0.15),
+        inset -2px -2px 6px rgba(0,0,0,0.5) !important;
+    }
+
+    /* ── MINI PLAYER + NAV GAP ── */
+    .mini-player--visible {
+      margin-bottom: 10px !important;
+    }
+    .bottom-nav,
+    .bottom-nav__wrapper {
+      margin-top: 10px !important;
+    }
+  </style>
 </head>
 
 <body>
