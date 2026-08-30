@@ -1217,13 +1217,13 @@
   }
 
   .event-card__guru-img-wrapper {
-    width: 104px !important;
-    height: 104px !important;
-    min-width: 104px !important;
-    min-height: 104px !important;
+    width: 86px !important;
+    height: 86px !important;
+    min-width: 86px !important;
+    min-height: 86px !important;
     border-radius: 50% !important;
-    border: 3px solid #D4943A !important;
-    box-shadow: 0 8px 24px rgba(212, 148, 58, 0.28) !important;
+    border: 2.5px solid #D4943A !important;
+    box-shadow: 0 6px 20px rgba(212, 148, 58, 0.28) !important;
     overflow: hidden !important;
     flex-shrink: 0 !important;
     background: #FFFFFF !important;
@@ -1281,116 +1281,93 @@
 
   /* ─── DESKTOP DYNAMIC THEME RULES (ALL CARDS + EVENT CARD + PROGRESS BAR) ─── */
   /* Evening / Sunset: #F29A2E */
-  html[data-time-of-day="evening"]:not(.dark-mode):not([data-theme="dark"]) .practice-card,
-  html[data-time-of-day="evening"]:not(.dark-mode):not([data-theme="dark"]) .quick-card,
-  html[data-time-of-day="evening"]:not(.dark-mode):not([data-theme="dark"]) .event-card,
-  html[data-time-of-day="evening"]:not(.dark-mode):not([data-theme="dark"]) .progress-inline {
+  html[data-theme-mode="auto"][data-time-of-day="evening"]:not(.dark-mode):not([data-theme="dark"]) .practice-card,
+  html[data-theme-mode="auto"][data-time-of-day="evening"]:not(.dark-mode):not([data-theme="dark"]) .quick-card,
+  html[data-theme-mode="auto"][data-time-of-day="evening"]:not(.dark-mode):not([data-theme="dark"]) .event-card,
+  html[data-theme-mode="auto"][data-time-of-day="evening"]:not(.dark-mode):not([data-theme="dark"]) .progress-inline {
     background: linear-gradient(135deg, #FFFDF8 0%, #FFF3DC 45%, #FEE5BE 100%) !important;
     border: none !important;
     box-shadow: 0 12px 28px -3px rgba(242, 154, 46, 0.24), 0 4px 10px rgba(0, 0, 0, 0.02), inset 2.5px 2.5px 6px rgba(255, 255, 255, 1), inset -2.5px -2.5px 6px rgba(242, 154, 46, 0.14) !important;
   }
-  html[data-time-of-day="evening"]:not(.dark-mode):not([data-theme="dark"]) .practice-card:hover,
-  html[data-time-of-day="evening"]:not(.dark-mode):not([data-theme="dark"]) .quick-card:hover {
+  html[data-theme-mode="auto"][data-time-of-day="evening"]:not(.dark-mode):not([data-theme="dark"]) .practice-card:hover,
+  html[data-theme-mode="auto"][data-time-of-day="evening"]:not(.dark-mode):not([data-theme="dark"]) .quick-card:hover {
     box-shadow: 0 18px 40px -6px rgba(242, 154, 46, 0.32), 0 6px 16px rgba(0, 0, 0, 0.04), inset 2.5px 2.5px 6px rgba(255, 255, 255, 1), inset -3px -3px 8px rgba(242, 154, 46, 0.16) !important;
   }
-  html[data-time-of-day="evening"]:not(.dark-mode):not([data-theme="dark"]) .practice-card__title,
-  html[data-time-of-day="evening"]:not(.dark-mode):not([data-theme="dark"]) .quick-card__title,
-  html[data-time-of-day="evening"]:not(.dark-mode):not([data-theme="dark"]) .event-card__title,
-  html[data-time-of-day="evening"]:not(.dark-mode):not([data-theme="dark"]) .progress-inline__label {
+  html[data-theme-mode="auto"][data-time-of-day="evening"]:not(.dark-mode):not([data-theme="dark"]) .practice-card__title,
+  html[data-theme-mode="auto"][data-time-of-day="evening"]:not(.dark-mode):not([data-theme="dark"]) .quick-card__title,
+  html[data-theme-mode="auto"][data-time-of-day="evening"]:not(.dark-mode):not([data-theme="dark"]) .event-card__title,
+  html[data-theme-mode="auto"][data-time-of-day="evening"]:not(.dark-mode):not([data-theme="dark"]) .progress-inline__label {
     color: #5C3200 !important;
   }
-  html[data-time-of-day="evening"]:not(.dark-mode):not([data-theme="dark"]) .practice-card__status,
-  html[data-time-of-day="evening"]:not(.dark-mode):not([data-theme="dark"]) .quick-card__subtitle,
-  html[data-time-of-day="evening"]:not(.dark-mode):not([data-theme="dark"]) .quick-card__meta,
-  html[data-time-of-day="evening"]:not(.dark-mode):not([data-theme="dark"]) .quick-card__meta-value,
-  html[data-time-of-day="evening"]:not(.dark-mode):not([data-theme="dark"]) .quick-card__progress,
-  html[data-time-of-day="evening"]:not(.dark-mode):not([data-theme="dark"]) .progress-inline__text {
+  html[data-theme-mode="auto"][data-time-of-day="evening"]:not(.dark-mode):not([data-theme="dark"]) .practice-card__status,
+  html[data-theme-mode="auto"][data-time-of-day="evening"]:not(.dark-mode):not([data-theme="dark"]) .quick-card__subtitle,
+  html[data-theme-mode="auto"][data-time-of-day="evening"]:not(.dark-mode):not([data-theme="dark"]) .quick-card__meta,
+  html[data-theme-mode="auto"][data-time-of-day="evening"]:not(.dark-mode):not([data-theme="dark"]) .quick-card__meta-value,
+  html[data-theme-mode="auto"][data-time-of-day="evening"]:not(.dark-mode):not([data-theme="dark"]) .quick-card__progress,
+  html[data-theme-mode="auto"][data-time-of-day="evening"]:not(.dark-mode):not([data-theme="dark"]) .progress-inline__text {
     color: #B86B07 !important;
   }
 
   /* Morning: Dawn Peach */
-  html[data-time-of-day="morning"]:not(.dark-mode):not([data-theme="dark"]) .practice-card,
-  html[data-time-of-day="morning"]:not(.dark-mode):not([data-theme="dark"]) .quick-card,
-  html[data-time-of-day="morning"]:not(.dark-mode):not([data-theme="dark"]) .event-card,
-  html[data-time-of-day="morning"]:not(.dark-mode):not([data-theme="dark"]) .progress-inline {
+  html[data-theme-mode="auto"][data-time-of-day="morning"]:not(.dark-mode):not([data-theme="dark"]) .practice-card,
+  html[data-theme-mode="auto"][data-time-of-day="morning"]:not(.dark-mode):not([data-theme="dark"]) .quick-card,
+  html[data-theme-mode="auto"][data-time-of-day="morning"]:not(.dark-mode):not([data-theme="dark"]) .event-card,
+  html[data-theme-mode="auto"][data-time-of-day="morning"]:not(.dark-mode):not([data-theme="dark"]) .progress-inline {
     background: linear-gradient(135deg, #FFFDFB 0%, #FFF4EB 45%, #FDE4D2 100%) !important;
     border: none !important;
     box-shadow: 0 10px 24px -3px rgba(235, 110, 60, 0.18), 0 3px 10px rgba(0, 0, 0, 0.02), inset 2.5px 2.5px 6px rgba(255, 255, 255, 1), inset -2.5px -2.5px 6px rgba(235, 110, 60, 0.08) !important;
   }
-  html[data-time-of-day="morning"]:not(.dark-mode):not([data-theme="dark"]) .practice-card:hover,
-  html[data-time-of-day="morning"]:not(.dark-mode):not([data-theme="dark"]) .quick-card:hover {
+  html[data-theme-mode="auto"][data-time-of-day="morning"]:not(.dark-mode):not([data-theme="dark"]) .practice-card:hover,
+  html[data-theme-mode="auto"][data-time-of-day="morning"]:not(.dark-mode):not([data-theme="dark"]) .quick-card:hover {
     box-shadow: 0 18px 40px -6px rgba(235, 110, 60, 0.26), 0 6px 16px rgba(0, 0, 0, 0.04), inset 2.5px 2.5px 6px rgba(255, 255, 255, 1), inset -3px -3px 8px rgba(235, 110, 60, 0.10) !important;
   }
-  html[data-time-of-day="morning"]:not(.dark-mode):not([data-theme="dark"]) .practice-card__title,
-  html[data-time-of-day="morning"]:not(.dark-mode):not([data-theme="dark"]) .quick-card__title,
-  html[data-time-of-day="morning"]:not(.dark-mode):not([data-theme="dark"]) .event-card__title,
-  html[data-time-of-day="morning"]:not(.dark-mode):not([data-theme="dark"]) .progress-inline__label {
+  html[data-theme-mode="auto"][data-time-of-day="morning"]:not(.dark-mode):not([data-theme="dark"]) .practice-card__title,
+  html[data-theme-mode="auto"][data-time-of-day="morning"]:not(.dark-mode):not([data-theme="dark"]) .quick-card__title,
+  html[data-theme-mode="auto"][data-time-of-day="morning"]:not(.dark-mode):not([data-theme="dark"]) .event-card__title,
+  html[data-theme-mode="auto"][data-time-of-day="morning"]:not(.dark-mode):not([data-theme="dark"]) .progress-inline__label {
     color: #4A1E08 !important;
   }
-  html[data-time-of-day="morning"]:not(.dark-mode):not([data-theme="dark"]) .practice-card__status,
-  html[data-time-of-day="morning"]:not(.dark-mode):not([data-theme="dark"]) .quick-card__subtitle,
-  html[data-time-of-day="morning"]:not(.dark-mode):not([data-theme="dark"]) .quick-card__meta,
-  html[data-time-of-day="morning"]:not(.dark-mode):not([data-theme="dark"]) .quick-card__meta-value,
-  html[data-time-of-day="morning"]:not(.dark-mode):not([data-theme="dark"]) .quick-card__progress,
-  html[data-time-of-day="morning"]:not(.dark-mode):not([data-theme="dark"]) .progress-inline__text {
+  html[data-theme-mode="auto"][data-time-of-day="morning"]:not(.dark-mode):not([data-theme="dark"]) .practice-card__status,
+  html[data-theme-mode="auto"][data-time-of-day="morning"]:not(.dark-mode):not([data-theme="dark"]) .quick-card__subtitle,
+  html[data-theme-mode="auto"][data-time-of-day="morning"]:not(.dark-mode):not([data-theme="dark"]) .quick-card__meta,
+  html[data-theme-mode="auto"][data-time-of-day="morning"]:not(.dark-mode):not([data-theme="dark"]) .quick-card__meta-value,
+  html[data-theme-mode="auto"][data-time-of-day="morning"]:not(.dark-mode):not([data-theme="dark"]) .quick-card__progress,
+  html[data-theme-mode="auto"][data-time-of-day="morning"]:not(.dark-mode):not([data-theme="dark"]) .progress-inline__text {
     color: #9C4112 !important;
   }
 
-  /* Day / Sky Blue (Slate Editorial Typography — No Hyperlink Blue) */
-  html[data-time-of-day="day"]:not(.dark-mode):not([data-theme="dark"]) .practice-card,
-  html[data-time-of-day="day"]:not(.dark-mode):not([data-theme="dark"]) .quick-card,
-  html[data-time-of-day="day"]:not(.dark-mode):not([data-theme="dark"]) .event-card,
-  html[data-time-of-day="day"]:not(.dark-mode):not([data-theme="dark"]) .progress-inline {
-    background: linear-gradient(145deg, #F8FAFF 0%, #EDF5FF 45%, #D6EAFF 100%) !important;
-    border: none !important;
-    box-shadow: 0 10px 28px -4px rgba(37, 99, 235, 0.14), 0 3px 10px rgba(0, 0, 0, 0.02), inset 2.5px 2.5px 6px rgba(255, 255, 255, 1), inset -2.5px -2.5px 6px rgba(37, 99, 235, 0.08) !important;
-  }
-  html[data-time-of-day="day"]:not(.dark-mode):not([data-theme="dark"]) .practice-card:hover,
-  html[data-time-of-day="day"]:not(.dark-mode):not([data-theme="dark"]) .quick-card:hover {
-    box-shadow: 0 18px 40px -6px rgba(37, 99, 235, 0.22), 0 6px 16px rgba(0, 0, 0, 0.04), inset 2.5px 2.5px 6px rgba(255, 255, 255, 1), inset -3px -3px 8px rgba(37, 99, 235, 0.10) !important;
-  }
-  html[data-time-of-day="day"]:not(.dark-mode):not([data-theme="dark"]) .practice-card__title,
-  html[data-time-of-day="day"]:not(.dark-mode):not([data-theme="dark"]) .quick-card__title,
-  html[data-time-of-day="day"]:not(.dark-mode):not([data-theme="dark"]) .event-card__title,
-  html[data-time-of-day="day"]:not(.dark-mode):not([data-theme="dark"]) .progress-inline__label,
-  html[data-time-of-day="day"]:not(.dark-mode):not([data-theme="dark"]) h3.practice-card__title,
-  html[data-time-of-day="day"]:not(.dark-mode):not([data-theme="dark"]) div.practice-card__title,
-  html[data-time-of-day="day"]:not(.dark-mode):not([data-theme="dark"]) div.quick-card__title {
-    color: #1E293B !important;
-  }
-  html[data-time-of-day="day"]:not(.dark-mode):not([data-theme="dark"]) .practice-card__status,
-  html[data-time-of-day="day"]:not(.dark-mode):not([data-theme="dark"]) .quick-card__subtitle,
-  html[data-time-of-day="day"]:not(.dark-mode):not([data-theme="dark"]) .quick-card__meta,
-  html[data-time-of-day="day"]:not(.dark-mode):not([data-theme="dark"]) .quick-card__meta-value,
-  html[data-time-of-day="day"]:not(.dark-mode):not([data-theme="dark"]) .quick-card__progress,
-  html[data-time-of-day="day"]:not(.dark-mode):not([data-theme="dark"]) .progress-inline__text,
-  html[data-time-of-day="day"]:not(.dark-mode):not([data-theme="dark"]) .event-card__date-pill {
-    color: #64748B !important;
-  }
-
-  /* Static Light Mode: Unified Luxurious Cream White Cushion Claymorphism */
-  html:not(.dark-mode):not([data-theme="dark"]):not([data-time-of-day="night"]):not([data-time-of-day="morning"]):not([data-time-of-day="day"]):not([data-time-of-day="evening"]) .practice-card,
-  html:not(.dark-mode):not([data-theme="dark"]):not([data-time-of-day="night"]):not([data-time-of-day="morning"]):not([data-time-of-day="day"]):not([data-time-of-day="evening"]) .quick-card,
-  html:not(.dark-mode):not([data-theme="dark"]):not([data-time-of-day="night"]):not([data-time-of-day="morning"]):not([data-time-of-day="day"]):not([data-time-of-day="evening"]) .event-card,
-  html:not(.dark-mode):not([data-theme="dark"]):not([data-time-of-day="night"]):not([data-time-of-day="morning"]):not([data-time-of-day="day"]):not([data-time-of-day="evening"]) .progress-inline {
-    background: linear-gradient(145deg, #FFFDF8 0%, #FFF8EE 45%, #FEEFD8 100%) !important;
+  /* Static Light Mode & Auto Day: Unified Luxurious Cream White Cushion Claymorphism */
+  html[data-theme-mode="light"] .practice-card,
+  html[data-theme-mode="light"] .quick-card,
+  html[data-theme-mode="light"] .event-card,
+  html[data-theme-mode="light"] .progress-inline,
+  html[data-theme-mode="auto"][data-time-of-day="day"]:not(.dark-mode):not([data-theme="dark"]) .practice-card,
+  html[data-theme-mode="auto"][data-time-of-day="day"]:not(.dark-mode):not([data-theme="dark"]) .quick-card,
+  html[data-theme-mode="auto"][data-time-of-day="day"]:not(.dark-mode):not([data-theme="dark"]) .event-card,
+  html[data-theme-mode="auto"][data-time-of-day="day"]:not(.dark-mode):not([data-theme="dark"]) .progress-inline,
+  html:not(.dark-mode):not([data-theme="dark"]):not([data-time-of-day="night"]) .practice-card,
+  html:not(.dark-mode):not([data-theme="dark"]):not([data-time-of-day="night"]) .quick-card,
+  html:not(.dark-mode):not([data-theme="dark"]):not([data-time-of-day="night"]) .event-card,
+  html:not(.dark-mode):not([data-theme="dark"]):not([data-time-of-day="night"]) .progress-inline {
+    background: linear-gradient(145deg, #FFFFFF 0%, #FFFDF8 45%, #FEEFD8 100%) !important;
     border: none !important;
     box-shadow: 0 10px 28px -4px rgba(212, 148, 58, 0.16), 0 3px 10px rgba(0, 0, 0, 0.02), inset 2.5px 2.5px 6px rgba(255, 255, 255, 1), inset -2.5px -2.5px 6px rgba(212, 148, 58, 0.10) !important;
   }
-  html:not(.dark-mode):not([data-theme="dark"]):not([data-time-of-day="night"]):not([data-time-of-day="morning"]):not([data-time-of-day="day"]):not([data-time-of-day="evening"]) .practice-card__title,
-  html:not(.dark-mode):not([data-theme="dark"]):not([data-time-of-day="night"]):not([data-time-of-day="morning"]):not([data-time-of-day="day"]):not([data-time-of-day="evening"]) .quick-card__title,
-  html:not(.dark-mode):not([data-theme="dark"]):not([data-time-of-day="night"]):not([data-time-of-day="morning"]):not([data-time-of-day="day"]):not([data-time-of-day="evening"]) .event-card__title,
-  html:not(.dark-mode):not([data-theme="dark"]):not([data-time-of-day="night"]):not([data-time-of-day="morning"]):not([data-time-of-day="day"]):not([data-time-of-day="evening"]) .progress-inline__label {
-    color: #7D4C00 !important;
+  html:not(.dark-mode):not([data-theme="dark"]):not([data-time-of-day="night"]) .practice-card__title,
+  html:not(.dark-mode):not([data-theme="dark"]):not([data-time-of-day="night"]) .quick-card__title,
+  html:not(.dark-mode):not([data-theme="dark"]):not([data-time-of-day="night"]) .event-card__title,
+  html:not(.dark-mode):not([data-theme="dark"]):not([data-time-of-day="night"]) .progress-inline__label {
+    color: #1C1C1E !important;
+    font-weight: 700 !important;
   }
-  html:not(.dark-mode):not([data-theme="dark"]):not([data-time-of-day="night"]):not([data-time-of-day="morning"]):not([data-time-of-day="day"]):not([data-time-of-day="evening"]) .practice-card__status,
-  html:not(.dark-mode):not([data-theme="dark"]):not([data-time-of-day="night"]):not([data-time-of-day="morning"]):not([data-time-of-day="day"]):not([data-time-of-day="evening"]) .quick-card__subtitle,
-  html:not(.dark-mode):not([data-theme="dark"]):not([data-time-of-day="night"]):not([data-time-of-day="morning"]):not([data-time-of-day="day"]):not([data-time-of-day="evening"]) .quick-card__meta,
-  html:not(.dark-mode):not([data-theme="dark"]):not([data-time-of-day="night"]):not([data-time-of-day="morning"]):not([data-time-of-day="day"]):not([data-time-of-day="evening"]) .quick-card__meta-value,
-  html:not(.dark-mode):not([data-theme="dark"]):not([data-time-of-day="night"]):not([data-time-of-day="morning"]):not([data-time-of-day="day"]):not([data-time-of-day="evening"]) .quick-card__progress,
-  html:not(.dark-mode):not([data-theme="dark"]):not([data-time-of-day="night"]):not([data-time-of-day="morning"]):not([data-time-of-day="day"]):not([data-time-of-day="evening"]) .progress-inline__text,
-  html:not(.dark-mode):not([data-theme="dark"]):not([data-time-of-day="night"]):not([data-time-of-day="morning"]):not([data-time-of-day="day"]):not([data-time-of-day="evening"]) .event-card__date-pill {
-    color: #A36B15 !important;
+  html:not(.dark-mode):not([data-theme="dark"]):not([data-time-of-day="night"]) .practice-card__status,
+  html:not(.dark-mode):not([data-theme="dark"]):not([data-time-of-day="night"]) .quick-card__subtitle,
+  html:not(.dark-mode):not([data-theme="dark"]):not([data-time-of-day="night"]) .quick-card__meta,
+  html:not(.dark-mode):not([data-theme="dark"]):not([data-time-of-day="night"]) .quick-card__meta-value,
+  html:not(.dark-mode):not([data-theme="dark"]):not([data-time-of-day="night"]) .quick-card__progress,
+  html:not(.dark-mode):not([data-theme="dark"]):not([data-time-of-day="night"]) .progress-inline__text,
+  html:not(.dark-mode):not([data-theme="dark"]):not([data-time-of-day="night"]) .event-card__date-pill {
+    color: #8A6D3B !important;
   }
 
   /* Dark Mode & Night */

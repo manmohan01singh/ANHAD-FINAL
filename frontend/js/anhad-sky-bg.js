@@ -268,10 +268,10 @@
 
   // ── TIME-ADAPTIVE CARD COLORS ─────────────────────────────────────────────
   const CARD_PALETTES = {
-    morning: { bg: 'rgba(255,235,208,0.84)', bgGlass: 'rgba(255,248,238,0.72)', text: '#1A0402', text2: '#4A1508', shadow: 'rgba(0,0,0,0.08)', border: 'rgba(230,140,60,0.30)', iconBg: 'rgba(255,215,160,0.70)', accent: '#B84800' },
-    day: { bg: '#F2F2F7', bgGlass: 'rgba(255,255,255,0.72)', text: '#1C1C1E', text2: '#8E8E93', shadow: 'rgba(0,0,0,0.08)', border: 'rgba(0,0,0,0.08)', iconBg: 'rgba(0,122,255,0.1)', accent: '#007AFF' },
-    evening: { bg: 'rgba(255,210,175,0.84)', bgGlass: 'rgba(255,235,210,0.72)', text: '#140205', text2: '#38050C', shadow: 'rgba(0,0,0,0.08)', border: 'rgba(200,80,20,0.30)', iconBg: 'rgba(255,185,130,0.70)', accent: '#7A1410' },
-    night: { bg: '#2C2C2E', bgGlass: 'rgba(44,44,46,0.72)', text: '#F5F5F7', text2: '#8E8E93', shadow: 'rgba(0,0,0,0.4)', border: 'rgba(255,255,255,0.08)', iconBg: 'rgba(255,255,255,0.1)', accent: '#0A84FF' },
+    morning: { bg: 'rgba(255,235,208,0.84)', bgGlass: 'rgba(255,248,238,0.72)', text: '#1A0402', text2: '#4A1508', shadow: 'rgba(0,0,0,0.08)', border: 'rgba(230,140,60,0.30)', iconBg: 'rgba(255,215,160,0.70)', accent: '#EB6834' },
+    day: { bg: '#FFFDF8', bgGlass: 'rgba(255,255,255,0.85)', text: '#1C1C1E', text2: '#8A6D3B', shadow: 'rgba(0,0,0,0.06)', border: 'rgba(212,148,58,0.15)', iconBg: 'rgba(212,148,58,0.1)', accent: '#D4943A' },
+    evening: { bg: 'rgba(255,210,175,0.84)', bgGlass: 'rgba(255,235,210,0.72)', text: '#140205', text2: '#38050C', shadow: 'rgba(0,0,0,0.08)', border: 'rgba(200,80,20,0.30)', iconBg: 'rgba(255,185,130,0.70)', accent: '#F29A2E' },
+    night: { bg: '#2C2C2E', bgGlass: 'rgba(44,44,46,0.72)', text: '#F5F5F7', text2: '#8E8E93', shadow: 'rgba(0,0,0,0.4)', border: 'rgba(255,255,255,0.08)', iconBg: 'rgba(212,148,58,0.15)', accent: '#D4943A' },
   };
 
   function applyTimeAdaptiveCardColors(slot) {
