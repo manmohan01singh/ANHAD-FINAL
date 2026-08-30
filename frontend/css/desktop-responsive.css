@@ -467,12 +467,12 @@
 
   .desktop-sidebar__footer {
     flex-shrink: 0 !important;
-    padding-top: 12px !important;
+    padding-top: 14px !important;
     margin-top: auto !important;
     border-top: 1px solid rgba(212, 148, 58, 0.14) !important;
-    display: grid !important;
-    grid-template-columns: 1fr 1fr 36px !important;
-    gap: 6px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
     width: 100% !important;
     box-sizing: border-box !important;
   }
@@ -482,14 +482,17 @@
   }
 
   .desktop-sidebar__footer-action {
+    flex: 1 1 0 !important;
+    height: 38px !important;
+    min-height: 38px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    gap: 4px !important;
-    padding: 8px 4px !important;
-    font-size: 0.74rem !important;
+    gap: 6px !important;
+    padding: 0 6px !important;
+    font-size: 0.78rem !important;
     font-weight: 600 !important;
-    border-radius: var(--desktop-radius-sm) !important;
+    border-radius: 12px !important;
     background: rgba(212, 148, 58, 0.08) !important;
     color: var(--text-primary, #1C1C1E) !important;
     border: 1px solid rgba(212, 148, 58, 0.16) !important;
@@ -511,16 +514,19 @@
   }
 
   .desktop-sidebar__theme-toggle {
-    width: 36px !important;
-    height: 34px !important;
+    flex: 0 0 38px !important;
+    width: 38px !important;
+    height: 38px !important;
+    min-height: 38px !important;
+    min-width: 38px !important;
     padding: 0 !important;
-    border: 1px solid rgba(212, 148, 58, 0.2) !important;
-    background: rgba(212, 148, 58, 0.1) !important;
+    border: 1px solid rgba(212, 148, 58, 0.16) !important;
+    background: rgba(212, 148, 58, 0.08) !important;
     cursor: pointer !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    border-radius: var(--desktop-radius-sm) !important;
+    border-radius: 12px !important;
     box-sizing: border-box !important;
     transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease !important;
   }
@@ -720,7 +726,7 @@
 
 
   /* ─────────────────────────────────────────────────────────────────────────────
-     4. HOMEPAGE HEADER (.home-header)
+     4. HOMEPAGE HEADER (.home-header) — TIED TO 1100px CENTRAL CONTENT GRID
      ───────────────────────────────────────────────────────────────────────────── */
   .home-header,
   .header.home-header {
@@ -728,11 +734,11 @@
     justify-content: space-between !important;
     align-items: center !important;
     padding: 0 0 20px 0 !important;
-    margin-bottom: 28px !important;
+    margin: 0 auto 28px auto !important;
     border-bottom: 1px solid rgba(0, 0, 0, 0.06) !important;
     background: transparent !important;
     width: 100% !important;
-    max-width: 100% !important;
+    max-width: 1100px !important;
     min-height: auto !important;
     box-sizing: border-box !important;
   }
@@ -747,7 +753,7 @@
   .home-header .header__right {
     display: flex !important;
     align-items: center !important;
-    gap: 12px !important;
+    gap: 10px !important;
     background: none !important;
     box-shadow: none !important;
     border: none !important;
@@ -755,8 +761,8 @@
   }
 
   .home-header .header__btn {
-    width: 42px !important;
-    height: 42px !important;
+    width: 40px !important;
+    height: 40px !important;
     border-radius: 12px !important;
     background: rgba(0, 0, 0, 0.04) !important;
     border: 1px solid rgba(0, 0, 0, 0.06) !important;
@@ -764,6 +770,7 @@
     align-items: center !important;
     justify-content: center !important;
     cursor: pointer !important;
+    position: relative !important;
     transition: transform 0.2s var(--ease-spring), background 0.2s ease, border-color 0.2s ease !important;
   }
   html.dark-mode .home-header .header__btn,
@@ -777,20 +784,84 @@
     border-color: rgba(212, 148, 58, 0.3) !important;
   }
 
+  /* Anchored Notification Red Badge */
+  .home-header #notifBtn {
+    position: relative !important;
+  }
+  .home-header #notifBadge,
+  .home-header .header__badge {
+    position: absolute !important;
+    top: -3px !important;
+    right: -3px !important;
+    min-width: 16px !important;
+    height: 16px !important;
+    padding: 0 3px !important;
+    border-radius: 8px !important;
+    background: #FF3B30 !important;
+    color: #FFFFFF !important;
+    font-size: 10px !important;
+    font-weight: 700 !important;
+    line-height: 16px !important;
+    text-align: center !important;
+    border: 1.5px solid #FFFFFF !important;
+    box-shadow: 0 2px 5px rgba(255, 59, 48, 0.45) !important;
+    box-sizing: border-box !important;
+    z-index: 5 !important;
+  }
+  html.dark-mode .home-header #notifBadge,
+  [data-theme="dark"] .home-header #notifBadge {
+    border-color: #1A171D !important;
+  }
+
   /* ─────────────────────────────────────────────────────────────────────────────
-     5. GREETING & PROGRESS BAR
+     5. HERO BANNER & GREETING — FULL BREATHING ROOM, ZERO CLIPPING
      ───────────────────────────────────────────────────────────────────────────── */
   .greeting {
     text-align: center !important;
-    margin: 0 auto 32px auto !important;
-    max-width: 900px !important;
+    margin: 0 auto 0 auto !important;
+    max-width: 1100px !important;
     width: 100% !important;
+    box-sizing: border-box !important;
   }
 
   .greeting__content {
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
+    width: 100% !important;
+  }
+
+  .greeting__hero-banner {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    max-width: 1100px !important;
+    margin: 0 auto 0 auto !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+
+  .greeting__hero-banner picture {
+    width: 100% !important;
+    max-width: 100% !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    margin: 0 auto !important;
+  }
+
+  .greeting__hero-artwork {
+    width: 100% !important;
+    max-width: 1050px !important;
+    height: auto !important;
+    aspect-ratio: 1906 / 650 !important;
+    object-fit: contain !important;
+    display: block !important;
+    margin: 0 auto !important;
+    transform: none !important; /* CRITICAL: Prevent image overlap on elements below */
+    filter: drop-shadow(0 8px 24px rgba(212, 148, 58, 0.08)) !important;
   }
 
   .greeting__portrait-slider {
@@ -833,11 +904,14 @@
     color: rgba(255, 255, 255, 0.6) !important;
   }
 
+  /* ─────────────────────────────────────────────────────────────────────────────
+     5.1 NITNEM PROGRESS TRACKER — SIT SAFELY BELOW HERO, NEVER OVERLAPPING
+     ───────────────────────────────────────────────────────────────────────────── */
   .progress-inline {
     width: 100% !important;
-    max-width: 100% !important;
-    margin: 0 0 36px 0 !important;
-    padding: 14px 24px !important;
+    max-width: 1100px !important;
+    margin: 28px auto 36px auto !important;
+    padding: 12px 22px !important;
     border-radius: 18px !important;
     background: rgba(255, 255, 255, 0.9) !important;
     border: 1px solid rgba(0, 0, 0, 0.08) !important;
@@ -847,6 +921,9 @@
     justify-content: space-between !important;
     gap: 16px !important;
     box-sizing: border-box !important;
+    position: relative !important;
+    z-index: 10 !important;
+    clear: both !important;
   }
   html.dark-mode .progress-inline,
   [data-theme="dark"] .progress-inline {
@@ -857,8 +934,8 @@
 
   .progress-inline__bar {
     flex: 1 !important;
-    height: 8px !important;
-    border-radius: 6px !important;
+    height: 6px !important;
+    border-radius: 4px !important;
     background: rgba(0, 0, 0, 0.08) !important;
   }
   html.dark-mode .progress-inline__bar,
@@ -868,7 +945,7 @@
 
   .progress-inline__fill {
     height: 100% !important;
-    border-radius: 6px !important;
+    border-radius: 4px !important;
     background: var(--gold-gradient) !important;
   }
 
@@ -876,9 +953,9 @@
      6. HERO CAROUSEL (4 CARDS SYMMETRIC GRID)
      ───────────────────────────────────────────────────────────────────────────── */
   .hero-carousel {
-    margin: 0 0 44px 0 !important;
+    margin: 0 auto 44px auto !important;
     width: 100% !important;
-    max-width: 100% !important;
+    max-width: 1100px !important;
   }
 
   .hero-carousel__track {
