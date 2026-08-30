@@ -4451,13 +4451,13 @@
       color: #94A3B8 !important;
     }
   </style>
-  <!-- ANHAD MASTER VISUAL OVERRIDES v10.74.0 -->
+  <!-- ANHAD MASTER VISUAL OVERRIDES v10.75.0 -->
   <style id="anhad-master-overrides">
     /* ════════════════════════════════════════════════════════════════
        1. GREETING SECTION & CLEAN SPACING BEFORE NITNEM BAR
        ════════════════════════════════════════════════════════════════ */
     html body .greeting {
-      margin-top: -6px !important;
+      margin-top: -8px !important;
       margin-bottom: 24px !important;
       padding-bottom: 0px !important;
       position: relative !important;
@@ -4481,14 +4481,17 @@
     }
 
     /* ════════════════════════════════════════════════════════════════
-       2. LIGHT MODE HERO ARTWORK — UNCROPPED FULL GURMUKHI & TITLE INTACT
+       2. LIGHT MODE HERO ARTWORK — LARGE MAJESTIC SIZE & PERFECT CENTER
        ════════════════════════════════════════════════════════════════ */
     html body .greeting__hero-banner {
       display: flex !important;
       flex-direction: column !important;
-      width: 100% !important;
-      max-width: 100% !important;
-      margin: 0 auto !important;
+      width: calc(100% + 32px) !important;
+      max-width: none !important;
+      margin-left: -16px !important;
+      margin-right: -16px !important;
+      margin-top: 0 !important;
+      margin-bottom: 0 !important;
       overflow: visible !important;
       padding: 0 !important;
       box-sizing: border-box !important;
@@ -4507,13 +4510,14 @@
     }
     html body .greeting__hero-artwork {
       width: 100% !important;
-      max-width: 600px !important;
+      max-width: 100% !important;
       height: auto !important;
       aspect-ratio: 1906 / 710 !important;
       object-fit: contain !important;
       display: block !important;
       margin: 0 auto !important;
-      transform: translateX(8px) !important;
+      transform: translateX(8px) scale(1.12) !important;
+      transform-origin: center center !important;
       image-rendering: -webkit-optimize-contrast !important;
       image-rendering: high-quality !important;
     }
@@ -4590,13 +4594,13 @@
       visibility: visible !important;
     }
 
-    /* Slides: Symmetrically centered with rightward optical shift */
+    /* Slides: Dead center — no optical shift */
     html body .greeting__slide {
       position: absolute !important;
       width: 120px !important;
       height: 120px !important;
       top: 50% !important;
-      left: calc(50% + 14px) !important;
+      left: 50% !important;
       margin-top: -60px !important;
       margin-left: -60px !important;
       display: flex !important;
