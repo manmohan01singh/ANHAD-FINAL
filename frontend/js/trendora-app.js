@@ -1071,22 +1071,21 @@
         // Update date/countdown display
         if (event.isToday) {
           if (daysBadge) daysBadge.style.display = 'none';
+          if (dateEl) dateEl.textContent = event.dateStr || '30 August';
           if (event.eventCategory === 'remembrance') {
             if (remembranceBadge) {
-              remembranceBadge.textContent = `🕯️ ${event.name || 'Remembrance Day'}`;
+              remembranceBadge.textContent = `✦ Historical Diwas`;
               remembranceBadge.style.display = 'inline-flex';
             }
             if (celebrationBadge) celebrationBadge.style.display = 'none';
-            if (dateEl) dateEl.textContent = '🕯️ In remembrance';
             if (countEl) countEl.textContent = '🙏';
             if (labelEl) labelEl.textContent = 'Today';
           } else {
             if (celebrationBadge) {
-              celebrationBadge.textContent = `✦ Today: ${event.name || 'Gurpurab'}`;
+              celebrationBadge.textContent = `✦ Gurpurab Diwas`;
               celebrationBadge.style.display = 'inline-flex';
             }
             if (remembranceBadge) remembranceBadge.style.display = 'none';
-            if (dateEl) dateEl.textContent = '🎉 Celebrate today!';
             if (countEl) countEl.textContent = '✨';
             if (labelEl) labelEl.textContent = 'Today';
           }

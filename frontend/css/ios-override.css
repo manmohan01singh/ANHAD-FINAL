@@ -2173,16 +2173,17 @@ html {
 .day-orb {
   position: absolute;
   border-radius: 50%;
-  filter: blur(80px);
-  opacity: 0.12; /* extremely soft and elegant */
-  will-change: auto; /* no animation to save GPU */
+  filter: none !important;
+  opacity: 0.85;
+  transform: translate3d(0, 0, 0);
+  pointer-events: none !important;
 }
 
 /* Sky Blue Orb */
 .day-orb-1 {
   width: 350px;
   height: 350px;
-  background: radial-gradient(circle, #BAE6FD, transparent 70%);
+  background: radial-gradient(circle at center, rgba(186, 230, 253, 0.4) 0%, rgba(186, 230, 253, 0.15) 40%, transparent 70%) !important;
   top: -50px;
   left: -50px;
 }
@@ -2191,16 +2192,16 @@ html {
 .day-orb-2 {
   width: 300px;
   height: 300px;
-  background: radial-gradient(circle, #D1FAE5, transparent 70%);
+  background: radial-gradient(circle at center, rgba(209, 250, 229, 0.4) 0%, rgba(209, 250, 229, 0.15) 40%, transparent 70%) !important;
   top: 150px;
   right: -50px;
 }
 
-/* Soft Red Orb */
+/* Soft Gold Orb */
 .day-orb-3 {
   width: 250px;
   height: 250px;
-  background: radial-gradient(circle, #FEE2E2, transparent 70%);
+  background: radial-gradient(circle at center, rgba(254, 240, 199, 0.45) 0%, rgba(254, 240, 199, 0.15) 40%, transparent 70%) !important;
   top: 420px;
   left: -30px;
 }
@@ -2209,7 +2210,7 @@ html {
 .day-orb-4 {
   width: 280px;
   height: 280px;
-  background: radial-gradient(circle, #FEF3C7, transparent 70%);
+  background: radial-gradient(circle at center, rgba(254, 243, 199, 0.4) 0%, rgba(254, 243, 199, 0.12) 40%, transparent 70%) !important;
   top: 580px;
   right: -20px;
 }
