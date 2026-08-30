@@ -329,17 +329,12 @@ html.dark-mode .campaign-card__countdown {
   overflow: hidden;
 }
 
-/* ── The state flip. Two attributes; no classes, no JS-written styles. ───── */
+/* ── The state flip: Ensure portraits track stays visible ───── */
 #guruSlider[data-campaign-state="b"] > .greeting__slider-track {
-  opacity: 0;
-  transform: scale(0.92);
-  pointer-events: none;
-  /* visibility is a perf measure only: stop compositing 11 portraits while
-     they are invisible. Delayed 0.6s on the way out so the fade still plays. */
-  visibility: hidden;
-  transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1),
-              opacity 0.6s cubic-bezier(0.2, 0.8, 0.2, 1),
-              visibility 0s linear 0.6s !important;
+  opacity: 1 !important;
+  transform: none !important;
+  pointer-events: auto !important;
+  visibility: visible !important;
 }
 
 #guruSlider[data-campaign-state="b"] > .greeting__announce {

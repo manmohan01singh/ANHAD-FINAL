@@ -697,21 +697,20 @@
         else timeOfDay = 'night';
       }
       const isDark = currentMode === 'dark' || currentTheme === 'dark' || htmlEl.classList.contains('dark-mode');
-      if (isDark) {
-        timeOfDay = 'night';
-      } else if (currentMode === 'light' && timeOfDay === 'night') {
-        timeOfDay = 'day';
-      }
-      htmlEl.setAttribute('data-time-of-day', timeOfDay);
-      if (currentMode === 'auto') {
+      if (currentMode === 'light') {
+        htmlEl.removeAttribute('data-time-of-day');
+        htmlEl.style.setProperty('background-color', '#FAF8F5', 'important');
+      } else if (isDark) {
+        htmlEl.setAttribute('data-time-of-day', 'night');
+        htmlEl.style.setProperty('background-color', '#0D0D0F', 'important');
+      } else {
+        htmlEl.setAttribute('data-time-of-day', timeOfDay);
         let autoBg = '#FAF8F5';
         if (timeOfDay === 'morning') autoBg = '#FFF5EC';
         else if (timeOfDay === 'day') autoBg = '#FAF8F5';
         else if (timeOfDay === 'evening') autoBg = '#FFF8E7';
         else if (timeOfDay === 'night') autoBg = '#0D0D0F';
         htmlEl.style.setProperty('background-color', autoBg, 'important');
-      } else {
-        htmlEl.style.setProperty('background-color', isDark ? '#0D0D0F' : '#FAF8F5', 'important');
       }
     } else {
       htmlEl.removeAttribute('data-anhad-home');

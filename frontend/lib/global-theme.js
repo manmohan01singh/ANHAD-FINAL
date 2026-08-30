@@ -49,8 +49,14 @@
             }
         }
 
-        const activeTimeOfDay = (theme === 'dark') ? 'night' : ((theme === 'light') ? 'day' : timeOfDay);
-        html.setAttribute('data-time-of-day', activeTimeOfDay);
+        if (theme === 'light') {
+            html.removeAttribute('data-time-of-day');
+        } else if (theme === 'dark') {
+            html.setAttribute('data-time-of-day', 'night');
+        } else {
+            html.setAttribute('data-time-of-day', timeOfDay);
+        }
+        const activeTimeOfDay = (theme === 'dark') ? 'night' : ((theme === 'light') ? 'light' : timeOfDay);
 
         // Update in-memory cache
         window._anhadThemeCache = {

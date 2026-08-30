@@ -183,7 +183,9 @@ button, .btn, .button {
 /* Dark mode: hide hero banner, show portrait slider - REMOVE GAP */
 html.dark-mode .greeting__hero-banner,
 [data-theme="dark"] .greeting__hero-banner,
-[data-time-of-day="night"] .greeting__hero-banner {
+[data-theme-mode="dark"] .greeting__hero-banner,
+[data-time-of-day="night"] .greeting__hero-banner,
+html[data-theme-mode="auto"][data-time-of-day="night"] .greeting__hero-banner {
     display: none !important;
 }
 
@@ -196,10 +198,16 @@ html.dark-mode .greeting,
     margin-right: 0 !important;
 }
 
-#greetingDarkCarousel,
+html.dark-mode #greetingDarkCarousel,
+[data-theme="dark"] #greetingDarkCarousel,
+[data-theme-mode="dark"] #greetingDarkCarousel,
+[data-time-of-day="night"] #greetingDarkCarousel,
+html[data-theme-mode="auto"][data-time-of-day="night"] #greetingDarkCarousel,
 html.dark-mode .greeting__dark-carousel-container,
 [data-theme="dark"] .greeting__dark-carousel-container,
-[data-time-of-day="night"] .greeting__dark-carousel-container {
+[data-theme-mode="dark"] .greeting__dark-carousel-container,
+[data-time-of-day="night"] .greeting__dark-carousel-container,
+html[data-theme-mode="auto"][data-time-of-day="night"] .greeting__dark-carousel-container {
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;

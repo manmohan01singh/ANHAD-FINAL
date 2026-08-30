@@ -567,6 +567,8 @@
       this.update();
     }
   };
+  window.PortraitSlider = PortraitSlider;
+  window.GuruSlider = PortraitSlider;
 
   // ═══════════════════════════════════════════════════════════════════════════
   // § 6. DATA MANAGER — Real Data, No Fabrication

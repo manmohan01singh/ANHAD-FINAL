@@ -827,6 +827,26 @@
     overflow: visible !important;
   }
 
+  html.dark-mode .greeting__hero-banner,
+  html[data-theme="dark"] .greeting__hero-banner,
+  html[data-theme-mode="dark"] .greeting__hero-banner,
+  html[data-time-of-day="night"] .greeting__hero-banner,
+  html[data-theme-mode="auto"][data-time-of-day="night"] .greeting__hero-banner {
+    display: none !important;
+  }
+
+  html.dark-mode .greeting__dark-carousel-container,
+  html[data-theme="dark"] .greeting__dark-carousel-container,
+  html[data-theme-mode="dark"] .greeting__dark-carousel-container,
+  html[data-time-of-day="night"] .greeting__dark-carousel-container,
+  html[data-theme-mode="auto"][data-time-of-day="night"] .greeting__dark-carousel-container {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    width: 100% !important;
+    margin-top: 0 !important;
+  }
+
   .greeting__hero-banner picture {
     width: 100% !important;
     max-width: 100% !important;
@@ -851,7 +871,7 @@
   }
 
   .greeting__portrait-slider {
-    max-width: 140px !important;
+    max-width: 480px !important;
     margin: 0 auto 16px auto !important;
   }
 

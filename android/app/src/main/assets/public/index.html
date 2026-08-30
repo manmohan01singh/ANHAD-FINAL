@@ -4830,15 +4830,15 @@
       box-shadow: 0 6px 18px rgba(212, 148, 58, 0.42) !important;
     }
 
-    /* ENLARGED GURU AVATAR (104px) WITH CLEAN GOLD RIM */
+    /* CLEAN PROPORTIONAL GURU AVATAR WITH GOLD RIM */
     .event-card__guru-img-wrapper {
-      width: 104px !important;
-      height: 104px !important;
-      min-width: 104px !important;
-      min-height: 104px !important;
+      width: 76px !important;
+      height: 76px !important;
+      min-width: 76px !important;
+      min-height: 76px !important;
       border-radius: 50% !important;
-      border: 3.5px solid #D4943A !important;
-      box-shadow: 0 6px 22px rgba(212, 148, 58, 0.30) !important;
+      border: 2px solid rgba(212, 148, 58, 0.45) !important;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12) !important;
       display: flex !important;
       align-items: center !important;
       justify-content: center !important;
@@ -6818,32 +6818,24 @@
   <script>
     (function() {
       function syncGreetingHeroArtwork() {
-        var img = document.getElementById('greetingHeroArtwork');
-        var source = document.getElementById('greetingHeroSource');
         var heroBanner = document.getElementById('greetingHeroBanner');
         var darkCarousel = document.getElementById('greetingDarkCarousel');
+        var html = document.documentElement;
         
-        var themeMode = document.documentElement.getAttribute('data-theme-mode');
-        var isDark = document.documentElement.classList.contains('dark-mode') ||
-                     document.documentElement.getAttribute('data-theme') === 'dark' ||
+        var themeMode = html.getAttribute('data-theme-mode');
+        var isDark = html.classList.contains('dark-mode') ||
+                     html.getAttribute('data-theme') === 'dark' ||
                      themeMode === 'dark';
-        var timeOfDay = document.documentElement.getAttribute('data-time-of-day');
-        var showDark = isDark || timeOfDay === 'night';
+        var timeOfDay = html.getAttribute('data-time-of-day');
+        var showDark = isDark || (themeMode === 'auto' && timeOfDay === 'night') || (timeOfDay === 'night' && themeMode !== 'light');
 
         if (heroBanner) {
           heroBanner.style.setProperty('display', showDark ? 'none' : 'flex', 'important');
         }
         if (darkCarousel) {
           darkCarousel.style.setProperty('display', showDark ? 'flex' : 'none', 'important');
-        }
-
-        if (img) {
-          var targetWebp = 'guruimages/guru-greeting-hero.webp';
-          if (source && source.srcset !== targetWebp) {
-            source.srcset = targetWebp;
-          }
-          if (!img.src.endsWith('guru-greeting-hero.webp')) {
-            img.src = targetWebp;
+          if (showDark && window.PortraitSlider && typeof window.PortraitSlider.init === 'function') {
+            window.PortraitSlider.init();
           }
         }
       }
