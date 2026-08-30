@@ -1386,37 +1386,25 @@ a,
 /* Dynamic Day / Sky Mode Practice Cards */
 [data-theme-mode="auto"][data-time-of-day="day"] .practice-card,
 [data-time-of-day="day"] .practice-card {
-  background: linear-gradient(150deg, #FFFFFF 0%, #EEF6FF 45%, #DCEEFF 100%) !important;
-  border: 1.5px solid rgba(255, 255, 255, 0.95) !important;
-  box-shadow: 
-    6px 8px 20px rgba(80, 145, 220, 0.18),
-    -4px -4px 12px rgba(255, 255, 255, 1),
-    inset 2.5px 2.5px 5px rgba(255, 255, 255, 1),
-    inset -2.5px -2.5px 5px rgba(80, 145, 220, 0.10) !important;
+  background: linear-gradient(145deg, #F8FAFF 0%, #EDF5FF 45%, #D6EAFF 100%) !important;
+  border: none !important;
+  box-shadow: 0 10px 24px -3px rgba(37, 99, 235, 0.14), 0 3px 8px rgba(0, 0, 0, 0.02), -3px -3px 8px rgba(255, 255, 255, 0.98), inset 2.5px 2.5px 6px rgba(255, 255, 255, 1), inset -2.5px -2.5px 6px rgba(37, 99, 235, 0.08) !important;
 }
 
 /* Dynamic Morning Mode Practice Cards */
 [data-theme-mode="auto"][data-time-of-day="morning"] .practice-card,
 [data-time-of-day="morning"] .practice-card {
-  background: linear-gradient(150deg, #FFFFFF 0%, #FFF8EC 45%, #FDE9CF 100%) !important;
-  border: 1.5px solid rgba(255, 255, 255, 0.95) !important;
-  box-shadow: 
-    6px 8px 20px rgba(212, 148, 58, 0.16),
-    -4px -4px 12px rgba(255, 255, 255, 0.98),
-    inset 2.5px 2.5px 5px rgba(255, 255, 255, 1),
-    inset -2.5px -2.5px 5px rgba(212, 148, 58, 0.10) !important;
+  background: linear-gradient(135deg, #FFFDF8 0%, #FFF5E6 45%, #FEE8C9 100%) !important;
+  border: none !important;
+  box-shadow: 0 10px 24px -3px rgba(242, 154, 46, 0.18), 0 3px 8px rgba(0, 0, 0, 0.02), -3px -3px 8px rgba(255, 255, 255, 0.98), inset 2.5px 2.5px 6px rgba(255, 255, 255, 1), inset -2.5px -2.5px 6px rgba(242, 154, 46, 0.10) !important;
 }
 
-/* Dynamic Evening Mode Practice Cards */
+/* Dynamic Evening Mode Practice Cards: #F29A2E */
 [data-theme-mode="auto"][data-time-of-day="evening"] .practice-card,
 [data-time-of-day="evening"] .practice-card {
-  background: linear-gradient(150deg, #FFFFFF 0%, #FFF1EB 45%, #FDE1D4 100%) !important;
-  border: 1.5px solid rgba(255, 255, 255, 0.95) !important;
-  box-shadow: 
-    6px 8px 20px rgba(234, 88, 12, 0.16),
-    -4px -4px 12px rgba(255, 255, 255, 0.98),
-    inset 2.5px 2.5px 5px rgba(255, 255, 255, 1),
-    inset -2.5px -2.5px 5px rgba(234, 88, 12, 0.10) !important;
+  background: linear-gradient(135deg, #FFFDF8 0%, #FFF5E6 45%, #FEE8C9 100%) !important;
+  border: none !important;
+  box-shadow: 0 12px 28px -3px rgba(242, 154, 46, 0.22), 0 4px 10px rgba(0, 0, 0, 0.02), -3px -3px 9px rgba(255, 255, 255, 0.98), inset 2.5px 2.5px 6px rgba(255, 255, 255, 1), inset -2.5px -2.5px 6px rgba(242, 154, 46, 0.12) !important;
 }
 
 /* Dynamic Night Mode & Dark Mode Practice Cards — Pure Deep Obsidian Clay */
@@ -1809,7 +1797,15 @@ html.dark-mode .practice-card__ring {
     -4px -4px 14px rgba(255, 255, 255, 0.95),
     inset 1.5px 1.5px 4px rgba(255, 255, 255, 0.95),
     inset -2px -2px 6px rgba(212, 148, 58, 0.08) !important;
-  border: 1px solid rgba(212, 148, 58, 0.22) !important;
+/* Nitnem — Warm Sacred Amber / Sunrise Gold */
+[data-theme-mode="auto"][data-time-of-day="day"] .practice-card--nitnem {
+  background: linear-gradient(155deg, #FFFDF8 0%, #FFF5E8 50%, #FFECD0 100%) !important;
+  box-shadow:
+    6px 10px 24px rgba(212, 148, 58, 0.12),
+    -4px -4px 14px rgba(255, 255, 255, 0.95),
+    inset 1.5px 1.5px 4px rgba(255, 255, 255, 0.95),
+    inset -2px -2px 6px rgba(212, 148, 58, 0.08) !important;
+  border: none !important;
   border-radius: 26px !important;
 }
 /* Sehaj Paath — Regal Royal Violet / Lavender */
@@ -1820,7 +1816,7 @@ html.dark-mode .practice-card__ring {
     -4px -4px 14px rgba(255, 255, 255, 0.95),
     inset 1.5px 1.5px 4px rgba(255, 255, 255, 0.95),
     inset -2px -2px 6px rgba(139, 92, 246, 0.08) !important;
-  border: 1px solid rgba(139, 92, 246, 0.22) !important;
+  border: none !important;
   border-radius: 26px !important;
 }
 /* Hukamnama — Radiant Saffron / Peach Glow */
@@ -1831,7 +1827,7 @@ html.dark-mode .practice-card__ring {
     -4px -4px 14px rgba(255, 255, 255, 0.95),
     inset 1.5px 1.5px 4px rgba(255, 255, 255, 0.95),
     inset -2px -2px 6px rgba(255, 122, 69, 0.08) !important;
-  border: 1px solid rgba(255, 122, 69, 0.22) !important;
+  border: none !important;
   border-radius: 26px !important;
 }
 /* Quick Access Cards — unified sky blue, no border */
