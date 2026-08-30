@@ -2908,7 +2908,7 @@
       -webkit-backdrop-filter: blur(8px) !important;
     }
     
-    /* 4. Semantic SVG Colors across All Themes */
+    /* 4. Semantic SVG Colors & Icon System across All Themes */
     .quick-card__chevron,
     .sheet__option-arrow,
     .event-card__learn-more svg {
@@ -2916,6 +2916,40 @@
       stroke: currentColor !important;
       color: var(--text-tertiary, #8E8E93);
       transition: transform 0.15s ease;
+    }
+    .header__btn svg,
+    .tab-icon svg,
+    .quick-card__icon svg,
+    .practice-card__ring-icon svg,
+    .desktop-sidebar__link-icon svg,
+    .sheet__option-icon svg {
+      display: inline-block;
+      vertical-align: middle;
+      color: inherit;
+    }
+    .quick-card__icon svg {
+      stroke: currentColor;
+    }
+    .practice-card__ring-icon svg {
+      stroke: currentColor;
+      color: var(--text-secondary, #636366);
+    }
+    .tab-item .tab-icon svg {
+      stroke: currentColor;
+      color: var(--tab-inactive, #8E8E93);
+      transition: color 0.15s ease, transform 0.15s ease;
+    }
+    .tab-item.active .tab-icon svg {
+      color: var(--anhad-gold, #D4943A) !important;
+      transform: scale(1.08);
+    }
+    .header__btn svg {
+      stroke: currentColor;
+      color: var(--text-primary, #1C1C1E);
+    }
+    html.dark-mode .header__btn svg,
+    [data-theme="dark"] .header__btn svg {
+      color: #F5F5F7 !important;
     }
     html.dark-mode .quick-card__chevron,
     html.dark-mode .sheet__option-arrow,
@@ -2974,7 +3008,70 @@
       border: 1px solid rgba(255, 255, 255, 0.25) !important;
       box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15) !important;
     }
-  </style>
+  
+
+    /* ─── SACRED DEVOTIONAL HERO ARTWORK INTEGRATION ─── */
+    .greeting__hero-banner {
+      position: relative;
+      width: 100%;
+      max-width: 580px;
+      margin: 0 auto 14px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      border-radius: 20px;
+      /* Soft natural edge vignetting: melts seamlessly into page surface */
+      mask-image: radial-gradient(ellipse 95% 90% at 50% 50%, black 65%, transparent 100%);
+      -webkit-mask-image: radial-gradient(ellipse 95% 90% at 50% 50%, black 65%, transparent 100%);
+    }
+    .greeting__hero-artwork {
+      width: 100%;
+      height: auto;
+      aspect-ratio: 1024 / 516;
+      object-fit: contain;
+      display: block;
+      transition: opacity 0.3s ease;
+    }
+    html.dark-mode .greeting__hero-banner,
+    [data-theme="dark"] .greeting__hero-banner {
+      /* Subtle dark mode contrast harmonization */
+      mask-image: radial-gradient(ellipse 92% 88% at 50% 50%, black 60%, transparent 100%);
+      -webkit-mask-image: radial-gradient(ellipse 92% 88% at 50% 50%, black 60%, transparent 100%);
+      filter: drop-shadow(0 4px 20px rgba(212, 148, 58, 0.12));
+    }
+    .greeting__salutation {
+      font-size: 1.15rem !important;
+      font-weight: 700 !important;
+      letter-spacing: 0.5px !important;
+      color: var(--anhad-gold, #D4943A) !important;
+      margin-bottom: 4px !important;
+    }
+    .greeting__gurbani {
+      font-family: var(--font-gurmukhi, 'Noto Sans Gurmukhi', serif) !important;
+      font-size: 1.18rem !important;
+      line-height: 1.5 !important;
+      font-weight: 600 !important;
+      color: var(--text-primary, #1C1C1E) !important;
+      margin-bottom: 4px !important;
+    }
+    html.dark-mode .greeting__gurbani,
+    [data-theme="dark"] .greeting__gurbani {
+      color: #F5F5F7 !important;
+    }
+    .greeting__translation {
+      font-size: 0.92rem !important;
+      line-height: 1.45 !important;
+      color: var(--text-secondary, #636366) !important;
+      max-width: 520px !important;
+      margin: 0 auto !important;
+    }
+    html.dark-mode .greeting__translation,
+    [data-theme="dark"] .greeting__translation {
+      color: #A1A1A6 !important;
+    }
+
+</style>
 
 </head>
 
@@ -3014,55 +3111,55 @@
       <div class="desktop-sidebar__section-title">Navigation</div>
       <nav class="desktop-sidebar__nav" aria-label="Main Menu">
         <a href="index.html" class="desktop-sidebar__link desktop-sidebar__link--active" data-route="home">
-          <span class="desktop-sidebar__link-icon"><span class="ios-emoji">🏠</span></span>
+          <span class="desktop-sidebar__link-icon"><svg width="20" height="20"><use href="#icon-home"/></svg></span>
           <span class="desktop-sidebar__link-text">Home</span>
         </a>
         <a href="Hukamnama/daily-hukamnama.html" class="desktop-sidebar__link" data-route="hukamnama">
-          <span class="desktop-sidebar__link-icon"><span class="ios-emoji">📜</span></span>
+          <span class="desktop-sidebar__link-icon"><svg width="20" height="20"><use href="#icon-scroll"/></svg></span>
           <span class="desktop-sidebar__link-text">Daily Hukamnama</span>
           <span class="desktop-sidebar__badge desktop-sidebar__badge--gold">Today</span>
         </a>
         <a href="nitnem/index.html" class="desktop-sidebar__link" data-route="nitnem">
-          <span class="desktop-sidebar__link-icon"><span class="ios-emoji">📿</span></span>
+          <span class="desktop-sidebar__link-icon"><svg width="20" height="20"><use href="#icon-mala-beads"/></svg></span>
           <span class="desktop-sidebar__link-text">Nitnem Hub</span>
           <span class="desktop-sidebar__badge">8 Banis</span>
         </a>
         <a href="GurbaniRadio/gurbani-radio.html" class="desktop-sidebar__link" data-route="radio">
-          <span class="desktop-sidebar__link-icon"><span class="ios-emoji">📻</span></span>
+          <span class="desktop-sidebar__link-icon"><svg width="20" height="20"><use href="#icon-radio-broadcast"/></svg></span>
           <span class="desktop-sidebar__link-text">Gurbani Radio</span>
           <span class="desktop-sidebar__badge desktop-sidebar__badge--live">LIVE</span>
         </a>
         <a href="GurbaniKhoj/gurbani-khoj.html" class="desktop-sidebar__link" data-route="khoj">
-          <span class="desktop-sidebar__link-icon"><span class="ios-emoji">🔍</span></span>
+          <span class="desktop-sidebar__link-icon"><svg width="20" height="20"><use href="#icon-search"/></svg></span>
           <span class="desktop-sidebar__link-text">Gurbani Khoj</span>
         </a>
         <a href="SehajPaath/sehaj-paath.html" class="desktop-sidebar__link" data-route="sehaj">
-          <span class="desktop-sidebar__link-icon"><span class="ios-emoji">📖</span></span>
+          <span class="desktop-sidebar__link-icon"><svg width="20" height="20"><use href="#icon-book-open"/></svg></span>
           <span class="desktop-sidebar__link-text">Sehaj Paath</span>
         </a>
         <a href="NaamAbhyas/naam-abhyas.html" class="desktop-sidebar__link" data-route="naam">
-          <span class="desktop-sidebar__link-icon"><span class="ios-emoji">🙏</span></span>
+          <span class="desktop-sidebar__link-icon"><svg width="20" height="20"><use href="#icon-prayer-hands"/></svg></span>
           <span class="desktop-sidebar__link-text">Naam Abhyas</span>
         </a>
         <a href="sadhsangat-live/index.html" class="desktop-sidebar__link" data-route="sadhsangat">
-          <span class="desktop-sidebar__link-icon"><span class="ios-emoji">📡</span></span>
+          <span class="desktop-sidebar__link-icon"><svg width="20" height="20"><use href="#icon-radio-broadcast"/></svg></span>
           <span class="desktop-sidebar__link-text">Sadhsangat Live</span>
           <span class="desktop-sidebar__badge">HD</span>
         </a>
         <a href="NitnemTracker/nitnem-tracker.html" class="desktop-sidebar__link" data-route="tracker">
-          <span class="desktop-sidebar__link-icon"><span class="ios-emoji">🔥</span></span>
+          <span class="desktop-sidebar__link-icon"><svg width="20" height="20"><use href="#icon-flame-streak"/></svg></span>
           <span class="desktop-sidebar__link-text">Nitnem Tracker</span>
         </a>
         <a href="Favorites/favorites.html" class="desktop-sidebar__link" data-route="favorites">
-          <span class="desktop-sidebar__link-icon"><span class="ios-emoji">❤️</span></span>
+          <span class="desktop-sidebar__link-icon"><svg width="20" height="20"><use href="#icon-heart-fav"/></svg></span>
           <span class="desktop-sidebar__link-text">Favorites</span>
         </a>
         <a href="Notes/notes.html" class="desktop-sidebar__link" data-route="notes">
-          <span class="desktop-sidebar__link-icon"><span class="ios-emoji">📝</span></span>
+          <span class="desktop-sidebar__link-icon"><svg width="20" height="20"><use href="#icon-notes-edit"/></svg></span>
           <span class="desktop-sidebar__link-text">Spiritual Notes</span>
         </a>
         <a href="Insights/insights.html" class="desktop-sidebar__link" data-route="learning">
-          <span class="desktop-sidebar__link-icon"><span class="ios-emoji">📚</span></span>
+          <span class="desktop-sidebar__link-icon"><svg width="20" height="20"><use href="#icon-library-books"/></svg></span>
           <span class="desktop-sidebar__link-text">Learning & Library</span>
         </a>
       </nav>
@@ -3070,15 +3167,15 @@
     
     <div class="desktop-sidebar__footer">
       <a href="Calendar/GurpurabCalendar-ios.html" class="desktop-sidebar__footer-action" title="Gurpurab Calendar">
-        <span class="ios-emoji">📅</span>
+        <svg width="18" height="18" style="margin-right:6px;"><use href="#icon-calendar"/></svg>
         <span>Calendar</span>
       </a>
       <a href="Settings/index.html" class="desktop-sidebar__footer-action" title="Settings">
-        <span class="ios-emoji">⚙️</span>
+        <svg width="18" height="18" style="margin-right:6px;"><use href="#icon-settings"/></svg>
         <span>Settings</span>
       </a>
       <button class="desktop-sidebar__footer-action desktop-sidebar__theme-toggle" id="desktopThemeToggle" aria-label="Toggle Theme" title="Toggle Theme">
-        <span class="ios-emoji" id="desktopThemeIcon">🌙</span>
+        <svg width="18" height="18" id="desktopThemeIcon"><use href="#icon-moon-theme"/></svg>
       </button>
     </div>
   </aside>
@@ -3124,6 +3221,97 @@
       <symbol id="icon-mala" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
         <circle cx="12" cy="12" r="9"/><circle cx="12" cy="3" r="1.5" fill="currentColor"/><circle cx="6.3" cy="6.3" r="1" fill="currentColor"/><circle cx="3" cy="12" r="1" fill="currentColor"/><circle cx="6.3" cy="17.7" r="1" fill="currentColor"/><circle cx="12" cy="21" r="1" fill="currentColor"/><circle cx="17.7" cy="17.7" r="1" fill="currentColor"/><circle cx="21" cy="12" r="1" fill="currentColor"/><circle cx="17.7" cy="6.3" r="1" fill="currentColor"/>
       </symbol>
+    
+      <!-- ─── REFINED PRODUCTION SVG ICON SYSTEM ─── -->
+      <symbol id="icon-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+        <polyline points="9 22 9 12 15 12 15 22"/>
+      </symbol>
+      <symbol id="icon-scroll" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+      </symbol>
+      <symbol id="icon-mala-beads" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="8"/>
+        <circle cx="12" cy="4" r="1.5" fill="currentColor"/>
+        <circle cx="17.6" cy="6.4" r="1.5" fill="currentColor"/>
+        <circle cx="20" cy="12" r="1.5" fill="currentColor"/>
+        <circle cx="17.6" cy="17.6" r="1.5" fill="currentColor"/>
+        <circle cx="12" cy="20" r="1.5" fill="currentColor"/>
+        <circle cx="6.4" cy="17.6" r="1.5" fill="currentColor"/>
+        <circle cx="4" cy="12" r="1.5" fill="currentColor"/>
+        <circle cx="6.4" cy="6.4" r="1.5" fill="currentColor"/>
+      </symbol>
+      <symbol id="icon-radio-broadcast" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="2"/>
+        <path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"/>
+      </symbol>
+      <symbol id="icon-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"/>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </symbol>
+      <symbol id="icon-book-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+      </symbol>
+      <symbol id="icon-prayer-hands" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2v20M8 5l4-3 4 3v12l-4 3-4-3V5z"/>
+      </symbol>
+      <symbol id="icon-flame-streak" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>
+      </symbol>
+      <symbol id="icon-heart-fav" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+      </symbol>
+      <symbol id="icon-notes-edit" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+      </symbol>
+      <symbol id="icon-library-books" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+        <line x1="8" y1="6" x2="16" y2="6"/>
+        <line x1="8" y1="10" x2="14" y2="10"/>
+      </symbol>
+      <symbol id="icon-calendar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+        <line x1="16" y1="2" x2="16" y2="6"/>
+        <line x1="8" y1="2" x2="8" y2="6"/>
+        <line x1="3" y1="10" x2="21" y2="10"/>
+      </symbol>
+      <symbol id="icon-settings" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+      </symbol>
+      <symbol id="icon-compass" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>
+      </symbol>
+      <symbol id="icon-moon-theme" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+      </symbol>
+      <symbol id="icon-bell-notif" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+        <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+      </symbol>
+      <symbol id="icon-diya-lamp" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2c-.5 2.5-2 4-2 6a2 2 0 0 0 4 0c0-2-1.5-3.5-2-6z"/>
+        <path d="M3 14c0 4.42 4.03 8 9 8s9-3.58 9-8H3z"/>
+        <line x1="2" y1="14" x2="22" y2="14"/>
+      </symbol>
+      <symbol id="icon-leaf-sprout" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 22v-9"/>
+        <path d="M12 13a5 5 0 0 0 5-5c0-4-5-6-5-6s-5 2-5 6a5 5 0 0 0 5 5z"/>
+      </symbol>
+      <symbol id="icon-music-note" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 18V5l12-2v13"/>
+        <circle cx="6" cy="18" r="3"/>
+        <circle cx="18" cy="16" r="3"/>
+      </symbol>
+      <symbol id="icon-close-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18"/>
+        <line x1="6" y1="6" x2="18" y2="18"/>
+      </symbol>
+
     </defs>
   </svg>
 
@@ -3143,11 +3331,11 @@
            title="Settings"
            onclick="try{sessionStorage.setItem('anhad_welcomed','1');localStorage.setItem('anhad_welcome_seen','true');localStorage.setItem('anhad_session_active_ts',Date.now().toString());}catch(e){} window.location.href='./Settings/index.html'"
            style="display: flex; align-items: center; justify-content: center; border: none; background: inherit; cursor: pointer;">
-          <span class="ios-emoji" role="img" aria-label="settings" style="font-size: 20px;">⚙️</span>
+          <svg width="20" height="20" aria-hidden="true"><use href="#icon-settings"/></svg>
         </button>
         <button class="header__btn ios-haptic" id="tourGuideBtn" aria-label="Guide" title="App Guide"
            onclick="event.stopPropagation(); window.location.href='guide/index.html';">
-          <span class="ios-emoji" role="img" aria-label="guide" style="font-size: 20px;">🧭</span>
+          <svg width="20" height="20" aria-hidden="true"><use href="#icon-compass"/></svg>
         </button>
       </div>
       <div class="header__center">
@@ -3159,11 +3347,11 @@
       <div class="header__right">
         <button class="header__btn ios-haptic" id="themeToggleBtn" aria-label="Toggle Theme"
            onclick="if(window.AnhadTheme){window.AnhadTheme.toggle();}else if(window.toggleTheme){window.toggleTheme();}">
-          <span class="ios-emoji" role="img" aria-label="theme" id="themeIcon">🌙</span>
+          <svg width="20" height="20" id="themeIcon" aria-hidden="true"><use href="#icon-moon-theme"/></svg>
         </button>
         <button class="header__btn ios-haptic" id="notifBtn" aria-label="Notifications"
            onclick="if(window.navigateTo){window.navigateTo('reminders/smart-reminders-v7.html');}else{window.location.href='reminders/smart-reminders-v7.html';}">
-          <span class="ios-emoji" role="img" aria-label="notifications">🔔</span>
+          <svg width="20" height="20" aria-hidden="true"><use href="#icon-bell-notif"/></svg>
           <span class="header__badge" id="notifBadge" style="display:none" aria-live="polite">0</span>
         </button>
       </div>
@@ -3173,80 +3361,26 @@
          GREETING — iOS Large Title Inspired
     ════════════════════════════════════════════════════════════════════ -->
     <section class="greeting" aria-label="Personal Greeting" style="position: relative; overflow: visible;">
-      <!-- Sky Blue Orbs - 2-3 circular orbs with 100% blur -->
-      <div class="greeting-orb greeting-orb-1" aria-hidden="true"></div>
-      <div class="greeting-orb greeting-orb-2" aria-hidden="true"></div>
-      <div class="greeting-orb greeting-orb-3" aria-hidden="true"></div>
-      
-      <style>
-        /* Dynamic Color Orbs - Adapt to Guru Image Colors */
-        .greeting-orb {
-          display: none !important;
-        }
-        
-        [data-theme-mode="auto"][data-time-of-day="day"] .greeting-orb {
-          display: none !important;
-        }
-        
-        .greeting-orb-1 {
-          width: 180px;
-          height: 180px;
-          top: -50px;
-          left: -40px;
-          background: radial-gradient(circle, rgba(255, 140, 66, 0.7), rgba(216, 101, 24, 0.4), transparent);
-          animation: floatOrb1 8s ease-in-out infinite;
-        }
-        
-        .greeting-orb-2 {
-          width: 150px;
-          height: 150px;
-          top: 20px;
-          right: -30px;
-          background: radial-gradient(circle, rgba(212, 148, 58, 0.7), rgba(184, 134, 11, 0.4), transparent);
-          animation: floatOrb2 10s ease-in-out infinite;
-        }
-        
-        .greeting-orb-3 {
-          width: 120px;
-          height: 120px;
-          bottom: -20px;
-          left: 50%;
-          transform: translateX(-50%);
-          background: radial-gradient(circle, rgba(245, 230, 211, 0.6), rgba(232, 220, 196, 0.3), transparent);
-          animation: floatOrb3 12s ease-in-out infinite;
-        }
-        
-        @keyframes floatOrb1 {
-          0%, 100% { transform: translate(0, 0); }
-          50% { transform: translate(15px, -15px); }
-        }
-        
-        @keyframes floatOrb2 {
-          0%, 100% { transform: translate(0, 0); }
-          50% { transform: translate(-12px, 12px); }
-        }
-        
-        @keyframes floatOrb3 {
-          0%, 100% { transform: translate(-50%, 0); }
-          50% { transform: translate(calc(-50% + 10px), -10px); }
-        }
-      </style>
-      
       <div class="greeting__content">
-        <!-- Portrait Slider for immersive experience.
-             data-campaign-state is the ONLY attribute js/campaign-renderer.js
-             writes here. It ships as "a" so every fresh load and every SPA
-             restore starts dormant. -->
-        <div class="greeting__portrait-slider" id="guruSlider" data-campaign-state="a">
-          <div class="greeting__slider-track" id="guruSliderTrack">
-            <!-- Slides will be injected by trendora-app.js -->
-          </div>
+        <!-- Sacred Devotional Hero Artwork: Sri Guru Gobind Singh Ji • Sri Guru Granth Sahib Ji • Sri Guru Nanak Dev Ji -->
+        <div class="greeting__hero-banner" id="greetingHeroBanner" aria-label="Sacred Guru Darbar">
+          <picture>
+            <source srcset="assets/guru-greeting-hero.webp" type="image/webp">
+            <img class="greeting__hero-artwork" id="greetingHeroArtwork"
+                 src="assets/guru-greeting-hero.png"
+                 alt="Sri Guru Granth Sahib Ji with Sri Guru Gobind Singh Ji and Sri Guru Nanak Dev Ji"
+                 width="1024" height="516"
+                 loading="eager" fetchpriority="high" decoding="async">
+          </picture>
+        </div>
 
+        <!-- Hidden container for Gurpurab campaign and background slider hooks to preserve JS compatibility -->
+        <div class="greeting__portrait-slider" id="guruSlider" data-campaign-state="a" style="display: none;">
+          <div class="greeting__slider-track" id="guruSliderTrack"></div>
           <div class="greeting__announce" id="greetingAnnounce" hidden aria-hidden="true">
             <span class="greeting__announce-halo" aria-hidden="true"></span>
             <div class="greeting__announce-disc">
-              <img class="greeting__announce-img" id="greetingAnnounceImg" alt="" aria-hidden="true"
-                   decoding="async" loading="lazy" src="assets/Darbar-sahib-AMRITVELA.webp">
+              <img class="greeting__announce-img" id="greetingAnnounceImg" alt="" aria-hidden="true" decoding="async" loading="lazy" src="assets/Darbar-sahib-AMRITVELA.webp">
               <span class="greeting__announce-veil" aria-hidden="true"></span>
               <span class="greeting__announce-ik" aria-hidden="true">ੴ</span>
               <span class="greeting__announce-badge" id="greetingAnnounceBadge"></span>
@@ -3255,11 +3389,11 @@
           </div>
         </div>
         
-        <!-- Text clearly below the image -->
+        <!-- Sacred Devotional Text & Dynamic Gurbani Pankti -->
         <div class="greeting__text">
-          <div class="greeting__salutation" id="greetingSalutation">&nbsp;</div>
-          <div class="greeting__gurbani" id="greetingGurbani" lang="pa">&nbsp;</div>
-          <div class="greeting__translation" id="greetingTranslation" style="font-size: 0.9rem; opacity: 0.8; margin-top: 2px;">&nbsp;</div>
+          <div class="greeting__salutation" id="greetingSalutation">Sri Guru Granth Sahib Ji</div>
+          <div class="greeting__gurbani" id="greetingGurbani" lang="pa">ਹਰਿ ਕੀ ਵਡਿਆਈ ਦੇਖਹੁ ਸੰਤਹੁ ਹਰਿ ਨਿਮਾਣਿਆ ਮਾਣੁ ਦੇਵਾਏ ॥</div>
+          <div class="greeting__translation" id="greetingTranslation" style="font-size: 0.92rem; opacity: 0.85; margin-top: 3px;">Behold the glorious greatness of the Lord, O Saints; the Lord bestows honor upon the dishonored.</div>
 
           <div class="greeting__announce-text" id="greetingAnnounceText" hidden aria-hidden="true">
             <div class="greeting__announce-title" id="greetingAnnounceTitle"></div>
@@ -3503,7 +3637,7 @@
             <circle class="practice-card__ring-bg" cx="30" cy="30" r="26"/>
             <circle class="practice-card__ring-fill" id="nitnemRing" cx="30" cy="30" r="26" stroke-dasharray="163.4" stroke-dashoffset="163.4"/>
           </svg>
-          <div class="practice-card__ring-icon" aria-hidden="true"><span class="ios-emoji" role="img" aria-label="prayer beads">📿</span></div>
+          <div class="practice-card__ring-icon" aria-hidden="true"><svg width="22" height="22"><use href="#icon-mala-beads"/></svg></div>
         </div>
         <div class="practice-card__title">Nitnem</div>
         <div class="practice-card__status" id="nitnemStatus">Daily Prayers</div>
@@ -3515,7 +3649,7 @@
             <circle class="practice-card__ring-bg" cx="30" cy="30" r="26"/>
             <circle class="practice-card__ring-fill" id="sehajRing" cx="30" cy="30" r="26" stroke-dasharray="163.4" stroke-dashoffset="163.4"/>
           </svg>
-          <div class="practice-card__ring-icon" aria-hidden="true"><span class="ios-emoji" role="img" aria-label="open book">📖</span></div>
+          <div class="practice-card__ring-icon" aria-hidden="true"><svg width="22" height="22"><use href="#icon-book-open"/></svg></div>
         </div>
         <div class="practice-card__title">Sehaj Paath</div>
         <div class="practice-card__status" id="sehajStatus">Begin journey</div>
@@ -3527,7 +3661,7 @@
             <circle class="practice-card__ring-bg" cx="30" cy="30" r="26"/>
             <circle class="practice-card__ring-fill" id="hukamRing" cx="30" cy="30" r="26" stroke-dasharray="163.4" stroke-dashoffset="163.4"/>
           </svg>
-          <div class="practice-card__ring-icon" aria-hidden="true"><span class="ios-emoji" role="img" aria-label="scroll">📜</span></div>
+          <div class="practice-card__ring-icon" aria-hidden="true"><svg width="22" height="22"><use href="#icon-scroll"/></svg></div>
         </div>
         <div class="practice-card__title">Hukamnama</div>
         <div class="practice-card__status" id="hukamStatus">Today's Message</div>
@@ -3543,7 +3677,7 @@
 
     <div class="quick-access-grid ios-stagger">
       <article class="quick-card quick-card--green ios-haptic" id="nitnemTrackerCard" aria-label="Nitnem Tracker" data-href="NitnemTracker/nitnem-tracker.html">
-      <div class="quick-card__icon" aria-hidden="true"><span class="ios-emoji" role="img" aria-label="fire">🔥</span></div>
+      <div class="quick-card__icon" aria-hidden="true"><svg width="22" height="22"><use href="#icon-flame-streak"/></svg></div>
       <div class="quick-card__content">
         <div class="quick-card__title">Nitnem Tracker</div>
         <div class="quick-card__subtitle">Track streaks &amp; daily progress</div>
@@ -3555,7 +3689,7 @@
     </article>
 
     <article class="quick-card quick-card--gold ios-haptic" id="naamCard" aria-label="Naam Abhyas" data-href="NaamAbhyas/naam-abhyas.html">
-      <div class="quick-card__icon" aria-hidden="true"><span class="ios-emoji" role="img" aria-label="prayer">🙏</span></div>
+      <div class="quick-card__icon" aria-hidden="true"><svg width="22" height="22"><use href="#icon-prayer-hands"/></svg></div>
       <div class="quick-card__content">
         <div class="quick-card__title">Naam Abhyas</div>
         <div class="quick-card__subtitle" id="naamSubtitle">Set schedule timing &amp; start</div>
@@ -3567,7 +3701,7 @@
     </article>
 
     <article class="quick-card quick-card--purple ios-haptic" id="shabadVicharCard" aria-label="Shabad Vichar" data-href="ShabadVichar/shabad-vichar.html">
-      <div class="quick-card__icon" aria-hidden="true"><span class="ios-emoji" role="img" aria-label="light">🪔</span></div>
+      <div class="quick-card__icon" aria-hidden="true"><svg width="22" height="22"><use href="#icon-diya-lamp"/></svg></div>
       <div class="quick-card__content">
         <div class="quick-card__title">Shabad Vichar</div>
         <div class="quick-card__subtitle">Daily Divine Contemplation</div>
@@ -3576,7 +3710,7 @@
     </article>
 
     <article class="quick-card quick-card--blue ios-haptic" id="searchCard" aria-label="Gurbani Khoj" data-href="GurbaniKhoj/gurbani-khoj.html">
-      <div class="quick-card__icon" aria-hidden="true"><span class="ios-emoji" role="img" aria-label="search">🔍</span></div>
+      <div class="quick-card__icon" aria-hidden="true"><svg width="22" height="22"><use href="#icon-search"/></svg></div>
       <div class="quick-card__content">
         <div class="quick-card__title">Gurbani Khoj</div>
         <div class="quick-card__subtitle">Search Sri Guru Granth Sahib Ji</div>
@@ -3585,7 +3719,7 @@
     </article>
 
     <article class="quick-card quick-card--rose ios-haptic" id="notesCard" aria-label="Spiritual Notes" data-href="Notes/notes.html">
-      <div class="quick-card__icon" aria-hidden="true"><span class="ios-emoji" role="img" aria-label="notes">📝</span></div>
+      <div class="quick-card__icon" aria-hidden="true"><svg width="22" height="22"><use href="#icon-notes-edit"/></svg></div>
       <div class="quick-card__content">
         <div class="quick-card__title">Spiritual Notes</div>
         <div class="quick-card__subtitle" id="notesSubtitle">Start writing reflections</div>
@@ -3598,7 +3732,7 @@
 
     <!-- 📡 Sadhsangat Live -->
     <article class="quick-card quick-card--gold ios-haptic" id="sadhsangatLiveCard" aria-label="Sadhsangat Live" data-href="sadhsangat-live/index.html">
-      <div class="quick-card__icon" aria-hidden="true"><span class="ios-emoji" role="img" aria-label="satellite antenna">📡</span></div>
+      <div class="quick-card__icon" aria-hidden="true"><svg width="22" height="22"><use href="#icon-radio-broadcast"/></svg></div>
       <div class="quick-card__content">
         <div class="quick-card__title">Sadhsangat Live</div>
         <div class="quick-card__subtitle">Discover live Kirtan &amp; Katha</div>
@@ -3611,7 +3745,7 @@
 
     <!-- 🌿 The Journey -->
     <article class="quick-card quick-card--green ios-haptic" id="journeyCard" aria-label="The Journey" data-href="Journey/journey.html">
-      <div class="quick-card__icon" aria-hidden="true"><span class="ios-emoji" role="img" aria-label="seedling">🌿</span></div>
+      <div class="quick-card__icon" aria-hidden="true"><svg width="22" height="22"><use href="#icon-leaf-sprout"/></svg></div>
       <div class="quick-card__content">
         <div class="quick-card__title">The Journey</div>
         <div class="quick-card__subtitle">Discover the story behind ANHAD</div>
@@ -3621,7 +3755,7 @@
 
     <!-- 🙏 Chaliya 2026 — Coming Soon -->
     <article class="quick-card quick-card--gold ios-haptic" id="chaliya2026Card" aria-label="Chaliya 2026" role="button" tabindex="0">
-      <div class="quick-card__icon" aria-hidden="true"><span class="ios-emoji" role="img" aria-label="prayer beads">📿</span></div>
+      <div class="quick-card__icon" aria-hidden="true"><svg width="22" height="22"><use href="#icon-mala-beads"/></svg></div>
       <div class="quick-card__content">
         <div class="quick-card__title">Chaliya 2026</div>
         <div class="quick-card__subtitle">Parkash Purab Guru Nanak Dev Ji</div>
@@ -3646,9 +3780,7 @@
     </div>
     <div class="sheet__body">
       <button class="sheet__option ios-haptic" id="optionDarbar">
-        <div class="sheet__option-icon sheet__option-icon--live">
-          <span class="ios-emoji ios-emoji--lg" role="img" aria-label="radio">📻</span>
-        </div>
+        <div class="sheet__option-icon sheet__option-icon--live"><svg width="24" height="24"><use href="#icon-radio-broadcast"/></svg></div>
         <div class="sheet__option-text">
           <div class="sheet__option-title">Darbar Sahib Live</div>
           <div class="sheet__option-desc">Real-time Kirtan from Sri Harmandir Sahib</div>
@@ -3656,9 +3788,7 @@
         <svg class="sheet__option-arrow"><use href="#icon-chevron-right"/></svg>
       </button>
       <button class="sheet__option ios-haptic" id="optionAmritvela">
-        <div class="sheet__option-icon sheet__option-icon--playlist">
-          <span class="ios-emoji ios-emoji--lg" role="img" aria-label="music">🎵</span>
-        </div>
+        <div class="sheet__option-icon sheet__option-icon--playlist"><svg width="24" height="24"><use href="#icon-music-note"/></svg></div>
         <div class="sheet__option-text">
           <div class="sheet__option-title">Amritvela Smagams</div>
           <div class="sheet__option-desc">Curated Kirtan tracks collection</div>
@@ -3684,9 +3814,7 @@
         <div class="install-banner__desc">Full app experience on your device</div>
       </div>
       <button class="install-banner__cta ios-haptic" id="installCta">Install</button>
-      <button class="install-banner__dismiss ios-haptic" id="installDismiss" aria-label="Dismiss install banner">
-        <span class="ios-emoji ios-emoji--sm" role="img" aria-label="close">❌</span>
-      </button>
+      <button class="install-banner__dismiss ios-haptic" id="installDismiss" aria-label="Dismiss install banner"><svg width="16" height="16"><use href="#icon-close-x"/></svg></button>
     </div>
   </div>
 
@@ -4206,21 +4334,19 @@
   <!-- Floating Tab Bar — Same as Dashboard -->
   <nav class="tab-bar" id="mainNav" aria-label="Main Navigation" style="position: fixed !important; bottom: 32px !important; left: 50% !important; transform: translateX(-50%) !important; z-index: 200 !important;">
     <a href="/index.html" class="tab-item active">
-      <span class="tab-icon">🏠</span>
+      <span class="tab-icon"><svg width="22" height="22" aria-hidden="true"><use href="#icon-home"/></svg></span>
       <span class="tab-label">Home</span>
     </a>
     <a href="Insights/insights.html" class="tab-item">
-      <span class="tab-icon">📚</span>
+      <span class="tab-icon"><svg width="22" height="22" aria-hidden="true"><use href="#icon-library-books"/></svg></span>
       <span class="tab-label">Learning</span>
     </a>
     <a href="Favorites/favorites.html" class="tab-item">
-      <span class="tab-icon">❤️</span>
+      <span class="tab-icon"><svg width="22" height="22" aria-hidden="true"><use href="#icon-heart-fav"/></svg></span>
       <span class="tab-label">Favorites</span>
     </a>
     <a href="sadhsangat-live/index.html" class="tab-item">
-      <span class="tab-icon" style="font-size:0;line-height:0;">
-        <img src="assets/app-logo.webp" alt="" aria-hidden="true" width="26" height="26" loading="lazy" decoding="async" style="width:26px;height:26px;border-radius:8px;object-fit:cover;display:block;">
-      </span>
+      <span class="tab-icon"><svg width="22" height="22" aria-hidden="true"><use href="#icon-radio-broadcast"/></svg></span>
       <span class="tab-label">Sadhsangat</span>
     </a>
   </nav>
