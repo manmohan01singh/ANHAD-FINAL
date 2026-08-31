@@ -106,17 +106,27 @@
         // Share Button
         const shareBtn = document.getElementById('shareBtn');
         if (shareBtn) {
-            shareBtn.addEventListener('click', async () => {
+            shareBtn.addEventListener('click', () => {
                 hapticFeedback();
-                try {
+                if (window.AnhadHukamnamaCardGenerator) {
+                    const firstVerse = (state.data?.verses && state.data.verses.length > 0) ? state.data.verses[0] : null;
+                    const hukamPayload = {
+                        title: `${state.data?.raag || ''} • ${state.data?.writer || ''}`.trim(),
+                        gurmukhi: firstVerse?.gurmukhi || 'ਗੁਰ ਪੂਰੇ ਚਰਨੀ ਲਾਇਆ ॥ ਹਰਿ ਸੰਗਿ ਸਹਾਈ ਪਾਇਆ ॥',
+                        english: firstVerse?.translation || 'The Perfect Guru has attached me to His feet. The Lord has become my companion and helper.',
+                        ang: `Ang ${state.data?.ang || '621'} • Sri Darbar Sahib`,
+                        date: state.data?.date || new Date().toLocaleDateString('en-GB')
+                    };
+                    window.AnhadHukamnamaCardGenerator.open(hukamPayload);
+                } else {
                     const text = `Daily Hukamnama - ${state.data?.date || ''}\n${state.data?.raag || ''} • ${state.data?.writer || ''}\n\nRead more at: ${window.location.href}`;
                     if (navigator.share) {
-                        await navigator.share({ title: 'Daily Hukamnama', text });
-                    } else {
-                        await navigator.clipboard.writeText(text);
+                        navigator.share({ title: 'Daily Hukamnama', text }).catch(() => {});
+                    } else if (navigator.clipboard) {
+                        navigator.clipboard.writeText(text);
                         alert('Link copied to clipboard');
                     }
-                } catch (e) {}
+                }
             });
         }
 

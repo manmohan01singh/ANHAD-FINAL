@@ -1315,6 +1315,10 @@
   <link rel="stylesheet" href="css/anhad-sky-bg.css?v=2">
   <link rel="stylesheet" href="css/scroll-engine.css">
   <link rel="stylesheet" href="css/campaign.css?v=2">
+  <!-- ANHAD: Devotional Feature Suite Styles -->
+  <link rel="stylesheet" href="css/mala-counter.css">
+  <link rel="stylesheet" href="css/hukamnama-card-generator.css">
+  <link rel="stylesheet" href="css/audio-sleep-timer.css">
 
   <!-- CRITICAL: ANHAD Adaptive Title - Changes with background -->
   <style id="anhad-header-title-override">
@@ -5701,6 +5705,9 @@
               <span class="hero-card__badge-dot" aria-hidden="true" style="background:#FFB347"></span>
               <span class="hero-card__badge-text">24/7 SIMRAN</span>
             </div>
+            <button class="hero-card__badge-action ios-haptic" type="button" aria-label="Open Digital Mala Counter" onclick="event.stopPropagation(); if (window.AnhadMalaCounter) window.AnhadMalaCounter.open();" style="position: absolute; top: 14px; right: 14px; padding: 4px 10px; border-radius: 20px; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.3); color: #FFF; font-size: 0.72rem; font-weight: 700; cursor: pointer; z-index: 10; display: inline-flex; align-items: center; gap: 4px;">
+              <span>📿 Mala Jaap</span>
+            </button>
             <div class="hero-card__overlay">
               <div class="hero-card__overlay-info">
                 <div class="hero-card__title">Waheguru Simran</div>
@@ -5723,6 +5730,9 @@
               onerror="this.style.display='none';this.parentNode.style.background='linear-gradient(150deg,#92400E,#B8651A)'">
             </picture>
             <div class="hero-card__badge hero-card__badge--curated" aria-label="Today">☸ HUKAMNAMA</div>
+            <button class="hero-card__badge-action ios-haptic" type="button" aria-label="Create Hukamnama Art Card" onclick="event.stopPropagation(); if (window.AnhadHukamnamaCardGenerator) window.AnhadHukamnamaCardGenerator.open();" style="position: absolute; top: 14px; right: 14px; padding: 4px 10px; border-radius: 20px; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.3); color: #FFF; font-size: 0.72rem; font-weight: 700; cursor: pointer; z-index: 10; display: inline-flex; align-items: center; gap: 4px;">
+              <span>✦ Share Card</span>
+            </button>
             <div class="hero-card__overlay">
               <div class="hero-card__overlay-info">
                 <div class="hero-card__title hero-card__title--thin" id="heroHukamTitle" style="font-family:var(--font-gurmukhi)">Today's Hukamnama</div>
@@ -6785,6 +6795,10 @@
       observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class', 'data-theme', 'data-theme-mode', 'data-time-of-day'] });
     })();
   </script>
+  <!-- ANHAD: Devotional Feature Suite Scripts -->
+  <script src="js/mala-counter.js" defer></script>
+  <script src="js/hukamnama-card-generator.js" defer></script>
+  <script src="js/audio-sleep-timer.js" defer></script>
 
 </body>
 </html>

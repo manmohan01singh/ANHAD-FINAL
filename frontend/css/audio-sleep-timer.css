@@ -1,0 +1,329 @@
+/**
+ * ═══════════════════════════════════════════════════════════════════════════════
+ * ANHAD — Bedtime Kirtan Sleep Timer & Dimmer Styling
+ * ═══════════════════════════════════════════════════════════════════════════════
+ */
+
+.sleep-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  pointer-events: none;
+  visibility: hidden;
+  transition: visibility 0.3s ease;
+}
+
+.sleep-modal.open {
+  pointer-events: auto;
+  visibility: visible;
+}
+
+.sleep-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.sleep-modal.open .sleep-modal__backdrop {
+  opacity: 1;
+}
+
+.sleep-modal__sheet {
+  position: relative;
+  width: 100%;
+  max-width: 460px;
+  background: linear-gradient(180deg, #FFFDF8 0%, #FFF8EE 100%);
+  border-radius: 32px 32px 0 0;
+  padding: 16px 24px 34px 24px;
+  box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.25), inset 0 1.5px 2px rgba(255, 255, 255, 0.9);
+  border-top: 1px solid rgba(212, 148, 58, 0.25);
+  transform: translateY(100%);
+  transition: transform 0.35s cubic-bezier(0.32, 1, 0.23, 1);
+  box-sizing: border-box;
+}
+
+.sleep-modal.open .sleep-modal__sheet {
+  transform: translateY(0);
+}
+
+html.dark-mode .sleep-modal__sheet,
+[data-theme="dark"] .sleep-modal__sheet,
+[data-time-of-day="night"] .sleep-modal__sheet {
+  background: linear-gradient(180deg, #1C1924 0%, #121017 100%);
+  border-top: 1px solid rgba(212, 148, 58, 0.35);
+  box-shadow: 0 -16px 48px rgba(0, 0, 0, 0.8), inset 0 1px 1px rgba(255, 255, 255, 0.08);
+}
+
+.sleep-modal__drag-handle {
+  width: 38px;
+  height: 4.5px;
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+  margin: 0 auto 14px auto;
+}
+
+html.dark-mode .sleep-modal__drag-handle,
+[data-theme="dark"] .sleep-modal__drag-handle {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.sleep-modal__header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.sleep-modal__eyebrow {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #A3640E;
+}
+
+html.dark-mode .sleep-modal__eyebrow,
+[data-theme="dark"] .sleep-modal__eyebrow {
+  color: #F7C634;
+}
+
+.sleep-modal__title {
+  font-size: 1.25rem;
+  font-weight: 750;
+  color: #1A171D;
+  margin: 2px 0 0 0;
+}
+
+html.dark-mode .sleep-modal__title,
+[data-theme="dark"] .sleep-modal__title {
+  color: #FFFDF8;
+}
+
+.sleep-modal__close-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.05);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #555;
+  transition: transform 0.15s ease;
+}
+
+html.dark-mode .sleep-modal__close-btn,
+[data-theme="dark"] .sleep-modal__close-btn {
+  background: rgba(255, 255, 255, 0.1);
+  color: #EEE;
+}
+
+.sleep-modal__desc {
+  font-size: 0.8rem;
+  color: #6C5B49;
+  line-height: 1.4;
+  margin: 0 0 16px 0;
+}
+
+html.dark-mode .sleep-modal__desc,
+[data-theme="dark"] .sleep-modal__desc {
+  color: #A89B8D;
+}
+
+/* Active status box */
+.sleep-active-status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(212, 148, 58, 0.12);
+  border: 1px solid rgba(212, 148, 58, 0.28);
+  border-radius: 16px;
+  padding: 10px 14px;
+  margin-bottom: 16px;
+}
+
+html.dark-mode .sleep-active-status,
+[data-theme="dark"] .sleep-active-status {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.sleep-active-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.sleep-active-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #7D4C00;
+  text-transform: uppercase;
+}
+
+html.dark-mode .sleep-active-label,
+[data-theme="dark"] .sleep-active-label {
+  color: #F7C634;
+}
+
+.sleep-active-countdown {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #1A171D;
+  font-family: var(--font-rounded, sans-serif);
+}
+
+html.dark-mode .sleep-active-countdown,
+[data-theme="dark"] .sleep-active-countdown {
+  color: #FFFFFF;
+}
+
+.sleep-cancel-btn {
+  padding: 6px 14px;
+  border-radius: 12px;
+  background: rgba(192, 57, 43, 0.12);
+  border: 1px solid rgba(192, 57, 43, 0.25);
+  color: #C0392B;
+  font-size: 0.76rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* Presets Grid */
+.sleep-presets-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.sleep-preset-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 8px;
+  border-radius: 18px;
+  background: rgba(212, 148, 58, 0.08);
+  border: 1px solid rgba(212, 148, 58, 0.2);
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.sleep-preset-btn:hover {
+  transform: translateY(-2px);
+  background: rgba(212, 148, 58, 0.14);
+}
+
+.sleep-preset-btn:active {
+  transform: scale(0.95);
+}
+
+html.dark-mode .sleep-preset-btn,
+[data-theme="dark"] .sleep-preset-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.sleep-preset-val {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #7D4C00;
+}
+
+html.dark-mode .sleep-preset-val,
+[data-theme="dark"] .sleep-preset-val {
+  color: #F7C634;
+}
+
+.sleep-preset-unit {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: #8C7560;
+  margin-top: 2px;
+}
+
+html.dark-mode .sleep-preset-unit,
+[data-theme="dark"] .sleep-preset-unit {
+  color: #A09586;
+}
+
+.sleep-preset-btn--dimmer {
+  background: rgba(44, 34, 60, 0.08);
+  border-color: rgba(142, 68, 173, 0.2);
+}
+
+/* Toast */
+.anhad-sleep-toast {
+  position: fixed;
+  bottom: 96px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: rgba(28, 24, 36, 0.92);
+  color: #FFFDF8;
+  padding: 10px 20px;
+  border-radius: 24px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(212, 148, 58, 0.3);
+  z-index: 10002;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.25s ease;
+}
+
+.anhad-sleep-toast.visible {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+/* Night Dimmer Overlay */
+.anhad-night-dimmer {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: #000000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+
+.anhad-night-dimmer.active {
+  opacity: 0.96;
+  pointer-events: auto;
+}
+
+.dimmer-content {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.4);
+  padding: 24px;
+}
+
+.dimmer-icon {
+  font-size: 2rem;
+  margin-bottom: 12px;
+}
+
+.dimmer-title {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.dimmer-subtitle {
+  font-size: 0.78rem;
+  max-width: 280px;
+  line-height: 1.4;
+}

@@ -1,0 +1,245 @@
+/**
+ * ═══════════════════════════════════════════════════════════════════════════════
+ * ANHAD — Hukamnama Shareable Art Card Generator Modal Styling
+ * ═══════════════════════════════════════════════════════════════════════════════
+ */
+
+.hukam-share-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  visibility: hidden;
+  transition: visibility 0.3s ease;
+}
+
+.hukam-share-modal.open {
+  pointer-events: auto;
+  visibility: visible;
+}
+
+.hukam-share-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.hukam-share-modal.open .hukam-share-modal__backdrop {
+  opacity: 1;
+}
+
+.hukam-share-modal__sheet {
+  position: relative;
+  width: 92%;
+  max-width: 440px;
+  max-height: 88vh;
+  background: linear-gradient(180deg, #FFFDF8 0%, #FFF8EE 100%);
+  border-radius: 28px;
+  padding: 18px 20px 24px 20px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35), inset 0 1.5px 2px rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(212, 148, 58, 0.3);
+  transform: scale(0.92) translateY(20px);
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.32, 1, 0.23, 1);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.hukam-share-modal.open .hukam-share-modal__sheet {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+}
+
+html.dark-mode .hukam-share-modal__sheet,
+[data-theme="dark"] .hukam-share-modal__sheet,
+[data-time-of-day="night"] .hukam-share-modal__sheet {
+  background: linear-gradient(180deg, #1C1924 0%, #121017 100%);
+  border-color: rgba(212, 148, 58, 0.35);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8), inset 0 1px 1px rgba(255, 255, 255, 0.08);
+}
+
+.hukam-share-modal__drag-handle {
+  width: 36px;
+  height: 4px;
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+  margin: 0 auto 10px auto;
+}
+
+html.dark-mode .hukam-share-modal__drag-handle,
+[data-theme="dark"] .hukam-share-modal__drag-handle {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.hukam-share-modal__header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.hukam-share-modal__eyebrow {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #A3640E;
+}
+
+html.dark-mode .hukam-share-modal__eyebrow,
+[data-theme="dark"] .hukam-share-modal__eyebrow {
+  color: #F7C634;
+}
+
+.hukam-share-modal__title {
+  font-size: 1.2rem;
+  font-weight: 750;
+  color: #1A171D;
+  margin: 2px 0 0 0;
+}
+
+html.dark-mode .hukam-share-modal__title,
+[data-theme="dark"] .hukam-share-modal__title {
+  color: #FFFDF8;
+}
+
+.hukam-share-modal__close-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.05);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #555;
+  transition: transform 0.15s ease;
+}
+
+html.dark-mode .hukam-share-modal__close-btn,
+[data-theme="dark"] .hukam-share-modal__close-btn {
+  background: rgba(255, 255, 255, 0.1);
+  color: #EEE;
+}
+
+/* Theme selector pills */
+.hukam-controls-row {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.hukam-theme-selector {
+  display: flex;
+  gap: 6px;
+}
+
+.hukam-theme-pill {
+  padding: 5px 12px;
+  border-radius: 16px;
+  background: rgba(212, 148, 58, 0.08);
+  border: 1px solid rgba(212, 148, 58, 0.2);
+  color: #7D4C00;
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.hukam-theme-pill.active {
+  background: linear-gradient(135deg, #E69526 0%, #BD6E09 100%);
+  border-color: transparent;
+  color: #FFFFFF;
+  box-shadow: 0 3px 10px rgba(212, 148, 58, 0.35);
+}
+
+html.dark-mode .hukam-theme-pill,
+[data-theme="dark"] .hukam-theme-pill {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.12);
+  color: #E0D0B8;
+}
+
+/* Canvas Preview */
+.hukam-preview-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-height: 52vh;
+  overflow: hidden;
+  border-radius: 18px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  background: #222;
+  margin-bottom: 16px;
+}
+
+.hukam-canvas {
+  width: 100%;
+  max-height: 52vh;
+  height: auto;
+  object-fit: contain;
+  border-radius: 18px;
+  display: block;
+}
+
+/* Share Actions */
+.hukam-share-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.hukam-action-btn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 14px;
+  border-radius: 16px;
+  background: rgba(212, 148, 58, 0.12);
+  border: 1px solid rgba(212, 148, 58, 0.25);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #7D4C00;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+html.dark-mode .hukam-action-btn,
+[data-theme="dark"] .hukam-action-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+  color: #F7C634;
+}
+
+.hukam-action-btn--primary {
+  background: linear-gradient(135deg, #E69526 0%, #BD6E09 100%);
+  border: none;
+  color: #FFFFFF;
+  box-shadow: 0 4px 14px rgba(212, 148, 58, 0.35);
+}
+
+html.dark-mode .hukam-action-btn--primary,
+[data-theme="dark"] .hukam-action-btn--primary {
+  background: linear-gradient(135deg, #E69526 0%, #BD6E09 100%);
+  color: #FFFFFF;
+}
+
+.hukam-action-btn:hover {
+  transform: translateY(-1px);
+}
+
+.hukam-action-btn:active {
+  transform: scale(0.96);
+}

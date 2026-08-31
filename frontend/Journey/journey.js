@@ -1,281 +1,223 @@
-// Journey Page JavaScript
+﻿/**
+ * ═══════════════════════════════════════════════════════════════════════════════
+ * ANHAD — THE JOURNEY CONTROLLER & BLESSING ENGINE
+ * ═══════════════════════════════════════════════════════════════════════════════
+ */
 
-// Load version from version.json
-async function loadVersion() {
+(function () {
+  'use strict';
+
+  const ARDAAS_STORAGE_KEY = 'anhad_user_ardaas_count';
+  let ardaasCount = 0;
+  let toastTimer = null;
+
+  // ─── Haptic Feedback ───
+  function triggerHaptic(style = 'MEDIUM') {
     try {
-        const response = await fetch('../version.json');
+      if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Haptics) {
+        window.Capacitor.Plugins.Haptics.impact({ style: style }).catch(() => {});
+      } else if (navigator.vibrate) {
+        navigator.vibrate(style === 'HEAVY' ? 60 : 30);
+      }
+    } catch (e) {}
+  }
+
+  // ─── Toast System ───
+  function showToast(message) {
+    const toast = document.getElementById('journeyToast');
+    if (!toast) return;
+
+    toast.textContent = message;
+    toast.classList.add('visible');
+
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => {
+      toast.classList.remove('visible');
+    }, 3200);
+  }
+
+  // ─── Version Loader ───
+  async function syncAppVersion() {
+    try {
+      const response = await fetch('../version.json?t=' + Date.now());
+      if (response.ok) {
         const data = await response.json();
-        const versionElement = document.getElementById('version');
-        if (versionElement && data.version) {
-            versionElement.textContent = data.version;
-        }
-    } catch (error) {
-        console.error('Error loading version:', error);
-    }
-}
+        const ver = data.version ? `v${data.version}` : 'v1.1.10';
+        
+        const heroVer = document.getElementById('heroVersionLabel');
+        if (heroVer) heroVer.textContent = ver;
 
-// Apply theme on page load
-function applyTheme() {
-    const savedTheme = localStorage.getItem('anhad_theme') || 'auto';
-    let effectiveTheme = savedTheme;
-    if (savedTheme === 'auto') {
-        let timeOfDay = localStorage.getItem('anhad_forced_time_of_day');
-        if (timeOfDay && ['morning', 'day', 'evening', 'night'].includes(timeOfDay)) {
-            effectiveTheme = (timeOfDay === 'night') ? 'dark' : 'light';
-        } else {
-            const hour = new Date().getHours();
-            effectiveTheme = (hour >= 5 && hour < 20) ? 'light' : 'dark';
-        }
+        const footerVer = document.getElementById('footerVersionText');
+        if (footerVer) footerVer.textContent = ver;
+      }
+    } catch (e) {
+      console.log('[Journey] Version fetch error, using fallback:', e);
     }
-    document.documentElement.setAttribute('data-theme', effectiveTheme);
-    document.documentElement.setAttribute('data-theme-mode', savedTheme);
-    if (effectiveTheme === 'dark') {
-        document.documentElement.classList.add('dark', 'dark-mode');
-        document.body.classList.add('dark-mode');
-    } else {
-        document.documentElement.classList.remove('dark', 'dark-mode');
-        document.body.classList.remove('dark-mode');
-    }
-}
+  }
 
-// Animate elements on scroll
-function observeElements() {
+  // ─── Scroll Reveal Observer ───
+  function initScrollReveal() {
+    const items = document.querySelectorAll('.reveal-item');
+    if (!('IntersectionObserver' in window)) {
+      items.forEach(el => el.classList.add('revealed'));
+      return;
+    }
+
     const observer = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-                entry.target.style.opacity = '1';
-                entry.target.style.transform = 'translateY(0)';
-            }
-        });
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('revealed');
+          observer.unobserve(entry.target);
+        }
+      });
     }, {
-        threshold: 0.1,
-        rootMargin: '0px 0px -50px 0px'
+      threshold: 0.12,
+      rootMargin: '0px 0px -40px 0px'
     });
 
-    // Observe all content sections
-    const sections = document.querySelectorAll('.content-section');
-    sections.forEach((section) => {
-        section.style.opacity = '0';
-        section.style.transform = 'translateY(30px)';
-        section.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-        observer.observe(section);
-    });
+    items.forEach(el => observer.observe(el));
+  }
 
-    // Observe timeline items
-    const timelineItems = document.querySelectorAll('.timeline-item');
-    timelineItems.forEach((item, index) => {
-        item.style.opacity = '0';
-        item.style.transform = 'translateX(-30px)';
-        item.style.transition = `opacity 0.6s ease ${index * 0.1}s, transform 0.6s ease ${index * 0.1}s`;
-        observer.observe(item);
-    });
+  // ─── Ardaas Blessing Engine with Particle Bloom ───
+  function initArdaasEngine() {
+    const btn = document.getElementById('sendArdaasBtn');
+    const pill = document.getElementById('ardaasCountPill');
+    const thankNote = document.getElementById('ardaasThankNote');
+    const stage = document.getElementById('particleStage');
 
-    // Observe stat cards
-    const statCards = document.querySelectorAll('.stat-card');
-    statCards.forEach((card, index) => {
-        card.style.opacity = '0';
-        card.style.transform = 'scale(0.9)';
-        card.style.transition = `opacity 0.5s ease ${index * 0.1}s, transform 0.5s ease ${index * 0.1}s`;
-        observer.observe(card);
-    });
-}
-
-// Animate numbers (for stats)
-function animateNumbers() {
-    const statValues = document.querySelectorAll('.stat-value');
-    statValues.forEach((stat) => {
-        const text = stat.textContent;
-        const number = parseInt(text);
-        
-        if (!isNaN(number)) {
-            let current = 0;
-            const increment = number / 50;
-            const timer = setInterval(() => {
-                current += increment;
-                if (current >= number) {
-                    stat.textContent = number;
-                    clearInterval(timer);
-                } else {
-                    stat.textContent = Math.floor(current);
-                }
-            }, 30);
-        }
-    });
-}
-
-// Smooth scroll to sections
-function smoothScrollToSection(sectionId) {
-    const section = document.getElementById(sectionId);
-    if (section) {
-        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-}
-
-// Add parallax effect to cover section
-function addParallaxEffect() {
-    const coverSection = document.querySelector('.cover-section');
-    if (!coverSection) return;
-
-    window.addEventListener('scroll', () => {
-        const scrolled = window.pageYOffset;
-        const parallaxSpeed = 0.5;
-        
-        if (scrolled < coverSection.offsetHeight) {
-            coverSection.style.transform = `translateY(${scrolled * parallaxSpeed}px)`;
-        }
-    });
-}
-
-// Add floating animation to logo
-function addLogoAnimation() {
-    const logo = document.querySelector('.logo-large');
-    if (!logo) return;
-
-    let direction = 1;
-    let position = 0;
-    
-    setInterval(() => {
-        position += direction * 0.5;
-        if (position >= 10 || position <= -10) {
-            direction *= -1;
-        }
-        logo.style.transform = `translateY(${position}px)`;
-    }, 50);
-}
-
-// Update contact buttons with actual links
-function updateContactLinks() {
-    // You can update these with your actual contact information
-    const emailBtn = document.querySelector('a[href^="mailto:"]');
-    if (emailBtn) {
-        // emailBtn.href = 'mailto:your-email@example.com';
-    }
-}
-
-// Track user interactions (optional analytics)
-function trackInteraction(eventName, data = {}) {
-    console.log('User Interaction:', eventName, data);
-    // You can integrate with analytics here if needed
-}
-
-// Add click tracking to contact buttons
-function setupContactTracking() {
-    const contactButtons = document.querySelectorAll('.contact-btn');
-    contactButtons.forEach((button) => {
-        button.addEventListener('click', (e) => {
-            const buttonText = button.textContent.trim();
-            trackInteraction('contact_button_click', { button: buttonText });
-        });
-    });
-}
-
-// Back button functionality
-function setupBackButton() {
-    const backButton = document.querySelector('.back-button');
-    if (backButton) {
-        backButton.addEventListener('click', () => {
-            trackInteraction('back_button_click');
-            // If there's no history, go to home
-            if (window.history.length <= 1) {
-                window.location.href = '../index.html';
-            } else {
-                window.history.back();
-            }
-        });
-    }
-}
-
-// Add keyboard navigation
-function setupKeyboardNavigation() {
-    document.addEventListener('keydown', (e) => {
-        // ESC key to go back
-        if (e.key === 'Escape') {
-            window.history.back();
-        }
-    });
-}
-
-// Update streak display from UnifiedStats
-function updateStreakDisplay() {
-    const streakEl = document.getElementById('nitnemStreak') ||
-                     document.querySelector('.quick-card__streak') ||
-                     document.querySelector('[data-streak]');
-    if (!streakEl) return;
-
-    let streak = 0;
+    // Load initial count
     try {
-        if (window.UnifiedStats) {
-            streak = window.UnifiedStats.getStreaks().nitnem || 0;
-        } else {
-            const sd = localStorage.getItem('anhad_streak_data');
-            if (sd) { const p = JSON.parse(sd); streak = p.current || p.currentStreak || 0; }
-        }
-    } catch(e) {}
-
-    if (streak > 0) {
-        streakEl.innerHTML = `🔥 ${streak} day${streak > 1 ? 's' : ''}`;
+      ardaasCount = parseInt(localStorage.getItem(ARDAAS_STORAGE_KEY) || '0', 10);
+      if (isNaN(ardaasCount)) ardaasCount = 0;
+    } catch (e) {
+      ardaasCount = 0;
     }
-}
 
-// Initialize page
-function init() {
-    console.log('🙏 Journey page loaded - Waheguru Ji Ka Khalsa, Waheguru Ji Ki Fateh');
-    
-    // Theme is already applied by inline IIFE in <head>
-    // applyTheme() still available as fallback for dynamic changes
-    applyTheme();
-    
-    // Load version
-    loadVersion();
-    
-    // Setup observers and animations
-    observeElements();
-    
-    // Update streak if any streak element exists on page
-    updateStreakDisplay();
+    if (pill) pill.textContent = ardaasCount;
 
-    // Setup interactions
-    setupBackButton();
-    setupContactTracking();
-    setupKeyboardNavigation();
-    updateContactLinks();
-    
-    // Add effects
-    addParallaxEffect();
-    
-    // Track page view
-    trackInteraction('journey_page_view');
-
-    // Listen for live streak changes
-    window.addEventListener('statsInitialized', updateStreakDisplay);
-    window.addEventListener('statsChanged', updateStreakDisplay);
-    window.addEventListener('streakUpdated', updateStreakDisplay);
-}
-
-// Wait for DOM to be ready
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
-} else {
-    init();
-}
-
-// Handle visibility change (for PWA)
-document.addEventListener('visibilitychange', () => {
-    if (!document.hidden) {
-        console.log('Journey page visible again');
+    if (ardaasCount > 0 && thankNote) {
+      thankNote.textContent = `You have blessed this seva ${ardaasCount} time${ardaasCount > 1 ? 's' : ''} 🙏`;
     }
-});
 
-// Service Worker registration check
-if ('serviceWorker' in navigator) {
-    console.log('Service Worker support detected');
-}
+    if (!btn) return;
 
-// Export functions for testing (if needed)
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = {
-        loadVersion,
-        applyTheme,
-        trackInteraction
+    btn.addEventListener('click', (e) => {
+      triggerHaptic('HEAVY');
+      ardaasCount++;
+      
+      try {
+        localStorage.setItem(ARDAAS_STORAGE_KEY, ardaasCount.toString());
+      } catch (e) {}
+
+      if (pill) {
+        pill.textContent = ardaasCount;
+        pill.style.transform = 'scale(1.3)';
+        setTimeout(() => { pill.style.transform = 'scale(1)'; }, 200);
+      }
+
+      if (thankNote) {
+        thankNote.textContent = `ਧੰਨਵਾਦ ਜੀ! May Guru Sahib bless you with Chardi Kala 🙏`;
+        thankNote.style.color = 'var(--journey-gold-primary)';
+      }
+
+      // Spawn Sparkle Particle Bloom
+      spawnSparkles(stage, e);
+
+      // Toast
+      showToast('🙏 ਧੰਨਵਾਦ ਜੀ! Your blessing & Ardaas has been received.');
+    });
+  }
+
+  function spawnSparkles(container, event) {
+    if (!container) return;
+
+    const symbols = ['✨', '🙏', '💛', '🌸', '💫', 'ੴ'];
+    const particleCount = 12;
+    const rect = container.getBoundingClientRect();
+
+    for (let i = 0; i < particleCount; i++) {
+      const particle = document.createElement('span');
+      particle.className = 'sparkle-particle';
+      particle.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+
+      const startX = (rect.width / 2) + (Math.random() * 80 - 40);
+      const startY = rect.height - 40;
+      const tx = (Math.random() * 160 - 80) + 'px';
+
+      particle.style.left = `${startX}px`;
+      particle.style.top = `${startY}px`;
+      particle.style.setProperty('--tx', tx);
+
+      container.appendChild(particle);
+
+      setTimeout(() => {
+        particle.remove();
+      }, 1600);
+    }
+  }
+
+  // ─── Sharing Engine ───
+  function initSharing() {
+    const shareData = {
+      title: 'ANHAD • Complete Gurbani Sanctuary',
+      text: 'Experience ANHAD — A peaceful sanctuary for Nitnem, 24x7 Gurbani Radio, Live Darbar Sahib, and Naam Simran. 100% Free & Ad-Free Seva.',
+      url: window.location.origin
     };
-}
+
+    const handleShare = async () => {
+      triggerHaptic('LIGHT');
+      if (navigator.share) {
+        try {
+          await navigator.share(shareData);
+        } catch (e) {
+          // User cancelled share
+        }
+      } else {
+        try {
+          await navigator.clipboard.writeText(shareData.url);
+          showToast('🔗 App Link copied to clipboard!');
+        } catch (e) {
+          showToast('🔗 Share ANHAD: ' + shareData.url);
+        }
+      }
+    };
+
+    const topBtn = document.getElementById('journeyShareTopBtn');
+    if (topBtn) topBtn.addEventListener('click', handleShare);
+
+    const shareAppBtn = document.getElementById('shareAppBtn');
+    if (shareAppBtn) shareAppBtn.addEventListener('click', handleShare);
+  }
+
+  // ─── Back Button ───
+  function initBackButton() {
+    const backBtn = document.getElementById('journeyBackBtn');
+    if (backBtn) {
+      backBtn.addEventListener('click', () => {
+        triggerHaptic('LIGHT');
+        if (window.history.length > 1) {
+          window.history.back();
+        } else {
+          window.location.href = '../index.html';
+        }
+      });
+    }
+  }
+
+  // ─── Bootstrapping ───
+  function boot() {
+    initBackButton();
+    syncAppVersion();
+    initScrollReveal();
+    initArdaasEngine();
+    initSharing();
+    console.log('🙏 [Journey] About ANHAD initialized with divine elegance');
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot, { once: true });
+  } else {
+    boot();
+  }
+
+})();
