@@ -1032,9 +1032,15 @@
     }
 
     if (loadPromises.length > 0) {
+      // On first-ever visit to a page the stylesheet is not in the HTTP cache and
+      // must download from the network — 150ms was too short on a real Android
+      // device over Wi-Fi, causing content to render unstyled for one frame (the
+      // "HTML loads then CSS loads" flash the user reported). 800ms is the outer
+      // bound; the race resolves immediately once ALL sheets have loaded, so fast
+      // connections are unaffected.
       await Promise.race([
         Promise.all(loadPromises),
-        new Promise(resolve => setTimeout(resolve, 150))
+        new Promise(resolve => setTimeout(resolve, 800))
       ]);
     }
   }
@@ -1469,6 +1475,15 @@
           prefetchPage(absolute);
         } catch (e) {}
       });
+
+      // Pre-warm Insights' stylesheet into the browser HTTP cache so the first
+      // SPA navigation to Insights does not suffer the HTML-before-CSS flash.
+      // This is a simple background fetch — the browser caches the bytes under
+      // the same key syncHeadAssets() later requests via a <link> tag.
+      try {
+        const insightsCssUrl = new URL('Insights/insights.css', window.ANHAD_ROOT || '/').href;
+        fetch(insightsCssUrl, { priority: 'low' }).catch(() => {});
+      } catch (e) {}
     }, 100);
   }
 

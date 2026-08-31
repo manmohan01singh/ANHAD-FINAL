@@ -2378,7 +2378,15 @@
       text-align: center !important;
       padding: 0 16px !important;
       margin-top: -2px !important;
-      font-size: 1.5rem !important;
+      font-size: 1.25rem !important;
+    }
+    /* Dark / Night mode: shrink Gurbani pankti to prevent overflow */
+    html.dark-mode #greetingGurbani,
+    [data-theme="dark"] #greetingGurbani,
+    [data-time-of-day="night"] #greetingGurbani {
+      font-size: 1.1rem !important;
+      line-height: 1.5 !important;
+      padding: 0 20px !important;
     }
     /* Guru portrait wrapper - order removed, relying on HTML order */
 

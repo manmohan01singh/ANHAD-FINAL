@@ -26,7 +26,7 @@
   const MAX_RETRIES = 200;
 
   /**
-   * Pages allowed to show the mini player: Homepage, Favorites page, and Sadhsangat page (the last page).
+   * Pages allowed to show the mini player: Homepage, Favorites page, and Insights/Learning page.
    * No other page should contain the mini player.
    */
   function isMiniPlayerPage() {
@@ -43,12 +43,12 @@
       if (p.includes('favorites.html') || p.endsWith('/favorites')) {
         return true;
       }
-      // 3. The last page (Sadhsangat Live)
-      if (p.includes('sadhsangat-live') || p.endsWith('/sadhsangat-live')) {
+      // 3. Insights / Learning page
+      if (p.includes('insights.html') || p.includes('/insights') || p.endsWith('/insights')) {
         return true;
       }
       
-      // All other pages (readers, nitnem, settings, calendar, notes, insights, etc.) are strictly excluded
+      // All other pages (readers, nitnem, settings, calendar, notes, sadhsangat, etc.) are strictly excluded
       return false;
     } catch (e) {
       return false;
