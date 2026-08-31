@@ -1,17 +1,11 @@
-﻿/* ═══════════════════════════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════════════════════════════
    ANHAD — THE JOURNEY (ABOUT ANHAD)
    Apple iOS-Grade Design • Clean Typography • 120 FPS Fluidity
    ═══════════════════════════════════════════════════════════════════════════════ */
 
 :root {
-  --ios-bg: #F8F9FA;
-  --ios-card: #FFFFFF;
-  --ios-text: #111111;
-  --ios-subtext: #666668;
-  --ios-accent: #B47B2B;
   --ios-accent-light: rgba(180, 123, 43, 0.10);
-  --ios-border: rgba(0, 0, 0, 0.07);
-  --ios-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
+  --ios-border: rgba(0, 0, 0, 0.08);
   
   --ios-spring: cubic-bezier(0.16, 1, 0.3, 1);
   --ios-smooth: cubic-bezier(0.25, 1, 0.5, 1);
@@ -19,14 +13,8 @@
 
 [data-theme="dark"],
 .dark-mode {
-  --ios-bg: #0C0C0E;
-  --ios-card: #1C1C1E;
-  --ios-text: #FFFFFF;
-  --ios-subtext: #98989E;
-  --ios-accent: #E5A844;
   --ios-accent-light: rgba(229, 168, 68, 0.14);
   --ios-border: rgba(255, 255, 255, 0.08);
-  --ios-shadow: 0 6px 24px rgba(0, 0, 0, 0.45);
 }
 
 /* ── Base Reset ── */
@@ -39,8 +27,8 @@
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', 'Inter', -system-ui, sans-serif;
-  background-color: var(--ios-bg);
-  color: var(--ios-text);
+  background-color: var(--bg-primary, #FAF8F5);
+  color: var(--text-primary, #1C1A22);
   line-height: 1.6;
   padding-top: calc(env(safe-area-inset-top, 20px) + 52px);
   padding-bottom: calc(env(safe-area-inset-bottom, 20px) + 80px);
@@ -59,20 +47,13 @@ body {
   top: 0;
   left: 0;
   right: 0;
-  z-index: 900;
-  background: rgba(248, 249, 250, 0.82);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border-bottom: 0.5px solid var(--ios-border);
+  z-index: 1000;
+  background: var(--bg-primary, #FAF8F5); /* SOLID matching --bg-primary to block raw layout bleeding */
+  border-bottom: 0.5px solid var(--border-color, rgba(0, 0, 0, 0.08));
   padding-top: env(safe-area-inset-top, 20px);
   height: calc(env(safe-area-inset-top, 20px) + 50px);
   display: flex;
   align-items: center;
-}
-
-[data-theme="dark"] .ios-nav,
-.dark-mode .ios-nav {
-  background: rgba(12, 12, 14, 0.82);
 }
 
 .ios-nav__inner {
@@ -91,7 +72,7 @@ body {
   gap: 6px;
   border: none;
   background: transparent;
-  color: var(--ios-accent);
+  color: var(--text-accent, #D4943A);
   font-size: 16px;
   font-weight: 500;
   cursor: pointer;
@@ -109,7 +90,7 @@ body {
   font-size: 17px;
   font-weight: 600;
   letter-spacing: -0.3px;
-  color: var(--ios-text);
+  color: var(--text-primary, #1C1A22);
 }
 
 .ios-nav__action-btn {
@@ -121,7 +102,7 @@ body {
   border-radius: 50%;
   border: none;
   background: rgba(0, 0, 0, 0.04);
-  color: var(--ios-text);
+  color: var(--text-primary, #1C1A22);
   cursor: pointer;
   transition: background 0.15s ease, transform 0.15s var(--ios-spring);
 }
@@ -129,6 +110,7 @@ body {
 [data-theme="dark"] .ios-nav__action-btn,
 .dark-mode .ios-nav__action-btn {
   background: rgba(255, 255, 255, 0.08);
+  color: #FFF;
 }
 
 .ios-nav__action-btn:active {
@@ -195,7 +177,7 @@ body {
   font-weight: 700;
   letter-spacing: 0.8px;
   text-transform: uppercase;
-  color: var(--ios-accent);
+  color: var(--text-accent, #D4943A);
   background: var(--ios-accent-light);
   margin-bottom: 10px;
 }
@@ -205,21 +187,21 @@ body {
   font-weight: 800;
   letter-spacing: -0.8px;
   line-height: 1;
-  color: var(--ios-text);
+  color: var(--text-primary, #1C1A22);
   margin-bottom: 4px;
 }
 
 .hero-gurmukhi-lead {
   font-size: 14px;
   font-weight: 600;
-  color: var(--ios-accent);
+  color: var(--text-accent, #D4943A);
   margin-bottom: 8px;
 }
 
 .hero-description {
   font-size: 15px;
   line-height: 1.5;
-  color: var(--ios-subtext);
+  color: var(--text-secondary, #8E8E93);
   max-width: 440px;
   margin-bottom: 18px;
 }
@@ -241,8 +223,8 @@ body {
   font-size: 12.5px;
   font-weight: 600;
   background: rgba(0, 0, 0, 0.04);
-  color: var(--ios-text);
-  border: 1px solid var(--ios-border);
+  color: var(--text-primary, #1C1A22);
+  border: 1px solid var(--border-color, rgba(0, 0, 0, 0.1));
 }
 
 [data-theme="dark"] .hero-pill,
@@ -263,9 +245,9 @@ body {
 .ios-card {
   border-radius: 22px;
   padding: 22px 20px;
-  background: var(--ios-card);
-  border: 1px solid var(--ios-border);
-  box-shadow: var(--ios-shadow);
+  background: var(--bg-secondary, #FFFFFF);
+  border: 1.5px solid var(--border-color, rgba(0, 0, 0, 0.08));
+  box-shadow: 0 4px 16px var(--shadow-color, rgba(0, 0, 0, 0.04));
   transition: transform 0.25s ease;
 }
 
@@ -293,26 +275,26 @@ body {
 .prose-content {
   font-size: 15px;
   line-height: 1.65;
-  color: var(--ios-subtext);
+  color: var(--text-secondary, #686571);
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
 .prose-content strong {
-  color: var(--ios-text);
+  color: var(--text-primary, #1C1A22);
 }
 
 .lead-text {
   font-size: 15.5px;
   font-weight: 600;
-  color: var(--ios-text);
+  color: var(--text-primary, #1C1A22);
 }
 
 /* ── Sabh Kirpa Tumhari Dedicated Styles ── */
 .sacred-card {
-  background: var(--ios-card);
-  border-color: rgba(180, 123, 43, 0.2);
+  background: var(--bg-secondary, #FFFFFF);
+  border-color: rgba(180, 123, 43, 0.25);
 }
 
 .card-top-row {
@@ -427,7 +409,7 @@ body {
 .dev-name {
   font-size: 1.1rem;
   font-weight: 700;
-  color: var(--ios-text);
+  color: var(--text-primary, #1C1A22);
 }
 
 .dev-badge {
@@ -436,18 +418,18 @@ body {
   text-transform: uppercase;
   padding: 2px 7px;
   border-radius: 6px;
-  background: var(--ios-accent);
+  background: var(--text-accent, #D4943A);
   color: #FFF;
 }
 
 .dev-role {
   font-size: 13px;
-  color: var(--ios-subtext);
+  color: var(--text-secondary, #8E8E93);
 }
 
 .dev-location {
   font-size: 12px;
-  color: var(--ios-accent);
+  color: var(--text-accent, #D4943A);
   font-weight: 600;
 }
 
@@ -467,8 +449,8 @@ body {
   background: rgba(0, 0, 0, 0.03);
   font-size: 13px;
   font-weight: 600;
-  color: var(--ios-text);
-  border: 1px solid var(--ios-border);
+  color: var(--text-primary, #1C1A22);
+  border: 1px solid var(--border-color, rgba(0, 0, 0, 0.1));
 }
 
 [data-theme="dark"] .app-item,
@@ -478,12 +460,12 @@ body {
 
 .ios-quote-callout {
   padding: 14px 18px;
-  border-left: 3px solid var(--ios-accent);
+  border-left: 3px solid var(--text-accent, #D4943A);
   background: var(--ios-accent-light);
   border-radius: 0 12px 12px 0;
   font-style: italic;
   font-size: 15px;
-  color: var(--ios-text);
+  color: var(--text-primary, #1C1A22);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════
@@ -554,13 +536,13 @@ body {
 .timeline-title {
   font-size: 15.5px;
   font-weight: 700;
-  color: var(--ios-text);
+  color: var(--text-primary, #1C1A22);
   margin-bottom: 2px;
 }
 
 .timeline-text {
   font-size: 13.5px;
-  color: var(--ios-subtext);
+  color: var(--text-secondary, #8E8E93);
   line-height: 1.5;
 }
 
@@ -577,7 +559,7 @@ body {
   padding: 14px 12px;
   border-radius: 16px;
   background: rgba(0, 0, 0, 0.025);
-  border: 1px solid var(--ios-border);
+  border: 1px solid var(--border-color, rgba(0, 0, 0, 0.1));
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -610,13 +592,13 @@ body {
 .feature-name {
   font-size: 13.5px;
   font-weight: 700;
-  color: var(--ios-text);
+  color: var(--text-primary, #1C1A22);
 }
 
 .feature-desc {
   font-size: 12px;
   line-height: 1.4;
-  color: var(--ios-subtext);
+  color: var(--text-secondary, #8E8E93);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════
@@ -633,7 +615,7 @@ body {
 .ardaas-intro {
   font-size: 14.5px;
   line-height: 1.6;
-  color: var(--ios-subtext);
+  color: var(--text-secondary, #8E8E93);
   margin-bottom: 14px;
 }
 
@@ -648,13 +630,13 @@ body {
 .ardaas-quote {
   font-size: 16px;
   font-weight: 700;
-  color: var(--ios-text);
+  color: var(--text-primary, #1C1A22);
   margin-bottom: 4px;
 }
 
 .ardaas-subtext {
   font-size: 13px;
-  color: var(--ios-subtext);
+  color: var(--text-secondary, #8E8E93);
 }
 
 .ardaas-interactive-wrap {
@@ -679,7 +661,7 @@ body {
   border: none;
   cursor: pointer;
   color: #FFF;
-  background: var(--ios-accent);
+  background: var(--text-accent, #D4943A);
   box-shadow: 0 4px 14px rgba(180, 123, 43, 0.35);
   transition: transform 0.2s var(--ios-spring), opacity 0.2s ease;
 }
@@ -698,7 +680,7 @@ body {
 
 .ardaas-status-text {
   font-size: 12px;
-  color: var(--ios-subtext);
+  color: var(--text-secondary, #8E8E93);
 }
 
 .particle-stage {
@@ -754,7 +736,7 @@ body {
   font-weight: 600;
   border: none;
   cursor: pointer;
-  background: var(--ios-accent);
+  background: var(--text-accent, #D4943A);
   color: #FFF;
   box-shadow: 0 4px 12px rgba(180, 123, 43, 0.25);
   transition: transform 0.15s ease;
@@ -774,8 +756,8 @@ body {
   text-decoration: none;
   cursor: pointer;
   background: rgba(0, 0, 0, 0.04);
-  color: var(--ios-text);
-  border: 1px solid var(--ios-border);
+  color: var(--text-primary, #1C1A22);
+  border: 1px solid var(--border-color, rgba(0, 0, 0, 0.1));
   transition: transform 0.15s ease;
 }
 
@@ -789,26 +771,26 @@ body {
 .app-meta-footer {
   text-align: center;
   padding-top: 14px;
-  border-top: 1px solid var(--ios-border);
+  border-top: 1px solid var(--border-color, rgba(0, 0, 0, 0.1));
 }
 
 .meta-app-name {
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.8px;
-  color: var(--ios-accent);
+  color: var(--text-accent, #D4943A);
   margin-right: 6px;
 }
 
 .meta-version {
   font-size: 11px;
   font-weight: 600;
-  color: var(--ios-subtext);
+  color: var(--text-secondary, #8E8E93);
 }
 
 .meta-dedication {
   font-size: 12px;
-  color: var(--ios-subtext);
+  color: var(--text-secondary, #8E8E93);
   margin-top: 4px;
 }
 

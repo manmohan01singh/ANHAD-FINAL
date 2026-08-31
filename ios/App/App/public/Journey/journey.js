@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ═══════════════════════════════════════════════════════════════════════════════
  * ANHAD — THE JOURNEY CONTROLLER & BLESSING ENGINE
  * ═══════════════════════════════════════════════════════════════════════════════
@@ -42,7 +42,7 @@
       const response = await fetch('../version.json?t=' + Date.now());
       if (response.ok) {
         const data = await response.json();
-        const ver = data.version ? `v${data.version}` : 'v1.1.10';
+        const ver = data.version ? `v${data.version}` : 'v1.1.13';
         
         const heroVer = document.getElementById('heroVersionLabel');
         if (heroVer) heroVer.textContent = ver;

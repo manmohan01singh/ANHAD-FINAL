@@ -9731,7 +9731,7 @@ const ReportsManager = {
                         </div>
                     </div>
 
-                    <!-- File Details Badge -->
+                    <!-- File Details Badge with Direct Download Button -->
                     <div class="export-file-meta">
                         <div class="export-file-info">
                             <span class="export-file-icon">📄</span>
@@ -9740,6 +9740,10 @@ const ReportsManager = {
                                 <span class="export-filesize">${fileSizeKb} KB • Universal JSON Format</span>
                             </div>
                         </div>
+                        <button class="btn btn-primary export-card-download-btn" id="downloadCardBtn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            <span>Save File</span>
+                        </button>
                     </div>
                 </div>
 
@@ -9790,7 +9794,14 @@ const ReportsManager = {
             });
         }
 
-        // Save File button handler
+        // Save File button handlers (both card download & footer download)
+        const downloadCardBtn = modal.querySelector('#downloadCardBtn');
+        if (downloadCardBtn) {
+            downloadCardBtn.addEventListener('click', () => {
+                this.downloadBackupFile(data, filename);
+            });
+        }
+
         const downloadBtn = modal.querySelector('#downloadBackupBtn');
         if (downloadBtn) {
             downloadBtn.addEventListener('click', () => {
@@ -9905,15 +9916,17 @@ const ReportsManager = {
     },
 
     /**
-     * Helper to trigger HTML5 Blob URL download
+     * Helper to trigger HTML5 Blob URL download (using application/octet-stream to force download instead of JSON viewer)
      */
     _triggerBlobDownload(jsonStr, filename) {
         try {
-            const blob = new Blob([jsonStr], { type: 'application/json;charset=utf-8;' });
+            // Force application/octet-stream so browser downloads file rather than opening in-browser JSON viewer
+            const blob = new Blob([jsonStr], { type: 'application/octet-stream' });
             const blobUrl = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = blobUrl;
             a.download = filename;
+            a.setAttribute('download', filename);
             a.style.display = 'none';
             document.body.appendChild(a);
 
@@ -9922,7 +9935,7 @@ const ReportsManager = {
                 setTimeout(() => {
                     if (a.parentNode) document.body.removeChild(a);
                     URL.revokeObjectURL(blobUrl);
-                }, 500);
+                }, 1000);
             }, 50);
 
             const progressFill = document.getElementById('exportProgressBar');
@@ -9936,22 +9949,13 @@ const ReportsManager = {
             }
             if (progressSubtext) progressSubtext.textContent = 'JSON file saved to Downloads & copied to clipboard';
 
-            Toast.success('Backup Downloaded!', 'JSON backup file saved & copied to clipboard');
+            Toast.success('Backup Saved!', 'JSON backup file downloaded & copied to clipboard');
             HapticManager.success();
         } catch (err) {
-            console.warn('Blob download warning, trying Data URI fallback:', err);
-            try {
-                const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(jsonStr);
-                const a = document.createElement('a');
-                a.href = dataUri;
-                a.download = filename;
-                a.style.display = 'none';
-                document.body.appendChild(a);
-                a.click();
-                setTimeout(() => { if (a.parentNode) document.body.removeChild(a); }, 500);
-                Toast.success('Backup Saved!', 'JSON backup saved');
-                HapticManager.success();
-            } catch (dataErr) {
+            console.warn('Blob download warning, falling back to Web Share / Clipboard:', err);
+            if (navigator.share) {
+                this.shareBackupFile(jsonStr, filename);
+            } else {
                 Toast.success('Backup Copied!', 'JSON backup copied to clipboard');
                 HapticManager.success();
             }

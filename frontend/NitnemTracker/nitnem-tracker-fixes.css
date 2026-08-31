@@ -1917,9 +1917,12 @@ button:active,
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   iOS-STYLE ADAPTIVE GLASSMORPHIC BACKUP POPUP (LIGHT & DARK THEMES)
+/* ═══════════════════════════════════════════════════════════════════════════
+   iOS-STYLE ADAPTIVE GLASSMORPHIC BACKUP POPUP & MODAL OVERLAYS
    ═══════════════════════════════════════════════════════════════════════════ */
-#exportModal.modal {
+#exportModal,
+#importModal,
+.modal-overlay.active {
     position: fixed !important;
     top: 0 !important;
     left: 0 !important;
@@ -1927,227 +1930,27 @@ button:active,
     bottom: 0 !important;
     width: 100vw !important;
     height: 100vh !important;
-    z-index: 100000 !important; /* Above header & bottom navigation bar */
+    z-index: 100000 !important; /* Above bottom navigation tab bar (z-index 9999) */
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    padding: 20px !important;
+    padding: 16px !important;
     box-sizing: border-box !important;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.3s ease;
 }
 
-#exportModal.modal.active,
-#exportModal.modal.show {
-    opacity: 1 !important;
-    visibility: visible !important;
-}
-
-#exportModal .modal-overlay {
-    position: absolute !important;
-    top: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    bottom: 0 !important;
-    background: rgba(0, 0, 0, 0.45) !important;
-    backdrop-filter: blur(20px) !important;
-    -webkit-backdrop-filter: blur(20px) !important;
-    z-index: 1 !important;
-}
-
-/* Light Theme / Default Card Styling */
-#exportModal .modal-content.export-modal-content {
+#exportModal .modal-container,
+#importModal .modal-container {
     position: relative !important;
-    z-index: 2 !important;
+    z-index: 100001 !important;
     width: 100% !important;
-    max-width: 420px !important;
-    max-height: calc(100vh - 40px) !important;
+    max-width: 440px !important;
+    max-height: calc(100vh - 48px) !important;
     display: flex !important;
     flex-direction: column !important;
-    background: rgba(255, 255, 255, 0.96) !important;
-    background-image: linear-gradient(145deg, rgba(255, 215, 0, 0.08), rgba(255, 255, 255, 0.95)) !important;
-    border: 1px solid rgba(212, 148, 58, 0.3) !important;
+    margin: auto !important;
     border-radius: 28px !important;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.18), 0 0 1px rgba(0, 0, 0, 0.1) !important;
     overflow: hidden !important;
-    transform: scale(0.92) translateY(20px);
-    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-    color: #1d1d1f !important;
 }
-
-/* Dark Theme Card Overrides */
-[data-theme="dark"] #exportModal .modal-content.export-modal-content {
-    background: #1c1c1e !important;
-    background-image: linear-gradient(145deg, rgba(255, 215, 0, 0.06), rgba(30, 30, 40, 0.98)) !important;
-    border: 1px solid rgba(255, 215, 0, 0.35) !important;
-    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7), 0 0 35px rgba(255, 215, 0, 0.18) !important;
-    color: #ffffff !important;
-}
-
-#exportModal.modal.active .modal-content,
-#exportModal.modal.show .modal-content {
-    transform: scale(1) translateY(0) !important;
-}
-
-#exportModal .modal-header {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: space-between !important;
-    padding: 20px 24px 16px 24px !important;
-    border-bottom: 1px solid rgba(120, 120, 128, 0.12) !important;
-}
-
-#exportModal .modal-title {
-    margin: 0 !important;
-    font-size: 19px !important;
-    font-weight: 700 !important;
-    color: #1d1d1f !important;
-    display: flex !important;
-    align-items: center !important;
-    gap: 8px !important;
-}
-
-[data-theme="dark"] #exportModal .modal-title {
-    color: #ffffff !important;
-}
-
-#exportModal .modal-close {
-    background: rgba(120, 120, 128, 0.14) !important;
-    border: none !important;
-    color: #1d1d1f !important;
-    width: 32px !important;
-    height: 32px !important;
-    border-radius: 50% !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    font-size: 20px !important;
-    cursor: pointer !important;
-    transition: all 0.2s ease !important;
-}
-
-[data-theme="dark"] #exportModal .modal-close {
-    background: rgba(255, 255, 255, 0.15) !important;
-    color: #ffffff !important;
-}
-
-#exportModal .modal-close:hover {
-    background: rgba(255, 59, 48, 0.2) !important;
-    color: #FF3B30 !important;
-    transform: scale(1.08) !important;
-}
-
-#exportModal .export-modal-body {
-    padding: 20px 24px !important;
-    overflow-y: auto !important;
-}
-
-#exportModal .export-info {
-    text-align: center !important;
-}
-
-#exportModal .export-icon {
-    font-size: 48px !important;
-    margin-bottom: 8px !important;
-    filter: drop-shadow(0 4px 12px rgba(229, 149, 0, 0.35)) !important;
-}
-
-#exportModal .export-message {
-    font-size: 17px !important;
-    font-weight: 700 !important;
-    margin: 0 0 16px 0 !important;
-    color: #1d1d1f !important;
-}
-
-[data-theme="dark"] #exportModal .export-message {
-    color: #ffffff !important;
-}
-
-#exportModal .export-details-box {
-    background: rgba(242, 242, 247, 0.8) !important;
-    border: 1px solid rgba(212, 148, 58, 0.2) !important;
-    border-radius: 18px !important;
-    padding: 16px 20px !important;
-    text-align: left !important;
-    margin-bottom: 16px !important;
-}
-
-[data-theme="dark"] #exportModal .export-details-box {
-    background: rgba(255, 255, 255, 0.07) !important;
-    border-color: rgba(255, 215, 0, 0.25) !important;
-}
-
-#exportModal .export-details-title {
-    font-size: 11px !important;
-    font-weight: 700 !important;
-    text-transform: uppercase !important;
-    letter-spacing: 0.8px !important;
-    color: #D4943A !important;
-    margin-bottom: 10px !important;
-}
-
-[data-theme="dark"] #exportModal .export-details-title {
-    color: #ffd700 !important;
-}
-
-#exportModal .export-item {
-    display: flex !important;
-    align-items: center !important;
-    gap: 10px !important;
-    font-size: 14px !important;
-    color: #3a3a3c !important;
-    margin-bottom: 8px !important;
-}
-
-[data-theme="dark"] #exportModal .export-item {
-    color: rgba(255, 255, 255, 0.9) !important;
-}
-
-#exportModal .export-item span {
-    color: #34C759 !important;
-    font-weight: 700 !important;
-}
-
-#exportModal .export-filename-pill {
-    background: rgba(0, 0, 0, 0.05) !important;
-    border: 1px dashed rgba(212, 148, 58, 0.4) !important;
-    padding: 9px 13px !important;
-    border-radius: 12px !important;
-    font-family: monospace !important;
-    font-size: 12px !important;
-    color: #D4943A !important;
-    word-break: break-all !important;
-    margin-top: 10px !important;
-}
-
-[data-theme="dark"] #exportModal .export-filename-pill {
-    background: rgba(0, 0, 0, 0.35) !important;
-    color: #ffd700 !important;
-}
-
-#exportModal .export-modal-footer {
-    display: flex !important;
-    gap: 10px !important;
-    padding: 16px 24px calc(16px + env(safe-area-inset-bottom, 0px)) 24px !important;
-    border-top: 1px solid rgba(120, 120, 128, 0.12) !important;
-    background: rgba(249, 249, 249, 0.6) !important;
-    justify-content: flex-end !important;
-    flex-wrap: wrap !important;
-}
-
-[data-theme="dark"] #exportModal .export-modal-footer {
-    background: rgba(0, 0, 0, 0.25) !important;
-    border-top-color: rgba(255, 255, 255, 0.08) !important;
-}
-
-#exportModal .export-modal-footer .btn {
-    padding: 12px 18px !important;
-    border-radius: 14px !important;
-    font-size: 14px !important;
-    font-weight: 600 !important;
-    cursor: pointer !important;
-    display: inline-flex !important;
     align-items: center !important;
     gap: 6px !important;
     transition: all 0.2s ease !important;
@@ -2564,24 +2367,31 @@ button:active,
 /* File Metadata Badge */
 .export-file-meta {
     background: var(--bg-secondary, rgba(245, 245, 247, 0.9)) !important;
-    border: 1px dashed rgba(212, 148, 58, 0.3) !important;
-    border-radius: 14px !important;
+    border: 1px dashed rgba(212, 148, 58, 0.35) !important;
+    border-radius: 16px !important;
     padding: 12px 16px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 12px !important;
 }
 
 [data-theme="dark"] .export-file-meta {
     background: rgba(255, 255, 255, 0.05) !important;
-    border-color: rgba(255, 215, 0, 0.3) !important;
+    border-color: rgba(255, 215, 0, 0.35) !important;
 }
 
 .export-file-info {
     display: flex !important;
     align-items: center !important;
     gap: 12px !important;
+    overflow: hidden !important;
+    flex: 1 !important;
 }
 
 .export-file-icon {
     font-size: 24px !important;
+    flex-shrink: 0 !important;
 }
 
 .export-file-details {
@@ -2612,6 +2422,18 @@ button:active,
 
 [data-theme="dark"] .export-filesize {
     color: rgba(255, 255, 255, 0.6) !important;
+}
+
+.export-card-download-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    padding: 8px 14px !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    border-radius: 12px !important;
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
 }
 
 /* Modal Footer Buttons */
