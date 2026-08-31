@@ -850,3 +850,56 @@ html.theme-changing *::after {
   transform-origin: left center;
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   GLOBAL POPUP & MODAL FLASH PREVENTION (ZERO FLASH ON SCROLL & NAVIGATION)
+   ═══════════════════════════════════════════════════════════════════════════ */
+.modal-overlay:not(.active),
+.modal:not(.active):not(.open),
+.hukam-share-modal:not(.open):not(.active),
+.mala-modal:not(.open):not(.active),
+.sleep-modal:not(.open):not(.active),
+.anhad-night-dimmer:not(.active),
+.day-detail-modal:not(.active),
+.sheet-overlay:not(.sheet-overlay--active),
+.sheet:not(.sheet--active):not(.active):not(.open),
+#hukamnamaShareModal:not(.open):not(.active),
+#malaModal:not(.open):not(.active),
+#sleepTimerModal:not(.open):not(.active),
+#anhadNightDimmer:not(.active),
+#addBaniModal:not(.active),
+#settingsModal:not(.active),
+#statsModal:not(.active),
+#penaltyModal:not(.active),
+#penaltyInfoModal:not(.active),
+#alarmModal:not(.active),
+#reportModal:not(.active),
+#exportModal:not(.active),
+#importModal:not(.active),
+#dayDetailModal:not(.active),
+#anhadShareModal:not(.active):not(.open) {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+.hukam-share-modal.open,
+.hukam-share-modal.active,
+.mala-modal.open,
+.mala-modal.active,
+.sleep-modal.open,
+.sleep-modal.active,
+.anhad-night-dimmer.active,
+#hukamnamaShareModal.open,
+#hukamnamaShareModal.active,
+#malaModal.open,
+#malaModal.active,
+#sleepTimerModal.open,
+#sleepTimerModal.active {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+

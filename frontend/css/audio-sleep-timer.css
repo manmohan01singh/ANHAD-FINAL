@@ -8,17 +8,21 @@
   position: fixed;
   inset: 0;
   z-index: 10000;
-  display: flex;
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
   align-items: flex-end;
   justify-content: center;
-  pointer-events: none;
-  visibility: hidden;
-  transition: visibility 0.3s ease;
+  transition: opacity 0.3s ease;
 }
 
-.sleep-modal.open {
-  pointer-events: auto;
-  visibility: visible;
+.sleep-modal.open,
+.sleep-modal.active {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
 }
 
 .sleep-modal__backdrop {

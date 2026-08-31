@@ -2749,4 +2749,66 @@ button:active,
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6) !important;
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   MASTER MODAL & POPUP FLASH PREVENTION (ZERO FLASH ON TAB SWITCHING & SCROLL)
+   ═══════════════════════════════════════════════════════════════════════════ */
+.modal-overlay,
+.modal,
+.day-detail-modal,
+.anhad-night-dimmer,
+.mala-modal,
+.sleep-modal,
+.sheet-overlay,
+.sheet,
+#addBaniModal,
+#settingsModal,
+#statsModal,
+#penaltyModal,
+#penaltyInfoModal,
+#malaModal,
+#alarmModal,
+#reportModal,
+#exportModal,
+#importModal,
+#sleepTimerModal,
+#dayDetailModal {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+.modal-overlay.active,
+.modal.active,
+.modal.open,
+.day-detail-modal.active,
+.anhad-night-dimmer.active,
+.mala-modal.open,
+.mala-modal.active,
+.sleep-modal.open,
+.sleep-modal.active,
+.sheet-overlay--active,
+.sheet--active,
+.sheet.active,
+.sheet.open,
+#addBaniModal.active,
+#settingsModal.active,
+#statsModal.active,
+#penaltyModal.active,
+#penaltyInfoModal.active,
+#malaModal.active,
+#malaModal.open,
+#alarmModal.active,
+#reportModal.active,
+#exportModal.active,
+#importModal.active,
+#sleepTimerModal.open,
+#dayDetailModal.active {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+}
+
+
 

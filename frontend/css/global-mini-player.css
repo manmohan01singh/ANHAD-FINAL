@@ -13,32 +13,32 @@
 
 .gmp {
   position: fixed;
-  bottom: calc(104px + max(env(safe-area-inset-bottom, 0px), 4px)) !important;
-  left: 14px;
-  right: 14px;
-  z-index: var(--z-mini-player, 300);
+  bottom: calc(76px + max(env(safe-area-inset-bottom, 0px), 8px) + 12px) !important;
+  left: 50% !important;
+  right: auto !important;
+  transform: translateX(-50%) !important;
+  width: calc(100% - 24px) !important;
+  max-width: 440px !important;
+  z-index: 9000 !important;
   display: none;
   align-items: center;
   gap: 14px;
   padding: 10px 16px 10px 10px;
-  min-height: 68px;
-  border-radius: 26px !important;
-  border: none !important;
-  backdrop-filter: blur(20px) saturate(180%) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.94), rgba(246, 240, 234, 0.94)) !important;
-  box-shadow: 
-    0 12px 32px rgba(0, 0, 0, 0.12),
-    -4px -4px 10px rgba(255, 255, 255, 0.95),
-    inset 2px 2px 5px rgba(255, 255, 255, 1),
-    inset -2px -2px 5px rgba(0, 0, 0, 0.04) !important;
+  min-height: 64px;
+  border-radius: 24px !important;
+  border: 1px solid rgba(212, 148, 58, 0.25) !important;
+  backdrop-filter: blur(25px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(25px) saturate(180%) !important;
+  background: rgba(255, 255, 255, 0.94) !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.18) !important;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   user-select: none;
+  box-sizing: border-box !important;
 }
 
 .gmp--visible {
-  display: flex;
+  display: flex !important;
 }
 
 /* ─── Artwork Thumbnail — Claymorphic Pill ─── */
