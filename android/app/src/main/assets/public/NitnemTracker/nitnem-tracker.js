@@ -1004,44 +1004,85 @@ const StorageManager = {
     },
 
     /**
-     * Export all data as JSON
+     * Export user progress data as a compact JSON (no Gurbani text)
      */
     exportData() {
         const data = {};
-        // 1. Export all CONFIG.STORAGE_KEYS
-        Object.entries(CONFIG.STORAGE_KEYS).forEach(([name, key]) => {
-            const val = this.load(key);
-            if (val !== null && val !== undefined) {
-                data[name] = val;
-                data[key] = val;
-            }
+
+        // === USER PROGRESS KEYS ONLY ===
+        // These are the specific localStorage keys that hold user's personal
+        // progress — NOT Gurbani content (which lives in the app anyway).
+        const PROGRESS_KEYS = [
+            // Nitnem Tracker core
+            'nitnemTracker_nitnemLog',
+            'nitnemTracker_selectedBanis',
+            'nitnemTracker_currentStreak',
+            'nitnemTracker_longestStreak',
+            'nitnemTracker_lastCompletedDate',
+            'nitnemTracker_achievements',
+            'nitnemTracker_stats',
+            'nitnemTracker_amritvelaLog',
+            'nitnemTracker_amritvelaStreak',
+            // My Pothi / bani selection (IDs only, not Gurbani text)
+            'anhad_my_pothi',
+            'anhad_my_pothi_data',
+            'anhad_my_pothi_completed',
+            'anhad_pothi_order',
+            // Mala / Naam Simran counts
+            'anhad_mala_count',
+            'anhad_mala_history',
+            'anhad_mala_daily',
+            'mala_count',
+            'mala_history',
+            'naam_mala_count',
+            'naam_mala_daily',
+            // Naam Abhyas progress
+            'naam_abhyas_sessions',
+            'naam_abhyas_stats',
+            'naam_abhyas_config',
+            'naam_abhyas_history',
+            // Streak / unified stats
+            'anhad_streak_data',
+            'anhad_unified_stats',
+            'anhad_daily_snapshot',
+            // User preferences (not content)
+            'anhad_theme',
+            'anhad_user_name',
+            'anhad_language_pref',
+            'anhad_nitnem_prefs',
+        ];
+
+        PROGRESS_KEYS.forEach(k => {
+            try {
+                const raw = localStorage.getItem(k);
+                if (raw !== null) {
+                    try { data[k] = JSON.parse(raw); }
+                    catch(e) { data[k] = raw; }
+                }
+            } catch(e) {}
         });
 
-        // 2. Export all app keys in localStorage (covering all past & current modules)
+        // Also pick up any nitnemTracker_* and naam_* keys dynamically
+        // but EXCLUDE any key that holds large Gurbani text arrays
         for (let i = 0; i < localStorage.length; i++) {
             const k = localStorage.key(i);
-            if (k && (
-                k.startsWith('nitnem') ||
-                k.startsWith('anhad_') ||
-                k.startsWith('sehaj') ||
-                k.startsWith('gurbani') ||
-                k.startsWith('sr_') ||
-                k.startsWith('cine_') ||
-                k.startsWith('user') ||
-                k.startsWith('bani') ||
-                k.startsWith('search') ||
-                k.startsWith('pothi') ||
-                k.startsWith('completed') ||
-                k.startsWith('naam_')
-            )) {
+            if (!k) continue;
+            if (data[k] !== undefined) continue; // already included
+
+            const isProgress =
+                (k.startsWith('nitnemTracker_') && !k.includes('baniText') && !k.includes('_content')) ||
+                (k.startsWith('naam_') && !k.includes('baniText')) ||
+                k.startsWith('anhad_mala') ||
+                k.startsWith('mala_');
+
+            if (isProgress) {
                 try {
-                    const rawVal = localStorage.getItem(k);
-                    if (rawVal !== null) {
-                        try {
-                            data[k] = JSON.parse(rawVal);
-                        } catch(e) {
-                            data[k] = rawVal;
-                        }
+                    const raw = localStorage.getItem(k);
+                    if (raw !== null) {
+                        // Skip if value looks like a large Gurbani array (> 100KB)
+                        if (raw.length > 102400) continue;
+                        try { data[k] = JSON.parse(raw); }
+                        catch(e) { data[k] = raw; }
                     }
                 } catch(e) {}
             }
@@ -1050,7 +1091,8 @@ const StorageManager = {
         data.exportDate = Utils.getTodayString();
         data.exportTimestamp = new Date().toISOString();
         data.appVersion = CONFIG.APP_VERSION || '2.0';
-        data.appName = 'ANHAD Divine Gurbani & Nitnem Tracker';
+        data.appName = 'ANHAD Nitnem Progress Backup';
+        data._exportType = 'progress_only'; // marker for import validation
         return JSON.stringify(data, null, 2);
     },
 
@@ -10317,9 +10359,9 @@ const ReportsManager = {
     /**
      * Download backup file (Direct HTML5 Blob Download of data.json + Capacitor Filesystem)
      */
-    downloadBackupFile(data, filename = 'data.json') {
+    downloadBackupFile(data, filename = 'anhad-progress-backup.json') {
         try {
-            filename = filename || 'data.json';
+            filename = filename || 'anhad-progress-backup.json';
             const jsonStr = typeof data === 'string' ? data : JSON.stringify(data, null, 2);
 
             // Animate progress bar in export modal if visible
@@ -10331,32 +10373,67 @@ const ReportsManager = {
                 progressFill.style.width = '30%';
                 statusBadge.textContent = 'Saving...';
                 statusBadge.className = 'export-progress-badge active';
-                if (progressSubtext) progressSubtext.textContent = `Preparing ${filename} download...`;
-
-                setTimeout(() => {
-                    progressFill.style.width = '80%';
-                }, 100);
+                if (progressSubtext) progressSubtext.textContent = `Preparing ${filename}...`;
+                setTimeout(() => { progressFill.style.width = '70%'; }, 100);
             }
 
-            // 1. Direct Browser / WebView File Download
-            this._triggerBlobDownload(jsonStr, filename);
-
-            // 2. Also write to Capacitor Filesystem if running in native app
             const isNativeApp = !!(window.Capacitor && (
                 (typeof window.Capacitor.isNativePlatform === 'function' && window.Capacitor.isNativePlatform()) ||
                 (typeof window.Capacitor.getPlatform === 'function' && window.Capacitor.getPlatform() !== 'web') ||
                 window.Capacitor.isNative
             ));
 
-            if (isNativeApp && window.Capacitor.Plugins && window.Capacitor.Plugins.Filesystem) {
-                window.Capacitor.Plugins.Filesystem.writeFile({
-                    path: filename,
-                    data: jsonStr,
-                    directory: 'DOCUMENTS',
-                    encoding: 'utf8'
-                }).catch((err) => {
-                    console.warn('Capacitor Filesystem write notice:', err);
-                });
+            if (isNativeApp) {
+                // === ANDROID / iOS NATIVE: Write to Downloads then Share ===
+                const fs = window.Capacitor?.Plugins?.Filesystem;
+                const share = window.Capacitor?.Plugins?.Share;
+
+                if (fs) {
+                    // Write to DOCUMENTS directory
+                    fs.writeFile({
+                        path: filename,
+                        data: jsonStr,
+                        directory: 'DOCUMENTS',
+                        encoding: 'utf8'
+                    }).then((result) => {
+                        // After writing, share / show open-with dialog
+                        if (share) {
+                            share.share({
+                                title: 'ANHAD Progress Backup',
+                                text: 'Your ANHAD Nitnem progress backup',
+                                files: [result.uri || filename],
+                                dialogTitle: 'Save or Share your backup'
+                            }).catch(() => {});
+                        }
+                        if (progressFill) progressFill.style.width = '100%';
+                        if (statusBadge) { statusBadge.textContent = 'Saved!'; statusBadge.className = 'export-progress-badge success'; }
+                        if (progressSubtext) progressSubtext.textContent = `${filename} saved to Documents`;
+                        Toast.success('Backup Saved!', `${filename} saved — use Share to send it`);
+                        HapticManager.success();
+                    }).catch((err) => {
+                        console.warn('Filesystem write failed, falling back to share:', err);
+                        // Fallback: use Share with base64 text
+                        if (share) {
+                            share.share({
+                                title: 'ANHAD Progress Backup',
+                                text: jsonStr,
+                                dialogTitle: 'Save or Share your backup'
+                            }).catch(() => Toast.error('Export Failed', 'Could not save backup'));
+                        }
+                    });
+                } else if (share) {
+                    // No filesystem plugin — share text directly
+                    share.share({
+                        title: 'ANHAD Progress Backup',
+                        text: jsonStr,
+                        dialogTitle: 'Save your backup'
+                    }).then(() => {
+                        Toast.success('Backup Shared!', 'Save it to Files or Drive');
+                    }).catch(() => Toast.error('Export Failed', 'Could not share backup'));
+                }
+            } else {
+                // === WEB / PWA: data URI download (avoids blob:// page open) ===
+                this._triggerBlobDownload(jsonStr, filename);
             }
         } catch (error) {
             console.error('Export failed:', error);
@@ -10370,10 +10447,10 @@ const ReportsManager = {
     _triggerBlobDownload(jsonStr, filename = 'data.json') {
         try {
             filename = filename || 'data.json';
-            const blob = new Blob([jsonStr], { type: 'application/json;charset=utf-8;' });
-            const blobUrl = URL.createObjectURL(blob);
+            // Primary: data URI download — works in Chrome/Edge/Firefox and doesn't open a blob page
+            const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(jsonStr);
             const a = document.createElement('a');
-            a.href = blobUrl;
+            a.href = dataUri;
             a.download = filename;
             a.setAttribute('download', filename);
             a.style.display = 'none';
@@ -10381,26 +10458,8 @@ const ReportsManager = {
 
             setTimeout(() => {
                 a.click();
-                setTimeout(() => {
-                    if (a.parentNode) document.body.removeChild(a);
-                    URL.revokeObjectURL(blobUrl);
-                }, 1000);
+                setTimeout(() => { if (a.parentNode) document.body.removeChild(a); }, 800);
             }, 50);
-
-            // Also fallback data URI for webviews that block blob downloads
-            setTimeout(() => {
-                try {
-                    const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(jsonStr);
-                    const dataA = document.createElement('a');
-                    dataA.href = dataUri;
-                    dataA.download = filename;
-                    dataA.setAttribute('download', filename);
-                    dataA.style.display = 'none';
-                    document.body.appendChild(dataA);
-                    dataA.click();
-                    setTimeout(() => { if (dataA.parentNode) document.body.removeChild(dataA); }, 500);
-                } catch(e) {}
-            }, 300);
 
             const progressFill = document.getElementById('exportProgressBar');
             const statusBadge = document.getElementById('exportStatusBadge');
@@ -10413,7 +10472,7 @@ const ReportsManager = {
             }
             if (progressSubtext) progressSubtext.textContent = `${filename} saved to Downloads`;
 
-            Toast.success('File Downloaded!', `${filename} saved to Downloads folder`);
+            Toast.success('File Downloaded!', `${filename} saved to Downloads`);
             HapticManager.success();
         } catch (err) {
             console.error('Download error:', err);
