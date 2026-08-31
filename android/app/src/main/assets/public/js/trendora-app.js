@@ -357,17 +357,105 @@
     _isMoving: false,
     _eventsBound: false,
     _gurus: [
-      { id: 'guru-nanak', name: 'Sri Guru Nanak Dev Sahib Ji', img: 'guruimages/gurunanakdevsahebji.jpeg', pos: 'center 20%', colors: ['#ddcdb3', '#c9b89f', '#b8a88e'] },
-      { id: 'guru-angad', name: 'Sri Guru Angad Dev Sahib Ji', img: 'guruimages/guruangaddevsahebji.jpeg', pos: 'center 25%', colors: ['#ab9468', '#e6d8bf', '#624d31'] },
-      { id: 'guru-amar-das', name: 'Sri Guru Amar Das Sahib Ji', img: 'guruimages/guruamardasji.jpeg', pos: 'center 25%', colors: ['#e7be7f', '#e4dccd', '#a37f4f'] },
-      { id: 'guru-ram-das', name: 'Sri Guru Ram Das Sahib Ji', img: 'guruimages/gururamdassahebji.jpeg', pos: 'center 25%', colors: ['#a97634', '#e3bc7b', '#8b5e28'] },
-      { id: 'guru-arjan', name: 'Sri Guru Arjan Dev Sahib Ji', img: 'guruimages/guruarjanddevsahebji.jpeg', gurbani: 'ਅੰਮ੍ਰਿਤ ਵੇਲਾ ਸਚੁ ਨਾਉ ਵਡਿਆਈ ਵੀਚਾਰੁ ॥', translation: 'In the Amrit Vela, chant the True Name, and contemplate His Glorious Greatness.', pos: 'center 25%', colors: ['#edeef0', '#e0c195', '#c9a876'] },
-      { id: 'guru-hargobind', name: 'Sri Guru Hargobind Sahib Ji', img: 'guruimages/guruhargobindsahebji.jpeg', pos: 'center 25%', colors: ['#ecedef', '#c0c0bf', '#916026'] },
-      { id: 'guru-har-rai', name: 'Sri Guru Har Rai Sahib Ji', img: 'guruimages/guruharraisahebji.jpeg', pos: 'center 25%', colors: ['#ac7d3d', '#afab85', '#875515'] },
-      { id: 'guru-harkrishan', name: 'Sri Guru Har Krishan Sahib Ji', img: 'guruimages/guruharkrishansahebji.jpeg', pos: 'center 25%', colors: ['#ece5d5', '#d9d0c0', '#c6bbab'] },
-      { id: 'guru-teg-bahadur', name: 'Sri Guru Tegh Bahadur Sahib Ji', img: 'guruimages/gurutegbahadursahebji.jpeg', pos: 'center 45%', colors: ['#2f3d46', '#4a5a63', '#5d6d76'] },
-      { id: 'guru-gobind', name: 'Sri Guru Gobind Singh Sahib Ji', img: 'guruimages/gurugobindsinghsahebji.jpeg', pos: 'center 25%', colors: ['#b77928', '#e1cdac', '#8e5f1f'] },
-      { id: 'sggs', name: 'Sri Guru Granth Sahib Ji', img: 'guruimages/gurugranthsahebji.jpeg', pos: 'center 25%', colors: ['#a06f2c', '#53371e', '#c89035'] }
+      { 
+        id: 'guru-nanak', 
+        name: 'Sri Guru Nanak Dev Sahib Ji', 
+        img: 'guruimages/gurunanakdevsahebji.jpeg', 
+        gurbani: 'ਗੁਰ ਪਰਸਾਦਿ ਕਰੇ ਜੇ ਅਪਣੀ ਪੂਰੇ ਸਹਜਿ ਸਮਾਇਆ ॥', 
+        translation: 'By His Grace, if the Lord grants His Mercy, one effortlessly merges in the Perfect Lord.', 
+        pos: 'center 20%', 
+        colors: ['#ddcdb3', '#c9b89f', '#b8a88e'] 
+      },
+      { 
+        id: 'guru-angad', 
+        name: 'Sri Guru Angad Dev Sahib Ji', 
+        img: 'guruimages/guruangaddevsahebji.jpeg', 
+        gurbani: 'ਜਿਸੁ ਪਿਆਰੇ ਸਿਉ ਨੇਹੁ ਤਿਸੁ ਆਗੈ ਮਰਿ ਚਲੀਐ ॥', 
+        translation: 'Die before the one whom you love; to live after them is to live a worthless life.', 
+        pos: 'center 25%', 
+        colors: ['#ab9468', '#e6d8bf', '#624d31'] 
+      },
+      { 
+        id: 'guru-amar-das', 
+        name: 'Sri Guru Amar Das Sahib Ji', 
+        img: 'guruimages/guruamardasji.jpeg', 
+        gurbani: 'ਅਨੰਦੁ ਭਇਆ ਮੇਰੀ ਮਾਏ ਸਤਿਗੁਰੂ ਮੈ ਪਾਇਆ ॥', 
+        translation: 'I am in ecstasy, O my mother, for I have found my True Guru.', 
+        pos: 'center 25%', 
+        colors: ['#e7be7f', '#e4dccd', '#a37f4f'] 
+      },
+      { 
+        id: 'guru-ram-das', 
+        name: 'Sri Guru Ram Das Sahib Ji', 
+        img: 'guruimages/gururamdassahebji.jpeg', 
+        gurbani: 'ਗੁਰ ਸਤਿਗੁਰ ਕਾ ਜੋ ਸਿਖੁ ਅਖਾਏ ਸੁ ਭਲਕੇ ਉਠਿ ਹਰਿ ਨਾਮੁ ਧਿਆਵੈ ॥', 
+        translation: 'One who calls himself a Sikh of the Guru shall rise early and meditate on the Name.', 
+        pos: 'center 25%', 
+        colors: ['#a97634', '#e3bc7b', '#8b5e28'] 
+      },
+      { 
+        id: 'guru-arjan', 
+        name: 'Sri Guru Arjan Dev Sahib Ji', 
+        img: 'guruimages/guruarjanddevsahebji.jpeg', 
+        gurbani: 'ਅੰਮ੍ਰਿਤ ਵੇਲਾ ਸਚੁ ਨਾਉ ਵਡਿਆਈ ਵੀਚਾਰੁ ॥', 
+        translation: 'In the Amrit Vela, chant the True Name, and contemplate His Glorious Greatness.', 
+        pos: 'center 25%', 
+        colors: ['#edeef0', '#e0c195', '#c9a876'] 
+      },
+      { 
+        id: 'guru-hargobind', 
+        name: 'Sri Guru Hargobind Sahib Ji', 
+        img: 'guruimages/guruhargobindsahebji.jpeg', 
+        gurbani: 'ਸਚੁ ਧਰਮੁ ਕਮਾਵੈ ਹਰਿ ਭਾਵੈ ਤਿਸੁ ਜਨ ਕਉ ਸਦਾ ਸੁਖੁ ਹੋਈ ॥', 
+        translation: 'One who practices true righteousness is pleasing to the Lord and attains eternal peace.', 
+        pos: 'center 25%', 
+        colors: ['#ecedef', '#c0c0bf', '#916026'] 
+      },
+      { 
+        id: 'guru-har-rai', 
+        name: 'Sri Guru Har Rai Sahib Ji', 
+        img: 'guruimages/guruharraisahebji.jpeg', 
+        gurbani: 'ਜਿਨਾ ਸਾਸਿ ਗਿਰਾਸਿ ਨ ਵਿਸਰੈ ਹਰਿ ਨਾਮਾਂ ਮਨਿ ਮੰਤੁ ॥', 
+        translation: 'Those who do not forget the Lord\'s Name with every breath and morsel are blessed.', 
+        pos: 'center 25%', 
+        colors: ['#ac7d3d', '#afab85', '#875515'] 
+      },
+      { 
+        id: 'guru-harkrishan', 
+        name: 'Sri Guru Har Krishan Sahib Ji', 
+        img: 'guruimages/guruharkrishansahebji.jpeg', 
+        gurbani: 'ਸ੍ਰੀ ਹਰਿਕ੍ਰਿਸਨ ਧਿਆਈਐ ਜਿਸੁ ਡਿਠੈ ਸਭਿ ਦੁਖਿ ਜਾਇ ॥', 
+        translation: 'Meditate on Sri Guru Har Krishan, beholding whom all suffering departs.', 
+        pos: 'center 25%', 
+        colors: ['#ece5d5', '#d9d0c0', '#c6bbab'] 
+      },
+      { 
+        id: 'guru-teg-bahadur', 
+        name: 'Sri Guru Tegh Bahadur Sahib Ji', 
+        img: 'guruimages/gurutegbahadursahebji.jpeg', 
+        gurbani: 'ਗੁਨ ਗੋਬਿੰਦ ਗਾਇ ਲੇਹੁ ਹਰਿ ਸਿਮਰਨੁ ਕਰਿ ਲੀਜੈ ॥', 
+        translation: 'Sing the Praises of the Lord of the Universe; remember Him in your heart.', 
+        pos: 'center 18%', 
+        colors: ['#2f3d46', '#4a5a63', '#5d6d76'] 
+      },
+      { 
+        id: 'guru-gobind', 
+        name: 'Sri Guru Gobind Singh Sahib Ji', 
+        img: 'guruimages/gurugobindsinghsahebji.jpeg', 
+        gurbani: 'ਦੇਹ ਸਿਵਾ ਬਰੁ ਮੋਹਿ ਇਹੈ ਸੁਭ ਕਰਮਨ ਤੇ ਕਬਹੂੰ ਨ ਟਰੋਂ ॥', 
+        translation: 'Grant me this boon, O Lord, that I may never shy away from righteous deeds.', 
+        pos: 'center 25%', 
+        colors: ['#b77928', '#e1cdac', '#8e5f1f'] 
+      },
+      { 
+        id: 'sggs', 
+        name: 'Sri Guru Granth Sahib Ji', 
+        img: 'guruimages/gurugranthsahebji.jpeg', 
+        gurbani: 'ਸਭ ਮਹਿ ਜੋਤਿ ਜੋਤਿ ਹੈ ਸੋਇ ॥ ਤਿਸ ਦੈ ਚਾਨਣਿ ਸਭ ਮਹਿ ਚਾਨਣੁ ਹੋਇ ॥', 
+        translation: 'Amongst all is the Light; You are that Light. By Its Radiance, the Light is in all.', 
+        pos: 'center 25%', 
+        colors: ['#a06f2c', '#53371e', '#c89035'] 
+      }
     ],
 
     _autoTimer: null,

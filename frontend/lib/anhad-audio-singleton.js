@@ -747,7 +747,7 @@
       return this.promiseChain;
     },
 
-    loadAndPlay(url, preloadMode) {
+    loadAndPlay(url, preloadMode, initialSeekTime) {
       this.init();
       isLoading = true;
       emit('loading', { isLoading: true });
@@ -762,14 +762,22 @@
         this.audio.removeAttribute('crossorigin');
       }
 
-      // A MediaError is STICKY: audio.error stays set and readyState stays at
-      // HAVE_NOTHING until the media load algorithm re-runs, which only a src
-      // reassignment or an explicit load() triggers. Calling play() on such an
-      // element is a no-op. Since virtual-live tracks resolve to a stable URL,
-      // the old `src !== url` guard meant a recovery attempt on the same track
-      // never reset anything — which is why playback stayed dead even when the
-      // user tapped play manually. load() must also run on Capacitor; skipping
-      // it there left native builds the least recoverable of all.
+      // Pre-set seek time on loadedmetadata so audio starts directly at the correct offset without a 1-second splash from 0
+      if (Number.isFinite(initialSeekTime) && initialSeekTime > 0) {
+        const applyInitialSeek = () => {
+          try {
+            const dur = this.audio.duration || 3600;
+            const safeSeek = Math.max(0, Math.min(initialSeekTime, dur - 2));
+            this.audio.currentTime = safeSeek;
+          } catch(e) {}
+        };
+        if (this.audio.readyState >= 1) {
+          applyInitialSeek();
+        } else {
+          this.audio.addEventListener('loadedmetadata', applyInitialSeek, { once: true });
+        }
+      }
+
       const isErrored = !!this.audio.error || this.audio.networkState === 3 /* NETWORK_NO_SOURCE */;
       if (this.audio.src !== url) {
         this.audio.src = url;
@@ -796,7 +804,7 @@
 
       return this.enqueue(async () => {
         if (playPromise) {
-          // CRITICAL FIX: Add 15-second timeout to prevent infinite hangs
+          // 15-second timeout to prevent infinite hangs
           const timeoutPromise = new Promise((_, reject) => {
             setTimeout(() => reject(new Error('TIMEOUT: Audio load exceeded 15 seconds')), 15000);
           });
@@ -805,6 +813,7 @@
             await Promise.race([playPromise, timeoutPromise]);
             isPlaying = true;
             isLoading = false;
+            connectionState = 'connected';
             emit('loading', { isLoading: false });
             emit('statechange', getPublicState());
             persistState();
@@ -815,11 +824,6 @@
             console.warn('[PlaybackQueueController] ❌ Play failed:', isTimeout ? 'TIMEOUT' : e.message);
 
             isPlaying = false;
-            // updateMediaSession() optimistically sets playbackState = 'playing'
-            // before this promise settles (needed so the OS shows controls
-            // immediately on user tap). Revert it here on actual failure so the
-            // lock screen/notification doesn't keep claiming "Playing" while
-            // nothing is playing.
             if ('mediaSession' in navigator) {
               navigator.mediaSession.playbackState = 'paused';
             }
@@ -835,7 +839,7 @@
               trackTitle: currentTrackTitle
             });
             
-            // UNIVERSAL AUTO-RECOVERY on timeout for all streams (Live and Playlist)
+            // AUTO-RECOVERY on timeout
             if (isTimeout && currentStream && wantsPlayback) {
               console.log('[PlaybackQueueController] 🔄 Auto-recovering from timeout in 2 seconds...');
               setTimeout(() => {
@@ -932,25 +936,9 @@
 
     updateMediaSession();
 
-    // Use 'metadata' preload for static R2 tracks to optimize bandwidth
-    PlaybackQueueController.loadAndPlay(trackUrl, 'metadata').then(() => {
-      // Seek once loaded metadata is available or immediately if ready
-      const seekTime = resolved.position;
-      const audioEl = PlaybackQueueController.audio;
-
-      const performSeek = () => {
-        // Clamp seek within track duration
-        const dur = audioEl.duration || resolved.trackDuration;
-        const safeSeek = Math.max(0, Math.min(seekTime, dur - 2));
-        PlaybackQueueController.seek(safeSeek);
-      };
-
-      if (audioEl.readyState >= 1) {
-        performSeek();
-      } else {
-        audioEl.addEventListener('loadedmetadata', performSeek, { once: true });
-      }
-    });
+    // Use 'auto' preload and pass initial seek offset so playback starts cleanly at the exact live position
+    const seekTime = resolved.position || 0;
+    PlaybackQueueController.loadAndPlay(trackUrl, 'auto', seekTime);
   }
 
   function handleTrackEnded() {
@@ -1560,56 +1548,47 @@
   }
 
   // --- RECOVERY: the network came back ---
-  // This engine previously had NO reaction to reconnection at all — the whole
-  // file contained zero addEventListener('online'), and navigator.onLine was
-  // read once, purely to pick an error string. Every recovery path was a timer
-  // armed at the moment of failure, so an outage that outlived those timers
-  // (~60s of backoff) left playback permanently dead, with the mini player
-  // still on screen showing a play button that did nothing.
+  let _lastWatchdogRecoveryTime = 0;
   function recoverAfterReconnect(reason) {
     if (!wantsPlayback || !currentStream) return;
-    if (isPlaying) return;
-    // A fast-path retry already owns recovery — let it run rather than
-    // resetting its budget and firing a second, overlapping playStream()
-    // call. Without this guard, this function (called from both the
-    // 6-second network watchdog below and the 'online' listener) raced the
-    // error handler's own backoff timer and reset liveReconnectAttempts back
-    // to 0 roughly every 6 seconds, which — independent of the 'play'/
-    // 'playing' event bug fixed above — was a second, equally sufficient
-    // cause of the attempt counter never advancing past #1.
+    if (isPlaying || isLoading || isTransitioning) return;
+    // Only recover if connection is actually in a failed or reconnecting state
+    if (connectionState !== 'failed' && connectionState !== 'reconnecting') return;
     if (reconnectCycleActive) return;
-    // A fresh network is a fresh budget — otherwise one bad patch of signal
-    // permanently poisons the session.
+
+    // Strict cooldown: at most one recovery per 20 seconds
+    const now = Date.now();
+    if (now - _lastWatchdogRecoveryTime < 20000) return;
+    _lastWatchdogRecoveryTime = now;
+
     liveReconnectAttempts = 0;
     connectionState = 'reconnecting';
     emit('statechange', getPublicState());
     console.log(`[AnhadAudio] 🌐 ${reason} — resuming "${currentStream}"`);
-    // Go through playStream so the virtual-live broadcast position is
-    // re-resolved for NOW, not the stale position from before the outage.
     playStream(currentStream);
   }
 
-  window.addEventListener('online', () => recoverAfterReconnect('Network restored'));
+  window.addEventListener('online', () => {
+    if (connectionState === 'failed' || connectionState === 'reconnecting') {
+      recoverAfterReconnect('Network restored');
+    }
+  });
 
   // --- ACTIVE NETWORK HEARTBEAT & AUTO-RETRIEVAL WATCHDOG ---
-  // Smart TVs, desktop browsers, and certain network cards frequently drop
-  // or restore WiFi/Ethernet without firing the browser 'online' event.
-  // This active watchdog probes network health every 6s whenever playback was
-  // requested (wantsPlayback === true) but is currently stopped/disconnected,
-  // and automatically resumes Kirtan/stream playback immediately upon retrieval!
-  const NETWORK_WATCHDOG_INTERVAL_MS = 6000;
+  // Runs every 12 seconds ONLY if playback is desired but stream is in a failed/reconnecting state
+  const NETWORK_WATCHDOG_INTERVAL_MS = 12000;
   let isWatchdogProbing = false;
   
   setInterval(async () => {
-    if (!wantsPlayback || !currentStream || isPlaying || isLoading || isWatchdogProbing) return;
+    if (!wantsPlayback || !currentStream || isPlaying || isLoading || isTransitioning || isWatchdogProbing) return;
+    // Only probe if stream is genuinely disconnected
+    if (connectionState !== 'failed' && connectionState !== 'reconnecting') return;
     
-    // Check if network is reported online or probe reachable
     if (navigator.onLine) {
       recoverAfterReconnect('Active watchdog detected network available');
       return;
     }
 
-    // If navigator.onLine is false or unreliable on TV, test with quick probe
     isWatchdogProbing = true;
     try {
       const probe = await fetch(document.baseURI || window.location.href, { method: 'HEAD', cache: 'no-store' });
@@ -1617,7 +1596,7 @@
         recoverAfterReconnect('Network probe succeeded — auto-resuming stream');
       }
     } catch(e) {
-      // Network still offline, will retry next tick
+      // Network still offline
     } finally {
       isWatchdogProbing = false;
     }
