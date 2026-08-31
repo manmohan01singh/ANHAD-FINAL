@@ -1,4 +1,4 @@
-﻿/* ═══════════════════════════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════════════════════════════
    ANHAD — THE JOURNEY (ABOUT ANHAD)
    Clean Minimalist Material & Apple Design • Pure Simplicity • High Legibility
    ═══════════════════════════════════════════════════════════════════════════════ */
@@ -35,7 +35,7 @@ body.journey-page {
   background-color: var(--bg-primary, #F8F9FA) !important;
   color: var(--journey-text-main);
   line-height: 1.6;
-  padding-top: calc(env(safe-area-inset-top, 20px) + 54px);
+  padding-top: calc(env(safe-area-inset-top, 12px) + 68px);
   padding-bottom: calc(env(safe-area-inset-bottom, 20px) + 110px);
   overflow-x: hidden;
   min-height: 100vh;
@@ -44,27 +44,38 @@ body.journey-page {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════
-   1. CLEAN TOP APP BAR
+   1. DYNAMIC ISLAND FLOATING PILL HEADER
    ═══════════════════════════════════════════════════════════════════════════════ */
 .app-bar {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
+  top: calc(env(safe-area-inset-top, 12px) + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(540px, calc(100% - 28px));
+  height: 50px;
   z-index: 1000;
-  background: var(--bg-primary, #FFFFFF);
-  border-bottom: 1px solid var(--journey-border);
-  padding-top: env(safe-area-inset-top, 20px);
-  height: calc(env(safe-area-inset-top, 20px) + 54px);
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 999px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04);
   display: flex;
   align-items: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+[data-theme="dark"] .app-bar,
+.dark-mode .app-bar {
+  background: rgba(26, 26, 30, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
 }
 
 .app-bar__container {
   width: 100%;
-  max-width: 680px;
-  margin: 0 auto;
-  padding: 0 16px;
+  height: 100%;
+  padding: 0 8px 0 10px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -77,24 +88,30 @@ body.journey-page {
   border: none;
   background: transparent;
   color: var(--journey-text-main);
-  font-size: 15px;
-  font-weight: 500;
+  font-size: 14.5px;
+  font-weight: 600;
   cursor: pointer;
-  padding: 6px 8px;
-  border-radius: 8px;
+  padding: 6px 12px;
+  border-radius: 999px;
   transition: opacity 0.15s ease, background 0.15s ease;
 }
 
 .app-bar__back:active {
-  opacity: 0.6;
-  background: rgba(0, 0, 0, 0.05);
+  opacity: 0.7;
+  background: rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="dark"] .app-bar__back:active,
+.dark-mode .app-bar__back:active {
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .app-bar__title {
-  font-size: 17px;
-  font-weight: 600;
+  font-size: 15.5px;
+  font-weight: 700;
   letter-spacing: -0.2px;
   color: var(--journey-text-main);
+  text-align: center;
 }
 
 .app-bar__action {

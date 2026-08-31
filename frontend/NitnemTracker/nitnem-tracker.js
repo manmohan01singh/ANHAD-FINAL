@@ -788,11 +788,22 @@ const StorageManager = {
     },
 
     /**
-     * Save data to localStorage AND IndexedDB
+     * Save data to localStorage AND IndexedDB (prevent double-stringifying JSON strings)
      */
     save(key, data) {
         try {
-            const serialized = JSON.stringify(data);
+            let serialized;
+            if (typeof data === 'string') {
+                const trimmed = data.trim();
+                if ((trimmed.startsWith('{') && trimmed.endsWith('}')) || (trimmed.startsWith('[') && trimmed.endsWith(']'))) {
+                    serialized = trimmed;
+                } else {
+                    serialized = JSON.stringify(data);
+                }
+            } else {
+                serialized = JSON.stringify(data);
+            }
+
             localStorage.setItem(key, serialized);
 
             // Also persist to IndexedDB
@@ -806,26 +817,31 @@ const StorageManager = {
     },
 
     /**
-     * Load data from localStorage
+     * Load data from localStorage (recursively unwraps stringified objects)
      */
     load(key, defaultValue = null) {
         try {
             const serialized = localStorage.getItem(key);
-            if (serialized === null) return defaultValue;
+            if (serialized === null || serialized === undefined) return defaultValue;
 
-            // Try to parse as JSON, but if it fails and value looks like a plain string,
-            // return it as-is (for backward compatibility with non-JSON storage like theme)
-            try {
-                return JSON.parse(serialized);
-            } catch (parseError) {
-                // If it's a simple string value (like "light" or "dark"), return it directly
-                if (typeof serialized === 'string' && !serialized.startsWith('{') && !serialized.startsWith('[')) {
-                    return serialized;
+            let parsed = serialized;
+            // Parse recursively if string contains encoded JSON object/array
+            while (typeof parsed === 'string') {
+                const trimmed = parsed.trim();
+                if ((trimmed.startsWith('{') && trimmed.endsWith('}')) || (trimmed.startsWith('[') && trimmed.endsWith(']')) || (trimmed.startsWith('"') && trimmed.endsWith('"'))) {
+                    try {
+                        const next = JSON.parse(trimmed);
+                        if (next === parsed) break;
+                        parsed = next;
+                    } catch (e) {
+                        break;
+                    }
+                } else {
+                    break;
                 }
-                // Only log error for actual JSON parsing failures
-                console.warn(`Storage: Non-JSON value for ${key}, returning raw value`);
-                return serialized;
             }
+
+            return parsed !== null && parsed !== undefined ? parsed : defaultValue;
         } catch (error) {
             console.error(`Storage load error for ${key}:`, error);
             return defaultValue;
