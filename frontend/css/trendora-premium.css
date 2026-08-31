@@ -2565,7 +2565,7 @@ html.dark-mode .sheet__option-arrow,
 ═══════════════════════════════════════════════════════════════════════════════ */
 .mini-player {
   position: fixed;
-  bottom: calc(112px + max(env(safe-area-inset-bottom, 0px), 8px)) !important;
+  bottom: calc(98px + max(env(safe-area-inset-bottom, 0px), 6px)) !important;
   left: 50%;
   transform: translateX(-50%) translateY(200%);
   width: calc(100% - 28px);

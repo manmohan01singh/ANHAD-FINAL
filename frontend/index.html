@@ -1195,8 +1195,8 @@
   
   <!-- PERF: Removed aggressive prefetch links — SPA engine handles viewport-based prefetch -->
 
-  <link rel="stylesheet" href="css/global-mini-player.css?v=4" media="print" onload="this.media='all'">
-  <link rel="stylesheet" href="./css/anhad-core.css?v=5">
+  <link rel="stylesheet" href="./css/anhad-core.css?v=13">
+  <link rel="stylesheet" href="css/global-mini-player.css?v=13">
   
   <!-- Image caching strategy -->
   <meta http-equiv="Cache-Control" content="max-age=31536000, immutable">
@@ -1208,7 +1208,7 @@
   <script src="lib/desktop-sidebar.js" defer></script>
   
   <!-- CRITICAL: SPA Navigation MUST load early to intercept clicks -->
-  <script src="lib/smooth-navigation.js?v=3" defer></script>
+  <script src="lib/smooth-navigation.js?v=13" defer></script>
   
   <!-- PERFORMANCE: Page visibility handler for instant restoration -->
   <script>
@@ -1252,15 +1252,6 @@
       
       // Use Page Lifecycle API for better performance
       if ('requestIdleCallback' in window) {
-        // Captured NOW, synchronously, while this is guaranteed to still be
-        // index.html's own document — not inside the callback below. This is
-        // a HEAD script, so it never re-runs on SPA return (syncHeadAssets
-        // only touches <link>/<style> in <head>, not <script>); it fires once
-        // per hard load, with the browser free to delay requestIdleCallback
-        // arbitrarily. If the user SPA-navigates to e.g. Favorites before it
-        // fires, resolving these bare relative paths at THAT moment resolved
-        // them against /Favorites/... instead of the site root — the actual
-        // 404s reported ("GET /Favorites/lib/anhad-audio-singleton.js").
         var _idlePrefetchBase = document.baseURI;
         requestIdleCallback(function() {
           // Preload critical resources when idle
@@ -1298,10 +1289,10 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display+SC:wght@400;700;900&family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;500;600;700&display=optional" media="print" onload="this.media='all'">
   
   <!-- Critical CSS (render-blocking — required for first paint) -->
-  <link rel="stylesheet" href="css/trendora-premium.css?v=10">
+  <link rel="stylesheet" href="css/trendora-premium.css?v=13">
   <link rel="stylesheet" href="css/anhad-clay.css?v=2">
   <link rel="stylesheet" href="css/claymorphism-system.css?v=2">
-  <link rel="stylesheet" href="css/nav-glass.css?v=4.2.0">
+  <link rel="stylesheet" href="css/nav-glass.css?v=13">
   <!-- NO SHADOWS - Remove all shadows from buttons and cards -->
   <link rel="stylesheet" href="css/no-shadows.css?v=3">
   <!-- Non-critical CSS loaded async via media trick -->
@@ -1309,7 +1300,7 @@
   <link rel="stylesheet" href="css/gurpurab-special-mode.css?v=2" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="css/install-button.css?v=2" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="css/mobile-accessibility.css?v=2" media="print" onload="this.media='all'">
-  <link rel="stylesheet" href="css/ios-override.css?v=11">
+  <link rel="stylesheet" href="css/ios-override.css?v=13">
   <link rel="stylesheet" href="css/hero-clean-desktop.css?v=2">
   <!-- ANHAD: Animated Sky Background (Auto Mode) -->
   <link rel="stylesheet" href="css/anhad-sky-bg.css?v=2">

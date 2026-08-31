@@ -648,7 +648,7 @@ body {
 ═══════════════════════════════════════════════════════════════════════════════ */
 .mini-player {
   position: fixed;
-  bottom: calc(112px + max(env(safe-area-inset-bottom, 0px), 8px)) !important;
+  bottom: calc(98px + max(env(safe-area-inset-bottom, 0px), 6px)) !important;
   left: 50% !important;
   transform: translateX(-50%) translateY(200%);
   width: calc(100% - 24px) !important;

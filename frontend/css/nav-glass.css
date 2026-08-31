@@ -93,7 +93,15 @@ html:not([data-theme="dark"]):not(.dark-mode) .tab-item {
               transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
 }
 
-.tab-item.active {
+.tab-item.active,
+[data-anhad-home] .tab-item.active,
+[data-theme-mode="auto"] .tab-item.active,
+html[data-theme-mode="auto"] .tab-item.active,
+[data-theme-mode="auto"][data-time-of-day="morning"] .tab-item.active,
+[data-theme-mode="auto"][data-time-of-day="day"] .tab-item.active,
+[data-theme-mode="auto"][data-time-of-day="evening"] .tab-item.active,
+.tab-bar .tab-item.active,
+body .tab-item.active {
   color: #C8821E !important;
   border: none !important;
   border-radius: 22px !important;
@@ -112,7 +120,10 @@ html:not([data-theme="dark"]):not(.dark-mode) .tab-item {
 
 [data-theme="dark"] .tab-item.active,
 html.dark-mode .tab-item.active,
-[data-time-of-day="night"] .tab-item.active {
+[data-time-of-day="night"] .tab-item.active,
+[data-theme-mode="auto"][data-time-of-day="night"] .tab-item.active,
+[data-theme="dark"][data-theme-mode="auto"] .tab-item.active,
+html.dark-mode[data-theme-mode="auto"] .tab-item.active {
   color: #F0A83A !important;
   border: none !important;
   border-radius: 22px !important;

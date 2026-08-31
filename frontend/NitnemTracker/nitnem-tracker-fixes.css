@@ -650,23 +650,35 @@ body {
 }
 
 .tab-item.active {
-    background: linear-gradient(145deg, #FFFFFF, #E8E8EC) !important;
-    border-radius: 16px !important;
+    color: #C8821E !important;
+    border: none !important;
+    border-radius: 22px !important;
+    background: linear-gradient(155deg,
+      rgba(255,255,255,1) 0%,
+      rgba(255,243,222,0.98) 50%,
+      rgba(248,232,200,0.95) 100%) !important;
     box-shadow:
-        4px 4px 12px rgba(0, 0, 0, 0.08),
-        -4px -4px 12px rgba(255, 255, 255, 0.85),
-        inset 2px 2px 4px rgba(255, 255, 255, 1),
-        inset -2px -2px 4px rgba(0, 0, 0, 0.02) !important;
+      0 6px 18px rgba(212, 148, 58, 0.18),
+      0 2px 6px rgba(0, 0, 0, 0.06),
+      -3px -3px 8px rgba(255,255,255,0.98),
+      inset 2px 2px 5px rgba(255,255,255,1),
+      inset -1px -1px 4px rgba(200, 130, 30, 0.08) !important;
 }
 
-[data-theme="dark"] .tab-item.active,
 [data-theme="dark"] .tab-item.active {
-    background: linear-gradient(145deg, #3A3A3C, #2C2C2E) !important;
+    color: #F0A83A !important;
+    border: none !important;
+    border-radius: 22px !important;
+    background: linear-gradient(155deg,
+      rgba(52, 42, 24, 0.98) 0%,
+      rgba(36, 28, 14, 0.98) 55%,
+      rgba(24, 18, 8, 0.97) 100%) !important;
     box-shadow:
-        4px 4px 12px rgba(0, 0, 0, 0.30),
-        -4px -4px 12px rgba(255, 255, 255, 0.04),
-        inset 2px 2px 4px rgba(255, 255, 255, 0.06),
-        inset -2px -2px 4px rgba(0, 0, 0, 0.12) !important;
+      0 6px 20px rgba(0, 0, 0, 0.6),
+      0 2px 8px rgba(0, 0, 0, 0.4),
+      -2px -2px 6px rgba(255, 255, 255, 0.04),
+      inset 2px 2px 5px rgba(212, 148, 58, 0.28),
+      inset -2px -2px 5px rgba(0, 0, 0, 0.5) !important;
 }
 
 /* ─── SECTION 10: PERIOD TABS — CLAY SEGMENTED CONTROL ─── */
