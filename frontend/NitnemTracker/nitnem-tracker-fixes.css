@@ -180,36 +180,27 @@ body {
         0 0 0 1px rgba(255, 255, 255, 0.3) !important;
 }
 
-/* ─── SECTION 4: CARDS — EXTREME CLAY 3D ─── */
+/* ─── SECTION 4: CARDS — CLEAN GLASSMORPHIC ─── */
 .card {
     position: relative !important;
-    background: linear-gradient(145deg, #FFFFFF 0%, #F0F0F5 100%) !important;
-    border-radius: var(--clay-radius-card) !important;
-    border: 1px solid rgba(255, 255, 255, 0.8) !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-    box-shadow:
-        16px 16px 32px rgba(0, 0, 0, var(--clay-shadow-deep)),
-        -16px -16px 32px rgba(255, 255, 255, var(--clay-highlight)),
-        inset 8px 8px 16px rgba(255, 255, 255, 1),
-        inset -8px -8px 16px rgba(0, 0, 0, var(--clay-inset-shadow)) !important;
-    transition: background-color 0.4s var(--clay-spring) !important, color 0.4s var(--clay-spring) !important, transform 0.4s var(--clay-spring) !important;
+    background: var(--card-bg, rgba(255, 255, 255, 0.95)) !important;
+    border-radius: 24px !important;
+    border: 1px solid rgba(212, 148, 58, 0.18) !important;
+    backdrop-filter: blur(15px) !important;
+    -webkit-backdrop-filter: blur(15px) !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05) !important;
+    transition: transform 0.3s ease, box-shadow 0.3s ease !important;
     overflow: visible !important;
-    padding: 24px !important;
+    padding: 20px !important;
 }
 
-[data-theme="dark"] .card,
 [data-theme="dark"] .card,
 [data-theme="saffron"] .card,
 [data-theme="gradient"] .card,
 [data-theme="gold"] .card {
-    background: linear-gradient(145deg, #2C2C2E 0%, #1C1C1E 100%) !important;
+    background: rgba(30, 30, 35, 0.95) !important;
     border-color: rgba(255, 255, 255, 0.08) !important;
-    box-shadow:
-        16px 16px 32px rgba(0, 0, 0, var(--clay-shadow-deep)),
-        -16px -16px 32px rgba(255, 255, 255, var(--clay-highlight)),
-        inset 8px 8px 16px rgba(255, 255, 255, 0.08),
-        inset -8px -8px 16px rgba(0, 0, 0, var(--clay-inset-shadow)) !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;
 }
 
 .card::before {
@@ -217,31 +208,19 @@ body {
 }
 
 .card:hover {
-    transform: translateY(-4px) scale(1.01) !important;
-    box-shadow:
-        20px 20px 40px rgba(0, 0, 0, var(--clay-shadow-deep)),
-        -20px -20px 40px rgba(255, 255, 255, var(--clay-highlight)),
-        inset 10px 10px 20px rgba(255, 255, 255, 1),
-        inset -10px -10px 20px rgba(0, 0, 0, var(--clay-inset-shadow)) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08) !important;
 }
 
-[data-theme="dark"] .card:hover,
 [data-theme="dark"] .card:hover,
 [data-theme="saffron"] .card:hover,
 [data-theme="gradient"] .card:hover,
 [data-theme="gold"] .card:hover {
-    box-shadow:
-        20px 20px 40px rgba(0, 0, 0, var(--clay-shadow-deep)),
-        -20px -20px 40px rgba(255, 255, 255, var(--clay-highlight)),
-        inset 10px 10px 20px rgba(255, 255, 255, 0.08),
-        inset -10px -10px 20px rgba(0, 0, 0, var(--clay-inset-shadow)) !important;
+    box-shadow: 0 14px 36px rgba(0, 0, 0, 0.5) !important;
 }
 
 .card:active {
-    transform: scale(0.97) translateY(4px) !important;
-    box-shadow:
-        inset 8px 8px 16px rgba(0, 0, 0, var(--clay-shadow-mid)),
-        inset -8px -8px 16px rgba(255, 255, 255, var(--clay-highlight)) !important;
+    transform: scale(0.985) !important;
 }
 
 [data-theme="dark"] .card:active,
@@ -772,73 +751,78 @@ body {
         inset -6px -6px 12px rgba(0, 0, 0, 0.15) !important;
 }
 
-/* ─── SECTION 16: REPORT/ALARM INNER ELEMENTS ─── */
+/* ─── SECTION 16: REPORT/ALARM INNER ELEMENTS & SETTINGS ─── */
 .report-summary-item,
 .alarm-stat-card,
 .mala-goal-container,
 .mala-option,
-.goal-preset,
-.setting-item,
-.settings-section {
-    background: linear-gradient(145deg, rgba(255, 255, 255, 0.6), rgba(240, 240, 245, 0.6)) !important;
-    border: 1px solid rgba(255, 255, 255, 0.50) !important;
+.goal-preset {
+    background: var(--bg-secondary, rgba(245, 245, 247, 0.85)) !important;
+    border: 1px solid rgba(0, 0, 0, 0.05) !important;
     border-radius: 16px !important;
-    box-shadow:
-        4px 4px 10px rgba(0, 0, 0, 0.05),
-        -4px -4px 10px rgba(255, 255, 255, 0.8),
-        inset 2px 2px 4px rgba(255, 255, 255, 0.9) !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03) !important;
     margin-bottom: 10px !important;
     padding: 14px !important;
 }
 
+.settings-section {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    margin-bottom: 16px !important;
+    padding: 0 !important;
+}
+
+.setting-item {
+    background: var(--bg-secondary, rgba(245, 245, 247, 0.85)) !important;
+    border: 1px solid rgba(0, 0, 0, 0.05) !important;
+    border-radius: 16px !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03) !important;
+    margin-bottom: 8px !important;
+    padding: 14px 16px !important;
+    transition: transform 0.2s ease, background-color 0.2s ease !important;
+}
+
+.setting-item.clickable:active {
+    transform: scale(0.985) !important;
+    background: rgba(212, 148, 58, 0.1) !important;
+}
+
 [data-theme="dark"] .report-summary-item,
 [data-theme="dark"] .alarm-stat-card,
 [data-theme="dark"] .mala-goal-container,
 [data-theme="dark"] .mala-option,
 [data-theme="dark"] .goal-preset,
-[data-theme="dark"] .setting-item,
-[data-theme="dark"] .settings-section,
-[data-theme="dark"] .report-summary-item,
-[data-theme="dark"] .alarm-stat-card,
-[data-theme="dark"] .mala-goal-container,
-[data-theme="dark"] .mala-option,
-[data-theme="dark"] .goal-preset,
-[data-theme="dark"] .setting-item,
+[data-theme="dark"] .setting-item {
+    background: rgba(255, 255, 255, 0.07) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    box-shadow: none !important;
+}
+
 [data-theme="dark"] .settings-section {
-    background: linear-gradient(145deg, rgba(50, 50, 52, 0.6), rgba(38, 38, 40, 0.6)) !important;
-    border-color: rgba(255, 255, 255, 0.05) !important;
-    box-shadow:
-        4px 4px 10px rgba(0, 0, 0, 0.25),
-        -4px -4px 10px rgba(255, 255, 255, 0.03),
-        inset 2px 2px 4px rgba(255, 255, 255, 0.04) !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
 }
 
 .mala-option.active {
-    background: linear-gradient(145deg, #FFE8C8, #FFD898) !important;
-    border-color: rgba(var(--clay-gold-rgb), 0.30) !important;
-    box-shadow:
-        4px 4px 10px rgba(var(--clay-gold-rgb), 0.20),
-        -4px -4px 10px rgba(255, 255, 255, 0.85),
-        inset 2px 2px 4px rgba(255, 255, 255, 1) !important;
+    background: linear-gradient(135deg, rgba(212, 148, 58, 0.15), rgba(255, 215, 0, 0.1)) !important;
+    border: 1px solid rgba(212, 148, 58, 0.4) !important;
+    box-shadow: 0 4px 12px rgba(212, 148, 58, 0.15) !important;
 }
 
-[data-theme="dark"] .mala-option.active,
 [data-theme="dark"] .mala-option.active {
-    box-shadow:
-        4px 4px 10px rgba(0, 0, 0, 0.30),
-        -4px -4px 10px rgba(255, 255, 255, 0.05),
-        inset 2px 2px 4px rgba(255, 255, 255, 0.08) !important;
+    background: linear-gradient(135deg, rgba(212, 148, 58, 0.25), rgba(255, 215, 0, 0.15)) !important;
+    border-color: rgba(255, 215, 0, 0.4) !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3) !important;
 }
 
 /* ─── SECTION 17: WEEK VIEW DAYS ─── */
 .week-days .day-item {
-    background: linear-gradient(145deg, rgba(255, 255, 255, 0.5), rgba(240, 240, 245, 0.5)) !important;
-    border: 1px solid rgba(255, 255, 255, 0.5) !important;
+    background: var(--bg-secondary, rgba(245, 245, 247, 0.85)) !important;
+    border: 1px solid rgba(0, 0, 0, 0.05) !important;
     border-radius: 14px !important;
-    box-shadow:
-        4px 4px 10px rgba(0, 0, 0, 0.05),
-        -4px -4px 10px rgba(255, 255, 255, 0.8),
-        inset 2px 2px 4px rgba(255, 255, 255, 0.9) !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03) !important;
 }
 
 /* ─── SECTION 18: INPUTS — CLAY INSET ─── */
@@ -2513,4 +2497,101 @@ button:active,
 .warning-icon {
     font-size: 16px !important;
     flex-shrink: 0 !important;
-}
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SETTINGS MODAL POPUP CONTAINER & CARDS (ZERO WHITE CLAY SHADOWS)
+   ═══════════════════════════════════════════════════════════════════════════ */
+#settingsModal .modal-container,
+.settings-modal {
+    max-width: 440px !important;
+    width: 90% !important;
+    max-height: calc(100vh - 64px) !important;
+    margin: auto !important;
+    background: var(--modal-bg, rgba(255, 255, 255, 0.96)) !important;
+    backdrop-filter: blur(25px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(25px) saturate(180%) !important;
+    border-radius: 28px !important;
+    border: 1px solid rgba(212, 148, 58, 0.25) !important;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.22) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+}
+
+[data-theme="dark"] #settingsModal .modal-container,
+[data-theme="dark"] .settings-modal {
+    background: rgba(28, 28, 30, 0.96) !important;
+    border-color: rgba(212, 148, 58, 0.3) !important;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7) !important;
+}
+
+#settingsModal .modal-body,
+.settings-body {
+    padding: 20px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+    overflow-y: auto !important;
+    flex: 1 !important;
+}
+
+#settingsModal .settings-section {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+}
+
+#settingsModal .settings-section-title {
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.8px !important;
+    text-transform: uppercase !important;
+    color: var(--text-secondary, #86868b) !important;
+    padding-left: 4px !important;
+    margin-bottom: 2px !important;
+}
+
+[data-theme="dark"] #settingsModal .settings-section-title {
+    color: rgba(255, 255, 255, 0.6) !important;
+}
+
+#settingsModal .setting-item {
+    background: var(--bg-secondary, rgba(245, 245, 247, 0.85)) !important;
+    border: 1px solid rgba(0, 0, 0, 0.05) !important;
+    border-radius: 16px !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03) !important;
+    padding: 14px 16px !important;
+    margin-bottom: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    transition: transform 0.2s ease, background-color 0.2s ease !important;
+}
+
+[data-theme="dark"] #settingsModal .setting-item {
+    background: rgba(255, 255, 255, 0.07) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    box-shadow: none !important;
+}
+
+#settingsModal .setting-item.clickable:active {
+    transform: scale(0.985) !important;
+    background: rgba(212, 148, 58, 0.1) !important;
+}
+
+#settingsModal .setting-item.danger {
+    background: rgba(255, 59, 48, 0.08) !important;
+    border: 1px solid rgba(255, 59, 48, 0.2) !important;
+}
+
+[data-theme="dark"] #settingsModal .setting-item.danger {
+    background: rgba(255, 59, 48, 0.15) !important;
+    border-color: rgba(255, 59, 48, 0.3) !important;
+}
+

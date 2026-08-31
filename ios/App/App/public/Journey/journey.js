@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ═══════════════════════════════════════════════════════════════════════════════
  * ANHAD — THE JOURNEY CONTROLLER & BLESSING ENGINE
  * ═══════════════════════════════════════════════════════════════════════════════
@@ -33,7 +33,7 @@
     if (toastTimer) clearTimeout(toastTimer);
     toastTimer = setTimeout(() => {
       toast.classList.remove('visible');
-    }, 3200);
+    }, 2800);
   }
 
   // ─── Version Loader ───
@@ -42,7 +42,7 @@
       const response = await fetch('../version.json?t=' + Date.now());
       if (response.ok) {
         const data = await response.json();
-        const ver = data.version ? `v${data.version}` : 'v1.1.13';
+        const ver = data.version ? `v${data.version}` : 'v1.1.14';
         
         const heroVer = document.getElementById('heroVersionLabel');
         if (heroVer) heroVer.textContent = ver;
@@ -55,30 +55,7 @@
     }
   }
 
-  // ─── Scroll Reveal Observer ───
-  function initScrollReveal() {
-    const items = document.querySelectorAll('.reveal-item');
-    if (!('IntersectionObserver' in window)) {
-      items.forEach(el => el.classList.add('revealed'));
-      return;
-    }
-
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('revealed');
-          observer.unobserve(entry.target);
-        }
-      });
-    }, {
-      threshold: 0.12,
-      rootMargin: '0px 0px -40px 0px'
-    });
-
-    items.forEach(el => observer.observe(el));
-  }
-
-  // ─── Ardaas Blessing Engine with Particle Bloom ───
+  // ─── Ardaas Blessing Engine with Gentle Particle Bloom ───
   function initArdaasEngine() {
     const btn = document.getElementById('sendArdaasBtn');
     const pill = document.getElementById('ardaasCountPill');
@@ -99,60 +76,55 @@
       thankNote.textContent = `You have blessed this seva ${ardaasCount} time${ardaasCount > 1 ? 's' : ''} 🙏`;
     }
 
-    if (!btn) return;
+    if (btn) {
+      btn.addEventListener('click', (e) => {
+        triggerHaptic('HEAVY');
+        ardaasCount++;
 
-    btn.addEventListener('click', (e) => {
-      triggerHaptic('HEAVY');
-      ardaasCount++;
-      
-      try {
-        localStorage.setItem(ARDAAS_STORAGE_KEY, ardaasCount.toString());
-      } catch (e) {}
+        try {
+          localStorage.setItem(ARDAAS_STORAGE_KEY, ardaasCount.toString());
+        } catch (err) {}
 
-      if (pill) {
-        pill.textContent = ardaasCount;
-        pill.style.transform = 'scale(1.3)';
-        setTimeout(() => { pill.style.transform = 'scale(1)'; }, 200);
-      }
+        if (pill) {
+          pill.textContent = ardaasCount;
+          pill.style.transform = 'scale(1.3)';
+          setTimeout(() => { pill.style.transform = 'scale(1)'; }, 200);
+        }
 
-      if (thankNote) {
-        thankNote.textContent = `ਧੰਨਵਾਦ ਜੀ! May Guru Sahib bless you with Chardi Kala 🙏`;
-        thankNote.style.color = 'var(--journey-gold-primary)';
-      }
+        if (thankNote) {
+          thankNote.textContent = `Waheguru Ji Kirpa! Blessing sent (${ardaasCount}) 🙏`;
+        }
 
-      // Spawn Sparkle Particle Bloom
-      spawnSparkles(stage, e);
-
-      // Toast
-      showToast('🙏 ਧੰਨਵਾਦ ਜੀ! Your blessing & Ardaas has been received.');
-    });
+        spawnGentleSparkles(e, stage);
+        showToast('🙏 ਧੰਨਵਾਦ ਜੀ! Your blessing & Ardaas has been received.');
+      });
+    }
   }
 
-  function spawnSparkles(container, event) {
+  function spawnGentleSparkles(event, container) {
     if (!container) return;
 
-    const symbols = ['✨', '🙏', '💛', '🌸', '💫', 'ੴ'];
-    const particleCount = 12;
-    const rect = container.getBoundingClientRect();
+    const symbols = ['✨', '🌸', '🪯', 'ੴ', '🕊️'];
+    const count = 7;
 
-    for (let i = 0; i < particleCount; i++) {
+    for (let i = 0; i < count; i++) {
       const particle = document.createElement('span');
       particle.className = 'sparkle-particle';
       particle.textContent = symbols[Math.floor(Math.random() * symbols.length)];
 
-      const startX = (rect.width / 2) + (Math.random() * 80 - 40);
-      const startY = rect.height - 40;
-      const tx = (Math.random() * 160 - 80) + 'px';
+      const startX = 50 + (Math.random() * 40 - 20); // Center around 50%
+      const tx = (Math.random() * 120 - 60) + 'px';
 
-      particle.style.left = `${startX}px`;
-      particle.style.top = `${startY}px`;
+      particle.style.left = `${startX}%`;
+      particle.style.bottom = '20px';
       particle.style.setProperty('--tx', tx);
+      particle.style.animationDelay = `${i * 0.08}s`;
 
       container.appendChild(particle);
 
       setTimeout(() => {
         particle.remove();
-      }, 1600);
+      }, 1800);
     }
   }
 
@@ -169,9 +141,7 @@
       if (navigator.share) {
         try {
           await navigator.share(shareData);
-        } catch (e) {
-          // User cancelled share
-        }
+        } catch (e) {}
       } else {
         try {
           await navigator.clipboard.writeText(shareData.url);
@@ -208,10 +178,8 @@
   function boot() {
     initBackButton();
     syncAppVersion();
-    initScrollReveal();
     initArdaasEngine();
     initSharing();
-    console.log('🙏 [Journey] About ANHAD initialized with divine elegance');
   }
 
   if (document.readyState === 'loading') {
