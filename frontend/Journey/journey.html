@@ -54,11 +54,10 @@
     <script src="journey.js" defer></script>
 </head>
 <body data-anhad-core>
-    <!-- Background Ambient Glow Canvas -->
+    <!-- Background Ambient Glow -->
     <div class="journey-ambient-bg" aria-hidden="true">
         <div class="ambient-orb orb-1"></div>
         <div class="ambient-orb orb-2"></div>
-        <div class="ambient-orb orb-3"></div>
     </div>
 
     <!-- Navigation Bar -->
@@ -70,15 +69,17 @@
             <span class="back-label">Back</span>
         </button>
         <span class="glass-nav__title">The Journey</span>
-        <button class="glass-nav__action" id="journeyShareTopBtn" aria-label="Share ANHAD">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="18" cy="5" r="3"></circle>
-                <circle cx="6" cy="12" r="3"></circle>
-                <circle cx="18" cy="19" r="3"></circle>
-                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
-                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
-            </svg>
-        </button>
+        <div class="glass-nav__action">
+            <button class="glass-nav__action-btn" id="journeyShareTopBtn" aria-label="Share ANHAD">
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="18" cy="5" r="3"></circle>
+                    <circle cx="6" cy="12" r="3"></circle>
+                    <circle cx="18" cy="19" r="3"></circle>
+                    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                    <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                </svg>
+            </button>
+        </div>
     </nav>
 
     <!-- Main Container -->
@@ -86,29 +87,42 @@
         
         <!-- 1. HERO SECTION -->
         <header class="journey-hero">
-            <div class="hero-emblem-wrap">
-                <div class="emblem-halo"></div>
-                <img src="../assets/app-logo-384.avif" alt="ANHAD Logo" class="hero-emblem" id="heroEmblemImg">
+            <div class="hero-emblem-container">
+                <div class="emblem-outer-ring">
+                    <div class="emblem-inner-frame">
+                        <img src="../assets/app-logo-384.avif" alt="ANHAD Logo" class="hero-emblem-img" id="heroEmblemImg">
+                    </div>
+                </div>
+                <div class="emblem-pulse-glow"></div>
             </div>
+
             <div class="hero-badge">
-                <span class="badge-dot"></span>
-                <span>SACRED SEVA PROJECT</span>
+                <span class="badge-sparkle">✦</span>
+                <span>SACRED SEVA INITIATIVE</span>
+                <span class="badge-sparkle">✦</span>
             </div>
-            <h1 class="hero-title">ANHAD</h1>
-            <p class="hero-tagline">A peaceful sanctuary for Gurbani, Naam Simran, and everyday Sikh living.</p>
+
+            <div class="hero-title-group">
+                <h1 class="hero-title">ANHAD</h1>
+                <p class="hero-punjabi-sub">ਅਨਹਦ • The Unstruck Divine Symphony</p>
+            </div>
+
+            <p class="hero-tagline">A serene sanctuary uniting Nitnem, 24×7 Gurbani Radio, Live Sri Harmandir Sahib, and Naam Simran.</p>
             
-            <div class="hero-stats-row">
-                <div class="hero-stat-pill">
-                    <span class="stat-icon">🪯</span>
-                    <span class="stat-label">100% Free Seva</span>
+            <div class="hero-badges-strip">
+                <div class="strip-item">
+                    <span class="strip-icon">🪯</span>
+                    <span>100% Free Seva</span>
                 </div>
-                <div class="hero-stat-pill">
-                    <span class="stat-icon">🕊️</span>
-                    <span class="stat-label">Zero Advertisements</span>
+                <div class="strip-divider">•</div>
+                <div class="strip-item">
+                    <span class="strip-icon">🕊️</span>
+                    <span>Zero Advertisements</span>
                 </div>
-                <div class="hero-stat-pill">
-                    <span class="stat-icon">✨</span>
-                    <span class="stat-label" id="heroVersionLabel">v1.1.10</span>
+                <div class="strip-divider">•</div>
+                <div class="strip-item">
+                    <span class="strip-icon">✨</span>
+                    <span id="heroVersionLabel">v1.1.11</span>
                 </div>
             </div>
         </header>
@@ -116,10 +130,8 @@
         <!-- 2. SABH KIRPA TUMHARI CROWN CARD -->
         <section class="journey-card crown-card reveal-item" id="kirpaSection">
             <div class="crown-card__header">
-                <div class="crown-icon-wrap">
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M12 2v20M8 5l4-3 4 3v12l-4 3-4-3V5z"/>
-                    </svg>
+                <div class="crown-orb-icon">
+                    <span class="crown-ik-onkar">ੴ</span>
                 </div>
                 <div class="crown-card__meta">
                     <span class="crown-eyebrow">DEDICATION & FOUNDATION</span>
@@ -128,12 +140,14 @@
             </div>
 
             <div class="crown-gurmukhi-verse">
-                « ਸਭ ਤੇਰੀ ਵਡਿਆਈ ਕੋਈ ਨਾਉ ਨ ਜਾਣੈ ਮੇਰਾ ॥ »
+                <div class="verse-quote-icon">❝</div>
+                <div class="verse-text">ਸਭ ਤੇਰੀ ਵਡਿਆਈ ਕੋਈ ਨਾਉ ਨ ਜਾਣੈ ਮੇਰਾ ॥</div>
+                <div class="verse-translation">All glory belongs to You, O Lord; no one even knows my name.</div>
             </div>
 
             <div class="card-prose">
                 <p class="lead-paragraph">
-                    Before sharing anything about this project, there is one supreme truth I hold closest to my heart:
+                    Before sharing anything about this application, there is one sacred truth I hold closest to my heart:
                 </p>
                 <p>
                     If ANHAD has become what it is today, the credit does not belong to me. Every single line of code written, every peaceful melody that streams, every design idea, every complex bug solved after days of searching, and every feature working today has only been possible through the infinite <strong>kirpa of Sri Guru Gobind Singh Ji Maharaj</strong>.
@@ -146,8 +160,8 @@
                 </p>
                 
                 <div class="kirpa-quote-pill">
-                    <span>🙏</span>
-                    <strong>"ਸਭ ਕਿਰਪਾ ਤੁਮਾਰੀ ਮੇਰੇ ਸਾਹਿਬਾ"</strong>
+                    <span class="quote-hands">🙏</span>
+                    <span>"ਸਭ ਕਿਰਪਾ ਤੁਮਾਰੀ ਮੇਰੇ ਸਾਹਿਬਾ"</span>
                 </div>
             </div>
         </section>
@@ -179,30 +193,30 @@
 
             <div class="card-prose">
                 <p>
-                    The idea behind ANHAD was born out of a daily struggle. Every morning and evening, I found myself juggling between five to seven different apps:
+                    The inspiration for ANHAD came from a daily struggle. Every morning and evening, I found myself switching between five to seven different apps:
                 </p>
 
                 <!-- Comparison Grid -->
                 <div class="fragmentation-grid">
-                    <div class="frag-pill"><span>📖</span> Nitnem Reader</div>
-                    <div class="frag-pill"><span>📻</span> Gurbani Radio</div>
-                    <div class="frag-pill"><span>🕌</span> Darbar Sahib Live</div>
-                    <div class="frag-pill"><span>📿</span> Naam Simran</div>
-                    <div class="frag-pill"><span>⏰</span> Amritvela Alarms</div>
-                    <div class="frag-pill"><span>📝</span> Spiritual Notes</div>
+                    <div class="frag-pill"><span class="frag-emoji">📖</span> <span>Nitnem Reader</span></div>
+                    <div class="frag-pill"><span class="frag-emoji">📻</span> <span>Gurbani Radio</span></div>
+                    <div class="frag-pill"><span class="frag-emoji">🕌</span> <span>Darbar Sahib Live</span></div>
+                    <div class="frag-pill"><span class="frag-emoji">📿</span> <span>Naam Simran</span></div>
+                    <div class="frag-pill"><span class="frag-emoji">⏰</span> <span>Amritvela Alarms</span></div>
+                    <div class="frag-pill"><span class="frag-emoji">📝</span> <span>Spiritual Notes</span></div>
                 </div>
 
                 <p>
-                    Each app had something good, but none provided a complete, uncluttered, and tranquil home for everyday practice. I constantly asked myself:
+                    Each app had something good, but none provided a complete, peaceful, and unified sanctuary for everyday practice. I constantly asked myself:
                 </p>
 
                 <div class="quote-callout">
                     <span class="quote-mark">“</span>
-                    <p>What if there was one peaceful sanctuary where any Gursikh around the world could find everything needed to stay connected with Gurbani, all day long?</p>
+                    <p>What if there was one serene, distraction-free home where any Gursikh around the world could find everything needed to stay connected with Gurbani, all day long?</p>
                 </div>
 
                 <p>
-                    <strong>That single heartfelt aspiration became ANHAD.</strong>
+                    <strong>That single heartfelt thought became ANHAD.</strong>
                 </p>
             </div>
         </section>
@@ -210,8 +224,8 @@
         <!-- 4. INTERACTIVE ROADMAP & MILESTONES -->
         <section class="journey-card reveal-item">
             <div class="card-header">
-                <span class="card-eyebrow">ENGINEERING & SEVA CHRONICLES</span>
-                <h2 class="card-title">The Development Milestones</h2>
+                <span class="card-eyebrow">SEVA & ENGINEERING CHRONICLES</span>
+                <h2 class="card-title">Development Milestones</h2>
             </div>
 
             <div class="roadmap-timeline">
@@ -223,7 +237,7 @@
                     <div class="node-content">
                         <div class="node-time">MONTH 1 • THE FOUNDATION</div>
                         <h4 class="node-title">The First Sacred Step</h4>
-                        <p class="node-desc">Designing an authentic Gurmukhi typography engine and a zero-distraction Nitnem reader with accurate transliterations.</p>
+                        <p class="node-desc">Designing an authentic Gurmukhi typography engine and a zero-distraction Nitnem reader with accurate transliterations and translations.</p>
                     </div>
                 </div>
 
@@ -234,8 +248,8 @@
                     </div>
                     <div class="node-content">
                         <div class="node-time">MONTH 2-3 • AUDIO ARCHITECTURE</div>
-                        <h4 class="node-title">24×7 Global Virtual Live Engine</h4>
-                        <p class="node-desc">Engineering UTC-synchronized television-style broadcast rotation for Amritvela Kirtan & Waheguru Simran, paired with direct Icecast feeds from Sri Harmandir Sahib Ji.</p>
+                        <h4 class="node-title">24×7 Virtual Live Broadcast</h4>
+                        <p class="node-desc">Engineering a global UTC-synchronized broadcast rotation for Amritvela Kirtan & Waheguru Simran, paired with direct high-fidelity Icecast feeds from Sri Harmandir Sahib Ji.</p>
                     </div>
                 </div>
 
@@ -245,9 +259,9 @@
                         <span class="node-icon">🎨</span>
                     </div>
                     <div class="node-content">
-                        <div class="node-time">MONTH 4-5 • LIQUID CLAYMORPHISM</div>
+                        <div class="node-time">MONTH 4-5 • LUXURY CLAYMORPHISM</div>
                         <h4 class="node-title">Next-Gen UI/UX & 120 FPS Rendering</h4>
-                        <p class="node-desc">Crafting luxury claymorphism, dynamic time-of-day sky backdrops (Morning, Day, Evening, Night), and a deep Obsidian Onyx dark mode.</p>
+                        <p class="node-desc">Crafting supreme claymorphism, dynamic time-of-day sky backdrops (Morning, Day, Evening, Night), and a deep Obsidian Onyx dark mode.</p>
                     </div>
                 </div>
 
@@ -268,7 +282,7 @@
         <!-- 5. WHAT ANHAD OFFERS TODAY (3D FEATURE MATRIX) -->
         <section class="journey-card reveal-item">
             <div class="card-header">
-                <span class="card-eyebrow">FEATURE SHOWCASE</span>
+                <span class="card-eyebrow">SANCTUARY ARCHITECTURE</span>
                 <h2 class="card-title">Everything In One Place</h2>
             </div>
 
@@ -343,7 +357,7 @@
         <section class="journey-card blessing-card reveal-item" id="ardaasSection">
             <div class="blessing-badge">
                 <span>🙏</span>
-                <span>A HUMBLE REQUEST</span>
+                <span>A HUMBLE PRAYER</span>
             </div>
             
             <h2 class="blessing-title">Keep Me In Your Ardaas</h2>
@@ -379,7 +393,7 @@
         <!-- 7. ACTIONS & SEVA HUB -->
         <section class="journey-card actions-card reveal-item">
             <div class="card-header">
-                <span class="card-eyebrow">SEVA & COMMUNITY</span>
+                <span class="card-eyebrow">COMMUNITY & CONNECTION</span>
                 <h2 class="card-title">Share the Light</h2>
             </div>
 
@@ -406,8 +420,8 @@
 
             <div class="footer-info">
                 <div class="app-version-badge">
-                    <span>ANHAD</span>
-                    <span id="footerVersionText">v1.1.10</span>
+                    <span>ANHAD GURBANI SANCTUARY</span>
+                    <span id="footerVersionText">v1.1.11</span>
                 </div>
                 <p class="footer-made-with">Crafted with utmost devotion & reverence for the global Sadhsangat.</p>
             </div>

@@ -5,16 +5,16 @@
 
 :root {
   --journey-gold-primary: #D4943A;
-  --journey-gold-bright: #FFD666;
+  --journey-gold-bright: #FBD578;
   --journey-gold-deep: #A86F1E;
   --journey-gold-glow: rgba(212, 148, 58, 0.28);
-  --journey-gold-subtle: rgba(212, 148, 58, 0.12);
+  --journey-gold-subtle: rgba(212, 148, 58, 0.10);
   
   --journey-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
   --journey-smooth: cubic-bezier(0.25, 1, 0.5, 1);
   
   --card-radius-xl: 28px;
-  --card-radius-lg: 22px;
+  --card-radius-lg: 20px;
   --card-radius-md: 16px;
   --card-radius-sm: 12px;
 }
@@ -41,7 +41,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* ── Dynamic Ambient Background ── */
+/* ── Clean Ambient Background (No top pink distortion) ── */
 .journey-ambient-bg {
   position: fixed;
   top: 0;
@@ -57,165 +57,203 @@ body {
   position: absolute;
   border-radius: 50%;
   transform: translate3d(0, 0, 0);
-  opacity: 0.6;
-  animation: orbFloat 14s ease-in-out infinite alternate;
+  opacity: 0.45;
+  animation: orbFloat 16s ease-in-out infinite alternate;
 }
 
 .orb-1 {
-  width: 380px;
-  height: 380px;
-  top: -80px;
+  width: 320px;
+  height: 320px;
+  top: 120px;
   left: -80px;
-  background: radial-gradient(circle, rgba(245, 196, 110, 0.22) 0%, rgba(245, 196, 110, 0) 70%);
+  background: radial-gradient(circle, rgba(245, 205, 120, 0.18) 0%, rgba(245, 205, 120, 0) 70%);
 }
 
 .orb-2 {
-  width: 440px;
-  height: 440px;
-  top: 40%;
-  right: -120px;
-  background: radial-gradient(circle, rgba(212, 148, 58, 0.18) 0%, rgba(212, 148, 58, 0) 70%);
-  animation-delay: -5s;
-}
-
-.orb-3 {
-  width: 360px;
-  height: 360px;
-  bottom: 5%;
-  left: -60px;
-  background: radial-gradient(circle, rgba(235, 180, 90, 0.16) 0%, rgba(235, 180, 90, 0) 70%);
-  animation-delay: -9s;
+  width: 380px;
+  height: 380px;
+  bottom: 10%;
+  right: -100px;
+  background: radial-gradient(circle, rgba(212, 148, 58, 0.15) 0%, rgba(212, 148, 58, 0) 70%);
+  animation-delay: -7s;
 }
 
 [data-theme="dark"] .orb-1,
 .dark-mode .orb-1 {
-  background: radial-gradient(circle, rgba(212, 148, 58, 0.15) 0%, rgba(212, 148, 58, 0) 70%);
+  background: radial-gradient(circle, rgba(212, 148, 58, 0.12) 0%, rgba(212, 148, 58, 0) 70%);
 }
 [data-theme="dark"] .orb-2,
 .dark-mode .orb-2 {
-  background: radial-gradient(circle, rgba(168, 111, 30, 0.14) 0%, rgba(168, 111, 30, 0) 70%);
+  background: radial-gradient(circle, rgba(168, 111, 30, 0.10) 0%, rgba(168, 111, 30, 0) 70%);
 }
 
 @keyframes orbFloat {
   0% { transform: translate3d(0, 0, 0) scale(1); }
-  100% { transform: translate3d(24px, 30px, 0) scale(1.08); }
+  100% { transform: translate3d(20px, 25px, 0) scale(1.06); }
 }
 
 /* ── Container ── */
 .journey-container {
   position: relative;
   z-index: 1;
-  max-width: 680px;
+  max-width: 660px;
   margin: 0 auto;
-  padding: 16px 18px 40px;
+  padding: 12px 18px 40px;
   display: flex;
   flex-direction: column;
   gap: 22px;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════
-   1. HERO SECTION
+   1. HERO SECTION & 3D CONCENTRIC GOLD MEDALLION
    ═══════════════════════════════════════════════════════════════════════════════ */
 .journey-hero {
   text-align: center;
-  padding: 24px 12px 14px;
+  padding: 20px 10px 10px;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-.hero-emblem-wrap {
+.hero-emblem-container {
   position: relative;
   margin-bottom: 18px;
 }
 
-.emblem-halo {
-  position: absolute;
-  inset: -14px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(212, 148, 58, 0.45) 0%, rgba(212, 148, 58, 0) 70%);
-  animation: haloPulse 3.5s ease-in-out infinite;
-  pointer-events: none;
-}
-
-@keyframes haloPulse {
-  0%, 100% { transform: scale(0.92); opacity: 0.5; }
-  50% { transform: scale(1.12); opacity: 0.9; }
-}
-
-.hero-emblem {
-  width: 104px;
-  height: 104px;
-  border-radius: 28px;
-  object-fit: cover;
-  display: block;
+.emblem-outer-ring {
+  width: 116px;
+  height: 116px;
+  border-radius: 34px;
+  padding: 5px;
+  background: linear-gradient(145deg, #FFEAB5 0%, #D4943A 50%, #8C5D14 100%);
+  box-shadow: 
+    0 14px 34px rgba(212, 148, 58, 0.28),
+    0 4px 12px rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   position: relative;
   z-index: 2;
-  box-shadow: 
-    0 12px 32px rgba(212, 148, 58, 0.28),
-    0 4px 12px rgba(0, 0, 0, 0.1);
   transition: transform 0.4s var(--journey-spring);
+  animation: floatEmblem 4s ease-in-out infinite alternate;
 }
 
-.hero-emblem:hover {
-  transform: translateY(-4px) scale(1.03);
+@keyframes floatEmblem {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-7px); }
+}
+
+.emblem-inner-frame {
+  width: 100%;
+  height: 100%;
+  border-radius: 29px;
+  overflow: hidden;
+  background: #FFF;
+  box-shadow: inset 0 2px 5px rgba(255, 255, 255, 1), inset 0 -2px 5px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+[data-theme="dark"] .emblem-outer-ring,
+.dark-mode .emblem-outer-ring {
+  background: linear-gradient(145deg, #FBD578 0%, #D4943A 40%, #5E3D08 100%);
+  box-shadow: 
+    0 16px 40px rgba(0, 0, 0, 0.6),
+    0 0 20px rgba(212, 148, 58, 0.25);
+}
+
+[data-theme="dark"] .emblem-inner-frame,
+.dark-mode .emblem-inner-frame {
+  background: #18161E;
+}
+
+.hero-emblem-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.emblem-pulse-glow {
+  position: absolute;
+  inset: -14px;
+  border-radius: 40px;
+  background: radial-gradient(circle, rgba(212, 148, 58, 0.35) 0%, rgba(212, 148, 58, 0) 70%);
+  animation: glowPulse 3.5s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+@keyframes glowPulse {
+  0%, 100% { transform: scale(0.92); opacity: 0.4; }
+  50% { transform: scale(1.14); opacity: 0.8; }
 }
 
 .hero-badge {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   padding: 5px 14px;
   border-radius: 999px;
   font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.8px;
+  font-weight: 800;
+  letter-spacing: 1px;
   text-transform: uppercase;
   color: #8C5D14;
   background: linear-gradient(135deg, #FFF6E5 0%, #FFE8C2 100%);
   border: 1px solid rgba(212, 148, 58, 0.25);
-  margin-bottom: 10px;
+  box-shadow: 0 2px 8px rgba(212, 148, 58, 0.08);
+  margin-bottom: 12px;
 }
 
 [data-theme="dark"] .hero-badge,
 .dark-mode .hero-badge {
   color: #F8D38D;
-  background: linear-gradient(135deg, rgba(212, 148, 58, 0.2) 0%, rgba(212, 148, 58, 0.08) 100%);
+  background: linear-gradient(135deg, rgba(212, 148, 58, 0.22) 0%, rgba(212, 148, 58, 0.08) 100%);
   border-color: rgba(212, 148, 58, 0.35);
 }
 
-.badge-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #D4943A;
-  box-shadow: 0 0 8px #D4943A;
-  animation: dotBlink 2s ease-in-out infinite;
+.badge-sparkle {
+  color: #D4943A;
+  font-size: 12px;
 }
 
-@keyframes dotBlink {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.4; transform: scale(0.7); }
+.hero-title-group {
+  margin-bottom: 10px;
 }
 
 .hero-title {
-  font-size: 2.8rem;
+  font-size: 3rem;
   font-weight: 900;
   letter-spacing: -0.5px;
-  line-height: 1.1;
-  margin-bottom: 10px;
-  background: linear-gradient(135deg, #D4943A 0%, #F5C564 45%, #B87B22 100%);
+  line-height: 1;
+  margin-bottom: 6px;
+  background: linear-gradient(135deg, #E5A844 0%, #F5C564 35%, #D4943A 70%, #9E6412 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  filter: drop-shadow(0 2px 8px rgba(212, 148, 58, 0.2));
+}
+
+.hero-punjabi-sub {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #8C5D14;
+  letter-spacing: 0.4px;
+}
+
+[data-theme="dark"] .hero-punjabi-sub,
+.dark-mode .hero-punjabi-sub {
+  color: #F5C564;
 }
 
 .hero-tagline {
-  font-size: 15px;
+  font-size: 14.5px;
   line-height: 1.5;
   color: var(--text-secondary, #686571);
   max-width: 440px;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 
 [data-theme="dark"] .hero-tagline,
@@ -223,56 +261,59 @@ body {
   color: #A09DA8;
 }
 
-.hero-stats-row {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 8px;
-}
-
-.hero-stat-pill {
+/* Unified Hero Badges Strip */
+.hero-badges-strip {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 14px;
+  gap: 10px;
+  padding: 8px 18px;
   border-radius: 999px;
-  font-size: 12px;
-  font-weight: 600;
   background: rgba(255, 255, 255, 0.85);
-  border: 1px solid rgba(212, 148, 58, 0.18);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(212, 148, 58, 0.2);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+  font-size: 12px;
+  font-weight: 700;
   color: var(--text-primary, #1C1A22);
 }
 
-[data-theme="dark"] .hero-stat-pill,
-.dark-mode .hero-stat-pill {
-  background: rgba(28, 26, 34, 0.85);
+[data-theme="dark"] .hero-badges-strip,
+.dark-mode .hero-badges-strip {
+  background: rgba(26, 24, 32, 0.85);
   border-color: rgba(255, 255, 255, 0.08);
   color: #F0EDF5;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+}
+
+.strip-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.strip-divider {
+  color: #D4943A;
+  opacity: 0.6;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════
-   2. CLAYMORPHIC CARD ARCHITECTURE (LIGHT & DARK PARITY)
+   2. CLAYMORPHIC CARD ARCHITECTURE
    ═══════════════════════════════════════════════════════════════════════════════ */
 .journey-card {
   position: relative;
   border-radius: var(--card-radius-xl);
   padding: 24px 22px;
   
-  /* Supreme Light Claymorphism */
   background: linear-gradient(155deg, #FFFFFF 0%, #FBF9F6 60%, #F5EFE6 100%);
   border: 1.5px solid rgba(255, 255, 255, 0.95);
   box-shadow: 
-    6px 10px 24px rgba(212, 148, 58, 0.1),
+    6px 10px 24px rgba(212, 148, 58, 0.08),
     -5px -5px 14px rgba(255, 255, 255, 1),
     inset 2px 2px 4px rgba(255, 255, 255, 1),
-    inset -2px -2px 4px rgba(212, 148, 58, 0.05);
+    inset -2px -2px 4px rgba(212, 148, 58, 0.04);
   
   transition: transform 0.3s var(--journey-smooth), box-shadow 0.3s var(--journey-smooth);
 }
 
-/* Supreme Dark Mode Claymorphism (Deep Obsidian Onyx) */
 [data-theme="dark"] .journey-card,
 .dark-mode .journey-card {
   background: linear-gradient(155deg, #1E1C24 0%, #16141B 50%, #100E14 100%);
@@ -339,8 +380,8 @@ body {
 }
 
 .lead-paragraph {
-  font-size: 16px;
-  font-weight: 500;
+  font-size: 15.5px;
+  font-weight: 600;
   color: var(--text-primary, #1C1A22);
 }
 
@@ -356,9 +397,9 @@ body {
   border-color: rgba(212, 148, 58, 0.35) !important;
   background: linear-gradient(155deg, #FFFDF9 0%, #FFF8ED 50%, #FFF2DD 100%) !important;
   box-shadow: 
-    0 12px 32px rgba(212, 148, 58, 0.16),
+    0 12px 32px rgba(212, 148, 58, 0.14),
     inset 2.5px 2.5px 5px rgba(255, 255, 255, 1),
-    inset -2.5px -2.5px 5px rgba(212, 148, 58, 0.1) !important;
+    inset -2.5px -2.5px 5px rgba(212, 148, 58, 0.08) !important;
 }
 
 [data-theme="dark"] .crown-card,
@@ -378,10 +419,10 @@ body {
   margin-bottom: 16px;
 }
 
-.crown-icon-wrap {
-  width: 48px;
-  height: 48px;
-  border-radius: 16px;
+.crown-orb-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -389,6 +430,12 @@ body {
   color: #FFF;
   box-shadow: 0 4px 14px rgba(212, 148, 58, 0.35);
   flex-shrink: 0;
+}
+
+.crown-ik-onkar {
+  font-size: 26px;
+  font-weight: 800;
+  line-height: 1;
 }
 
 .crown-eyebrow {
@@ -406,7 +453,7 @@ body {
 }
 
 .crown-title {
-  font-size: 1.55rem;
+  font-size: 1.6rem;
   font-weight: 900;
   color: #80530A;
 }
@@ -417,23 +464,50 @@ body {
 }
 
 .crown-gurmukhi-verse {
-  font-size: 16px;
-  font-weight: 700;
-  text-align: center;
-  padding: 12px 16px;
+  position: relative;
+  padding: 14px 18px;
   border-radius: var(--card-radius-md);
-  background: rgba(212, 148, 58, 0.1);
-  border: 1px solid rgba(212, 148, 58, 0.2);
-  color: #8C5D14;
+  background: rgba(212, 148, 58, 0.09);
+  border: 1px solid rgba(212, 148, 58, 0.22);
   margin-bottom: 16px;
-  letter-spacing: 0.3px;
+  text-align: center;
 }
 
 [data-theme="dark"] .crown-gurmukhi-verse,
 .dark-mode .crown-gurmukhi-verse {
   background: rgba(212, 148, 58, 0.12);
   border-color: rgba(212, 148, 58, 0.28);
+}
+
+.verse-quote-icon {
+  font-size: 22px;
+  color: #D4943A;
+  line-height: 1;
+  margin-bottom: 2px;
+}
+
+.verse-text {
+  font-size: 16px;
+  font-weight: 700;
+  color: #8C5D14;
+  letter-spacing: 0.3px;
+  margin-bottom: 4px;
+}
+
+[data-theme="dark"] .verse-text,
+.dark-mode .verse-text {
   color: #F8D38D;
+}
+
+.verse-translation {
+  font-size: 12.5px;
+  font-style: italic;
+  color: var(--text-secondary, #686571);
+}
+
+[data-theme="dark"] .verse-translation,
+.dark-mode .verse-translation {
+  color: #B5B2BE;
 }
 
 .kirpa-quote-pill {
@@ -446,6 +520,7 @@ body {
   background: linear-gradient(135deg, #FFE8BF 0%, #FFD694 100%);
   color: #613C03;
   font-size: 15px;
+  font-weight: 800;
   box-shadow: 0 4px 14px rgba(212, 148, 58, 0.2);
   margin-top: 6px;
 }
@@ -459,7 +534,7 @@ body {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════
-   4. CREATOR PROFILE & COMPARISON GRID
+   4. CREATOR PROFILE & GENESIS
    ═══════════════════════════════════════════════════════════════════════════════ */
 .creator-profile-card {
   display: flex;
@@ -723,7 +798,7 @@ body {
 .matrix-card {
   padding: 16px 14px;
   border-radius: var(--card-radius-lg);
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.75);
   border: 1px solid rgba(212, 148, 58, 0.15);
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.03);
   display: flex;
@@ -798,7 +873,7 @@ body {
   background: linear-gradient(160deg, #FFFDF9 0%, #FFF6E8 60%, #FFEDD0 100%) !important;
   border-color: rgba(212, 148, 58, 0.4) !important;
   box-shadow: 
-    0 14px 36px rgba(212, 148, 58, 0.18),
+    0 14px 36px rgba(212, 148, 58, 0.16),
     inset 2px 2px 4px rgba(255, 255, 255, 1) !important;
   position: relative;
   overflow: hidden;
@@ -1044,10 +1119,11 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-size: 12px;
+  font-size: 11.5px;
   font-weight: 800;
   color: #8C5D14;
   margin-bottom: 6px;
+  letter-spacing: 0.5px;
 }
 
 [data-theme="dark"] .app-version-badge,
@@ -1111,7 +1187,7 @@ body {
 /* Responsive breakpoint for tablets/desktops */
 @media (min-width: 768px) {
   .journey-container {
-    padding: 24px 24px 60px;
+    padding: 20px 24px 60px;
     gap: 28px;
   }
   .features-matrix {

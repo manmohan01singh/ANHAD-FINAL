@@ -2059,12 +2059,8 @@
         <div class="stars-field" id="starsField" aria-hidden="true"></div>
     </div>
 
-    <!-- Component scripts -->
-    <script src="components/timer-engine.js"></script>
-    <script src="components/notification-engine.js"></script>
-    <script src="components/stats-tracker.js"></script>
+    <!-- Audio Manager -->
     <script src="components/audio-manager.js"></script>
-    <script src="components/ritual-engine.js"></script>
 
     <!-- Core Script -->
     <script src="naam-abhyas.js"></script>
@@ -2074,15 +2070,6 @@
     <script src="../lib/anhad-widget-bridge.js"></script>
     <script src="../lib/anhad-audio-singleton.js?v=2.1.5"></script>
     <script src="../lib/overlay-player.js" defer></script>
-
-    <!--
-        â•”═══════════════════════════════════════════════════════â•—
-        â•‘  NAAM ALARM — Single Notification Authority           â•‘
-        â•‘  Must load LAST. Disables all competing senders.      â•‘
-        â•‘  Pipeline: schedule â†’ tick â†’ notify â†’ popup â†’ done   â•‘
-        â•š═══════════════════════════════════════════════════════â•
-    -->
-    <script src="naam-alarm.js"></script>
 </body>
 
 </html>
