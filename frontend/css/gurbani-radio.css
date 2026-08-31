@@ -120,7 +120,7 @@
    ═══════════════════════════════════════════════════════════════════ */
 .mini-player {
     position: fixed;
-    bottom: 20px;
+    bottom: 90px;
     left: 50%;
     transform: translateX(-50%);
     width: calc(100% - 32px);
@@ -240,7 +240,7 @@
     }
 
     .mini-player {
-        bottom: 16px;
+        bottom: 80px;
         width: calc(100% - 24px);
         padding: 8px 12px;
     }

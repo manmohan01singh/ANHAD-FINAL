@@ -2330,7 +2330,7 @@
   .floating-player,
   .mini-player {
     position: fixed !important;
-    bottom: 20px !important;
+    bottom: 90px !important;
     right: 20px !important;
     z-index: 9999 !important;
   }

@@ -13,7 +13,7 @@
 
 .gmp {
   position: fixed;
-  bottom: calc(76px + max(env(safe-area-inset-bottom, 0px), 8px) + 12px) !important;
+  bottom: calc(112px + max(env(safe-area-inset-bottom, 0px), 8px)) !important;
   left: 50% !important;
   right: auto !important;
   transform: translateX(-50%) !important;
