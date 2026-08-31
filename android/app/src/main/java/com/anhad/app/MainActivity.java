@@ -27,35 +27,6 @@ public class MainActivity extends BridgeActivity {
     private AppUpdateManager appUpdateManager;
     private InstallStateUpdatedListener installStateUpdatedListener;
 
-    private BroadcastReceiver mediaCommandReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String command = intent.getStringExtra("command");
-            if (command != null) {
-                Log.d(TAG, "Received media command from service: " + command);
-                String jsStr = "";
-                if (command.equals("PAUSE")) {
-                    jsStr = "if(window.AnhadAudio) { window.AnhadAudio.pauseFromNative(); }";
-                } else if (command.equals("STOP")) {
-                    jsStr = "if(window.AnhadAudio) { window.AnhadAudio.stopFromNative(); }";
-                } else if (command.equals("PLAY") || command.equals("RECONNECT")) {
-                    jsStr = "if(window.AnhadAudio) { window.AnhadAudio.resumeFromNative(); }";
-                } else if (command.equals("NEXT")) {
-                    jsStr = "if(window.AnhadAudio) { window.AnhadAudio.playNextTrack(true); }";
-                } else if (command.equals("PREV")) {
-                    jsStr = "if(window.AnhadAudio) { window.AnhadAudio.playNextTrack(false); }";
-                }
-                
-                final String finalJs = jsStr;
-                if (!finalJs.isEmpty() && getBridge() != null && getBridge().getWebView() != null) {
-                    getBridge().getWebView().post(() -> {
-                        getBridge().getWebView().evaluateJavascript(finalJs, null);
-                    });
-                }
-            }
-        }
-    };
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         registerPlugin(WidgetDataBridgePlugin.class);
@@ -115,13 +86,6 @@ public class MainActivity extends BridgeActivity {
             Log.d(TAG, "✅ WebView configured for audio streaming: " +
                 "gesture=" + settings.getMediaPlaybackRequiresUserGesture() +
                 ", mixedContent=ALWAYS_ALLOW");
-        }
-
-        // Register receiver for background audio controls
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-            registerReceiver(mediaCommandReceiver, new IntentFilter("com.anhad.app.MEDIA_COMMAND"), Context.RECEIVER_EXPORTED);
-        } else {
-            registerReceiver(mediaCommandReceiver, new IntentFilter("com.anhad.app.MEDIA_COMMAND"));
         }
 
         // Handle widget click routing
@@ -492,11 +456,6 @@ public class MainActivity extends BridgeActivity {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        try {
-            unregisterReceiver(mediaCommandReceiver);
-        } catch (Exception e) {
-            // Ignored
-        }
         
         // Unregister update listener
         if (appUpdateManager != null && installStateUpdatedListener != null) {

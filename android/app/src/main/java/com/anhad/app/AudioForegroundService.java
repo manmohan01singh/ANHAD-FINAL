@@ -50,12 +50,8 @@ public class AudioForegroundService extends Service {
     
     private PowerManager.WakeLock wakeLock;
     private MediaSessionCompat mediaSession;
-    private AudioManager audioManager;
-    private AudioFocusRequest focusRequest;
-    private AudioManager.OnAudioFocusChangeListener focusChangeListener;
     
     private boolean isPlaying = false;
-    private boolean wasPlayingBeforeInterruption = false;
     private String currentTitle = "ANHAD Kirtan";
     private String currentArtist = "Sri Harmandir Sahib Ji";
     private String currentStream = "darbar";
@@ -65,7 +61,6 @@ public class AudioForegroundService extends Service {
         super.onCreate();
         createNotificationChannel();
         acquireWakeLock();
-        initAudioFocus();
         initMediaSession();
     }
 
@@ -73,80 +68,6 @@ public class AudioForegroundService extends Service {
         Intent intent = new Intent("com.anhad.app.MEDIA_COMMAND");
         intent.putExtra("command", command);
         sendBroadcast(intent);
-    }
-
-    private void initAudioFocus() {
-        audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-        focusChangeListener = new AudioManager.OnAudioFocusChangeListener() {
-            @Override
-            public void onAudioFocusChange(int focusChange) {
-                switch (focusChange) {
-                    case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
-                    case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
-                        Log.d(TAG, "Audio focus transient loss");
-                        if (isPlaying) {
-                            wasPlayingBeforeInterruption = true;
-                            isPlaying = false;
-                            updateMediaSessionState();
-                            updateNotification();
-                            detachForeground();
-                            broadcastCommand("PAUSE");
-                        }
-                        break;
-
-                    case AudioManager.AUDIOFOCUS_GAIN:
-                        Log.d(TAG, "Audio focus regained");
-                        if (wasPlayingBeforeInterruption) {
-                            wasPlayingBeforeInterruption = false;
-                            isPlaying = true;
-                            updateMediaSessionState();
-                            startForeground(NOTIFICATION_ID, buildNotification());
-                            broadcastCommand("PLAY");
-                        }
-                        break;
-
-                    case AudioManager.AUDIOFOCUS_LOSS:
-                        Log.d(TAG, "Audio focus permanent loss");
-                        wasPlayingBeforeInterruption = false;
-                        if (isPlaying) {
-                            isPlaying = false;
-                            updateMediaSessionState();
-                            updateNotification();
-                            detachForeground();
-                            broadcastCommand("PAUSE");
-                        }
-                        break;
-                }
-            }
-        };
-    }
-
-    private void requestAudioFocus() {
-        if (audioManager == null) return;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            AudioAttributes playbackAttributes = new AudioAttributes.Builder()
-                .setUsage(AudioAttributes.USAGE_MEDIA)
-                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                .build();
-            focusRequest = new AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN)
-                .setAudioAttributes(playbackAttributes)
-                .setAcceptsDelayedFocusGain(true)
-                .setWillPauseWhenDucked(true)
-                .setOnAudioFocusChangeListener(focusChangeListener)
-                .build();
-            audioManager.requestAudioFocus(focusRequest);
-        } else {
-            audioManager.requestAudioFocus(focusChangeListener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
-        }
-    }
-
-    private void abandonAudioFocus() {
-        if (audioManager == null) return;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && focusRequest != null) {
-            audioManager.abandonAudioFocusRequest(focusRequest);
-        } else if (focusChangeListener != null) {
-            audioManager.abandonAudioFocus(focusChangeListener);
-        }
     }
 
     private void detachForeground() {
@@ -160,7 +81,6 @@ public class AudioForegroundService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent == null) {
-            // Service restarted by OS (START_STICKY)
             if (currentTitle == null || currentTitle.isEmpty()) {
                 currentTitle = "ANHAD Kirtan";
                 currentArtist = "Sri Harmandir Sahib Ji";
@@ -179,8 +99,6 @@ public class AudioForegroundService extends Service {
         // 1. User clicked Stop on notification
         if (ACTION_STOP.equals(action) || "STOP".equals(action)) {
             isPlaying = false;
-            wasPlayingBeforeInterruption = false;
-            abandonAudioFocus();
             updateMediaSessionState();
             broadcastCommand("STOP");
             stopForeground(true);
@@ -191,26 +109,23 @@ public class AudioForegroundService extends Service {
         // 2. User clicked Pause on notification
         if (ACTION_PAUSE.equals(action)) {
             isPlaying = false;
-            abandonAudioFocus();
             updateMediaSessionState();
             updateNotification();
             detachForeground();
-            broadcastCommand("PAUSE"); // Inform JS
+            broadcastCommand("PAUSE");
             return START_STICKY;
         }
         
         // 3. User clicked Play on notification
         if (ACTION_PLAY.equals(action)) {
             isPlaying = true;
-            wasPlayingBeforeInterruption = false;
-            requestAudioFocus();
             updateMediaSessionState();
             startForeground(NOTIFICATION_ID, buildNotification());
-            broadcastCommand("PLAY"); // Inform JS
+            broadcastCommand("PLAY");
             return START_STICKY;
         }
 
-        // 4. JS Sync: Play state updated from web layer (DO NOT ECHO BROADCAST BACK TO JS)
+        // 4. JS Sync: Play state updated from web layer (DO NOT ECHO BROADCAST)
         if (ACTION_SYNC_PLAY.equals(action)) {
             String title = intent.getStringExtra("title");
             String artist = intent.getStringExtra("artist");
@@ -220,18 +135,15 @@ public class AudioForegroundService extends Service {
             if (stream != null) currentStream = stream;
 
             isPlaying = true;
-            wasPlayingBeforeInterruption = false;
-            requestAudioFocus();
             updateMediaSessionMetadata();
             updateMediaSessionState();
             startForeground(NOTIFICATION_ID, buildNotification());
             return START_STICKY;
         }
 
-        // 5. JS Sync: Pause state updated from web layer (DO NOT ECHO BROADCAST BACK TO JS)
+        // 5. JS Sync: Pause state updated from web layer (DO NOT ECHO BROADCAST)
         if (ACTION_SYNC_PAUSE.equals(action)) {
             isPlaying = false;
-            abandonAudioFocus();
             updateMediaSessionState();
             updateNotification();
             detachForeground();
@@ -269,9 +181,7 @@ public class AudioForegroundService extends Service {
         if (artist != null) currentArtist = artist;
         if (stream != null) currentStream = stream;
         isPlaying = true;
-        wasPlayingBeforeInterruption = false;
         
-        requestAudioFocus();
         updateMediaSessionMetadata();
         updateMediaSessionState();
         startForeground(NOTIFICATION_ID, buildNotification());
@@ -286,8 +196,6 @@ public class AudioForegroundService extends Service {
             @Override
             public void onPlay() {
                 isPlaying = true;
-                wasPlayingBeforeInterruption = false;
-                requestAudioFocus();
                 updateMediaSessionState();
                 startForeground(NOTIFICATION_ID, buildNotification());
                 broadcastCommand("PLAY");
@@ -296,7 +204,6 @@ public class AudioForegroundService extends Service {
             @Override
             public void onPause() {
                 isPlaying = false;
-                abandonAudioFocus();
                 updateMediaSessionState();
                 updateNotification();
                 detachForeground();
@@ -316,8 +223,6 @@ public class AudioForegroundService extends Service {
             @Override
             public void onStop() {
                 isPlaying = false;
-                wasPlayingBeforeInterruption = false;
-                abandonAudioFocus();
                 updateMediaSessionState();
                 broadcastCommand("STOP");
                 stopForeground(true);

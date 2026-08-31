@@ -470,16 +470,14 @@
 
       // HTML5 event listeners
       const notifyStateChange = (playingState, confirmed) => {
+        // If pause fired while we still want playback and audio is seeking or buffering, ignore transient pause
+        if (!playingState && wantsPlayback && (this.audio.seeking || isLoading || isTransitioning)) {
+          return;
+        }
+
         isPlaying = playingState;
         isLoading = false;
         if (playingState && confirmed) {
-          // Only 'playing' confirms data is actually flowing. 'play' fires as
-          // soon as .play() is accepted — often *before* the browser knows
-          // whether the source will load — so resetting the retry budget
-          // there let every reconnect attempt erase its own counter a moment
-          // before the matching 'error' could increment it, which is why the
-          // attempt counter was stuck announcing "#1" forever instead of
-          // counting up and eventually tripping the retry cap.
           connectionState = 'connected';
           liveReconnectAttempts = 0;
           stallRecoveryAttempts = 0;
@@ -495,6 +493,13 @@
       this.audio.addEventListener('play', () => notifyStateChange(true, false));
       this.audio.addEventListener('playing', () => notifyStateChange(true, true));
       this.audio.addEventListener('pause', () => notifyStateChange(false, false));
+      this.audio.addEventListener('seeked', () => {
+        if (wantsPlayback && this.audio.paused) {
+          try {
+            this.audio.play().catch(() => {});
+          } catch(e) {}
+        }
+      });
       this.audio.addEventListener('timeupdate', () => {
         persistState();
         // Dispatch UI timeupdate
