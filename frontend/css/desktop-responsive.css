@@ -1132,25 +1132,29 @@
     display: flex !important;
     align-items: center !important;
     justify-content: space-between !important;
-    gap: 8px !important;
+    gap: 6px !important;
     width: 100% !important;
+    min-width: 0 !important;
   }
 
   .event-card__eyebrow {
-    font-size: 0.72rem !important;
+    font-size: 0.68rem !important;
     font-weight: 800 !important;
     letter-spacing: 0.05em !important;
     text-transform: uppercase !important;
     color: #A3640E !important;
     display: flex !important;
     align-items: center !important;
-    gap: 5px !important;
-    padding: 3px 8px !important;
+    gap: 4px !important;
+    padding: 2.5px 7px !important;
     background: rgba(212, 148, 58, 0.12) !important;
     border-radius: 6px !important;
     white-space: nowrap !important;
     overflow: hidden !important;
     text-overflow: ellipsis !important;
+    max-width: calc(100% - 85px) !important;
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
   }
   html.dark-mode .event-card__eyebrow,
   [data-theme="dark"] .event-card__eyebrow {

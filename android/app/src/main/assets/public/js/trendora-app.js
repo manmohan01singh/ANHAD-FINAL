@@ -260,16 +260,37 @@
       return 'night';
     },
 
+    _tukIndex: -1,  // -1 means first call picks randomly
+
     getTuk() {
       const slot = this.getTimeSlot();
       const tuks = this._tuks[slot];
-      const randomIndex = Math.floor(Math.random() * tuks.length);
-      return tuks[randomIndex];
+      // Advance index on each call (cycling) instead of always random
+      // so users see a different pankti every time they navigate to Home.
+      this._tukIndex = (this._tukIndex + 1) % tuks.length;
+      return tuks[this._tukIndex];
+    },
+
+    // Write the current tuk to the DOM pankti text elements.
+    // Called directly from reviveHomepageVisuals() and also from
+    // PortraitSlider.update() when the active Guru has no Guru-specific gurbani.
+    renderTuk() {
+      const tuk = this.getTuk();
+      const gurEl = document.getElementById('greetingGurbani');
+      const transEl = document.getElementById('greetingTranslation');
+      if (gurEl) gurEl.textContent = tuk.gurmukhi;
+      if (transEl) transEl.textContent = tuk.translation;
     },
 
     update() {
       if (typeof window.syncGreetingHeroArtwork === 'function') {
         window.syncGreetingHeroArtwork();
+      }
+      // Render a new pankti if the active Guru has no Guru-specific gurbani
+      const slider = window.GuruSlider || window.PortraitSlider;
+      const currentGuru = slider && slider._gurus && slider._gurus[slider._currentIndex];
+      if (!currentGuru || !currentGuru.gurbani) {
+        this.renderTuk();
       }
     }
   };
@@ -349,6 +370,8 @@
       { id: 'sggs', name: 'Sri Guru Granth Sahib Ji', img: 'guruimages/gurugranthsahebji.jpeg', pos: 'center 25%', colors: ['#a06f2c', '#53371e', '#c89035'] }
     ],
 
+    _autoTimer: null,
+
     init() {
       const track = document.getElementById('guruSliderTrack');
       if (!track) return;
@@ -377,13 +400,40 @@
           e.stopPropagation();
           this._currentIndex = i;
           this.update();
+          // Restart auto-advance after manual interaction
+          this.stopAutoSlide();
+          this.startAutoSlide();
         };
       });
 
       this._renderDots();
       this._bindEvents();
       this.update(true);
+      // Start auto-advance: rotate through all 11 Gurus every 5 seconds
+      this.stopAutoSlide(); // clear any existing timer first
+      this.startAutoSlide();
     },
+
+    startAutoSlide() {
+      // Don't run auto-advance if user prefers reduced motion
+      if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      this._autoTimer = setInterval(() => {
+        if (!document.getElementById('guruSliderTrack')) {
+          this.stopAutoSlide();
+          return;
+        }
+        this._currentIndex = (this._currentIndex + 1) % this._gurus.length;
+        this.update();
+      }, 5000);
+    },
+
+    stopAutoSlide() {
+      if (this._autoTimer) {
+        clearInterval(this._autoTimer);
+        this._autoTimer = null;
+      }
+    },
+
 
     _renderDots() {
       const dotsContainer = document.getElementById('guruDots');
@@ -2866,6 +2916,13 @@
       try {
         if (window.AnhadCampaignRenderer && window.AnhadCampaignRenderer.stopRotation) {
           window.AnhadCampaignRenderer.stopRotation();
+        }
+      } catch (e) {}
+
+      // Stop the Guru portrait slider auto-advance to free the timer while off Home.
+      try {
+        if (window.PortraitSlider && window.PortraitSlider.stopAutoSlide) {
+          window.PortraitSlider.stopAutoSlide();
         }
       } catch (e) {}
 

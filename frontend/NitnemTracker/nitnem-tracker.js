@@ -5281,12 +5281,105 @@ const SettingsManager = {
     },
 
     /**
-     * Import data with preview modal
+     * Import data with file picker or clipboard paste options
      */
     importData() {
+        let modal = document.getElementById('importChoiceModal');
+        if (modal) modal.remove();
+
+        modal = document.createElement('div');
+        modal.className = 'modal-overlay';
+        modal.id = 'importChoiceModal';
+        modal.innerHTML = `
+            <div class="modal-backdrop" data-close-choice></div>
+            <div class="modal-container import-modal-container">
+                <div class="modal-handle"></div>
+                <div class="modal-header">
+                    <h2 class="modal-title">📥 Import Nitnem Backup</h2>
+                    <button class="modal-close-btn" data-close-choice aria-label="Close">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                    </button>
+                </div>
+                <div class="modal-body import-modal-body" style="padding: 16px;">
+                    <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 16px;">
+                        Select how you want to restore your Nitnem backup:
+                    </p>
+                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                        <button class="btn btn-primary modal-btn" id="importFromFileBtn" style="padding: 14px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                            <span>Choose JSON File</span>
+                        </button>
+                        <button class="btn btn-secondary modal-btn" id="importFromClipboardBtn" style="padding: 14px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                            <span>Paste / Restore from Clipboard</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+
+        modal.querySelectorAll('[data-close-choice]').forEach(el => {
+            el.addEventListener('click', () => {
+                ModalManager.close('importChoiceModal');
+                setTimeout(() => modal.remove(), 300);
+            });
+        });
+
+        // Option 1: File selection
+        const fileBtn = modal.querySelector('#importFromFileBtn');
+        if (fileBtn) {
+            fileBtn.addEventListener('click', () => {
+                ModalManager.close('importChoiceModal');
+                setTimeout(() => modal.remove(), 300);
+                this._triggerFileInput();
+            });
+        }
+
+        // Option 2: Clipboard paste
+        const clipBtn = modal.querySelector('#importFromClipboardBtn');
+        if (clipBtn) {
+            clipBtn.addEventListener('click', async () => {
+                ModalManager.close('importChoiceModal');
+                setTimeout(() => modal.remove(), 300);
+
+                let pastedText = '';
+                if (navigator.clipboard && navigator.clipboard.readText) {
+                    try {
+                        pastedText = await navigator.clipboard.readText();
+                    } catch(e) {}
+                }
+
+                if (pastedText && pastedText.trim().startsWith('{')) {
+                    const summary = StorageManager.parseBackupSummary(pastedText);
+                    if (summary.isValid) {
+                        this.showImportPreviewModal(pastedText, summary, 'Clipboard-Backup.json');
+                        return;
+                    }
+                }
+
+                // If clipboard read was denied or didn't contain valid JSON, show paste prompt
+                const manualJson = prompt('Paste your Nitnem backup JSON text here:');
+                if (manualJson && manualJson.trim()) {
+                    const summary = StorageManager.parseBackupSummary(manualJson);
+                    if (!summary.isValid) {
+                        Toast.error('Invalid Backup Data', 'The pasted text is not a valid Nitnem backup');
+                        HapticManager.error();
+                        return;
+                    }
+                    this.showImportPreviewModal(manualJson, summary, 'Pasted-Backup.json');
+                }
+            });
+        }
+
+        ModalManager.open('importChoiceModal');
+        HapticManager.selection();
+    },
+
+    _triggerFileInput() {
         const input = document.createElement('input');
         input.type = 'file';
-        input.accept = '.json,application/json';
+        input.accept = '.json,application/json,text/plain';
 
         input.onchange = (e) => {
             const file = e.target.files[0];
@@ -9868,7 +9961,7 @@ const ReportsManager = {
     },
 
     /**
-     * Download backup file (Safe Blob URL with Capacitor & WebView support)
+     * Download backup file (Safe Blob URL + Data URI with Capacitor, Web Share & WebView support)
      */
     downloadBackupFile(data, filename) {
         try {
@@ -9895,35 +9988,77 @@ const ReportsManager = {
                 }, 100);
             }
 
-            const isNativeApp = !!(window.Capacitor && (
-                (typeof window.Capacitor.isNativePlatform === 'function' && window.Capacitor.isNativePlatform()) ||
-                (typeof window.Capacitor.getPlatform === 'function' && window.Capacitor.getPlatform() !== 'web') ||
-                window.Capacitor.isNative
-            ));
+            // 1. Try Native Web Share with File object (best for Android/iOS mobile to save to Downloads/Drive/Files)
+            const blob = new Blob([jsonStr], { type: 'application/json' });
+            let fileObj = null;
+            try {
+                fileObj = new File([blob], filename, { type: 'application/json' });
+            } catch(e) {}
 
-            // Native Capacitor Filesystem plugin
-            if (isNativeApp && window.Capacitor.Plugins && window.Capacitor.Plugins.Filesystem) {
-                window.Capacitor.Plugins.Filesystem.writeFile({
-                    path: filename,
-                    data: jsonStr,
-                    directory: 'DOCUMENTS',
-                    encoding: 'utf8'
+            const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || (window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
+
+            if (isMobile && fileObj && navigator.canShare && navigator.canShare({ files: [fileObj] })) {
+                navigator.share({
+                    files: [fileObj],
+                    title: filename,
+                    text: 'Nitnem Tracker Backup File'
                 }).then(() => {
                     if (progressFill) progressFill.style.width = '100%';
                     if (statusBadge) {
                         statusBadge.textContent = 'Saved!';
                         statusBadge.className = 'export-progress-badge success';
                     }
-                    if (progressSubtext) progressSubtext.textContent = 'Saved to Documents folder & clipboard';
+                    if (progressSubtext) progressSubtext.textContent = 'File shared/saved & copied to clipboard';
+                    Toast.success('Backup Ready!', 'Saved to destination & copied to clipboard');
+                    HapticManager.success();
+                }).catch((err) => {
+                    if (err && err.name !== 'AbortError') {
+                        this._triggerBlobDownload(jsonStr, filename);
+                    }
+                });
+                return;
+            }
+
+            // 2. Try Capacitor Filesystem + Share if in native container
+            const isNativeApp = !!(window.Capacitor && (
+                (typeof window.Capacitor.isNativePlatform === 'function' && window.Capacitor.isNativePlatform()) ||
+                (typeof window.Capacitor.getPlatform === 'function' && window.Capacitor.getPlatform() !== 'web') ||
+                window.Capacitor.isNative
+            ));
+
+            if (isNativeApp && window.Capacitor.Plugins && window.Capacitor.Plugins.Filesystem) {
+                window.Capacitor.Plugins.Filesystem.writeFile({
+                    path: filename,
+                    data: jsonStr,
+                    directory: 'DOCUMENTS',
+                    encoding: 'utf8'
+                }).then((res) => {
+                    if (progressFill) progressFill.style.width = '100%';
+                    if (statusBadge) {
+                        statusBadge.textContent = 'Saved!';
+                        statusBadge.className = 'export-progress-badge success';
+                    }
+                    if (progressSubtext) progressSubtext.textContent = 'Saved to Documents & copied to clipboard';
+                    
+                    // If Capacitor Share is available, offer to share the written file
+                    if (window.Capacitor.Plugins.Share && res && res.uri) {
+                        window.Capacitor.Plugins.Share.share({
+                            title: filename,
+                            url: res.uri,
+                            dialogTitle: 'Save Nitnem Backup'
+                        }).catch(() => {});
+                    }
+
                     Toast.success('Backup Saved!', 'Saved to Documents folder & copied to clipboard');
                     HapticManager.success();
                 }).catch((err) => {
-                    console.warn('Capacitor Filesystem write error, falling back to Blob download:', err);
+                    console.warn('Capacitor Filesystem write error, falling back to download link:', err);
                     this._triggerBlobDownload(jsonStr, filename);
                 });
                 return;
             }
 
+            // 3. Fallback: Browser Download (Blob + Data URI)
             this._triggerBlobDownload(jsonStr, filename);
         } catch (error) {
             console.error('Export failed:', error);
@@ -9932,12 +10067,11 @@ const ReportsManager = {
     },
 
     /**
-     * Helper to trigger HTML5 Blob URL download (using application/octet-stream to force download instead of JSON viewer)
+     * Helper to trigger HTML5 Blob / Data URI download
      */
     _triggerBlobDownload(jsonStr, filename) {
         try {
-            // Force application/octet-stream so browser downloads file rather than opening in-browser JSON viewer
-            const blob = new Blob([jsonStr], { type: 'application/octet-stream' });
+            const blob = new Blob([jsonStr], { type: 'application/json;charset=utf-8;' });
             const blobUrl = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = blobUrl;
@@ -9954,6 +10088,21 @@ const ReportsManager = {
                 }, 1000);
             }, 50);
 
+            // Also fallback data URI for webviews that block blob downloads
+            setTimeout(() => {
+                try {
+                    const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(jsonStr);
+                    const dataA = document.createElement('a');
+                    dataA.href = dataUri;
+                    dataA.download = filename;
+                    dataA.setAttribute('download', filename);
+                    dataA.style.display = 'none';
+                    document.body.appendChild(dataA);
+                    dataA.click();
+                    setTimeout(() => { if (dataA.parentNode) document.body.removeChild(dataA); }, 500);
+                } catch(e) {}
+            }, 300);
+
             const progressFill = document.getElementById('exportProgressBar');
             const statusBadge = document.getElementById('exportStatusBadge');
             const progressSubtext = document.getElementById('exportProgressSubtext');
@@ -9965,7 +10114,7 @@ const ReportsManager = {
             }
             if (progressSubtext) progressSubtext.textContent = 'JSON file saved to Downloads & copied to clipboard';
 
-            Toast.success('Backup Saved!', 'JSON backup file downloaded & copied to clipboard');
+            Toast.success('Backup Ready!', 'JSON backup downloaded & copied to clipboard');
             HapticManager.success();
         } catch (err) {
             console.warn('Blob download warning, falling back to Web Share / Clipboard:', err);
