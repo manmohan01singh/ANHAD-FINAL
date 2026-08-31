@@ -104,6 +104,7 @@
   }
 
   const STORAGE_KEY = 'anhad_mala_counter_v1';
+  const NITNEM_MALA_KEY = 'nitnemTracker_malaLog';
 
   const MalaCounter = {
     count: 0,
@@ -118,17 +119,39 @@
       this._loadState();
       this._injectDOM();
       this._bindEvents();
+
+      // Listen for cross-component or cross-page Mala updates
+      window.addEventListener('storage', (e) => {
+        if (e.key === STORAGE_KEY || e.key === NITNEM_MALA_KEY) {
+          this._loadState();
+          this._updateUI();
+        }
+      });
+      window.addEventListener('malaUpdated', (e) => {
+        if (e && e.detail && e.detail._source !== 'home_mala') {
+          this._loadState();
+          this._updateUI();
+        }
+      });
     },
 
     _loadState() {
       try {
-        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
         const today = new Date().toISOString().slice(0, 10);
+        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+        const nitnemLog = JSON.parse(localStorage.getItem(NITNEM_MALA_KEY) || '{}');
+        const nitnemToday = nitnemLog[today] || {};
+
         if (saved.date === today) {
           this.count = saved.count || 0;
-          this.rounds = saved.rounds || 0;
-          this.totalJaap = saved.totalJaap || 0;
+          this.rounds = Math.max(saved.rounds || 0, nitnemToday.completedMalas || 0);
+          this.totalJaap = Math.max(saved.totalJaap || 0, nitnemToday.totalCount || 0);
           this.target = saved.target || 108;
+        } else if (nitnemToday && (nitnemToday.totalCount || nitnemToday.completedMalas)) {
+          this.count = 0;
+          this.rounds = nitnemToday.completedMalas || 0;
+          this.totalJaap = nitnemToday.totalCount || 0;
+          this.target = 108;
         } else {
           this.count = 0;
           this.rounds = 0;
@@ -145,6 +168,8 @@
     _saveState() {
       try {
         const today = new Date().toISOString().slice(0, 10);
+        
+        // 1. Save Home Mala Counter state
         localStorage.setItem(STORAGE_KEY, JSON.stringify({
           date: today,
           count: this.count,
@@ -152,6 +177,34 @@
           totalJaap: this.totalJaap,
           target: this.target
         }));
+
+        // 2. Synchronize to Nitnem Tracker Mala Log (nitnemTracker_malaLog)
+        const nitnemLog = JSON.parse(localStorage.getItem(NITNEM_MALA_KEY) || '{}');
+        nitnemLog[today] = {
+          completedMalas: this.rounds,
+          totalCount: this.totalJaap,
+          lastUpdated: new Date().toISOString()
+        };
+        localStorage.setItem(NITNEM_MALA_KEY, JSON.stringify(nitnemLog));
+
+        // 3. Dispatch storage and custom events for real-time synchronization
+        try {
+          window.dispatchEvent(new StorageEvent('storage', {
+            key: NITNEM_MALA_KEY,
+            newValue: JSON.stringify(nitnemLog),
+            url: window.location.href
+          }));
+          window.dispatchEvent(new CustomEvent('malaUpdated', {
+            detail: {
+              _source: 'home_mala',
+              count: this.count,
+              rounds: this.rounds,
+              totalJaap: this.totalJaap,
+              target: this.target,
+              date: today
+            }
+          }));
+        } catch (evErr) {}
       } catch (e) {}
     },
 

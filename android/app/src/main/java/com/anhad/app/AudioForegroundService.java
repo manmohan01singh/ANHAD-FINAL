@@ -390,7 +390,6 @@ public class AudioForegroundService extends Service {
 
     @Override
     public void onDestroy() {
-        abandonAudioFocus();
         if (wakeLock != null && wakeLock.isHeld()) {
             wakeLock.release();
         }
