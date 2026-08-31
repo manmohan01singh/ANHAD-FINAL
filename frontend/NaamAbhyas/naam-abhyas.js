@@ -1198,10 +1198,10 @@ class NaamAbhyas {
     }
 
     executeAutoStart(detail) {
-        const targetHour = detail.hour !== undefined ? Number(detail.hour) : new Date().getHours();
+        const targetHour = detail?.hour !== undefined ? Number(detail.hour) : new Date().getHours();
         const sessionInfo = {
             hour: targetHour,
-            startTime: this.statsEngine.formatTime12h(targetHour, detail.minute !== undefined ? Number(detail.minute) : 0),
+            startTime: this.statsEngine.formatTime12h(targetHour, detail?.minute !== undefined ? Number(detail.minute) : 0),
             isExtra: false
         };
         const dur = Number(this.config.duration || 2);
@@ -1530,7 +1530,10 @@ class NaamAbhyas {
         if (loader) {
             loader.style.opacity = '0';
             loader.style.pointerEvents = 'none';
-            setTimeout(() => loader.remove(), 400);
+            setTimeout(() => {
+                if (typeof loader.remove === 'function') loader.remove();
+                else loader.style.display = 'none';
+            }, 400);
         }
     }
 
@@ -1559,7 +1562,10 @@ class NaamAbhyas {
         setTimeout(() => {
             toast.style.opacity = '0';
             toast.style.transition = 'opacity 0.3s';
-            setTimeout(() => toast.remove(), 300);
+            setTimeout(() => {
+                if (typeof toast.remove === 'function') toast.remove();
+                else toast.style.display = 'none';
+            }, 300);
         }, 3200);
     }
 }

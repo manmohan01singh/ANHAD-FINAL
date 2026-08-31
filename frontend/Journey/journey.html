@@ -18,17 +18,10 @@
           } else {
             const hour = new Date().getHours();
             effectiveTheme = (hour >= 5 && hour < 20) ? 'light' : 'dark';
-            if (hour >= 5 && hour < 9) timeOfDay = 'morning';
-            else if (hour >= 9 && hour < 16) timeOfDay = 'day';
-            else if (hour >= 16 && hour < 20) timeOfDay = 'evening';
-            else timeOfDay = 'night';
           }
         }
         document.documentElement.setAttribute('data-theme', effectiveTheme);
         document.documentElement.setAttribute('data-theme-mode', theme);
-        if (theme === 'auto') {
-          document.documentElement.setAttribute('data-time-of-day', timeOfDay);
-        }
         document.documentElement.style.colorScheme = effectiveTheme;
         if (effectiveTheme === 'dark') {
           document.documentElement.classList.add('dark', 'dark-mode');
@@ -37,10 +30,9 @@
     })();
     </script>
     
-    <!-- Global Style Systems -->
+    <!-- Stylesheets -->
     <link rel="stylesheet" href="../css/theme-variables.css">
     <link rel="stylesheet" href="../css/anhad-core.css">
-    <link rel="stylesheet" href="../css/claymorphism-system.css">
     <link rel="stylesheet" href="../css/nav-glass.css">
     <link rel="stylesheet" href="journey.css">
     <link rel="stylesheet" href="../css/global-mini-player.css?v=5">
@@ -54,24 +46,19 @@
     <script src="journey.js" defer></script>
 </head>
 <body data-anhad-core>
-    <!-- Background Ambient Glow -->
-    <div class="journey-ambient-bg" aria-hidden="true">
-        <div class="ambient-orb orb-1"></div>
-        <div class="ambient-orb orb-2"></div>
-    </div>
 
-    <!-- Navigation Bar -->
-    <nav class="glass-nav" aria-label="Navigation">
-        <button class="glass-nav__back" id="journeyBackBtn" aria-label="Back">
-            <svg class="back-chevron" viewBox="0 0 9 16" xmlns="http://www.w3.org/2000/svg">
-                <path d="M8 1L1 8L8 15" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            <span class="back-label">Back</span>
-        </button>
-        <span class="glass-nav__title">The Journey</span>
-        <div class="glass-nav__action">
-            <button class="glass-nav__action-btn" id="journeyShareTopBtn" aria-label="Share ANHAD">
-                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Fixed iOS Navigation Bar -->
+    <nav class="ios-nav" aria-label="Navigation">
+        <div class="ios-nav__inner">
+            <button class="ios-nav__back-btn" id="journeyBackBtn" aria-label="Go Back">
+                <svg width="10" height="18" viewBox="0 0 10 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9 1.5L1.5 9L9 16.5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>Back</span>
+            </button>
+            <h1 class="ios-nav__title">The Journey</h1>
+            <button class="ios-nav__action-btn" id="journeyShareTopBtn" aria-label="Share ANHAD">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="18" cy="5" r="3"></circle>
                     <circle cx="6" cy="12" r="3"></circle>
                     <circle cx="18" cy="19" r="3"></circle>
@@ -82,324 +69,303 @@
         </div>
     </nav>
 
-    <!-- Main Container -->
-    <main class="journey-container" id="journeyContent">
+    <!-- Main Content Container -->
+    <main class="journey-main" id="journeyContent">
         
-        <!-- 1. HERO SECTION -->
-        <header class="journey-hero">
-            <div class="hero-emblem-container">
-                <div class="emblem-outer-ring">
-                    <div class="emblem-inner-frame">
-                        <img src="../assets/app-logo-384.avif" alt="ANHAD Logo" class="hero-emblem-img" id="heroEmblemImg">
-                    </div>
-                </div>
-                <div class="emblem-pulse-glow"></div>
+        <!-- 1. HERO SECTION (Clean Apple Style) -->
+        <header class="ios-hero">
+            <div class="app-icon-wrapper">
+                <img src="../assets/app-logo-384.avif" alt="ANHAD App Icon" class="app-icon-img" id="heroEmblemImg">
             </div>
 
-            <div class="hero-badge">
-                <span class="badge-sparkle">✦</span>
+            <div class="hero-category-pill">
                 <span>SACRED SEVA INITIATIVE</span>
-                <span class="badge-sparkle">✦</span>
             </div>
 
-            <div class="hero-title-group">
-                <h1 class="hero-title">ANHAD</h1>
-                <p class="hero-punjabi-sub">ਅਨਹਦ • The Unstruck Divine Symphony</p>
-            </div>
-
-            <p class="hero-tagline">A serene sanctuary uniting Nitnem, 24×7 Gurbani Radio, Live Sri Harmandir Sahib, and Naam Simran.</p>
+            <h1 class="hero-app-title">ANHAD</h1>
+            <p class="hero-gurmukhi-lead">ਅਨਹਦ • The Unstruck Symphony</p>
+            <p class="hero-description">A peaceful, unified sanctuary for Gurbani, Naam Simran, and everyday Sikh living.</p>
             
-            <div class="hero-badges-strip">
-                <div class="strip-item">
-                    <span class="strip-icon">🪯</span>
+            <!-- Clean Horizontal Badges -->
+            <div class="hero-pills-row">
+                <div class="hero-pill">
+                    <span class="pill-dot"></span>
                     <span>100% Free Seva</span>
                 </div>
-                <div class="strip-divider">•</div>
-                <div class="strip-item">
-                    <span class="strip-icon">🕊️</span>
-                    <span>Zero Advertisements</span>
+                <div class="hero-pill">
+                    <span class="pill-dot"></span>
+                    <span>Zero Ads</span>
                 </div>
-                <div class="strip-divider">•</div>
-                <div class="strip-item">
-                    <span class="strip-icon">✨</span>
-                    <span id="heroVersionLabel">v1.1.11</span>
+                <div class="hero-pill">
+                    <span class="pill-dot"></span>
+                    <span id="heroVersionLabel">v1.1.13</span>
                 </div>
             </div>
         </header>
 
-        <!-- 2. SABH KIRPA TUMHARI CROWN CARD -->
-        <section class="journey-card crown-card reveal-item" id="kirpaSection">
-            <div class="crown-card__header">
-                <div class="crown-orb-icon">
-                    <span class="crown-ik-onkar">ੴ</span>
+        <!-- 2. SABH KIRPA TUMHARI CARD -->
+        <section class="ios-card sacred-card reveal-item" id="kirpaSection">
+            <div class="card-top-row">
+                <div class="sacred-symbol-badge">
+                    <span>ੴ</span>
                 </div>
-                <div class="crown-card__meta">
-                    <span class="crown-eyebrow">DEDICATION & FOUNDATION</span>
-                    <h2 class="crown-title">ਸਭ ਕਿਰਪਾ ਤੁਮਾਰੀ</h2>
+                <div class="card-titles">
+                    <span class="section-eyebrow">DEDICATION & FOUNDATION</span>
+                    <h2 class="section-heading">ਸਭ ਕਿਰਪਾ ਤੁਮਾਰੀ</h2>
                 </div>
             </div>
 
-            <div class="crown-gurmukhi-verse">
-                <div class="verse-quote-icon">❝</div>
-                <div class="verse-text">ਸਭ ਤੇਰੀ ਵਡਿਆਈ ਕੋਈ ਨਾਉ ਨ ਜਾਣੈ ਮੇਰਾ ॥</div>
-                <div class="verse-translation">All glory belongs to You, O Lord; no one even knows my name.</div>
+            <div class="verse-quote-box">
+                <p class="verse-text">« ਸਭ ਤੇਰੀ ਵਡਿਆਈ ਕੋਈ ਨਾਉ ਨ ਜਾਣੈ ਮੇਰਾ ॥ »</p>
+                <p class="verse-sub">All glory belongs to You, O Lord; no one even knows my name.</p>
             </div>
 
-            <div class="card-prose">
-                <p class="lead-paragraph">
-                    Before sharing anything about this application, there is one sacred truth I hold closest to my heart:
+            <div class="prose-content">
+                <p class="lead-text">
+                    Before sharing anything about this project, there is one truth I hold closest to my heart:
                 </p>
                 <p>
-                    If ANHAD has become what it is today, the credit does not belong to me. Every single line of code written, every peaceful melody that streams, every design idea, every complex bug solved after days of searching, and every feature working today has only been possible through the infinite <strong>kirpa of Sri Guru Gobind Singh Ji Maharaj</strong>.
+                    If ANHAD has become what it is today, the credit does not belong to me. Every single line of code written, every peaceful stream that plays, every design detail, every complex bug solved, and every feature working today has only been possible through the infinite <strong>kirpa of Sri Guru Gobind Singh Ji Maharaj</strong>.
                 </p>
                 <p>
-                    There were countless moments during development when things seemed impossible, when solutions weren't visible, and yet somehow a divine way always opened. Looking back, I know with certainty this never happened from my own capability alone.
+                    There were many moments during development when solutions simply weren't visible, and yet somehow a way always opened. Looking back, I know with certainty that this never happened through my own ability alone.
                 </p>
                 <p>
-                    Whatever humble seva has been accomplished through this application is solely because Guru Sahib blessed me with the opportunity to do it.
+                    Whatever humble seva has been accomplished through this application is only because Guru Sahib blessed me with the opportunity to do it.
                 </p>
                 
-                <div class="kirpa-quote-pill">
-                    <span class="quote-hands">🙏</span>
-                    <span>"ਸਭ ਕਿਰਪਾ ਤੁਮਾਰੀ ਮੇਰੇ ਸਾਹਿਬਾ"</span>
+                <div class="devotional-summary-pill">
+                    <span>🙏</span>
+                    <strong>"ਸਭ ਕਿਰਪਾ ਤੁਮਾਰੀ ਮੇਰੇ ਸਾਹਿਬਾ"</strong>
                 </div>
             </div>
         </section>
 
         <!-- 3. HOW ANHAD BEGAN (GENESIS) -->
-        <section class="journey-card reveal-item">
-            <div class="card-header">
-                <span class="card-eyebrow">THE GENESIS STORY</span>
-                <h2 class="card-title">How ANHAD Began</h2>
+        <section class="ios-card reveal-item">
+            <div class="card-header-clean">
+                <span class="section-eyebrow">THE GENESIS STORY</span>
+                <h2 class="section-heading">How ANHAD Began</h2>
             </div>
 
-            <!-- Creator Spotlight Inside Genesis -->
-            <div class="creator-profile-card">
-                <div class="creator-avatar-wrap">
-                    <img src="image.png" alt="Manmohan Singh" class="creator-avatar" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                    <div class="creator-avatar-fallback">
-                        <span>ੴ</span>
-                    </div>
+            <!-- Creator Profile Box -->
+            <div class="developer-profile-box">
+                <div class="dev-avatar-wrap">
+                    <img src="image.png" alt="Manmohan Singh" class="dev-avatar" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <div class="dev-avatar-fallback">ੴ</div>
                 </div>
-                <div class="creator-details">
-                    <div class="creator-name-row">
-                        <h3 class="creator-name">Manmohan Singh</h3>
-                        <span class="creator-badge">Sevadar</span>
+                <div class="dev-info">
+                    <div class="dev-name-row">
+                        <h3 class="dev-name">Manmohan Singh</h3>
+                        <span class="dev-badge">Sevadar</span>
                     </div>
-                    <p class="creator-bio">Electronics & Communication Engineering Student</p>
-                    <p class="creator-loc">📍 Punjab, India</p>
+                    <p class="dev-role">Electronics & Communication Engineering Student</p>
+                    <p class="dev-location">📍 Punjab, India</p>
                 </div>
             </div>
 
-            <div class="card-prose">
+            <div class="prose-content">
                 <p>
-                    The inspiration for ANHAD came from a daily struggle. Every morning and evening, I found myself switching between five to seven different apps:
+                    The inspiration behind ANHAD came from a daily struggle. Every morning and evening, I found myself switching between five to seven different applications:
                 </p>
 
                 <!-- Comparison Grid -->
-                <div class="fragmentation-grid">
-                    <div class="frag-pill"><span class="frag-emoji">📖</span> <span>Nitnem Reader</span></div>
-                    <div class="frag-pill"><span class="frag-emoji">📻</span> <span>Gurbani Radio</span></div>
-                    <div class="frag-pill"><span class="frag-emoji">🕌</span> <span>Darbar Sahib Live</span></div>
-                    <div class="frag-pill"><span class="frag-emoji">📿</span> <span>Naam Simran</span></div>
-                    <div class="frag-pill"><span class="frag-emoji">⏰</span> <span>Amritvela Alarms</span></div>
-                    <div class="frag-pill"><span class="frag-emoji">📝</span> <span>Spiritual Notes</span></div>
+                <div class="app-comparison-grid">
+                    <div class="app-item"><span>📖</span> Nitnem Reader</div>
+                    <div class="app-item"><span>📻</span> Gurbani Radio</div>
+                    <div class="app-item"><span>🕌</span> Darbar Sahib Live</div>
+                    <div class="app-item"><span>📿</span> Naam Simran</div>
+                    <div class="app-item"><span>⏰</span> Amritvela Alarms</div>
+                    <div class="app-item"><span>📝</span> Spiritual Notes</div>
                 </div>
 
                 <p>
-                    Each app had something good, but none provided a complete, peaceful, and unified sanctuary for everyday practice. I constantly asked myself:
+                    Each app had something good, but none brought everything together into one serene, distraction-free environment. I kept thinking:
                 </p>
 
-                <div class="quote-callout">
-                    <span class="quote-mark">“</span>
-                    <p>What if there was one serene, distraction-free home where any Gursikh around the world could find everything needed to stay connected with Gurbani, all day long?</p>
+                <div class="ios-quote-callout">
+                    <p>"What if there was one peaceful place where any Gursikh around the world could find everything needed to stay connected with Gurbani throughout the day?"</p>
                 </div>
 
                 <p>
-                    <strong>That single heartfelt thought became ANHAD.</strong>
+                    <strong>That single heartfelt aspiration became ANHAD.</strong>
                 </p>
             </div>
         </section>
 
-        <!-- 4. INTERACTIVE ROADMAP & MILESTONES -->
-        <section class="journey-card reveal-item">
-            <div class="card-header">
-                <span class="card-eyebrow">SEVA & ENGINEERING CHRONICLES</span>
-                <h2 class="card-title">Development Milestones</h2>
+        <!-- 4. DEVELOPMENT MILESTONES -->
+        <section class="ios-card reveal-item">
+            <div class="card-header-clean">
+                <span class="section-eyebrow">DEVELOPMENT CHRONICLES</span>
+                <h2 class="section-heading">Milestones & Journey</h2>
             </div>
 
-            <div class="roadmap-timeline">
-                <!-- Milestone 1 -->
-                <div class="timeline-node">
-                    <div class="node-marker">
-                        <span class="node-icon">🌱</span>
+            <div class="ios-timeline">
+                <div class="timeline-entry">
+                    <div class="timeline-bullet">
+                        <span class="bullet-dot"></span>
                     </div>
-                    <div class="node-content">
-                        <div class="node-time">MONTH 1 • THE FOUNDATION</div>
-                        <h4 class="node-title">The First Sacred Step</h4>
-                        <p class="node-desc">Designing an authentic Gurmukhi typography engine and a zero-distraction Nitnem reader with accurate transliterations and translations.</p>
-                    </div>
-                </div>
-
-                <!-- Milestone 2 -->
-                <div class="timeline-node">
-                    <div class="node-marker">
-                        <span class="node-icon">📻</span>
-                    </div>
-                    <div class="node-content">
-                        <div class="node-time">MONTH 2-3 • AUDIO ARCHITECTURE</div>
-                        <h4 class="node-title">24×7 Virtual Live Broadcast</h4>
-                        <p class="node-desc">Engineering a global UTC-synchronized broadcast rotation for Amritvela Kirtan & Waheguru Simran, paired with direct high-fidelity Icecast feeds from Sri Harmandir Sahib Ji.</p>
+                    <div class="timeline-body">
+                        <span class="timeline-tag">MONTH 1 • THE FOUNDATION</span>
+                        <h4 class="timeline-title">Authentic Gurmukhi Engine</h4>
+                        <p class="timeline-text">Building a distraction-free Nitnem reader with accurate transliterations, translations, and custom fonts.</p>
                     </div>
                 </div>
 
-                <!-- Milestone 3 -->
-                <div class="timeline-node">
-                    <div class="node-marker">
-                        <span class="node-icon">🎨</span>
+                <div class="timeline-entry">
+                    <div class="timeline-bullet">
+                        <span class="bullet-dot"></span>
                     </div>
-                    <div class="node-content">
-                        <div class="node-time">MONTH 4-5 • LUXURY CLAYMORPHISM</div>
-                        <h4 class="node-title">Next-Gen UI/UX & 120 FPS Rendering</h4>
-                        <p class="node-desc">Crafting supreme claymorphism, dynamic time-of-day sky backdrops (Morning, Day, Evening, Night), and a deep Obsidian Onyx dark mode.</p>
+                    <div class="timeline-body">
+                        <span class="timeline-tag">MONTH 2-3 • AUDIO SUBSYSTEM</span>
+                        <h4 class="timeline-title">24×7 Virtual Live Broadcasting</h4>
+                        <p class="timeline-text">Engineering UTC-synchronized television-style broadcast rotations for Kirtan & Simran alongside direct Icecast feeds from Sri Harmandir Sahib Ji.</p>
                     </div>
                 </div>
 
-                <!-- Milestone 4 -->
-                <div class="timeline-node">
-                    <div class="node-marker">
-                        <span class="node-icon">⚡</span>
+                <div class="timeline-entry">
+                    <div class="timeline-bullet">
+                        <span class="bullet-dot"></span>
                     </div>
-                    <div class="node-content">
-                        <div class="node-time">TODAY • THE UNIFIED COMPANION</div>
-                        <h4 class="node-title">Complete Offline Sanctuary</h4>
-                        <p class="node-desc">Cross-platform PWA, native Android & iOS engines, unified streak analytics, and continuous community improvements.</p>
+                    <div class="timeline-body">
+                        <span class="timeline-tag">MONTH 4-5 • INTERFACE REFINEMENT</span>
+                        <h4 class="timeline-title">120 FPS Fluid Design System</h4>
+                        <p class="timeline-text">Crafting Apple-grade claymorphism, dynamic day/night ambient palettes, and an ultra-deep Obsidian Onyx dark mode.</p>
+                    </div>
+                </div>
+
+                <div class="timeline-entry">
+                    <div class="timeline-bullet">
+                        <span class="bullet-dot active"></span>
+                    </div>
+                    <div class="timeline-body">
+                        <span class="timeline-tag">TODAY • THE COMPANION</span>
+                        <h4 class="timeline-title">Complete Offline Sanctuary</h4>
+                        <p class="timeline-text">Cross-platform PWA, native Android & iOS engines, unified streak analytics, and continuous community improvements.</p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- 5. WHAT ANHAD OFFERS TODAY (3D FEATURE MATRIX) -->
-        <section class="journey-card reveal-item">
-            <div class="card-header">
-                <span class="card-eyebrow">SANCTUARY ARCHITECTURE</span>
-                <h2 class="card-title">Everything In One Place</h2>
+        <!-- 5. WHAT ANHAD OFFERS TODAY -->
+        <section class="ios-card reveal-item">
+            <div class="card-header-clean">
+                <span class="section-eyebrow">FEATURE SHOWCASE</span>
+                <h2 class="section-heading">Everything In One Sanctuary</h2>
             </div>
 
-            <div class="features-matrix">
-                <div class="matrix-card">
-                    <div class="matrix-icon icon-gold">
+            <div class="ios-features-grid">
+                <div class="feature-cell">
+                    <div class="feature-icon icon-amber">
                         <svg width="22" height="22"><use href="#icon-scroll"/></svg>
                     </div>
-                    <h4 class="matrix-title">Nitnem & Baanis</h4>
-                    <p class="matrix-desc">Smart auto-scroll, custom Gurmukhi fonts, and offline memory.</p>
+                    <h4 class="feature-name">Nitnem Paath</h4>
+                    <p class="feature-desc">Smart auto-scroll, Gurmukhi typography, and offline storage.</p>
                 </div>
 
-                <div class="matrix-card">
-                    <div class="matrix-icon icon-orange">
+                <div class="feature-cell">
+                    <div class="feature-icon icon-orange">
                         <svg width="22" height="22"><use href="#icon-radio-broadcast"/></svg>
                     </div>
-                    <h4 class="matrix-title">24×7 Gurbani Radio</h4>
-                    <p class="matrix-desc">Virtual Live Kirtan, Simran broadcasts, and SikhNet channels.</p>
+                    <h4 class="feature-name">24×7 Radio</h4>
+                    <p class="feature-desc">Virtual Live Kirtan, Simran broadcasts, and SikhNet feeds.</p>
                 </div>
 
-                <div class="matrix-card">
-                    <div class="matrix-icon icon-rose">
+                <div class="feature-cell">
+                    <div class="feature-icon icon-rose">
                         <svg width="22" height="22"><use href="#icon-diya-lamp"/></svg>
                     </div>
-                    <h4 class="matrix-title">Darbar Sahib Live</h4>
-                    <p class="matrix-desc">Direct high-fidelity audio stream from Sri Amritsar.</p>
+                    <h4 class="feature-name">Darbar Sahib</h4>
+                    <p class="feature-desc">High-fidelity direct audio stream from Sri Amritsar.</p>
                 </div>
 
-                <div class="matrix-card">
-                    <div class="matrix-icon icon-purple">
+                <div class="feature-cell">
+                    <div class="feature-icon icon-purple">
                         <svg width="22" height="22"><use href="#icon-mala"/></svg>
                     </div>
-                    <h4 class="matrix-title">Naam Abhyas</h4>
-                    <p class="matrix-desc">Interactive Mala counter, breath pace guides, and ambient Simran.</p>
+                    <h4 class="feature-name">Naam Abhyas</h4>
+                    <p class="feature-desc">Tactile Mala counter, breathing pace guides, and Simran.</p>
                 </div>
 
-                <div class="matrix-card">
-                    <div class="matrix-icon icon-blue">
+                <div class="feature-cell">
+                    <div class="feature-icon icon-blue">
                         <svg width="22" height="22"><use href="#icon-bell-notif"/></svg>
                     </div>
-                    <h4 class="matrix-title">Spiritual Alarms</h4>
-                    <p class="matrix-desc">Smart Amritvela & Rehras Sahib notifications with auto-play.</p>
+                    <h4 class="feature-name">Smart Alarms</h4>
+                    <p class="feature-desc">Amritvela & Rehras Sahib notifications with auto-play.</p>
                 </div>
 
-                <div class="matrix-card">
-                    <div class="matrix-icon icon-teal">
+                <div class="feature-cell">
+                    <div class="feature-icon icon-teal">
                         <svg width="22" height="22"><use href="#icon-search"/></svg>
                     </div>
-                    <h4 class="matrix-title">Gurbani Khoj</h4>
-                    <p class="matrix-desc">Instant First-Letter and Shabad search across Sri Guru Granth Sahib Ji.</p>
+                    <h4 class="feature-name">Gurbani Khoj</h4>
+                    <p class="feature-desc">First-Letter and Shabad search across Sri Guru Granth Sahib Ji.</p>
                 </div>
 
-                <div class="matrix-card">
-                    <div class="matrix-icon icon-amber">
+                <div class="feature-cell">
+                    <div class="feature-icon icon-indigo">
                         <svg width="22" height="22"><use href="#icon-notes-edit"/></svg>
                     </div>
-                    <h4 class="matrix-title">Spiritual Notes</h4>
-                    <p class="matrix-desc">Private offline reflection journal and sacred Shabad bookmarks.</p>
+                    <h4 class="feature-name">Spiritual Notes</h4>
+                    <p class="feature-desc">Private reflection journal and sacred Shabad bookmarks.</p>
                 </div>
 
-                <div class="matrix-card">
-                    <div class="matrix-icon icon-green">
+                <div class="feature-cell">
+                    <div class="feature-icon icon-green">
                         <svg width="22" height="22"><use href="#icon-flame-streak"/></svg>
                     </div>
-                    <h4 class="matrix-title">Streaks & Insights</h4>
-                    <p class="matrix-desc">Encouraging daily progress tracking and Gursikhi knowledge quizzes.</p>
+                    <h4 class="feature-name">Streaks & Quiz</h4>
+                    <p class="feature-desc">Daily practice progress tracking and Gursikhi quizzes.</p>
                 </div>
             </div>
         </section>
 
-        <!-- 6. INTERACTIVE ARDAAS BLESSING CORNER -->
-        <section class="journey-card blessing-card reveal-item" id="ardaasSection">
-            <div class="blessing-badge">
-                <span>🙏</span>
-                <span>A HUMBLE PRAYER</span>
+        <!-- 6. INTERACTIVE ARDAAS CORNER -->
+        <section class="ios-card ardaas-card reveal-item" id="ardaasSection">
+            <div class="card-header-clean text-center">
+                <span class="section-eyebrow">A HUMBLE PRAYER</span>
+                <h2 class="section-heading">Keep Me In Your Ardaas</h2>
             </div>
             
-            <h2 class="blessing-title">Keep Me In Your Ardaas</h2>
-            
-            <p class="blessing-desc">
+            <p class="ardaas-intro">
                 If ANHAD has helped you in any small way—whether by bringing ease to your Nitnem, helping you spend more time in Naam Simran, or simply remembering Guru Sahib throughout your day—please do one thing:
             </p>
 
-            <div class="ardaas-highlight-box">
-                <p><strong>"Please remember me in your Ardaas before Guru Sahib."</strong></p>
-                <span class="ardaas-sub">That is the greatest gift and encouragement I could ever receive in this seva.</span>
+            <div class="ardaas-message-card">
+                <p class="ardaas-quote">"Please remember me in your Ardaas before Guru Sahib."</p>
+                <span class="ardaas-subtext">That is the greatest gift and encouragement I could ever receive.</span>
             </div>
 
-            <!-- Interactive Blessing Button with Particle Engine -->
-            <div class="blessing-action-area">
-                <button class="ardaas-btn" id="sendArdaasBtn" aria-label="Send Ardaas & Blessing">
-                    <span class="ardaas-btn__icon">✨</span>
-                    <span class="ardaas-btn__text">Send Ardaas & Blessing</span>
-                    <span class="ardaas-counter-pill" id="ardaasCountPill">0</span>
+            <!-- Interactive Blessing Button -->
+            <div class="ardaas-interactive-wrap">
+                <button class="ios-blessing-btn" id="sendArdaasBtn" aria-label="Send Ardaas & Blessing">
+                    <span class="btn-icon">✨</span>
+                    <span class="btn-text">Send Ardaas & Blessing</span>
+                    <span class="btn-count-pill" id="ardaasCountPill">0</span>
                 </button>
-                <p class="ardaas-note" id="ardaasThankNote">Tap to send a silent prayer for Chardi Kala</p>
+                <p class="ardaas-status-text" id="ardaasThankNote">Tap to send a silent prayer for Chardi Kala</p>
             </div>
 
-            <!-- Particle Canvas Container -->
+            <!-- Particle Stage for floating blossoms -->
             <div class="particle-stage" id="particleStage" aria-hidden="true"></div>
 
-            <div class="fateh-signoff">
-                <p class="fateh-text">ਵਾਹਿਗੁਰੂ ਜੀ ਕਾ ਖਾਲਸਾ ॥</p>
-                <p class="fateh-text">ਵਾਹਿਗੁਰੂ ਜੀ ਕੀ ਫਤਿਹ ॥</p>
+            <div class="fateh-footer">
+                <p class="fateh-line">ਵਾਹਿਗੁਰੂ ਜੀ ਕਾ ਖਾਲਸਾ ॥</p>
+                <p class="fateh-line">ਵਾਹਿਗੁਰੂ ਜੀ ਕੀ ਫਤਿਹ ॥</p>
             </div>
         </section>
 
-        <!-- 7. ACTIONS & SEVA HUB -->
-        <section class="journey-card actions-card reveal-item">
-            <div class="card-header">
-                <span class="card-eyebrow">COMMUNITY & CONNECTION</span>
-                <h2 class="card-title">Share the Light</h2>
+        <!-- 7. ACTIONS & COMMUNITY HUB -->
+        <section class="ios-card reveal-item">
+            <div class="card-header-clean">
+                <span class="section-eyebrow">COMMUNITY & CONNECTION</span>
+                <h2 class="section-heading">Share the Seva</h2>
             </div>
 
-            <div class="action-buttons-grid">
-                <button class="action-btn action-btn--primary" id="shareAppBtn">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <div class="ios-action-group">
+                <button class="ios-primary-btn" id="shareAppBtn">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="18" cy="5" r="3"></circle>
                         <circle cx="6" cy="12" r="3"></circle>
                         <circle cx="18" cy="19" r="3"></circle>
@@ -409,21 +375,19 @@
                     <span>Share ANHAD with Sangat</span>
                 </button>
 
-                <a href="mailto:contact.anhadapp@gmail.com?subject=ANHAD%20App%20Feedback%20%26%20Seva" class="action-btn action-btn--secondary" id="contactDevBtn">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <a href="mailto:contact.anhadapp@gmail.com?subject=ANHAD%20Feedback%20%26%20Seva" class="ios-secondary-btn" id="contactDevBtn">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
                         <polyline points="22,6 12,13 2,6"></polyline>
                     </svg>
-                    <span>Send Seva Feedback / Thoughts</span>
+                    <span>Send Seva Thoughts & Feedback</span>
                 </a>
             </div>
 
-            <div class="footer-info">
-                <div class="app-version-badge">
-                    <span>ANHAD GURBANI SANCTUARY</span>
-                    <span id="footerVersionText">v1.1.11</span>
-                </div>
-                <p class="footer-made-with">Crafted with utmost devotion & reverence for the global Sadhsangat.</p>
+            <div class="app-meta-footer">
+                <span class="meta-app-name">ANHAD GURBANI SANCTUARY</span>
+                <span class="meta-version" id="footerVersionText">v1.1.13</span>
+                <p class="meta-dedication">Crafted with utmost devotion & reverence for the global Sadhsangat.</p>
             </div>
         </section>
 

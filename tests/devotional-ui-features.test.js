@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 
 describe('Devotional UI/UX Feature Suite', () => {
   describe('Mala Counter State & Milestones', () => {
@@ -52,6 +52,34 @@ describe('Devotional UI/UX Feature Suite', () => {
       const progEnd = 60000 / durationMs;
       const volEnd = startVol * Math.pow(1 - progEnd, 2);
       expect(volEnd).toBe(0.0);
+    });
+  });
+
+  describe('Hukamnama Card Generator Pauri Parsing', () => {
+    it('accurately captures verses up to Pauri 1 end (॥੧॥) or Rahaao', () => {
+      const sampleVerses = [
+        { verse: { unicode: 'ਧਨਾਸਰੀ ਛੰਤ ਮਹਲਾ ੪ ਘਰੁ ੧' }, translation: { en: 'Dhanaasaree, Chhant' } },
+        { verse: { unicode: 'ੴ ਸਤਿਗੁਰ ਪ੍ਰਸਾਦਿ ॥' }, translation: { en: 'One Universal Creator God' } },
+        { verse: { unicode: 'ਹਰਿ ਜੀਉ ਕ੍ਰਿਪਾ ਕਰੇ ਤਾ ਨਾਮੁ ਧਿਆਈਐ ਜੀਉ ॥' }, translation: { en: 'When the Lord grants Grace' } },
+        { verse: { unicode: 'ਸਤਿਗੁਰੁ ਮਿਲੈ ਸੁਭਾਇ ਸਹਜਿ ਗੁਣ ਗਾਈਐ ਜੀਉ ॥' }, translation: { en: 'Meeting the True Guru' } },
+        { verse: { unicode: 'ਹਰਿ ਜੀਉ ਕ੍ਰਿਪਾ ਕਰੇ ਤਾ ਨਾਮੁ ਧਿਆਈਐ ਜੀਉ ॥੧॥' }, translation: { en: 'We meditate on the Naam. ||1||' } },
+        { verse: { unicode: 'ਅੰਦਰਿ ਸਾਚਾ ਨੇਹੁ ਪੂਰੇ ਸਤਿਗੁਰੈ ਜੀਉ ॥' }, translation: { en: 'Deep within I feel love' } }
+      ];
+
+      const pauriLines = [];
+      for (let i = 0; i < sampleVerses.length; i++) {
+        const text = sampleVerses[i].verse.unicode;
+        if (!text.includes('ਮਹਲਾ') && !text.includes('ਘਰੁ')) {
+          pauriLines.push(text);
+        }
+        if (text.includes('॥੧॥') || text.includes('॥ ਰਹਾਉ ॥')) {
+          break;
+        }
+      }
+
+      expect(pauriLines.length).toBe(4);
+      expect(pauriLines[pauriLines.length - 1]).toContain('॥੧॥');
+      expect(pauriLines).not.toContain('ਅੰਦਰਿ ਸਾਚਾ ਨੇਹੁ ਪੂਰੇ ਸਤਿਗੁਰੈ ਜੀਉ ॥');
     });
   });
 });

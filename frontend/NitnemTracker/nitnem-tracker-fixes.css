@@ -2392,3 +2392,303 @@ button:active,
     transform: translateY(-1px) !important;
     border-color: var(--ac-gold, #D4943A) !important;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   EXPORT & IMPORT MODALS & DOWNLOAD PROGRESS BAR
+   ═══════════════════════════════════════════════════════════════════════════ */
+.export-modal-container,
+.import-modal-container {
+    max-width: 480px !important;
+    width: 90% !important;
+    margin: 0 auto !important;
+    background: var(--modal-bg, rgba(255, 255, 255, 0.95)) !important;
+    backdrop-filter: blur(25px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(25px) saturate(180%) !important;
+    border-radius: 24px !important;
+    border: 1px solid rgba(212, 148, 58, 0.25) !important;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2) !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+}
+
+[data-theme="dark"] .export-modal-container,
+[data-theme="dark"] .import-modal-container {
+    background: rgba(28, 28, 30, 0.95) !important;
+    border-color: rgba(212, 148, 58, 0.3) !important;
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.6) !important;
+}
+
+.export-modal-body,
+.import-modal-body {
+    padding: 20px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+}
+
+/* Progress Card */
+.export-progress-card {
+    background: linear-gradient(135deg, rgba(212, 148, 58, 0.08) 0%, rgba(212, 148, 58, 0.02) 100%) !important;
+    border: 1px solid rgba(212, 148, 58, 0.2) !important;
+    border-radius: 16px !important;
+    padding: 16px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+}
+
+[data-theme="dark"] .export-progress-card {
+    background: linear-gradient(135deg, rgba(212, 148, 58, 0.15) 0%, rgba(255, 215, 0, 0.04) 100%) !important;
+    border-color: rgba(255, 215, 0, 0.25) !important;
+}
+
+.export-progress-header {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+}
+
+.export-progress-title {
+    font-size: 14px !important;
+    font-weight: 700 !important;
+    color: var(--text-primary, #1d1d1f) !important;
+}
+
+[data-theme="dark"] .export-progress-title {
+    color: #ffffff !important;
+}
+
+.export-progress-badge {
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    padding: 3px 8px !important;
+    border-radius: 10px !important;
+    background: rgba(212, 148, 58, 0.2) !important;
+    color: #D4943A !important;
+    transition: all 0.3s ease !important;
+}
+
+.export-progress-badge.active {
+    background: rgba(0, 122, 255, 0.15) !important;
+    color: #007AFF !important;
+}
+
+.export-progress-badge.success {
+    background: rgba(52, 199, 89, 0.2) !important;
+    color: #34C759 !important;
+}
+
+/* Download / Progress Bar Track */
+.export-progress-track {
+    width: 100% !important;
+    height: 10px !important;
+    background: rgba(0, 0, 0, 0.08) !important;
+    border-radius: 10px !important;
+    overflow: hidden !important;
+    position: relative !important;
+}
+
+[data-theme="dark"] .export-progress-track {
+    background: rgba(255, 255, 255, 0.1) !important;
+}
+
+.export-progress-fill {
+    height: 100% !important;
+    width: 0%;
+    background: linear-gradient(90deg, #D4943A 0%, #F5B041 50%, #34C759 100%) !important;
+    border-radius: 10px !important;
+    transition: width 0.4s ease-in-out !important;
+    box-shadow: 0 0 10px rgba(212, 148, 58, 0.4) !important;
+}
+
+.export-progress-footer {
+    display: flex !important;
+    justify-content: space-between !important;
+    font-size: 12px !important;
+    color: var(--text-secondary, #86868b) !important;
+    font-weight: 500 !important;
+}
+
+[data-theme="dark"] .export-progress-footer {
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+
+/* Included Content Section & Chips */
+.export-content-section {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+}
+
+.export-section-label {
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    color: var(--text-secondary, #86868b) !important;
+}
+
+[data-theme="dark"] .export-section-label {
+    color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.export-chips-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+}
+
+.export-chip {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    background: var(--bg-secondary, rgba(245, 245, 247, 0.9)) !important;
+    border: 1px solid rgba(0, 0, 0, 0.06) !important;
+    border-radius: 12px !important;
+    padding: 8px 12px !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    color: var(--text-primary, #1d1d1f) !important;
+}
+
+[data-theme="dark"] .export-chip {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    color: #ffffff !important;
+}
+
+.chip-icon {
+    font-size: 15px !important;
+}
+
+/* File Metadata Badge */
+.export-file-meta {
+    background: var(--bg-secondary, rgba(245, 245, 247, 0.9)) !important;
+    border: 1px dashed rgba(212, 148, 58, 0.3) !important;
+    border-radius: 14px !important;
+    padding: 12px 16px !important;
+}
+
+[data-theme="dark"] .export-file-meta {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border-color: rgba(255, 215, 0, 0.3) !important;
+}
+
+.export-file-info {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+}
+
+.export-file-icon {
+    font-size: 24px !important;
+}
+
+.export-file-details {
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+}
+
+.export-filename {
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    font-family: monospace !important;
+    color: var(--text-primary, #1d1d1f) !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
+
+[data-theme="dark"] .export-filename {
+    color: #ffffff !important;
+}
+
+.export-filesize {
+    font-size: 11px !important;
+    color: var(--text-secondary, #86868b) !important;
+    font-weight: 500 !important;
+}
+
+[data-theme="dark"] .export-filesize {
+    color: rgba(255, 255, 255, 0.6) !important;
+}
+
+/* Modal Footer Buttons */
+.export-modal-footer,
+.import-modal-footer {
+    display: flex !important;
+    gap: 8px !important;
+    padding: 16px 20px !important;
+    background: rgba(0, 0, 0, 0.02) !important;
+    border-top: 1px solid rgba(0, 0, 0, 0.05) !important;
+}
+
+[data-theme="dark"] .export-modal-footer,
+[data-theme="dark"] .import-modal-footer {
+    background: rgba(255, 255, 255, 0.02) !important;
+    border-top-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.export-modal-footer .modal-btn,
+.import-modal-footer .modal-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    padding: 10px 14px !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    border-radius: 12px !important;
+}
+
+/* Import Preview Card & Warning */
+.import-preview-card {
+    background: linear-gradient(135deg, rgba(52, 199, 89, 0.1) 0%, rgba(52, 199, 89, 0.02) 100%) !important;
+    border: 1px solid rgba(52, 199, 89, 0.25) !important;
+    border-radius: 16px !important;
+    padding: 16px !important;
+}
+
+.import-preview-header {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+}
+
+.import-preview-icon {
+    font-size: 28px !important;
+}
+
+.import-meta {
+    font-size: 12px !important;
+    color: var(--text-secondary, #86868b) !important;
+    margin-top: 2px !important;
+}
+
+[data-theme="dark"] .import-meta {
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.import-warning-box {
+    display: flex !important;
+    align-items: flex-start !important;
+    gap: 10px !important;
+    background: rgba(255, 149, 0, 0.1) !important;
+    border: 1px solid rgba(255, 149, 0, 0.25) !important;
+    border-radius: 12px !important;
+    padding: 12px 14px !important;
+    font-size: 12px !important;
+    color: var(--text-primary, #1d1d1f) !important;
+    line-height: 1.4 !important;
+}
+
+[data-theme="dark"] .import-warning-box {
+    background: rgba(255, 149, 0, 0.15) !important;
+    color: #ffffff !important;
+}
+
+.warning-icon {
+    font-size: 16px !important;
+    flex-shrink: 0 !important;
+}

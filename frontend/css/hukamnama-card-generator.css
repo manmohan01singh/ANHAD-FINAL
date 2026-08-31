@@ -24,9 +24,9 @@
 .hukam-share-modal__backdrop {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.55);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   opacity: 0;
   transition: opacity 0.3s ease;
 }
@@ -37,21 +37,23 @@
 
 .hukam-share-modal__sheet {
   position: relative;
-  width: 92%;
+  width: 94%;
   max-width: 440px;
-  max-height: 88vh;
+  max-height: 90vh;
   background: linear-gradient(180deg, #FFFDF8 0%, #FFF8EE 100%);
   border-radius: 28px;
-  padding: 18px 20px 24px 20px;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35), inset 0 1.5px 2px rgba(255, 255, 255, 0.9);
+  padding: 16px 20px 22px 20px;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.4), inset 0 1.5px 2px rgba(255, 255, 255, 0.9);
   border: 1px solid rgba(212, 148, 58, 0.3);
   transform: scale(0.92) translateY(20px);
   opacity: 0;
-  transition: all 0.3s cubic-bezier(0.32, 1, 0.23, 1);
+  transition: all 0.32s cubic-bezier(0.32, 1, 0.23, 1);
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
 }
 
 .hukam-share-modal.open .hukam-share-modal__sheet {
@@ -64,7 +66,7 @@ html.dark-mode .hukam-share-modal__sheet,
 [data-time-of-day="night"] .hukam-share-modal__sheet {
   background: linear-gradient(180deg, #1C1924 0%, #121017 100%);
   border-color: rgba(212, 148, 58, 0.35);
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8), inset 0 1px 1px rgba(255, 255, 255, 0.08);
+  box-shadow: 0 28px 72px rgba(0, 0, 0, 0.85), inset 0 1px 1px rgba(255, 255, 255, 0.08);
 }
 
 .hukam-share-modal__drag-handle {
@@ -84,7 +86,7 @@ html.dark-mode .hukam-share-modal__drag-handle,
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 14px;
+  margin-bottom: 12px;
 }
 
 .hukam-share-modal__eyebrow {
@@ -101,7 +103,7 @@ html.dark-mode .hukam-share-modal__eyebrow,
 }
 
 .hukam-share-modal__title {
-  font-size: 1.2rem;
+  font-size: 1.18rem;
   font-weight: 750;
   color: #1A171D;
   margin: 2px 0 0 0;
@@ -132,20 +134,24 @@ html.dark-mode .hukam-share-modal__close-btn,
   color: #EEE;
 }
 
-/* Theme selector pills */
+/* Format & Theme Controls */
 .hukam-controls-row {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  gap: 8px;
   margin-bottom: 12px;
 }
 
-.hukam-theme-selector {
+.hukam-theme-selector,
+.hukam-format-selector {
   display: flex;
   gap: 6px;
+  justify-content: center;
 }
 
-.hukam-theme-pill {
-  padding: 5px 12px;
+.hukam-theme-pill,
+.hukam-format-pill {
+  padding: 5px 11px;
   border-radius: 16px;
   background: rgba(212, 148, 58, 0.08);
   border: 1px solid rgba(212, 148, 58, 0.2);
@@ -156,7 +162,8 @@ html.dark-mode .hukam-share-modal__close-btn,
   transition: all 0.2s ease;
 }
 
-.hukam-theme-pill.active {
+.hukam-theme-pill.active,
+.hukam-format-pill.active {
   background: linear-gradient(135deg, #E69526 0%, #BD6E09 100%);
   border-color: transparent;
   color: #FFFFFF;
@@ -164,39 +171,80 @@ html.dark-mode .hukam-share-modal__close-btn,
 }
 
 html.dark-mode .hukam-theme-pill,
-[data-theme="dark"] .hukam-theme-pill {
+html.dark-mode .hukam-format-pill,
+[data-theme="dark"] .hukam-theme-pill,
+[data-theme="dark"] .hukam-format-pill {
   background: rgba(255, 255, 255, 0.06);
   border-color: rgba(255, 255, 255, 0.12);
   color: #E0D0B8;
 }
 
-/* Canvas Preview */
+html.dark-mode .hukam-theme-pill.active,
+html.dark-mode .hukam-format-pill.active,
+[data-theme="dark"] .hukam-theme-pill.active,
+[data-theme="dark"] .hukam-format-pill.active {
+  background: linear-gradient(135deg, #E69526 0%, #BD6E09 100%);
+  color: #FFFFFF;
+}
+
+/* Canvas Preview & Loader */
 .hukam-preview-wrapper {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
-  max-height: 52vh;
+  max-height: 50vh;
+  min-height: 240px;
   overflow: hidden;
   border-radius: 18px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-  background: #222;
-  margin-bottom: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
+  background: #18151D;
+  margin-bottom: 14px;
 }
 
 .hukam-canvas {
   width: 100%;
-  max-height: 52vh;
+  max-height: 50vh;
   height: auto;
   object-fit: contain;
   border-radius: 18px;
   display: block;
 }
 
+.hukam-loader {
+  position: absolute;
+  inset: 0;
+  background: rgba(24, 21, 29, 0.85);
+  backdrop-filter: blur(8px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: #F7C634;
+  font-size: 0.78rem;
+  font-weight: 600;
+  z-index: 5;
+}
+
+.hukam-spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid rgba(212, 148, 58, 0.25);
+  border-top-color: #E69526;
+  border-radius: 50%;
+  animation: hukamSpin 0.75s linear infinite;
+}
+
+@keyframes hukamSpin {
+  to { transform: rotate(360deg); }
+}
+
 /* Share Actions */
 .hukam-share-actions {
   display: flex;
-  gap: 10px;
+  gap: 8px;
 }
 
 .hukam-action-btn {
@@ -205,15 +253,16 @@ html.dark-mode .hukam-theme-pill,
   align-items: center;
   justify-content: center;
   gap: 6px;
-  padding: 10px 14px;
+  padding: 10px 12px;
   border-radius: 16px;
   background: rgba(212, 148, 58, 0.12);
   border: 1px solid rgba(212, 148, 58, 0.25);
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   font-weight: 700;
   color: #7D4C00;
   cursor: pointer;
   transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
 html.dark-mode .hukam-action-btn,
@@ -224,6 +273,7 @@ html.dark-mode .hukam-action-btn,
 }
 
 .hukam-action-btn--primary {
+  flex: 1.4;
   background: linear-gradient(135deg, #E69526 0%, #BD6E09 100%);
   border: none;
   color: #FFFFFF;
@@ -236,10 +286,39 @@ html.dark-mode .hukam-action-btn--primary,
   color: #FFFFFF;
 }
 
+.hukam-action-btn--copy {
+  flex: 0.8;
+}
+
 .hukam-action-btn:hover {
   transform: translateY(-1px);
 }
 
 .hukam-action-btn:active {
   transform: scale(0.96);
+}
+
+/* Toast */
+.anhad-hukam-toast {
+  position: fixed;
+  bottom: 96px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: rgba(28, 24, 36, 0.94);
+  color: #FFFDF8;
+  padding: 10px 20px;
+  border-radius: 24px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(212, 148, 58, 0.35);
+  z-index: 10005;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.25s ease;
+}
+
+.anhad-hukam-toast.visible {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
 }

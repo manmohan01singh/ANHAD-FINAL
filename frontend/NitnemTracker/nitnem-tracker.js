@@ -965,25 +965,108 @@ const StorageManager = {
     },
 
     /**
+     * Parse backup summary from JSON string
+     */
+    parseBackupSummary(jsonString) {
+        try {
+            let raw = JSON.parse(jsonString);
+            if (typeof raw !== 'object' || raw === null) {
+                return { isValid: false, categoriesCount: 0, categoriesList: [] };
+            }
+
+            // Handle nested wrapped payload (e.g. { data: { ... } })
+            let payload = raw.data && typeof raw.data === 'object' ? raw.data : raw;
+
+            const categoryLabels = {
+                SETTINGS: 'App Settings',
+                nitnemTracker_settings: 'App Settings',
+                AMRITVELA_LOG: 'Amritvela Logs',
+                nitnemTracker_amritvelaLog: 'Amritvela Logs',
+                NITNEM_LOG: 'Nitnem Completion Log',
+                nitnemTracker_nitnemLog: 'Nitnem Completion Log',
+                MALA_LOG: 'Mala Logs',
+                nitnemTracker_malaLog: 'Mala Logs',
+                ALARM_LOG: 'Alarm Logs',
+                nitnemTracker_alarmLog: 'Alarm Logs',
+                STREAK_DATA: 'Streak & Session Stats',
+                anhad_streak_data: 'Streak & Session Stats',
+                ACHIEVEMENTS: 'Achievements Data',
+                nitnemTracker_achievements: 'Achievements Data',
+                SELECTED_BANIS: 'Selected Banis',
+                nitnemTracker_selectedBanis: 'Selected Banis',
+                THEME: 'Theme Preference',
+                nitnemTracker_theme: 'Theme Preference',
+                SELECTED_BANIS_HISTORY: 'Bani Selection History',
+                nitnemTracker_selectedBanis_history: 'Bani Selection History',
+                NITNEM_PROGRESS: 'Nitnem Progress Stats',
+                nitnemTracker_progress: 'Nitnem Progress Stats',
+                DAILY_GOALS: 'Daily Goals',
+                anhad_daily_goals: 'Daily Goals',
+                NAAM_ABHYAS_HISTORY: 'Naam Abhyas History',
+                naam_abhyas_history: 'Naam Abhyas History',
+                MY_POTHI_ORDER: 'My Pothi Order',
+                anhad_my_pothi: 'My Pothi Order',
+                MY_POTHI_DATA: 'My Pothi Banis',
+                anhad_my_pothi_data: 'My Pothi Banis',
+                MY_POTHI_COMPLETED: 'My Pothi History',
+                anhad_my_pothi_completed: 'My Pothi History',
+                MY_POTHI_SNAPSHOTS: 'My Pothi Snapshots',
+                anhad_pothi_snapshots: 'My Pothi Snapshots'
+            };
+
+            const foundCategories = new Set();
+            Object.keys(payload).forEach(key => {
+                if (categoryLabels[key] && payload[key] !== null) {
+                    foundCategories.add(categoryLabels[key]);
+                }
+            });
+
+            const exportDate = raw.exportDate || (raw.exportTimestamp ? raw.exportTimestamp.split('T')[0] : null);
+
+            return {
+                isValid: foundCategories.size > 0,
+                exportDate: exportDate,
+                appVersion: raw.appVersion || '2.0',
+                categoriesCount: foundCategories.size,
+                categoriesList: Array.from(foundCategories),
+                rawPayload: payload
+            };
+        } catch (e) {
+            return { isValid: false, categoriesCount: 0, categoriesList: [] };
+        }
+    },
+
+    /**
      * Import data from JSON
      */
     importData(jsonString) {
         try {
-            const data = JSON.parse(jsonString);
+            const summary = this.parseBackupSummary(jsonString);
+            if (!summary.isValid || !summary.rawPayload) {
+                console.error('Import error: invalid or unrecognized JSON backup file');
+                return false;
+            }
+
+            const data = summary.rawPayload;
             let restoredCount = 0;
-            Object.entries(data).forEach(([name, value]) => {
-                const key = CONFIG.STORAGE_KEYS[name];
-                if (key && value !== null) {
-                    this.save(key, value);
+
+            // Build bidirectional key mapping table
+            const keyMap = {};
+            Object.entries(CONFIG.STORAGE_KEYS).forEach(([name, key]) => {
+                keyMap[name] = key;
+                keyMap[key] = key;
+            });
+
+            Object.entries(data).forEach(([keyOrName, value]) => {
+                const storageKey = keyMap[keyOrName];
+                if (storageKey && value !== null && value !== undefined) {
+                    this.save(storageKey, value);
                     restoredCount++;
                 }
             });
 
-            // If nothing in the file matched a known key, this isn't an ANHAD
-            // backup (e.g. an incompatible/foreign JSON file) — report failure
-            // instead of a false-positive success with zero fields restored.
             if (restoredCount === 0) {
-                console.error('Import error: no recognized ANHAD backup keys found in file');
+                console.error('Import error: no recognized backup keys restored');
                 return false;
             }
 
@@ -5167,23 +5250,27 @@ const SettingsManager = {
      * Export all data
      */
     exportData() {
-        const data = StorageManager.exportData();
-        const filename = `nitnem-tracker-backup-${Utils.getTodayString()}.json`;
-        if (typeof ReportsManager !== 'undefined' && ReportsManager.downloadBackupFile) {
-            ReportsManager.downloadBackupFile(data, filename);
+        if (typeof ReportsManager !== 'undefined' && ReportsManager.exportReport) {
+            ReportsManager.exportReport();
         } else {
-            navigator.clipboard?.writeText?.(data);
-            Toast.success('Export Copied', 'JSON backup copied to clipboard');
+            const data = StorageManager.exportData();
+            const filename = `anhad-backup-${Utils.getTodayString()}.json`;
+            if (typeof ReportsManager !== 'undefined' && ReportsManager.downloadBackupFile) {
+                ReportsManager.downloadBackupFile(data, filename);
+            } else {
+                navigator.clipboard?.writeText?.(data);
+                Toast.success('Export Copied', 'JSON backup copied to clipboard');
+            }
         }
     },
 
     /**
-     * Import data
+     * Import data with preview modal
      */
     importData() {
         const input = document.createElement('input');
         input.type = 'file';
-        input.accept = '.json';
+        input.accept = '.json,application/json';
 
         input.onchange = (e) => {
             const file = e.target.files[0];
@@ -5191,19 +5278,111 @@ const SettingsManager = {
 
             const reader = new FileReader();
             reader.onload = (event) => {
-                const success = StorageManager.importData(event.target.result);
+                const content = event.target.result;
+                const summary = StorageManager.parseBackupSummary(content);
 
-                if (success) {
-                    Toast.success('Import Complete', 'Your data has been restored');
-                    setTimeout(() => location.reload(), 1500);
-                } else {
-                    Toast.error('Import Failed', 'Invalid backup file');
+                if (!summary.isValid) {
+                    Toast.error('Invalid Backup File', 'The selected file is not a valid Nitnem backup');
+                    HapticManager.error();
+                    return;
                 }
+
+                this.showImportPreviewModal(content, summary, file.name);
             };
             reader.readAsText(file);
         };
 
         input.click();
+    },
+
+    /**
+     * Show Import Confirmation Preview Modal
+     */
+    showImportPreviewModal(content, summary, filename) {
+        let modal = document.getElementById('importModal');
+        if (modal) modal.remove();
+
+        modal = document.createElement('div');
+        modal.className = 'modal-overlay';
+        modal.id = 'importModal';
+
+        const categoriesHtml = summary.categoriesList.map(cat => 
+            `<div class="export-chip"><span class="chip-icon">✓</span> ${cat}</div>`
+        ).join('');
+
+        modal.innerHTML = `
+            <div class="modal-backdrop" data-close-import></div>
+            <div class="modal-container import-modal-container">
+                <div class="modal-handle"></div>
+                <div class="modal-header">
+                    <h2 class="modal-title">📥 Restore Backup Data</h2>
+                    <button class="modal-close-btn" data-close-import aria-label="Close">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 6L6 18M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="modal-body import-modal-body">
+                    <div class="import-preview-card">
+                        <div class="import-preview-header">
+                            <span class="import-preview-icon">📦</span>
+                            <div>
+                                <div class="export-filename">${filename}</div>
+                                <div class="import-meta">Export Date: ${summary.exportDate || 'Valid Backup'} • ${summary.categoriesCount} Categories</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="import-warning-box">
+                        <span class="warning-icon">⚠️</span>
+                        <span>Importing this file will safely merge and restore your Nitnem completion history, streak data, My Pothi banis, and app preferences.</span>
+                    </div>
+
+                    <div class="export-content-section">
+                        <span class="export-section-label">Data to be Restored:</span>
+                        <div class="export-chips-grid">
+                            ${categoriesHtml}
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer import-modal-footer">
+                    <button class="btn btn-secondary modal-btn" data-close-import>Cancel</button>
+                    <button class="btn btn-primary modal-btn" id="confirmImportBtn">
+                        <span>Confirm & Restore</span>
+                    </button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        modal.querySelectorAll('[data-close-import]').forEach(el => {
+            el.addEventListener('click', () => {
+                ModalManager.close('importModal');
+                setTimeout(() => modal.remove(), 300);
+            });
+        });
+
+        const confirmBtn = modal.querySelector('#confirmImportBtn');
+        if (confirmBtn) {
+            confirmBtn.addEventListener('click', () => {
+                const success = StorageManager.importData(content);
+                ModalManager.close('importModal');
+                setTimeout(() => modal.remove(), 300);
+
+                if (success) {
+                    Toast.success('Import Complete', 'Your Nitnem data has been successfully restored');
+                    HapticManager.success();
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    Toast.error('Import Failed', 'Unable to restore backup data');
+                    HapticManager.error();
+                }
+            });
+        }
+
+        ModalManager.open('importModal');
+        HapticManager.selection();
     },
 
     /**
@@ -9497,110 +9676,205 @@ const ReportsManager = {
     },
 
     /**
-     * Show export modal with download & copy options
+     * Show export modal with download progress bar & multi-sharing options
      */
     showExportModal(data) {
         const today = Utils.getTodayString();
         const filename = `anhad-backup-${today}.json`;
-        
-        // Create modal if it doesn't exist
+        const jsonStr = typeof data === 'string' ? data : JSON.stringify(data, null, 2);
+        const fileSizeKb = (jsonStr.length / 1024).toFixed(1);
+
         let modal = document.getElementById('exportModal');
-        if (!modal) {
-            modal = document.createElement('div');
-            modal.id = 'exportModal';
-            modal.className = 'modal';
-            modal.innerHTML = `
-                <div class="modal-overlay" data-close-export></div>
-                <div class="modal-content export-modal-content">
-                    <div class="modal-header">
-                        <h3 class="modal-title">📥 Export Backup</h3>
-                        <button class="modal-close" data-close-export>&times;</button>
-                    </div>
-                    <div class="modal-body export-modal-body">
-                        <div class="export-info">
-                            <div class="export-icon">💾</div>
-                            <p class="export-message">Your complete backup is ready!</p>
-                            <p class="export-details">
-                                This includes:<br>
-                                ✓ Nitnem completion history<br>
-                                ✓ Amritvela wake times<br>
-                                ✓ Mala counts & streaks<br>
-                                ✓ <strong>My Pothi configuration</strong><br>
-                                ✓ All settings & preferences
-                            </p>
-                            <div class="export-filename">${filename}</div>
+        if (modal) modal.remove();
+
+        modal = document.createElement('div');
+        modal.className = 'modal-overlay';
+        modal.id = 'exportModal';
+        modal.innerHTML = `
+            <div class="modal-backdrop" data-close-export></div>
+            <div class="modal-container export-modal-container">
+                <div class="modal-handle"></div>
+                <div class="modal-header">
+                    <h2 class="modal-title">📥 Export Nitnem Backup</h2>
+                    <button class="modal-close-btn" data-close-export aria-label="Close">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 6L6 18M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="modal-body export-modal-body">
+                    <!-- Progress & Status Card -->
+                    <div class="export-progress-card">
+                        <div class="export-progress-header">
+                            <span class="export-progress-title">Backup Generation Status</span>
+                            <span class="export-progress-badge success" id="exportStatusBadge">Ready</span>
+                        </div>
+                        <div class="export-progress-track">
+                            <div class="export-progress-fill" id="exportProgressBar" style="width: 100%;"></div>
+                        </div>
+                        <div class="export-progress-footer">
+                            <span id="exportProgressSubtext">Complete Nitnem JSON backup payload ready</span>
+                            <span id="exportProgressPercent">100%</span>
                         </div>
                     </div>
-                    <div class="modal-footer export-modal-footer" style="display:flex;gap:8px;justify-content:flex-end;">
-                        <button class="btn btn-secondary" data-close-export>Close</button>
-                        <button class="btn btn-secondary" id="copyBackupBtn">
-                            <span>📋 Copy JSON</span>
-                        </button>
-                        <button class="btn btn-primary" id="downloadBackupBtn">
-                            <span>⬇️ Save Backup</span>
-                        </button>
+
+                    <!-- Included Content Section -->
+                    <div class="export-content-section">
+                        <span class="export-section-label">Included in this Backup:</span>
+                        <div class="export-chips-grid">
+                            <div class="export-chip"><span class="chip-icon">📖</span> Nitnem History</div>
+                            <div class="export-chip"><span class="chip-icon">🌅</span> Amritvela Logs</div>
+                            <div class="export-chip"><span class="chip-icon">📿</span> Mala & Streaks</div>
+                            <div class="export-chip"><span class="chip-icon">📚</span> My Pothi Banis</div>
+                            <div class="export-chip"><span class="chip-icon">🏆</span> Achievements</div>
+                            <div class="export-chip"><span class="chip-icon">⚙️</span> App Settings</div>
+                        </div>
+                    </div>
+
+                    <!-- File Details Badge -->
+                    <div class="export-file-meta">
+                        <div class="export-file-info">
+                            <span class="export-file-icon">📄</span>
+                            <div class="export-file-details">
+                                <span class="export-filename">${filename}</span>
+                                <span class="export-filesize">${fileSizeKb} KB • Universal JSON Format</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            `;
-            document.body.appendChild(modal);
-            
-            // Add close handlers
-            modal.querySelectorAll('[data-close-export]').forEach(el => {
-                el.addEventListener('click', () => this.closeExportModal());
-            });
 
-            // Add Copy JSON handler
-            const copyBtn = modal.querySelector('#copyBackupBtn');
-            if (copyBtn) {
-                copyBtn.addEventListener('click', () => {
-                    const jsonStr = typeof data === 'string' ? data : JSON.stringify(data, null, 2);
-                    if (navigator.clipboard && navigator.clipboard.writeText) {
-                        navigator.clipboard.writeText(jsonStr).then(() => {
-                            Toast.success('Copied!', 'JSON backup copied to clipboard');
-                            HapticManager.success();
-                        }).catch(() => {
-                            Toast.error('Copy Failed', 'Unable to copy to clipboard');
-                        });
-                    } else {
-                        Toast.error('Clipboard Unavailable', 'Please use Save Backup');
-                    }
-                });
-            }
-            
-            // Add download handler
-            const downloadBtn = modal.querySelector('#downloadBackupBtn');
+                <div class="modal-footer export-modal-footer">
+                    <button class="btn btn-secondary modal-btn" id="shareBackupBtn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+                        <span>Share</span>
+                    </button>
+                    <button class="btn btn-secondary modal-btn" id="copyBackupBtn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                        <span>Copy JSON</span>
+                    </button>
+                    <button class="btn btn-primary modal-btn" id="downloadBackupBtn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        <span>Save File</span>
+                    </button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+
+        modal.querySelectorAll('[data-close-export]').forEach(el => {
+            el.addEventListener('click', () => this.closeExportModal());
+        });
+
+        // Share button handler
+        const shareBtn = modal.querySelector('#shareBackupBtn');
+        if (shareBtn) {
+            shareBtn.addEventListener('click', () => {
+                this.shareBackupFile(data, filename);
+            });
+        }
+
+        // Copy JSON button handler
+        const copyBtn = modal.querySelector('#copyBackupBtn');
+        if (copyBtn) {
+            copyBtn.addEventListener('click', () => {
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(jsonStr).then(() => {
+                        Toast.success('Copied!', 'JSON backup copied to clipboard');
+                        HapticManager.success();
+                    }).catch(() => {
+                        Toast.error('Copy Failed', 'Unable to copy to clipboard');
+                    });
+                } else {
+                    Toast.error('Clipboard Unavailable', 'Please use Save File option');
+                }
+            });
+        }
+
+        // Save File button handler
+        const downloadBtn = modal.querySelector('#downloadBackupBtn');
+        if (downloadBtn) {
             downloadBtn.addEventListener('click', () => {
                 this.downloadBackupFile(data, filename);
-                this.closeExportModal();
             });
-        } else {
-            // Update filename if modal already exists
-            modal.querySelector('.export-filename').textContent = filename;
         }
-        
-        // Open modal
+
         ModalManager.open('exportModal');
         HapticManager.selection();
     },
 
     /**
-     * Download backup file (Capacitor & WebView Safe - Never navigates to Blob URL)
+     * Share backup file via Web Share API or native mobile intent
+     */
+    shareBackupFile(data, filename) {
+        try {
+            const jsonStr = typeof data === 'string' ? data : JSON.stringify(data, null, 2);
+            const blob = new Blob([jsonStr], { type: 'application/json' });
+            const file = new File([blob], filename, { type: 'application/json' });
+
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                navigator.share({
+                    files: [file],
+                    title: 'Nitnem Tracker Backup',
+                    text: 'Nitnem Tracker JSON backup file'
+                }).then(() => {
+                    Toast.success('Shared!', 'Backup file shared successfully');
+                    HapticManager.success();
+                }).catch(err => {
+                    if (err && err.name !== 'AbortError') {
+                        Toast.error('Share Failed', 'Could not share file');
+                    }
+                });
+            } else if (navigator.share) {
+                navigator.share({
+                    title: 'Nitnem Tracker Backup',
+                    text: jsonStr
+                }).catch(() => {});
+            } else {
+                navigator.clipboard?.writeText?.(jsonStr);
+                Toast.success('Copied!', 'JSON backup copied to clipboard for sharing');
+                HapticManager.success();
+            }
+        } catch (err) {
+            console.error('Share backup error:', err);
+            Toast.error('Share Error', 'Unable to share file');
+        }
+    },
+
+    /**
+     * Download backup file (Safe Blob URL with Capacitor & WebView support)
      */
     downloadBackupFile(data, filename) {
         try {
             const jsonStr = typeof data === 'string' ? data : JSON.stringify(data, null, 2);
+
+            // Copy to clipboard as safe background measure
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(jsonStr).catch(() => {});
+            }
+
+            // Animate progress bar in export modal if visible
+            const progressFill = document.getElementById('exportProgressBar');
+            const statusBadge = document.getElementById('exportStatusBadge');
+            const progressSubtext = document.getElementById('exportProgressSubtext');
+
+            if (progressFill && statusBadge) {
+                progressFill.style.width = '20%';
+                statusBadge.textContent = 'Saving...';
+                statusBadge.className = 'export-progress-badge active';
+                if (progressSubtext) progressSubtext.textContent = 'Preparing JSON file download...';
+
+                setTimeout(() => {
+                    progressFill.style.width = '70%';
+                }, 100);
+            }
+
             const isNativeApp = !!(window.Capacitor && (
                 (typeof window.Capacitor.isNativePlatform === 'function' && window.Capacitor.isNativePlatform()) ||
                 (typeof window.Capacitor.getPlatform === 'function' && window.Capacitor.getPlatform() !== 'web') ||
                 window.Capacitor.isNative
             ));
 
-            // 1. Always copy JSON to clipboard as immediate safe backup
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(jsonStr).catch(() => {});
-            }
-
-            // 2. Native Capacitor Filesystem plugin
+            // Native Capacitor Filesystem plugin
             if (isNativeApp && window.Capacitor.Plugins && window.Capacitor.Plugins.Filesystem) {
                 window.Capacitor.Plugins.Filesystem.writeFile({
                     path: filename,
@@ -9608,43 +9882,22 @@ const ReportsManager = {
                     directory: 'DOCUMENTS',
                     encoding: 'utf8'
                 }).then(() => {
+                    if (progressFill) progressFill.style.width = '100%';
+                    if (statusBadge) {
+                        statusBadge.textContent = 'Saved!';
+                        statusBadge.className = 'export-progress-badge success';
+                    }
+                    if (progressSubtext) progressSubtext.textContent = 'Saved to Documents folder & clipboard';
                     Toast.success('Backup Saved!', 'Saved to Documents folder & copied to clipboard');
                     HapticManager.success();
-                }).catch(() => {
-                    Toast.success('Backup Copied!', 'JSON backup copied to clipboard');
-                    HapticManager.success();
+                }).catch((err) => {
+                    console.warn('Capacitor Filesystem write error, falling back to Blob download:', err);
+                    this._triggerBlobDownload(jsonStr, filename);
                 });
                 return;
             }
 
-            // 3. Web download using Data URI (prevents WebView from navigating to blob: page)
-            try {
-                const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(jsonStr);
-                const a = document.createElement('a');
-                a.href = dataUri;
-                a.download = filename;
-                // REMOVED target="_blank" to prevent new window/tab opening
-                a.rel = 'noopener';
-                a.style.display = 'none';
-                document.body.appendChild(a);
-                
-                // Use setTimeout to ensure DOM is ready before click
-                setTimeout(() => {
-                    a.click();
-                    
-                    // Clean up after download starts
-                    setTimeout(() => {
-                        if (a.parentNode) document.body.removeChild(a);
-                    }, 500);
-                }, 50);
-
-                Toast.success('Backup Saved!', 'File download started & copied to clipboard');
-                HapticManager.success();
-            } catch (dlErr) {
-                console.warn('Data URI download warning:', dlErr);
-                Toast.success('Backup Copied!', 'JSON backup copied to clipboard');
-                HapticManager.success();
-            }
+            this._triggerBlobDownload(jsonStr, filename);
         } catch (error) {
             console.error('Export failed:', error);
             Toast.error('Export Failed', 'Could not save backup file');
@@ -9652,11 +9905,69 @@ const ReportsManager = {
     },
 
     /**
+     * Helper to trigger HTML5 Blob URL download
+     */
+    _triggerBlobDownload(jsonStr, filename) {
+        try {
+            const blob = new Blob([jsonStr], { type: 'application/json;charset=utf-8;' });
+            const blobUrl = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = blobUrl;
+            a.download = filename;
+            a.style.display = 'none';
+            document.body.appendChild(a);
+
+            setTimeout(() => {
+                a.click();
+                setTimeout(() => {
+                    if (a.parentNode) document.body.removeChild(a);
+                    URL.revokeObjectURL(blobUrl);
+                }, 500);
+            }, 50);
+
+            const progressFill = document.getElementById('exportProgressBar');
+            const statusBadge = document.getElementById('exportStatusBadge');
+            const progressSubtext = document.getElementById('exportProgressSubtext');
+
+            if (progressFill) progressFill.style.width = '100%';
+            if (statusBadge) {
+                statusBadge.textContent = 'Downloaded!';
+                statusBadge.className = 'export-progress-badge success';
+            }
+            if (progressSubtext) progressSubtext.textContent = 'JSON file saved to Downloads & copied to clipboard';
+
+            Toast.success('Backup Downloaded!', 'JSON backup file saved & copied to clipboard');
+            HapticManager.success();
+        } catch (err) {
+            console.warn('Blob download warning, trying Data URI fallback:', err);
+            try {
+                const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(jsonStr);
+                const a = document.createElement('a');
+                a.href = dataUri;
+                a.download = filename;
+                a.style.display = 'none';
+                document.body.appendChild(a);
+                a.click();
+                setTimeout(() => { if (a.parentNode) document.body.removeChild(a); }, 500);
+                Toast.success('Backup Saved!', 'JSON backup saved');
+                HapticManager.success();
+            } catch (dataErr) {
+                Toast.success('Backup Copied!', 'JSON backup copied to clipboard');
+                HapticManager.success();
+            }
+        }
+    },
+
+    /**
      * Close export modal
      */
     closeExportModal() {
+        const modal = document.getElementById('exportModal');
         ModalManager.close('exportModal');
         HapticManager.light();
+        if (modal) {
+            setTimeout(() => modal.remove(), 300);
+        }
     },
 
     /**
