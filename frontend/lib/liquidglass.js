@@ -1015,9 +1015,9 @@ var HtmlCapture = class {
     this.cache = /* @__PURE__ */ new Map();
     this.dpr = 1;
   }
-  // ────────────────────────────────────────────
+  // --------------------------------------------
   // Public API
-  // ────────────────────────────────────────────
+  // --------------------------------------------
   /**
    * Resolve the page's @font-face rules into a single CSS string with
    * every `url(...)` source already inlined as a base64 data URL. The
@@ -1162,9 +1162,9 @@ var HtmlCapture = class {
   destroy() {
     this.cache.clear();
   }
-  // ────────────────────────────────────────────
+  // --------------------------------------------
   // html-to-image back-end
-  // ────────────────────────────────────────────
+  // --------------------------------------------
   async _captureWithHtmlToImage(element, w, h, cssW, cssH) {
     if (cssW <= 0 || cssH <= 0 || w <= 0 || h <= 0) return;
     try {
@@ -1478,9 +1478,9 @@ var GlassRenderer = class {
     this.canvas.addEventListener("webglcontextlost", this._onContextLost);
     this.canvas.addEventListener("webglcontextrestored", this._onContextRestored);
   }
-  // ────────────────────────────────────────────
+  // --------------------------------------------
   // Initialisation
-  // ────────────────────────────────────────────
+  // --------------------------------------------
   _initPrograms() {
     this.blitP = this._link(VS_QUAD, FS_BLIT);
     this.blitU = this._uloc(this.blitP, ["u_tex", "u_scale", "u_offset"]);
@@ -1521,9 +1521,9 @@ var GlassRenderer = class {
     gl.bindBuffer(gl.ARRAY_BUFFER, this.panelBuf);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-0.5, -0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5]), gl.STATIC_DRAW);
   }
-  // ────────────────────────────────────────────
+  // --------------------------------------------
   // Resize
-  // ────────────────────────────────────────────
+  // --------------------------------------------
   resize(width, height) {
     this.width = width;
     this.height = height;
@@ -1535,9 +1535,9 @@ var GlassRenderer = class {
     this.canvas.width = 0;
     this.canvas.height = 0;
   }
-  // ────────────────────────────────────────────
+  // --------------------------------------------
   // Background upload
-  // ────────────────────────────────────────────
+  // --------------------------------------------
   uploadAndBlur(sourceCanvas, sourceX, sourceY, width, height, blurAmount) {
     if (this.contextLost) return;
     const gl = this.gl;
@@ -1592,9 +1592,9 @@ var GlassRenderer = class {
       }
     }
   }
-  // ────────────────────────────────────────────
+  // --------------------------------------------
   // Glass panel rendering
-  // ────────────────────────────────────────────
+  // --------------------------------------------
   renderGlassPanel(config, width, height, dpr) {
     if (this.contextLost) return;
     const gl = this.gl;
@@ -1663,9 +1663,9 @@ var GlassRenderer = class {
     }
     this.canvas.remove();
   }
-  // ────────────────────────────────────────────
+  // --------------------------------------------
   // FBO management
-  // ────────────────────────────────────────────
+  // --------------------------------------------
   _setActiveSize(w, h) {
     if (w <= 0 || h <= 0) return false;
     this.width = w;
@@ -1713,9 +1713,9 @@ var GlassRenderer = class {
     this._freeFBO(fboSet.blurA);
     this._freeFBO(fboSet.blurB);
   }
-  // ────────────────────────────────────────────
+  // --------------------------------------------
   // Shader helpers
-  // ────────────────────────────────────────────
+  // --------------------------------------------
   _compile(src, type) {
     const gl = this.gl;
     const s = gl.createShader(type);
@@ -1765,9 +1765,9 @@ var BUTTON_CSS = `
 }
 `;
 var LiquidGlass = class _LiquidGlass {
-  // ────────────────────────────────────────────
+  // --------------------------------------------
   // Constructor (prefer LiquidGlass.init)
-  // ────────────────────────────────────────────
+  // --------------------------------------------
   constructor({ root, glassElements, defaults = {} }) {
     /** Current frames-per-second (updated every frame). */
     this.fps = 0;
@@ -1847,17 +1847,17 @@ var LiquidGlass = class _LiquidGlass {
     this._onPointerMove = this._handlePointerMove.bind(this);
     this._onPointerUp = this._handlePointerUp.bind(this);
   }
-  // ────────────────────────────────────────────
+  // --------------------------------------------
   // Static entry point
-  // ────────────────────────────────────────────
+  // --------------------------------------------
   static async init(options) {
     const instance = new _LiquidGlass(options);
     await instance._start();
     return instance;
   }
-  // ────────────────────────────────────────────
+  // --------------------------------------------
   // Lifecycle
-  // ────────────────────────────────────────────
+  // --------------------------------------------
   async _start() {
     this.root.style.userSelect = "none";
     this.root.style.webkitUserSelect = "none";
@@ -1937,9 +1937,9 @@ var LiquidGlass = class _LiquidGlass {
     this.capture.destroy();
     this.renderer.destroy();
   }
-  // ────────────────────────────────────────────
+  // --------------------------------------------
   // Glass element setup
-  // ────────────────────────────────────────────
+  // --------------------------------------------
   _setupGlassElements() {
     let needsButtonStyles = false;
     for (const el of this.glassSet) {
@@ -2120,9 +2120,9 @@ var LiquidGlass = class _LiquidGlass {
       () => el.removeEventListener("pointercancel", onUp)
     ]);
   }
-  // ────────────────────────────────────────────
+  // --------------------------------------------
   // Glass content pre-capture
-  // ────────────────────────────────────────────
+  // --------------------------------------------
   /**
    * Re-capture the DOM content (text, icons, etc.) of glass elements
    * whose subtrees have been mutated since the last capture, hiding
@@ -2176,9 +2176,9 @@ var LiquidGlass = class _LiquidGlass {
       }
     }
   }
-  // ────────────────────────────────────────────
+  // --------------------------------------------
   // Child ordering & stacking context
-  // ────────────────────────────────────────────
+  // --------------------------------------------
   _getSortedChildren() {
     const children = Array.from(this.root.children);
     const rootDisplay = window.getComputedStyle(this.root).display;
@@ -2261,9 +2261,9 @@ var LiquidGlass = class _LiquidGlass {
     }
     return false;
   }
-  // ────────────────────────────────────────────
+  // --------------------------------------------
   // Configuration
-  // ────────────────────────────────────────────
+  // --------------------------------------------
   _getConfig(el) {
     const cachedEl = el;
     const configKey = el.dataset.config !== undefined && el.dataset.config !== null ? el.dataset.config : "";
@@ -2298,9 +2298,9 @@ var LiquidGlass = class _LiquidGlass {
     }
     return config;
   }
-  // ────────────────────────────────────────────
+  // --------------------------------------------
   // Resize
-  // ────────────────────────────────────────────
+  // --------------------------------------------
   _handleResize() {
     const dpr = window.devicePixelRatio || 1;
     const rect = this.root.getBoundingClientRect();
@@ -2350,9 +2350,9 @@ var LiquidGlass = class _LiquidGlass {
     }
     return changed;
   }
-  // ────────────────────────────────────────────
+  // --------------------------------------------
   // Floating (drag) behaviour — Pointer Events
-  // ────────────────────────────────────────────
+  // --------------------------------------------
   /** Parse the current translate(x, y) values from an element's transform. */
   static _getTranslateXY(el) {
     const style = getComputedStyle(el);
@@ -2443,9 +2443,9 @@ var LiquidGlass = class _LiquidGlass {
     this._drag.element = null;
     this._markGlassAndDependents(dragged);
   }
-  // ────────────────────────────────────────────
+  // --------------------------------------------
   // Render loop
-  // ────────────────────────────────────────────
+  // --------------------------------------------
   _renderLoop() {
     if (!this._running) return;
     const now = performance.now();

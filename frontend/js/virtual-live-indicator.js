@@ -15,7 +15,7 @@
 (function () {
   'use strict';
 
-  // ─── State ────────────────────────────────────────────────────────────────
+  // --- State ----------------------------------------------------------------
   let currentOffsetSeconds = 0;
   let isAtLive = true;
   let pausedAt = null;          // Timestamp when audio was paused
@@ -24,7 +24,7 @@
   let progressLiveEl = null;    // Optional: live tick mark on progress bar
   let initialized = false;
 
-  // ─── Format offset as "−5m 30s" or "−45s" ───────────────────────────────
+  // --- Format offset as "−5m 30s" or "−45s" -------------------------------
   function formatOffset(secs) {
     if (secs < 60) return `\u2212${secs}s`;
     const m = Math.floor(secs / 60);
@@ -32,7 +32,7 @@
     return s > 0 ? `\u2212${m}m ${s}s` : `\u2212${m}m`;
   }
 
-  // ─── Create the badge element ─────────────────────────────────────────────
+  // --- Create the badge element ---------------------------------------------
   function createBadge() {
     if (document.getElementById('anhad-live-badge')) return;
 
@@ -140,7 +140,7 @@
     return badgeEl;
   }
 
-  // ─── Attach badge to existing player HTML ─────────────────────────────────
+  // --- Attach badge to existing player HTML ---------------------------------
   function attachBadge() {
     if (!badgeEl) createBadge();
     if (!badgeEl || document.getElementById('anhad-live-badge')) return;
@@ -169,7 +169,7 @@
     }
   }
 
-  // ─── Update badge based on offset ─────────────────────────────────────────
+  // --- Update badge based on offset -----------------------------------------
   function updateBadge(offsetSecs, atLive, paused) {
     if (!badgeEl) return;
 
@@ -194,7 +194,7 @@
     }
   }
 
-  // ─── Handle pause: start counting how long paused ─────────────────────────
+  // --- Handle pause: start counting how long paused -------------------------
   function onPaused() {
     pausedAt = Date.now();
     clearTimeout(pauseCheckTimer);
@@ -215,7 +215,7 @@
     clearTimeout(pauseCheckTimer);
   }
 
-  // ─── Listen to singleton events ───────────────────────────────────────────
+  // --- Listen to singleton events -------------------------------------------
   function attachListeners() {
     // Live offset from singleton (fires every 1 second while playing)
     window.addEventListener('anhadLiveOffset', (e) => {
@@ -248,7 +248,7 @@
     });
   }
 
-  // ─── Init ─────────────────────────────────────────────────────────────────
+  // --- Init -----------------------------------------------------------------
   function init() {
     if (initialized) return;
 

@@ -1,6 +1,6 @@
 /**
  * ANHAD Gurbani Radio — Stream Proxy Edge Function
- * ───────────────────────────────────────────────
+ * -----------------------------------------------
  * Proxies live Gurbani audio streams over HTTPS with CORS Access-Control-Allow-Origin: *
  * and 'Icy-MetaData: 0' to prevent browser decoder corruption.
  *

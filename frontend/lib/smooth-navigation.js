@@ -86,7 +86,7 @@
   // navigateTo(), so a bailout can never wedge navigation permanently.
   let navInFlight = null;
 
-  // ── PAGE CSS OWNERSHIP ──────────────────────────────────────────────────
+  // -- PAGE CSS OWNERSHIP --------------------------------------------------
   // Every page-owned <style>/<link> carries data-spa-page="<pathname>" plus a
   // data-spa-media record of the media value it should have when active.
   //
@@ -550,7 +550,7 @@
        return;
     }
 
-    // ── ARRIVAL EPOCH ────────────────────────────────────────────────────
+    // -- ARRIVAL EPOCH ----------------------------------------------------
     // A monotonic counter identifying THIS navigation. Page modules repopulate
     // themselves from two independent triggers that both fire for a single
     // arrival — runPageInit() below, and the anhad_page_changed event at the
@@ -653,7 +653,7 @@
     document.body.style.minHeight = '';
     document.body.style.color = '';
 
-    // ── CSS LIFECYCLE: install → swap → deactivate ────────────────────────
+    // -- CSS LIFECYCLE: install → swap → deactivate ------------------------
     // Ordering is the whole point here. The outgoing page's CSS stays fully
     // active until AFTER its DOM has been replaced, so it is never rendered
     // unstyled. Nothing is removed at any stage — see the ownership helpers

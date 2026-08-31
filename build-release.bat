@@ -3,8 +3,8 @@ echo ================================================
 echo ANHAD APP - BUILD RELEASE AAB
 echo ================================================
 echo.
-echo Current Version: 1.0.3 (versionCode 4)
-echo Features: Network fixes + In-App Updates
+echo Current Version: 1.1.16 (versionCode 7)
+echo Features: Android 16 (API 36) + PWA Sync + Size Optimized
 echo.
 
 echo [Step 1/5] Syncing Capacitor files to Android...

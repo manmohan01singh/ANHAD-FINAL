@@ -44,15 +44,89 @@ body {
 
 }
 
-/* Hide distracting gradient background effects */
-.background-effects,
-.gradient-orb,
-.gradient-orb-1,
-.gradient-orb-2,
-.gradient-orb-3,
-.mesh-gradient,
-.noise-overlay {
-    display: none !important;
+/* ─── LIVING DYNAMIC AMBIENT BACKGROUND & ORBS ─── */
+body {
+    background: radial-gradient(circle at 50% 0%, #1A1A24 0%, #0F0F14 60%, #08080C 100%) !important;
+    background-attachment: fixed !important;
+    -webkit-font-smoothing: antialiased !important;
+    -moz-osx-font-smoothing: grayscale !important;
+}
+
+[data-theme="dark"],
+[data-theme="gold"],
+[data-theme="saffron"],
+[data-theme="gradient"] {
+    background: radial-gradient(circle at 50% 0%, #1C1914 0%, #12100C 60%, #0A0907 100%) !important;
+    background-attachment: fixed !important;
+}
+
+.background-effects {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    pointer-events: none !important;
+    z-index: 0 !important;
+    overflow: hidden !important;
+    display: block !important;
+}
+
+.gradient-orb {
+    position: absolute !important;
+    border-radius: 50% !important;
+    filter: blur(90px) !important;
+    -webkit-filter: blur(90px) !important;
+    opacity: 0.55 !important;
+    display: block !important;
+    will-change: transform, opacity !important;
+}
+
+/* Orb 1: Warm Golden Aura (Top Right) */
+.gradient-orb-1 {
+    top: -10% !important;
+    right: -10% !important;
+    width: 420px !important;
+    height: 420px !important;
+    background: radial-gradient(circle, rgba(212, 148, 58, 0.40) 0%, rgba(255, 180, 50, 0.18) 50%, transparent 75%) !important;
+    animation: orbLivingFloat1 18s ease-in-out infinite alternate !important;
+}
+
+/* Orb 2: Deep Spiritual Indigo/Purple (Bottom Left) */
+.gradient-orb-2 {
+    bottom: 5% !important;
+    left: -10% !important;
+    width: 480px !important;
+    height: 480px !important;
+    background: radial-gradient(circle, rgba(120, 86, 214, 0.32) 0%, rgba(70, 50, 150, 0.15) 50%, transparent 75%) !important;
+    animation: orbLivingFloat2 22s ease-in-out infinite alternate !important;
+}
+
+/* Orb 3: Radiant Golden Center Aura */
+.gradient-orb-3 {
+    top: 35% !important;
+    left: 20% !important;
+    width: 360px !important;
+    height: 360px !important;
+    background: radial-gradient(circle, rgba(255, 215, 0, 0.22) 0%, rgba(212, 148, 58, 0.10) 55%, transparent 75%) !important;
+    animation: orbLivingPulse 14s ease-in-out infinite alternate !important;
+}
+
+@keyframes orbLivingFloat1 {
+    0% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(-35px, 45px) scale(1.15); }
+    100% { transform: translate(30px, -25px) scale(0.92); }
+}
+
+@keyframes orbLivingFloat2 {
+    0% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(45px, -40px) scale(1.18); }
+    100% { transform: translate(-25px, 35px) scale(0.90); }
+}
+
+@keyframes orbLivingPulse {
+    0% { transform: scale(1) translate(0, 0); opacity: 0.45; }
+    50% { transform: scale(1.28) translate(25px, -18px); opacity: 0.75; }
+    100% { transform: scale(0.92) translate(-18px, 12px); opacity: 0.45; }
 }
 
 /* ─── SECTION 1: CLAYMORPHISM DESIGN TOKENS ─── */
@@ -180,36 +254,27 @@ body {
         0 0 0 1px rgba(255, 255, 255, 0.3) !important;
 }
 
-/* ─── SECTION 4: CARDS — EXTREME CLAY 3D ─── */
+/* ─── SECTION 4: CARDS — CLEAN GLASSMORPHIC ─── */
 .card {
     position: relative !important;
-    background: linear-gradient(145deg, #FFFFFF 0%, #F0F0F5 100%) !important;
-    border-radius: var(--clay-radius-card) !important;
-    border: 1px solid rgba(255, 255, 255, 0.8) !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-    box-shadow:
-        16px 16px 32px rgba(0, 0, 0, var(--clay-shadow-deep)),
-        -16px -16px 32px rgba(255, 255, 255, var(--clay-highlight)),
-        inset 8px 8px 16px rgba(255, 255, 255, 1),
-        inset -8px -8px 16px rgba(0, 0, 0, var(--clay-inset-shadow)) !important;
-    transition: background-color 0.4s var(--clay-spring) !important, color 0.4s var(--clay-spring) !important, transform 0.4s var(--clay-spring) !important;
+    background: var(--card-bg, rgba(255, 255, 255, 0.95)) !important;
+    border-radius: 24px !important;
+    border: 1px solid rgba(212, 148, 58, 0.18) !important;
+    backdrop-filter: blur(15px) !important;
+    -webkit-backdrop-filter: blur(15px) !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05) !important;
+    transition: transform 0.3s ease, box-shadow 0.3s ease !important;
     overflow: visible !important;
-    padding: 24px !important;
+    padding: 20px !important;
 }
 
-[data-theme="dark"] .card,
 [data-theme="dark"] .card,
 [data-theme="saffron"] .card,
 [data-theme="gradient"] .card,
 [data-theme="gold"] .card {
-    background: linear-gradient(145deg, #2C2C2E 0%, #1C1C1E 100%) !important;
+    background: rgba(30, 30, 35, 0.95) !important;
     border-color: rgba(255, 255, 255, 0.08) !important;
-    box-shadow:
-        16px 16px 32px rgba(0, 0, 0, var(--clay-shadow-deep)),
-        -16px -16px 32px rgba(255, 255, 255, var(--clay-highlight)),
-        inset 8px 8px 16px rgba(255, 255, 255, 0.08),
-        inset -8px -8px 16px rgba(0, 0, 0, var(--clay-inset-shadow)) !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;
 }
 
 .card::before {
@@ -217,31 +282,19 @@ body {
 }
 
 .card:hover {
-    transform: translateY(-4px) scale(1.01) !important;
-    box-shadow:
-        20px 20px 40px rgba(0, 0, 0, var(--clay-shadow-deep)),
-        -20px -20px 40px rgba(255, 255, 255, var(--clay-highlight)),
-        inset 10px 10px 20px rgba(255, 255, 255, 1),
-        inset -10px -10px 20px rgba(0, 0, 0, var(--clay-inset-shadow)) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08) !important;
 }
 
-[data-theme="dark"] .card:hover,
 [data-theme="dark"] .card:hover,
 [data-theme="saffron"] .card:hover,
 [data-theme="gradient"] .card:hover,
 [data-theme="gold"] .card:hover {
-    box-shadow:
-        20px 20px 40px rgba(0, 0, 0, var(--clay-shadow-deep)),
-        -20px -20px 40px rgba(255, 255, 255, var(--clay-highlight)),
-        inset 10px 10px 20px rgba(255, 255, 255, 0.08),
-        inset -10px -10px 20px rgba(0, 0, 0, var(--clay-inset-shadow)) !important;
+    box-shadow: 0 14px 36px rgba(0, 0, 0, 0.5) !important;
 }
 
 .card:active {
-    transform: scale(0.97) translateY(4px) !important;
-    box-shadow:
-        inset 8px 8px 16px rgba(0, 0, 0, var(--clay-shadow-mid)),
-        inset -8px -8px 16px rgba(255, 255, 255, var(--clay-highlight)) !important;
+    transform: scale(0.985) !important;
 }
 
 [data-theme="dark"] .card:active,
@@ -597,23 +650,35 @@ body {
 }
 
 .tab-item.active {
-    background: linear-gradient(145deg, #FFFFFF, #E8E8EC) !important;
-    border-radius: 16px !important;
+    color: #C8821E !important;
+    border: none !important;
+    border-radius: 22px !important;
+    background: linear-gradient(155deg,
+      rgba(255,255,255,1) 0%,
+      rgba(255,243,222,0.98) 50%,
+      rgba(248,232,200,0.95) 100%) !important;
     box-shadow:
-        4px 4px 12px rgba(0, 0, 0, 0.08),
-        -4px -4px 12px rgba(255, 255, 255, 0.85),
-        inset 2px 2px 4px rgba(255, 255, 255, 1),
-        inset -2px -2px 4px rgba(0, 0, 0, 0.02) !important;
+      0 6px 18px rgba(212, 148, 58, 0.18),
+      0 2px 6px rgba(0, 0, 0, 0.06),
+      -3px -3px 8px rgba(255,255,255,0.98),
+      inset 2px 2px 5px rgba(255,255,255,1),
+      inset -1px -1px 4px rgba(200, 130, 30, 0.08) !important;
 }
 
-[data-theme="dark"] .tab-item.active,
 [data-theme="dark"] .tab-item.active {
-    background: linear-gradient(145deg, #3A3A3C, #2C2C2E) !important;
+    color: #F0A83A !important;
+    border: none !important;
+    border-radius: 22px !important;
+    background: linear-gradient(155deg,
+      rgba(52, 42, 24, 0.98) 0%,
+      rgba(36, 28, 14, 0.98) 55%,
+      rgba(24, 18, 8, 0.97) 100%) !important;
     box-shadow:
-        4px 4px 12px rgba(0, 0, 0, 0.30),
-        -4px -4px 12px rgba(255, 255, 255, 0.04),
-        inset 2px 2px 4px rgba(255, 255, 255, 0.06),
-        inset -2px -2px 4px rgba(0, 0, 0, 0.12) !important;
+      0 6px 20px rgba(0, 0, 0, 0.6),
+      0 2px 8px rgba(0, 0, 0, 0.4),
+      -2px -2px 6px rgba(255, 255, 255, 0.04),
+      inset 2px 2px 5px rgba(212, 148, 58, 0.28),
+      inset -2px -2px 5px rgba(0, 0, 0, 0.5) !important;
 }
 
 /* ─── SECTION 10: PERIOD TABS — CLAY SEGMENTED CONTROL ─── */
@@ -772,73 +837,78 @@ body {
         inset -6px -6px 12px rgba(0, 0, 0, 0.15) !important;
 }
 
-/* ─── SECTION 16: REPORT/ALARM INNER ELEMENTS ─── */
+/* ─── SECTION 16: REPORT/ALARM INNER ELEMENTS & SETTINGS ─── */
 .report-summary-item,
 .alarm-stat-card,
 .mala-goal-container,
 .mala-option,
-.goal-preset,
-.setting-item,
-.settings-section {
-    background: linear-gradient(145deg, rgba(255, 255, 255, 0.6), rgba(240, 240, 245, 0.6)) !important;
-    border: 1px solid rgba(255, 255, 255, 0.50) !important;
+.goal-preset {
+    background: var(--bg-secondary, rgba(245, 245, 247, 0.85)) !important;
+    border: 1px solid rgba(0, 0, 0, 0.05) !important;
     border-radius: 16px !important;
-    box-shadow:
-        4px 4px 10px rgba(0, 0, 0, 0.05),
-        -4px -4px 10px rgba(255, 255, 255, 0.8),
-        inset 2px 2px 4px rgba(255, 255, 255, 0.9) !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03) !important;
     margin-bottom: 10px !important;
     padding: 14px !important;
 }
 
+.settings-section {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    margin-bottom: 16px !important;
+    padding: 0 !important;
+}
+
+.setting-item {
+    background: var(--bg-secondary, rgba(245, 245, 247, 0.85)) !important;
+    border: 1px solid rgba(0, 0, 0, 0.05) !important;
+    border-radius: 16px !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03) !important;
+    margin-bottom: 8px !important;
+    padding: 14px 16px !important;
+    transition: transform 0.2s ease, background-color 0.2s ease !important;
+}
+
+.setting-item.clickable:active {
+    transform: scale(0.985) !important;
+    background: rgba(212, 148, 58, 0.1) !important;
+}
+
 [data-theme="dark"] .report-summary-item,
 [data-theme="dark"] .alarm-stat-card,
 [data-theme="dark"] .mala-goal-container,
 [data-theme="dark"] .mala-option,
 [data-theme="dark"] .goal-preset,
-[data-theme="dark"] .setting-item,
-[data-theme="dark"] .settings-section,
-[data-theme="dark"] .report-summary-item,
-[data-theme="dark"] .alarm-stat-card,
-[data-theme="dark"] .mala-goal-container,
-[data-theme="dark"] .mala-option,
-[data-theme="dark"] .goal-preset,
-[data-theme="dark"] .setting-item,
+[data-theme="dark"] .setting-item {
+    background: rgba(255, 255, 255, 0.07) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    box-shadow: none !important;
+}
+
 [data-theme="dark"] .settings-section {
-    background: linear-gradient(145deg, rgba(50, 50, 52, 0.6), rgba(38, 38, 40, 0.6)) !important;
-    border-color: rgba(255, 255, 255, 0.05) !important;
-    box-shadow:
-        4px 4px 10px rgba(0, 0, 0, 0.25),
-        -4px -4px 10px rgba(255, 255, 255, 0.03),
-        inset 2px 2px 4px rgba(255, 255, 255, 0.04) !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
 }
 
 .mala-option.active {
-    background: linear-gradient(145deg, #FFE8C8, #FFD898) !important;
-    border-color: rgba(var(--clay-gold-rgb), 0.30) !important;
-    box-shadow:
-        4px 4px 10px rgba(var(--clay-gold-rgb), 0.20),
-        -4px -4px 10px rgba(255, 255, 255, 0.85),
-        inset 2px 2px 4px rgba(255, 255, 255, 1) !important;
+    background: linear-gradient(135deg, rgba(212, 148, 58, 0.15), rgba(255, 215, 0, 0.1)) !important;
+    border: 1px solid rgba(212, 148, 58, 0.4) !important;
+    box-shadow: 0 4px 12px rgba(212, 148, 58, 0.15) !important;
 }
 
-[data-theme="dark"] .mala-option.active,
 [data-theme="dark"] .mala-option.active {
-    box-shadow:
-        4px 4px 10px rgba(0, 0, 0, 0.30),
-        -4px -4px 10px rgba(255, 255, 255, 0.05),
-        inset 2px 2px 4px rgba(255, 255, 255, 0.08) !important;
+    background: linear-gradient(135deg, rgba(212, 148, 58, 0.25), rgba(255, 215, 0, 0.15)) !important;
+    border-color: rgba(255, 215, 0, 0.4) !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3) !important;
 }
 
 /* ─── SECTION 17: WEEK VIEW DAYS ─── */
 .week-days .day-item {
-    background: linear-gradient(145deg, rgba(255, 255, 255, 0.5), rgba(240, 240, 245, 0.5)) !important;
-    border: 1px solid rgba(255, 255, 255, 0.5) !important;
+    background: var(--bg-secondary, rgba(245, 245, 247, 0.85)) !important;
+    border: 1px solid rgba(0, 0, 0, 0.05) !important;
     border-radius: 14px !important;
-    box-shadow:
-        4px 4px 10px rgba(0, 0, 0, 0.05),
-        -4px -4px 10px rgba(255, 255, 255, 0.8),
-        inset 2px 2px 4px rgba(255, 255, 255, 0.9) !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03) !important;
 }
 
 /* ─── SECTION 18: INPUTS — CLAY INSET ─── */
@@ -1917,9 +1987,12 @@ button:active,
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   iOS-STYLE ADAPTIVE GLASSMORPHIC BACKUP POPUP (LIGHT & DARK THEMES)
+/* ═══════════════════════════════════════════════════════════════════════════
+   iOS-STYLE ADAPTIVE GLASSMORPHIC BACKUP POPUP & MODAL OVERLAYS
    ═══════════════════════════════════════════════════════════════════════════ */
-#exportModal.modal {
+#exportModal,
+#importModal,
+.modal-overlay.active {
     position: fixed !important;
     top: 0 !important;
     left: 0 !important;
@@ -1927,227 +2000,27 @@ button:active,
     bottom: 0 !important;
     width: 100vw !important;
     height: 100vh !important;
-    z-index: 100000 !important; /* Above header & bottom navigation bar */
+    z-index: 100000 !important; /* Above bottom navigation tab bar (z-index 9999) */
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    padding: 20px !important;
+    padding: 16px !important;
     box-sizing: border-box !important;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.3s ease;
 }
 
-#exportModal.modal.active,
-#exportModal.modal.show {
-    opacity: 1 !important;
-    visibility: visible !important;
-}
-
-#exportModal .modal-overlay {
-    position: absolute !important;
-    top: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    bottom: 0 !important;
-    background: rgba(0, 0, 0, 0.45) !important;
-    backdrop-filter: blur(20px) !important;
-    -webkit-backdrop-filter: blur(20px) !important;
-    z-index: 1 !important;
-}
-
-/* Light Theme / Default Card Styling */
-#exportModal .modal-content.export-modal-content {
+#exportModal .modal-container,
+#importModal .modal-container {
     position: relative !important;
-    z-index: 2 !important;
+    z-index: 100001 !important;
     width: 100% !important;
-    max-width: 420px !important;
-    max-height: calc(100vh - 40px) !important;
+    max-width: 440px !important;
+    max-height: calc(100vh - 48px) !important;
     display: flex !important;
     flex-direction: column !important;
-    background: rgba(255, 255, 255, 0.96) !important;
-    background-image: linear-gradient(145deg, rgba(255, 215, 0, 0.08), rgba(255, 255, 255, 0.95)) !important;
-    border: 1px solid rgba(212, 148, 58, 0.3) !important;
+    margin: auto !important;
     border-radius: 28px !important;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.18), 0 0 1px rgba(0, 0, 0, 0.1) !important;
     overflow: hidden !important;
-    transform: scale(0.92) translateY(20px);
-    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-    color: #1d1d1f !important;
 }
-
-/* Dark Theme Card Overrides */
-[data-theme="dark"] #exportModal .modal-content.export-modal-content {
-    background: #1c1c1e !important;
-    background-image: linear-gradient(145deg, rgba(255, 215, 0, 0.06), rgba(30, 30, 40, 0.98)) !important;
-    border: 1px solid rgba(255, 215, 0, 0.35) !important;
-    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7), 0 0 35px rgba(255, 215, 0, 0.18) !important;
-    color: #ffffff !important;
-}
-
-#exportModal.modal.active .modal-content,
-#exportModal.modal.show .modal-content {
-    transform: scale(1) translateY(0) !important;
-}
-
-#exportModal .modal-header {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: space-between !important;
-    padding: 20px 24px 16px 24px !important;
-    border-bottom: 1px solid rgba(120, 120, 128, 0.12) !important;
-}
-
-#exportModal .modal-title {
-    margin: 0 !important;
-    font-size: 19px !important;
-    font-weight: 700 !important;
-    color: #1d1d1f !important;
-    display: flex !important;
-    align-items: center !important;
-    gap: 8px !important;
-}
-
-[data-theme="dark"] #exportModal .modal-title {
-    color: #ffffff !important;
-}
-
-#exportModal .modal-close {
-    background: rgba(120, 120, 128, 0.14) !important;
-    border: none !important;
-    color: #1d1d1f !important;
-    width: 32px !important;
-    height: 32px !important;
-    border-radius: 50% !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    font-size: 20px !important;
-    cursor: pointer !important;
-    transition: all 0.2s ease !important;
-}
-
-[data-theme="dark"] #exportModal .modal-close {
-    background: rgba(255, 255, 255, 0.15) !important;
-    color: #ffffff !important;
-}
-
-#exportModal .modal-close:hover {
-    background: rgba(255, 59, 48, 0.2) !important;
-    color: #FF3B30 !important;
-    transform: scale(1.08) !important;
-}
-
-#exportModal .export-modal-body {
-    padding: 20px 24px !important;
-    overflow-y: auto !important;
-}
-
-#exportModal .export-info {
-    text-align: center !important;
-}
-
-#exportModal .export-icon {
-    font-size: 48px !important;
-    margin-bottom: 8px !important;
-    filter: drop-shadow(0 4px 12px rgba(229, 149, 0, 0.35)) !important;
-}
-
-#exportModal .export-message {
-    font-size: 17px !important;
-    font-weight: 700 !important;
-    margin: 0 0 16px 0 !important;
-    color: #1d1d1f !important;
-}
-
-[data-theme="dark"] #exportModal .export-message {
-    color: #ffffff !important;
-}
-
-#exportModal .export-details-box {
-    background: rgba(242, 242, 247, 0.8) !important;
-    border: 1px solid rgba(212, 148, 58, 0.2) !important;
-    border-radius: 18px !important;
-    padding: 16px 20px !important;
-    text-align: left !important;
-    margin-bottom: 16px !important;
-}
-
-[data-theme="dark"] #exportModal .export-details-box {
-    background: rgba(255, 255, 255, 0.07) !important;
-    border-color: rgba(255, 215, 0, 0.25) !important;
-}
-
-#exportModal .export-details-title {
-    font-size: 11px !important;
-    font-weight: 700 !important;
-    text-transform: uppercase !important;
-    letter-spacing: 0.8px !important;
-    color: #D4943A !important;
-    margin-bottom: 10px !important;
-}
-
-[data-theme="dark"] #exportModal .export-details-title {
-    color: #ffd700 !important;
-}
-
-#exportModal .export-item {
-    display: flex !important;
-    align-items: center !important;
-    gap: 10px !important;
-    font-size: 14px !important;
-    color: #3a3a3c !important;
-    margin-bottom: 8px !important;
-}
-
-[data-theme="dark"] #exportModal .export-item {
-    color: rgba(255, 255, 255, 0.9) !important;
-}
-
-#exportModal .export-item span {
-    color: #34C759 !important;
-    font-weight: 700 !important;
-}
-
-#exportModal .export-filename-pill {
-    background: rgba(0, 0, 0, 0.05) !important;
-    border: 1px dashed rgba(212, 148, 58, 0.4) !important;
-    padding: 9px 13px !important;
-    border-radius: 12px !important;
-    font-family: monospace !important;
-    font-size: 12px !important;
-    color: #D4943A !important;
-    word-break: break-all !important;
-    margin-top: 10px !important;
-}
-
-[data-theme="dark"] #exportModal .export-filename-pill {
-    background: rgba(0, 0, 0, 0.35) !important;
-    color: #ffd700 !important;
-}
-
-#exportModal .export-modal-footer {
-    display: flex !important;
-    gap: 10px !important;
-    padding: 16px 24px calc(16px + env(safe-area-inset-bottom, 0px)) 24px !important;
-    border-top: 1px solid rgba(120, 120, 128, 0.12) !important;
-    background: rgba(249, 249, 249, 0.6) !important;
-    justify-content: flex-end !important;
-    flex-wrap: wrap !important;
-}
-
-[data-theme="dark"] #exportModal .export-modal-footer {
-    background: rgba(0, 0, 0, 0.25) !important;
-    border-top-color: rgba(255, 255, 255, 0.08) !important;
-}
-
-#exportModal .export-modal-footer .btn {
-    padding: 12px 18px !important;
-    border-radius: 14px !important;
-    font-size: 14px !important;
-    font-weight: 600 !important;
-    cursor: pointer !important;
-    display: inline-flex !important;
     align-items: center !important;
     gap: 6px !important;
     transition: all 0.2s ease !important;
@@ -2392,3 +2265,562 @@ button:active,
     transform: translateY(-1px) !important;
     border-color: var(--ac-gold, #D4943A) !important;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   EXPORT & IMPORT MODALS & DOWNLOAD PROGRESS BAR
+   ═══════════════════════════════════════════════════════════════════════════ */
+.export-modal-container,
+.import-modal-container {
+    max-width: 480px !important;
+    width: 90% !important;
+    margin: 0 auto !important;
+    background: var(--modal-bg, rgba(255, 255, 255, 0.95)) !important;
+    backdrop-filter: blur(25px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(25px) saturate(180%) !important;
+    border-radius: 24px !important;
+    border: 1px solid rgba(212, 148, 58, 0.25) !important;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2) !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+}
+
+[data-theme="dark"] .export-modal-container,
+[data-theme="dark"] .import-modal-container {
+    background: rgba(28, 28, 30, 0.95) !important;
+    border-color: rgba(212, 148, 58, 0.3) !important;
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.6) !important;
+}
+
+.export-modal-body,
+.import-modal-body {
+    padding: 20px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+}
+
+/* Progress Card */
+.export-progress-card {
+    background: linear-gradient(135deg, rgba(212, 148, 58, 0.08) 0%, rgba(212, 148, 58, 0.02) 100%) !important;
+    border: 1px solid rgba(212, 148, 58, 0.2) !important;
+    border-radius: 16px !important;
+    padding: 16px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+}
+
+[data-theme="dark"] .export-progress-card {
+    background: linear-gradient(135deg, rgba(212, 148, 58, 0.15) 0%, rgba(255, 215, 0, 0.04) 100%) !important;
+    border-color: rgba(255, 215, 0, 0.25) !important;
+}
+
+.export-progress-header {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+}
+
+.export-progress-title {
+    font-size: 14px !important;
+    font-weight: 700 !important;
+    color: var(--text-primary, #1d1d1f) !important;
+}
+
+[data-theme="dark"] .export-progress-title {
+    color: #ffffff !important;
+}
+
+.export-progress-badge {
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    padding: 3px 8px !important;
+    border-radius: 10px !important;
+    background: rgba(212, 148, 58, 0.2) !important;
+    color: #D4943A !important;
+    transition: all 0.3s ease !important;
+}
+
+.export-progress-badge.active {
+    background: rgba(0, 122, 255, 0.15) !important;
+    color: #007AFF !important;
+}
+
+.export-progress-badge.success {
+    background: rgba(52, 199, 89, 0.2) !important;
+    color: #34C759 !important;
+}
+
+/* Download / Progress Bar Track */
+.export-progress-track {
+    width: 100% !important;
+    height: 10px !important;
+    background: rgba(0, 0, 0, 0.08) !important;
+    border-radius: 10px !important;
+    overflow: hidden !important;
+    position: relative !important;
+}
+
+[data-theme="dark"] .export-progress-track {
+    background: rgba(255, 255, 255, 0.1) !important;
+}
+
+.export-progress-fill {
+    height: 100% !important;
+    width: 0%;
+    background: linear-gradient(90deg, #D4943A 0%, #F5B041 50%, #34C759 100%) !important;
+    border-radius: 10px !important;
+    transition: width 0.4s ease-in-out !important;
+    box-shadow: 0 0 10px rgba(212, 148, 58, 0.4) !important;
+}
+
+.export-progress-footer {
+    display: flex !important;
+    justify-content: space-between !important;
+    font-size: 12px !important;
+    color: var(--text-secondary, #86868b) !important;
+    font-weight: 500 !important;
+}
+
+[data-theme="dark"] .export-progress-footer {
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+
+/* Included Content Section & Chips */
+.export-content-section {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+}
+
+.export-section-label {
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    color: var(--text-secondary, #86868b) !important;
+}
+
+[data-theme="dark"] .export-section-label {
+    color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.export-chips-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+}
+
+.export-chip {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    background: var(--bg-secondary, rgba(245, 245, 247, 0.9)) !important;
+    border: 1px solid rgba(0, 0, 0, 0.06) !important;
+    border-radius: 12px !important;
+    padding: 8px 12px !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    color: var(--text-primary, #1d1d1f) !important;
+}
+
+[data-theme="dark"] .export-chip {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    color: #ffffff !important;
+}
+
+.chip-icon {
+    font-size: 15px !important;
+}
+
+/* File Metadata Badge */
+.export-file-meta {
+    background: var(--bg-secondary, rgba(245, 245, 247, 0.9)) !important;
+    border: 1px dashed rgba(212, 148, 58, 0.35) !important;
+    border-radius: 16px !important;
+    padding: 12px 16px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 12px !important;
+}
+
+[data-theme="dark"] .export-file-meta {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border-color: rgba(255, 215, 0, 0.35) !important;
+}
+
+.export-file-info {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    overflow: hidden !important;
+    flex: 1 !important;
+}
+
+.export-file-icon {
+    font-size: 24px !important;
+    flex-shrink: 0 !important;
+}
+
+.export-file-details {
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+}
+
+.export-filename {
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    font-family: monospace !important;
+    color: var(--text-primary, #1d1d1f) !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
+
+[data-theme="dark"] .export-filename {
+    color: #ffffff !important;
+}
+
+.export-filesize {
+    font-size: 11px !important;
+    color: var(--text-secondary, #86868b) !important;
+    font-weight: 500 !important;
+}
+
+[data-theme="dark"] .export-filesize {
+    color: rgba(255, 255, 255, 0.6) !important;
+}
+
+.export-card-download-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    padding: 8px 14px !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    border-radius: 12px !important;
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
+}
+
+/* Modal Footer Buttons */
+.export-modal-footer,
+.import-modal-footer {
+    display: flex !important;
+    gap: 8px !important;
+    padding: 16px 20px !important;
+    background: rgba(0, 0, 0, 0.02) !important;
+    border-top: 1px solid rgba(0, 0, 0, 0.05) !important;
+}
+
+[data-theme="dark"] .export-modal-footer,
+[data-theme="dark"] .import-modal-footer {
+    background: rgba(255, 255, 255, 0.02) !important;
+    border-top-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.export-modal-footer .modal-btn,
+.import-modal-footer .modal-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    padding: 10px 14px !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    border-radius: 12px !important;
+}
+
+/* Import Preview Card & Warning */
+.import-preview-card {
+    background: linear-gradient(135deg, rgba(52, 199, 89, 0.1) 0%, rgba(52, 199, 89, 0.02) 100%) !important;
+    border: 1px solid rgba(52, 199, 89, 0.25) !important;
+    border-radius: 16px !important;
+    padding: 16px !important;
+}
+
+.import-preview-header {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+}
+
+.import-preview-icon {
+    font-size: 28px !important;
+}
+
+.import-meta {
+    font-size: 12px !important;
+    color: var(--text-secondary, #86868b) !important;
+    margin-top: 2px !important;
+}
+
+[data-theme="dark"] .import-meta {
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.import-warning-box {
+    display: flex !important;
+    align-items: flex-start !important;
+    gap: 10px !important;
+    background: rgba(255, 149, 0, 0.1) !important;
+    border: 1px solid rgba(255, 149, 0, 0.25) !important;
+    border-radius: 12px !important;
+    padding: 12px 14px !important;
+    font-size: 12px !important;
+    color: var(--text-primary, #1d1d1f) !important;
+    line-height: 1.4 !important;
+}
+
+[data-theme="dark"] .import-warning-box {
+    background: rgba(255, 149, 0, 0.15) !important;
+    color: #ffffff !important;
+}
+
+.warning-icon {
+    font-size: 16px !important;
+    flex-shrink: 0 !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SETTINGS MODAL POPUP CONTAINER & CARDS (ZERO WHITE CLAY SHADOWS)
+   ═══════════════════════════════════════════════════════════════════════════ */
+#settingsModal .modal-container,
+.settings-modal {
+    max-width: 440px !important;
+    width: 90% !important;
+    max-height: calc(100vh - 64px) !important;
+    margin: auto !important;
+    background: var(--modal-bg, rgba(255, 255, 255, 0.96)) !important;
+    backdrop-filter: blur(25px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(25px) saturate(180%) !important;
+    border-radius: 28px !important;
+    border: 1px solid rgba(212, 148, 58, 0.25) !important;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.22) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+}
+
+[data-theme="dark"] #settingsModal .modal-container,
+[data-theme="dark"] .settings-modal {
+    background: rgba(28, 28, 30, 0.96) !important;
+    border-color: rgba(212, 148, 58, 0.3) !important;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7) !important;
+}
+
+#settingsModal .modal-body,
+.settings-body {
+    padding: 20px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+    overflow-y: auto !important;
+    flex: 1 !important;
+}
+
+#settingsModal .settings-section {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+}
+
+#settingsModal .settings-section-title {
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.8px !important;
+    text-transform: uppercase !important;
+    color: var(--text-secondary, #86868b) !important;
+    padding-left: 4px !important;
+    margin-bottom: 2px !important;
+}
+
+[data-theme="dark"] #settingsModal .settings-section-title {
+    color: rgba(255, 255, 255, 0.6) !important;
+}
+
+#settingsModal .setting-item {
+    background: var(--bg-secondary, rgba(245, 245, 247, 0.85)) !important;
+    border: 1px solid rgba(0, 0, 0, 0.05) !important;
+    border-radius: 16px !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03) !important;
+    padding: 14px 16px !important;
+    margin-bottom: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    transition: transform 0.2s ease, background-color 0.2s ease !important;
+}
+
+[data-theme="dark"] #settingsModal .setting-item {
+    background: rgba(255, 255, 255, 0.07) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    box-shadow: none !important;
+}
+
+#settingsModal .setting-item.clickable:active {
+    transform: scale(0.985) !important;
+    background: rgba(212, 148, 58, 0.1) !important;
+}
+
+#settingsModal .setting-item.danger {
+    background: rgba(255, 59, 48, 0.08) !important;
+    border: 1px solid rgba(255, 59, 48, 0.2) !important;
+}
+
+[data-theme="dark"] #settingsModal .setting-item.danger {
+    background: rgba(255, 59, 48, 0.15) !important;
+    border-color: rgba(255, 59, 48, 0.3) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ULTIMATE NITNEM PROGRESS BARS & PROGRESS RINGS (ZERO WHITE SHADOWS)
+   ═══════════════════════════════════════════════════════════════════════════ */
+.nitnem-progress-card,
+.nitnem-progress-bar,
+.progress-bar,
+.progress-bar-fill,
+.progress-track,
+.mala-progress-bar,
+.banner-progress-bar,
+.goal-progress,
+.time-progress,
+.time-progress-bg,
+.time-progress-fill {
+    box-shadow: none !important;
+}
+
+.nitnem-progress-card {
+    background: linear-gradient(135deg, rgba(212, 148, 58, 0.12) 0%, rgba(30, 30, 40, 0.95) 100%) !important;
+    border: 1px solid rgba(212, 148, 58, 0.3) !important;
+    border-radius: 24px !important;
+    padding: 20px !important;
+}
+
+/* Progress Tracks */
+.nitnem-progress-bar,
+.progress-bar,
+.progress-track,
+.mala-progress-bar,
+.goal-progress,
+.banner-progress,
+.time-progress-bg {
+    background: rgba(0, 0, 0, 0.35) !important;
+    border: 1px solid rgba(212, 148, 58, 0.25) !important;
+    border-radius: 9999px !important;
+    overflow: hidden !important;
+}
+
+[data-theme="dark"] .nitnem-progress-bar,
+[data-theme="dark"] .progress-bar,
+[data-theme="dark"] .progress-track,
+[data-theme="dark"] .mala-progress-bar,
+[data-theme="dark"] .goal-progress,
+[data-theme="dark"] .banner-progress {
+    background: rgba(0, 0, 0, 0.55) !important;
+    border-color: rgba(255, 215, 0, 0.3) !important;
+}
+
+/* Progress Fills */
+.nitnem-progress-fill,
+.progress-bar-fill,
+.mala-progress-fill,
+.banner-progress-bar,
+.goal-progress-fill,
+.time-progress-fill {
+    background: linear-gradient(90deg, #D4943A 0%, #F5B041 55%, #FFD700 100%) !important;
+    border-radius: 9999px !important;
+    box-shadow: 0 0 12px rgba(212, 148, 58, 0.5) !important;
+}
+
+/* Global Removal of Harsh White 3D Highlights */
+.card,
+.modal-container,
+.export-modal-container,
+.import-modal-container,
+.setting-item,
+.btn,
+.status-pill {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15) !important;
+}
+
+[data-theme="dark"] .card,
+[data-theme="dark"] .modal-container,
+[data-theme="dark"] .export-modal-container,
+[data-theme="dark"] .import-modal-container,
+[data-theme="dark"] .setting-item,
+[data-theme="dark"] .btn {
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   MASTER MODAL & POPUP FLASH PREVENTION (ZERO FLASH ON TAB SWITCHING & SCROLL)
+   ═══════════════════════════════════════════════════════════════════════════ */
+.modal-overlay,
+.modal,
+.day-detail-modal,
+.anhad-night-dimmer,
+.mala-modal,
+.sleep-modal,
+.sheet-overlay,
+.sheet,
+#addBaniModal,
+#settingsModal,
+#statsModal,
+#penaltyModal,
+#penaltyInfoModal,
+#malaModal,
+#alarmModal,
+#reportModal,
+#exportModal,
+#importModal,
+#sleepTimerModal,
+#dayDetailModal {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+.modal-overlay.active,
+.modal.active,
+.modal.open,
+.day-detail-modal.active,
+.anhad-night-dimmer.active,
+.mala-modal.open,
+.mala-modal.active,
+.sleep-modal.open,
+.sleep-modal.active,
+.sheet-overlay--active,
+.sheet--active,
+.sheet.active,
+.sheet.open,
+#addBaniModal.active,
+#settingsModal.active,
+#statsModal.active,
+#penaltyModal.active,
+#penaltyInfoModal.active,
+#malaModal.active,
+#malaModal.open,
+#alarmModal.active,
+#reportModal.active,
+#exportModal.active,
+#importModal.active,
+#sleepTimerModal.open,
+#dayDetailModal.active {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+}
+
+
+

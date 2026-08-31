@@ -1,7 +1,0 @@
-        <div class="hdr-logo-text">
-          <div style="display:flex; align-items:center; gap:6px;">
-            <span style="font-size:16px; font-weight:800; letter-spacing:1px; color:var(--gold-accent);">ANHAD</span>
-            <span style="font-family:'Dancing Script', cursive; font-size:20px; font-weight:600; color:var(--text);">Sadhsangat</span>
-          </div>
-          <span class="hdr-logo-live-badge"><span class="hdr-logo-live-dot"></span>LIVE</span>
-        </div>

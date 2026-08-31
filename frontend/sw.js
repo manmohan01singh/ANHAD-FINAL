@@ -12,7 +12,7 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
-const CACHE_VERSION = 'anhad-v13.0.0'; // v13.0.0: Render-blocking global-mini-player.css, synchronized cushion soft claymorphism active tabs across direct load and SPA navigation, optimized mini-player gap above bottom nav.
+const CACHE_VERSION = 'anhad-v13.1.0'; // v13.1.0: Mini player strictly limited to Home, Favorites, and Sadhsangat; black shadow removed; full About page reconstruction; character encoding cleaned; Android adaptive icons synced with PWA.
 // v10.29.0: Root-caused why fixes kept looking reverted on both localhost AND the deployed site despite correct source: .js/.css requests (rule 4 below) used cacheFirst(), which NEVER revalidates a hit — once any browser fetched e.g. nav-glass.css once, it kept serving that exact response forever regardless of CACHE_VERSION bumps, until the whole detect-new-SW/install/activate/reload chain happened to complete for that specific client. .html already used staleWhileRevalidate for exactly this reason (see the v10.13-v10.22 history below) but .js/.css never did. Moved .js/.css to staleWhileRevalidate too (new rule 3c) — verified live by injecting a fake stale response into an active client's cache and confirming the SECOND fetch (not a reload, not a cache clear, ~1s later) automatically served the real current file. Also: de-clobbered window.__anhadPageInit — trendora-app.js and homepage-data.js registered the identical 4 keys for Home and the second one to load silently overwrote the first, so only one of the two intended repopulation paths ever actually ran; now both compose, with the double-render debounce moved inside refreshHomeForSpa itself so having two live trigger paths again can't reintroduce the flash. Shell script loads that fail now retry once and log clearly instead of onerror=resolve silently treating a failed fetch as success forever. Added missing cache-busting query params to smooth-navigation.js/homepage-data.js. Live-measured the reported Home bottom gap on a guaranteed-fresh load: padding-bottom computes to exactly 110px, on-screen gap measures 109.67px — matches source exactly, confirming the gap itself was never a code bug, only ever a symptom of the same stale-cache issue this version fixes at the root.
 // v10.28.0: Decreased excessive bottom padding-bottom from 160px to 110px in nav-glass.css, and upgraded the Nitnem, Sehaj Paath, and Hukamnama practice cards with premium 3D soft claymorphism (ambient soft colored drop shadows + inset light reflection and shadow highlights) in both Light & Dark modes.
 // v10.26.0: Found the REAL remaining cause of the Home/Favorites "two-time flash" the user kept reporting even after v10.23/v10.24 — a CSS entrance animation (.page-enter, anhad-core.css), applied by JS via smooth-navigation.js's unconditional post-swap AnhadCore.init() -> initTransition() call, on an #app container that was already fully painted and visible. Adding a class that newly matches an `animation` rule restarts it regardless of how it's added — so this genuinely replayed the 0.48s "fade up from below" entrance on top of content the user was already looking at, on every single arrival at Home/Favorites. Insights never showed this because its own swapped content (#mainContent) already ships `page-enter` baked into its static HTML, so the later JS class-add is a true no-op there (class already present). Fix: added `page-enter` to Home's and Favorites' own #app markup, matching Insights' pattern exactly, instead of touching the JS trigger at all — verified via CDP by sampling #app's actual computed opacity every 25ms across 5 rapid Home<->Favorites round trips (the exact "gets worse the more I test" scenario reported): 172 samples, zero re-triggers, zero errors. Also fixed the Learning page's Daily Gursikhi Quiz re-prompting the same already-answered question on every revisit — it had no persistence at all; now stores {date, selectedIdx} in localStorage (en-CA date, matching the app's existing per-day convention) and restores the answered state instead of a fresh clickable question until the next calendar day.
@@ -832,7 +832,7 @@ self.addEventListener('message', (event) => {
     checkAndFireScheduledNotifications();
   }
 
-  // ── Alarm scheduling messages (merged from sw-alarm.js) ──
+  // -- Alarm scheduling messages (merged from sw-alarm.js) --
   const { type: msgType, data: msgData } = event.data || {};
 
   if (msgType === 'SCHEDULE_ALARMS' && Array.isArray(msgData?.alarms)) {
@@ -1124,7 +1124,7 @@ async function checkNaamAbhyasSchedule() {
   const currentMinute = now.getMinutes();
   const today = now.toLocaleDateString('en-CA');
 
-  // ─── STRATEGY 1: Try to get schedule from connected clients (most accurate) ───
+  // --- STRATEGY 1: Try to get schedule from connected clients (most accurate) ---
   const clients = await self.clients.matchAll({ type: 'window' });
 
   if (clients.length > 0) {
@@ -1155,7 +1155,7 @@ async function checkNaamAbhyasSchedule() {
     }
   }
 
-  // ─── STRATEGY 2: Fallback to IndexedDB (works even when no clients open) ───
+  // --- STRATEGY 2: Fallback to IndexedDB (works even when no clients open) ---
   console.log('[SW] No clients available, checking IndexedDB for alarms...');
   await checkAndFireAlarmsFromDB(today, currentHour, currentMinute);
 }

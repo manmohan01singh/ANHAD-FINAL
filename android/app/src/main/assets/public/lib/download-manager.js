@@ -97,7 +97,7 @@ class GurbaniDownloadManager {
 
         } catch (error) {
             if (this._isCancelled) {
-                console.log('⏸️ GurbaniDownload: Cancelled by user');
+                console.log('⏸️️ GurbaniDownload: Cancelled by user');
                 this._emit('cancelled');
             } else {
                 console.error('❌ GurbaniDownload: Error:', error);

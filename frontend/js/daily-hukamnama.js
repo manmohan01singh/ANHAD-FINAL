@@ -60,7 +60,7 @@
         punjabiToggle: document.getElementById('punjabiToggle')
     };
 
-    // ─── INITIALIZATION ──────────────────────────────────────────────────
+    // --- INITIALIZATION --------------------------------------------------
 
     async function init() {
         console.log('🚀 Hukamnama V3 Initializing...');
@@ -167,7 +167,7 @@
         });
     }
 
-    // ─── HUKAMNAMA AUDIO PLAYER ───────────────────────────────────────────────
+    // --- HUKAMNAMA AUDIO PLAYER -----------------------------------------------
     // Self-contained player — does NOT use the global AnhadAudio kirtan singleton.
     const HukamPlayer = {
         audio: null,
@@ -436,7 +436,7 @@
         });
     }
 
-    // ─── DATA FETCHING ───────────────────────────────────────────────────
+    // --- DATA FETCHING ---------------------------------------------------
 
     async function fetchHukamnama() {
         try {
@@ -521,7 +521,7 @@
         return '';
     }
 
-    // ─── RENDERING ───────────────────────────────────────────────────────
+    // --- RENDERING -------------------------------------------------------
 
     function renderHukamnama() {
         const d = state.data;
@@ -594,7 +594,7 @@
         }
     }
 
-    // ─── UI HELPERS ──────────────────────────────────────────────────────
+    // --- UI HELPERS ------------------------------------------------------
 
     function hideLoader() {
         if (elements.skeleton) {

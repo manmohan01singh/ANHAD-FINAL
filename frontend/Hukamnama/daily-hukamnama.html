@@ -206,7 +206,7 @@
         #mainScroll::-webkit-scrollbar { display: none; }
         #mainScroll { -ms-overflow-style: none; scrollbar-width: none; }
 
-        /* ─── SKELETON ─── */
+        /* --- SKELETON --- */
         .skeleton-container {
             position: fixed; inset: 0; z-index: 10000;
             background: var(--bg);
@@ -228,7 +228,7 @@
         .skeleton-line:nth-child(4) { width: 60%; height: 10px; }
         .skeleton-line:nth-child(5) { width: 75%; }
 
-        /* ─── HEADER ─── */
+        /* --- HEADER --- */
         .app-header {
             position: fixed; top: 0; left: 0; width: 100%;
             height: var(--header-h);
@@ -270,7 +270,7 @@
         }
         .app-header.scrolled .header-title-small { opacity: 1; }
 
-        /* ─── HERO — COMPACT & ELEGANT ─── */
+        /* --- HERO — COMPACT & ELEGANT --- */
         .hero {
             position: relative;
             width: 100%;
@@ -436,7 +436,7 @@
             transition-delay: 0.34s;
         }
 
-        /* ─── PROGRESSIVE SCROLL COLLAPSE ─── */
+        /* --- PROGRESSIVE SCROLL COLLAPSE --- */
         .hero[data-collapsing="true"] .hero-portrait,
         .hero[data-collapsing="true"] .hero-title,
         .hero[data-collapsing="true"] .hero-guru,
@@ -468,7 +468,7 @@
             transform: scaleX(calc(1 - var(--scroll-progress, 0) * 0.3));
         }
 
-        /* ─── GURBANI — READING FIRST (BEAUTIFUL GURMUKHI FONT) ─── */
+        /* --- GURBANI — READING FIRST (BEAUTIFUL GURMUKHI FONT) --- */
         .gurbani-section {
             padding: 8px 24px 120px;
             max-width: 680px;
@@ -552,11 +552,11 @@
             padding: 0 8px;
         }
 
-        /* ─── READING MODE ─── */
+        /* --- READING MODE --- */
         .reading-mode .hero { display: none; }
         .reading-mode .gurbani-section { padding-top: calc(var(--header-h) + 24px); }
 
-        /* ─── ACTION BAR ─── */
+        /* --- ACTION BAR --- */
         .action-bar {
             position: fixed;
             bottom: calc(20px + var(--safe-bottom));
@@ -604,7 +604,7 @@
         .action-btn.active { color: var(--accent); }
         .action-btn svg { width: 22px; height: 22px; }
 
-        /* ─── SETTINGS MODAL ─── */
+        /* --- SETTINGS MODAL --- */
         .modal-overlay {
             position: fixed; inset: 0;
             background: rgba(0,0,0,0.5);

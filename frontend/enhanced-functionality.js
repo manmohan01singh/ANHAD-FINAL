@@ -101,7 +101,7 @@ class GurbaniRadioEnhancements {
       playBtn.classList.remove('playing');
       playBtn.setAttribute('aria-pressed', 'false');
       playIcon.className = 'fas fa-play';
-      this.showNotification('⏸️ Paused', 'info');
+      this.showNotification('⏸️️ Paused', 'info');
     }
 
     this.updatePlayerUI();

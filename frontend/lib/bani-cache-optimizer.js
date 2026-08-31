@@ -566,7 +566,7 @@ class BaniCacheOptimizer {
             console.log('[BaniCache] ✅ Background download complete');
             this.notifyDownloadListeners('download_completed', this.getDownloadProgress());
         } else {
-            console.log('[BaniCache] ⏸️ Background download paused');
+            console.log('[BaniCache] ⏸️️ Background download paused');
             this.notifyDownloadListeners('download_paused');
         }
     }
@@ -576,7 +576,7 @@ class BaniCacheOptimizer {
      */
     pauseBackgroundDownload() {
         this.downloadQueue.paused = true;
-        console.log('[BaniCache] ⏸️ Download paused');
+        console.log('[BaniCache] ⏸️️ Download paused');
         this.notifyDownloadListeners('download_paused');
     }
 

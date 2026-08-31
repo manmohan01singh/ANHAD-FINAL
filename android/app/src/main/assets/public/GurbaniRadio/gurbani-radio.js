@@ -23,12 +23,12 @@
   if (window.__anhadGurbaniRadioInit) return;
   window.__anhadGurbaniRadioInit = true;
 
-  // ─── DOM References ───
+  // --- DOM References ---
   var DOM = {};
   var sleepTimerId = null;
   var sleepTimerEnd = 0;
 
-  // ─── Recording State ───
+  // --- Recording State ---
   var recState = {
     isRecording: false,
     chunks: [],
@@ -41,7 +41,7 @@
     streamType: null
   };
 
-  // ─── Haptics ───
+  // --- Haptics ---
   function haptic(style) {
     try {
       if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Haptics) {
@@ -52,7 +52,7 @@
     } catch (e) {}
   }
 
-  // ─── Toast ───
+  // --- Toast ---
   var toastTimer = null;
   function showToast(msg) {
     var el = DOM.toast;
@@ -63,7 +63,7 @@
     toastTimer = setTimeout(function () { el.classList.remove('show'); }, 3000);
   }
 
-  // ─── Date Formatter ───
+  // --- Date Formatter ---
   function formatSeconds(sec) {
     if (!sec || isNaN(sec) || !isFinite(sec)) return '00:00';
     var m = Math.floor(sec / 60);
@@ -71,7 +71,7 @@
     return String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
   }
 
-  // ─── Time of Day helpers ───
+  // --- Time of Day helpers ---
   function getTimeOfDay() {
     var h = new Date().getHours();
     if (h >= 5 && h < 9) return 'morning';
@@ -115,7 +115,7 @@
     return cover || streamCovers.day;
   }
 
-  // ─── Audio Meta Resolvers ───
+  // --- Audio Meta Resolvers ---
   var METADATA = {
     darbar: {
       title: 'Darbar Sahib Live',
@@ -146,7 +146,7 @@
     };
   }
 
-  // ─── Sync UI with Audio State ───
+  // --- Sync UI with Audio State ---
   function syncUI() {
     var audio = window.AnhadAudio;
     if (!audio) return;
@@ -270,7 +270,7 @@
     }
   }
 
-  // ─── Timeline dragging ───
+  // --- Timeline dragging ---
   function setupSlider() {
     DOM.isDraggingSlider = false;
 
@@ -335,7 +335,7 @@
     }, { passive: true });
   }
 
-  // ─── Gurbani Recording Engine (MediaRecorder exactly what plays) ───
+  // --- Gurbani Recording Engine (MediaRecorder exactly what plays) ---
   async function startRecording() {
     var audio = window.AnhadAudio;
     if (!audio) {
@@ -559,7 +559,7 @@
     }
   }
 
-  // ─── Sleep Timer ───
+  // --- Sleep Timer ---
   function setSleepTimer(mins) {
     if (sleepTimerId) {
       clearTimeout(sleepTimerId);
@@ -584,7 +584,7 @@
     }, mins * 60 * 1000);
   }
 
-  // ─── Alarm Management ───
+  // --- Alarm Management ---
   function loadAlarmSettings() {
     try {
       var alarmRaw = localStorage.getItem('anhad_radio_alarm');
@@ -688,7 +688,7 @@
     setInterval(applyRadioTheme, 10 * 60 * 1000);
   }
 
-  // ─── Event Bindings ───
+  // --- Event Bindings ---
   function cacheDom() {
     DOM.toast          = document.getElementById('grToast');
     DOM.playBtn        = document.getElementById('grPlayBtn');
@@ -956,7 +956,7 @@
     }
   }
 
-  // ─── Alarm foreground checker ───
+  // --- Alarm foreground checker ---
   var lastCheckedMinute = -1;
   setInterval(function () {
     var alarmRaw = localStorage.getItem('anhad_radio_alarm');
@@ -985,7 +985,7 @@
     } catch(e) {}
   }, 15000);
 
-  // ─── Network Status Monitor ───
+  // --- Network Status Monitor ---
   function initNetworkMonitor() {
     // Check initial network status
     function updateNetworkStatus() {
@@ -1021,7 +1021,7 @@
     }
   }
 
-  // ─── Initializer ───
+  // --- Initializer ---
   function boot() {
     cacheDom();
     initTheme();

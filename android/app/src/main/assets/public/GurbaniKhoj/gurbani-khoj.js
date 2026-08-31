@@ -288,7 +288,7 @@ function updateSearchInput(value) {
 
 const Theme = {
     init() {
-        // ── Sync with global app theme (anhad_theme) first ──
+        // -- Sync with global app theme (anhad_theme) first --
         const globalTheme = localStorage.getItem('anhad_theme');
         if (globalTheme) {
             this.set(globalTheme);
@@ -1968,7 +1968,7 @@ const OfflineCache = {
         });
     },
 
-    // ── UI Helpers ──
+    // -- UI Helpers --
     setRingProgress(pct) {
         const circ  = 2 * Math.PI * 52;
         const track = document.getElementById('offlineRingTrack');
@@ -2160,7 +2160,7 @@ const OfflineCache = {
         this._busy = false;
     },
     
-    // ── Local Search Engine ──
+    // -- Local Search Engine --
     async search(query, type, source) {
         let verses = await this.loadAllVerses();
         if (!verses.length) return null; // Not ready
@@ -2208,7 +2208,7 @@ const OfflineCache = {
         };
     },
 
-    // ── Offline Raag Engine ──
+    // -- Offline Raag Engine --
     async getRaagShabads(raagId) {
         let verses = await this.loadAllVerses();
         if (!verses.length) return null;
@@ -2517,14 +2517,14 @@ const RaagManager = {
             return;
         }
 
-        // ── 1) Check in-memory cache (instant, no fetch) ──
+        // -- 1) Check in-memory cache (instant, no fetch) --
         if (!this._shabadCache) this._shabadCache = {};
         if (this._shabadCache[raagId]) {
             this.renderGroupedShabads(this._shabadCache[raagId], listEl);
             return;
         }
 
-        // ── 2) Check Offline Engine (Total DB) ──
+        // -- 2) Check Offline Engine (Total DB) --
         if (State.isOfflineReady) {
             const idbShabads = await OfflineCache.getRaagShabads(raagId);
             if (idbShabads && idbShabads.length > 0) {
@@ -2535,7 +2535,7 @@ const RaagManager = {
             }
         }
 
-        // ── Fetch ALL angs in raag range in batches (Progressive render) ──
+        // -- Fetch ALL angs in raag range in batches (Progressive render) --
         const { startAng, endAng } = raagInfo;
         const allAngs = Array.from({ length: endAng - startAng + 1 }, (_, i) => startAng + i);
         const BATCH = 8; // 8 parallel requests at a time
@@ -3253,7 +3253,7 @@ document.addEventListener('DOMContentLoaded', () => {
         console.warn('Could not restore search state:', e);
     }
 
-    // ── Back-from-reader: restore raag view INSTANTLY (no animation delays) ──
+    // -- Back-from-reader: restore raag view INSTANTLY (no animation delays) --
     try {
         const raagBack = sessionStorage.getItem('gurbaniKhoj_backToRaag');
         if (raagBack) {

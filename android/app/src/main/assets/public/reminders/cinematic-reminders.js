@@ -7,7 +7,7 @@
 (function () {
     'use strict';
 
-    /* ─── STATE ──────────────────────────────────────────────────────── */
+    /* --- STATE -------------------------------------------------------- */
     const S = {
         min: 780, dragging: false, dx0: 0, dm0: 0,
         hint: true, sheet: false, audioSheet: false, locSheet: false,
@@ -15,7 +15,7 @@
         selectedSound: 'audio1', currentLocation: 'desert',
     };
 
-    /* ─── AUDIO FILES ────────────────────────────────────────────────── */
+    /* --- AUDIO FILES -------------------------------------------------- */
     const AUDIO_FILES = [
         { id: 'audio1', file: 'audio1.mp3', name: 'Waheguru Simran', desc: 'Soft melodic simran', icon: '🕉️' },
         { id: 'audio2', file: 'audio2.mp3', name: 'Amritvela Dhun', desc: 'Peaceful morning raga', icon: '🌅' },
@@ -26,7 +26,7 @@
     ];
     let previewAudio = null;
 
-    /* ─── LOCATION THEMES ────────────────────────────────────────────── */
+    /* --- LOCATION THEMES ---------------------------------------------- */
     const LOCATIONS = [
         {
             id: 'desert', name: 'Rajasthan Desert', flag: '🇮🇳', desc: 'Sand dunes & camels',
@@ -72,7 +72,7 @@
         },
     ];
 
-    /* ─── SVG LANDSCAPE PATHS PER LOCATION ───────────────────────── */
+    /* --- SVG LANDSCAPE PATHS PER LOCATION ------------------------- */
     const LOC_SVG = {
         desert: {
             previewSvg: '<svg viewBox="0 0 200 100"><rect width="200" height="100" fill="#c8956a"/><path d="M0 65 Q30 40 70 55 Q110 70 140 48 Q170 32 200 42 L200 100 H0Z" fill="#d4a870"/><path d="M0 80 Q50 60 100 72 Q150 84 200 68 L200 100 H0Z" fill="#e8c890"/><circle cx="35" cy="48" r="2" fill="#5a4030"/><line x1="35" y1="48" x2="35" y2="58" stroke="#5a4030" stroke-width="0.8"/></svg>',
@@ -119,7 +119,7 @@
         },
     };
 
-    /* ─── STORAGE ────────────────────────────────────────────────────── */
+    /* --- STORAGE ------------------------------------------------------ */
     const SK = 'cine_alarms_v4';
     const loadA = () => {
         try { const r = localStorage.getItem(SK); if (r) return JSON.parse(r); } catch { }
@@ -132,7 +132,7 @@
     const saveA = a => localStorage.setItem(SK, JSON.stringify(a));
     let alarms = loadA();
 
-    /* ─── SKY TABLE ──────────────────────────────────────────────── */
+    /* --- SKY TABLE ------------------------------------------------ */
     const SKY = [
         { t: 0, top: [4, 8, 18], mid: [8, 14, 30], bot: [12, 18, 36], glow: [0, 0, 0, 0], fog: 0 },
         { t: 200, top: [5, 9, 22], mid: [9, 15, 34], bot: [14, 20, 40], glow: [0, 0, 0, 0], fog: 0 },
@@ -153,7 +153,7 @@
         { t: 1440, top: [4, 8, 18], mid: [8, 14, 30], bot: [12, 18, 36], glow: [0, 0, 0, 0], fog: 0 },
     ];
 
-    /* ─── MATH ───────────────────────────────────────────────────── */
+    /* --- MATH ----------------------------------------------------- */
     const lerp = (a, b, t) => a + (b - a) * t;
     const lC = (c1, c2, t) => c1.map((v, i) => Math.round(lerp(v, c2[i], t)));
     const clamp = (v, mn, mx) => Math.max(mn, Math.min(mx, v));
@@ -190,7 +190,7 @@
         return [0, 0, 0, 0];
     }
 
-    /* ─── LAND COLOR STOPS (location-aware) ──────────────────────── */
+    /* --- LAND COLOR STOPS (location-aware) ------------------------ */
     function getLandStops() {
         const loc = LOCATIONS.find(l => l.id === S.currentLocation) || LOCATIONS[0];
         const c = loc.landColors;
@@ -205,7 +205,7 @@
         ];
     }
 
-    /* ─── CELESTIAL ──────────────────────────────────────────────── */
+    /* --- CELESTIAL ------------------------------------------------ */
     function sunP(min) {
         const m = wrap(min), rise = 290, set = 1140;
         if (m < rise || m > set) return { x: 50, y: 115, o: 0, s: 0.8, g: 0 };
@@ -223,7 +223,7 @@
         return { x: lerp(90, 8, p), y: lerp(58, 8, arc), o: Math.min(1, arc * 3) };
     }
 
-    /* ─── CANVAS SKY ─────────────────────────────────────────────── */
+    /* --- CANVAS SKY ----------------------------------------------- */
     let cvs, ctx;
     function initCvs() {
         cvs = document.getElementById('skyCanvas'); if (!cvs) return;
@@ -258,7 +258,7 @@
         ctx.fillStyle = vg; ctx.fillRect(0, 0, w, h);
     }
 
-    /* ─── DOM ────────────────────────────────────────────────────── */
+    /* --- DOM ------------------------------------------------------ */
     let E = {};
     function cE() {
         const $ = id => document.getElementById(id);
@@ -273,7 +273,7 @@
         };
     }
 
-    /* ─── RENDER ─────────────────────────────────────────────────── */
+    /* --- RENDER --------------------------------------------------- */
     let raf = null;
     function render() {
         const min = S.min, m = wrap(min), r = document.documentElement.style;
@@ -379,7 +379,7 @@
         if (E.tp) E.tp.textContent = prd;
     }
 
-    /* ─── PARALLAX ───────────────────────────────────────────────── */
+    /* --- PARALLAX ------------------------------------------------- */
     function setPx(dx) {
         const c = clamp(dx, -500, 500);
         if (E.d4) E.d4.style.transform = `translateX(${c * 0.006}px)`;
@@ -388,7 +388,7 @@
         if (E.d1) E.d1.style.transform = `translateX(${c * 0.024}px)`;
     }
 
-    /* ─── MOMENTUM DRAG ──────────────────────────────────────────── */
+    /* --- MOMENTUM DRAG -------------------------------------------- */
     const gx = e => e.touches ? e.touches[0].clientX : e.clientX;
     function ds(e) {
         if (S.momentumRaf) { cancelAnimationFrame(S.momentumRaf); S.momentumRaf = null; }
@@ -433,7 +433,7 @@
         addEventListener('mousemove', dm); addEventListener('mouseup', de);
     }
 
-    /* ─── ALARM SHEET ────────────────────────────────────────────── */
+    /* --- ALARM SHEET ---------------------------------------------- */
     function openSh() { S.sheet = true; E.ash.classList.add('on'); E.abd.classList.add('on'); rList(); }
     function closeSh() { S.sheet = false; E.ash.classList.remove('on'); E.abd.classList.remove('on'); }
     function rList() {
@@ -458,7 +458,7 @@
         openSh();
     }
 
-    /* ─── AUDIO PICKER ───────────────────────────────────────────── */
+    /* --- AUDIO PICKER --------------------------------------------- */
     function openAudioSh() { S.audioSheet = true; E.audSh.classList.add('on'); E.audBd.classList.add('on'); renderAudioList(); }
     function closeAudioSh() { S.audioSheet = false; E.audSh.classList.remove('on'); E.audBd.classList.remove('on'); stopPreview(); }
     function renderAudioList() {
@@ -499,7 +499,7 @@
         });
     }
 
-    /* ─── LOCATION THEME — SVG LANDSCAPE SWAP ────────────────────── */
+    /* --- LOCATION THEME — SVG LANDSCAPE SWAP ---------------------- */
     function openLocSh() { S.locSheet = true; E.locSh.classList.add('on'); E.locBd.classList.add('on'); renderLocGrid(); }
     function closeLocSh() { S.locSheet = false; E.locSh.classList.remove('on'); E.locBd.classList.remove('on'); }
 
@@ -553,14 +553,14 @@
         });
     }
 
-    /* ─── TOAST ──────────────────────────────────────────────────── */
+    /* --- TOAST ---------------------------------------------------- */
     function toast(msg) {
         const t = document.createElement('div');
         t.className = 'tm'; t.textContent = msg; E.tw.appendChild(t);
         setTimeout(() => { t.classList.add('out'); setTimeout(() => t.remove(), 300); }, 2800);
     }
 
-    /* ─── STARS ──────────────────────────────────────────────────── */
+    /* --- STARS ---------------------------------------------------- */
     function genStars() {
         const c = document.getElementById('sf'); if (!c) return;
         let h = '';
@@ -573,7 +573,7 @@
         c.innerHTML = h;
     }
 
-    /* ─── INIT ───────────────────────────────────────────────────── */
+    /* --- INIT ----------------------------------------------------- */
     function init() {
         cE(); initCvs();
         const now = new Date();

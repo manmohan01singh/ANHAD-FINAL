@@ -658,7 +658,7 @@
 
             this.currentToneId = toneId;
 
-            button.textContent = '⏸';
+            button.textContent = '⏸️';
 
             button.classList.add('playing');
 

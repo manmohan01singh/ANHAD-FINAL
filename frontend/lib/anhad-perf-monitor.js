@@ -54,7 +54,7 @@
     }
   };
 
-  // ── 1. BROWSER RUNTIME FPS & FRAME DROPS ──────────────────────────────────
+  // -- 1. BROWSER RUNTIME FPS & FRAME DROPS ----------------------------------
   if (isBrowserRuntime) {
     let lastFrameTime = performance.now();
     let frameCount = 0;
@@ -85,7 +85,7 @@
     requestAnimationFrame(trackFrame);
   }
 
-  // ── 2. PERFORMANCE OBSERVERS (Paint & Long Tasks) ───────────────────────
+  // -- 2. PERFORMANCE OBSERVERS (Paint & Long Tasks) -----------------------
   if (isBrowserRuntime && 'PerformanceObserver' in window) {
     try {
       new PerformanceObserver((list) => {
@@ -126,7 +126,7 @@
     } catch (e) {}
   }
 
-  // ── 3. EVENT LISTENER LEAK & DUPLICATE TRACKING ───────────────────────────
+  // -- 3. EVENT LISTENER LEAK & DUPLICATE TRACKING ---------------------------
   if (typeof EventTarget !== 'undefined') {
     const origAdd = EventTarget.prototype.addEventListener;
     EventTarget.prototype.addEventListener = function(type, listener, options) {
@@ -146,7 +146,7 @@
     };
   }
 
-  // ── 4. MEMORY & P95 NAVIGATION LATENCY ───────────────────────────────────
+  // -- 4. MEMORY & P95 NAVIGATION LATENCY -----------------------------------
   let navStartMark = null;
 
   function markNavStart(route) {
@@ -196,7 +196,7 @@
 
   if (isBrowserRuntime) setInterval(updateMemory, 2000);
 
-  // ── 5. PUBLIC TELEMETRY INTERFACE ─────────────────────────────────────────
+  // -- 5. PUBLIC TELEMETRY INTERFACE -----------------------------------------
   window.AnhadPerf = {
     markNavStart,
     markNavEnd,

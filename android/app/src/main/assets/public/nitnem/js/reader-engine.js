@@ -1359,7 +1359,7 @@
 
     function loadSettings() {
         try {
-            // ─── Migration: v5 → v5.1 clears old defaults ──────────────────
+            // --- Migration: v5 → v5.1 clears old defaults ------------------
             // Old v5 had showRoman=true, showEnglish=true, ikonkarTransparency=10/30
             // New v5.1 defaults: Gurmukhi-only, both backgrounds off (0)
             const SETTINGS_VERSION = 'v5.1';
@@ -1369,7 +1369,7 @@
                 localStorage.removeItem('anhad_reader_v5');
                 localStorage.setItem('anhad_reader_settings_version', SETTINGS_VERSION);
             }
-            // ────────────────────────────────────────────────────────────────
+            // ----------------------------------------------------------------
 
             const getNitnemDefaultTheme = () => {
                 var override = localStorage.getItem('nitnem_theme_override');

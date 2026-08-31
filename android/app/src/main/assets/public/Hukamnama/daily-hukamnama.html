@@ -91,6 +91,7 @@
 
     <link rel="stylesheet" href="../css/theme-variables.css">
     <link rel="stylesheet" href="../css/desktop-responsive.css?v=26">
+    <link rel="stylesheet" href="../css/hukamnama-card-generator.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Gurmukhi:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=Cinzel:wght@600;700;800&display=optional" rel="stylesheet">
@@ -205,7 +206,7 @@
         #mainScroll::-webkit-scrollbar { display: none; }
         #mainScroll { -ms-overflow-style: none; scrollbar-width: none; }
 
-        /* ─── SKELETON ─── */
+        /* --- SKELETON --- */
         .skeleton-container {
             position: fixed; inset: 0; z-index: 10000;
             background: var(--bg);
@@ -227,7 +228,7 @@
         .skeleton-line:nth-child(4) { width: 60%; height: 10px; }
         .skeleton-line:nth-child(5) { width: 75%; }
 
-        /* ─── HEADER ─── */
+        /* --- HEADER --- */
         .app-header {
             position: fixed; top: 0; left: 0; width: 100%;
             height: var(--header-h);
@@ -269,7 +270,7 @@
         }
         .app-header.scrolled .header-title-small { opacity: 1; }
 
-        /* ─── HERO — COMPACT & ELEGANT ─── */
+        /* --- HERO — COMPACT & ELEGANT --- */
         .hero {
             position: relative;
             width: 100%;
@@ -435,7 +436,7 @@
             transition-delay: 0.34s;
         }
 
-        /* ─── PROGRESSIVE SCROLL COLLAPSE ─── */
+        /* --- PROGRESSIVE SCROLL COLLAPSE --- */
         .hero[data-collapsing="true"] .hero-portrait,
         .hero[data-collapsing="true"] .hero-title,
         .hero[data-collapsing="true"] .hero-guru,
@@ -467,7 +468,7 @@
             transform: scaleX(calc(1 - var(--scroll-progress, 0) * 0.3));
         }
 
-        /* ─── GURBANI — READING FIRST (BEAUTIFUL GURMUKHI FONT) ─── */
+        /* --- GURBANI — READING FIRST (BEAUTIFUL GURMUKHI FONT) --- */
         .gurbani-section {
             padding: 8px 24px 120px;
             max-width: 680px;
@@ -551,11 +552,11 @@
             padding: 0 8px;
         }
 
-        /* ─── READING MODE ─── */
+        /* --- READING MODE --- */
         .reading-mode .hero { display: none; }
         .reading-mode .gurbani-section { padding-top: calc(var(--header-h) + 24px); }
 
-        /* ─── ACTION BAR ─── */
+        /* --- ACTION BAR --- */
         .action-bar {
             position: fixed;
             bottom: calc(20px + var(--safe-bottom));
@@ -603,7 +604,7 @@
         .action-btn.active { color: var(--accent); }
         .action-btn svg { width: 22px; height: 22px; }
 
-        /* ─── SETTINGS MODAL ─── */
+        /* --- SETTINGS MODAL --- */
         .modal-overlay {
             position: fixed; inset: 0;
             background: rgba(0,0,0,0.5);
@@ -836,6 +837,7 @@
     <script src="../lib/desktop-sidebar.js" defer></script>
     <script src="../lib/smart-back.js?v=2.1" defer></script>
     <script src="../lib/anhad-audio-singleton.js?v=2.5" defer></script>
+    <script src="../js/hukamnama-card-generator.js" defer></script>
     <script src="daily-hukamnama.js?v=2.8" defer></script>
 </body>
 </html>

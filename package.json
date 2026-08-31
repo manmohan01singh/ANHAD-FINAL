@@ -1,6 +1,6 @@
 {
   "name": "gurbani-radio",
-  "version": "1.0.3",
+  "version": "1.1.16",
   "description": "24/7 Divine Gurbani Kirtan streaming with reminders and Nitnem Tracker",
   "main": "electron-main.js",
   "scripts": {

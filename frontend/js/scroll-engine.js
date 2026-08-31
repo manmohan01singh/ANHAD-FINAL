@@ -16,7 +16,7 @@
         }
     });
 
-    // ─── CENTRALIZED REVEAL OBSERVER ───
+    // --- CENTRALIZED REVEAL OBSERVER ---
     // Single shared IntersectionObserver for scroll-reveal animations.
     const AnhadScrollObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {

@@ -1999,7 +1999,7 @@
       UI.init();
       ThemeSync.init();
 
-      // ─── POST-REBOOT RESCHEDULE ──────────────────────────────────────────────
+      // --- POST-REBOOT RESCHEDULE ----------------------------------------------
       (async () => {
         try {
           if (window.Capacitor && window.Capacitor.isNativePlatform()) {

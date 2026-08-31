@@ -6,7 +6,7 @@
 (function () {
   'use strict';
 
-  // ── Time helpers ─────────────────────────────────────────────────────────
+  // -- Time helpers ---------------------------------------------------------
   function getSlot() {
     const forced = localStorage.getItem('anhad_forced_time_of_day');
     if (forced && ['morning', 'day', 'evening', 'night'].includes(forced)) {
@@ -19,7 +19,7 @@
     return 'night';
   }
 
-  // ── Background image map (WebP — optimized) ──────────────────────────────
+  // -- Background image map (WebP — optimized) ------------------------------
   const BG_IMAGES = {
     morning: 'assets/darbar-sahib-morning-bg.webp',
     day: 'assets/darbar-sahib-day-bg.webp',
@@ -27,7 +27,7 @@
     night: 'assets/HERO CARD IMAGES/new-night-bg.webp',
   };
 
-  // ── Pre-load all bg images for instant swap ──────────────────────────────
+  // -- Pre-load all bg images for instant swap ------------------------------
   function preloadBgImages() {
     Object.values(BG_IMAGES).forEach(url => {
       const img = new Image();
@@ -36,7 +36,7 @@
     });
   }
 
-  // ── Inject instant-bg CSS kill-switch ───────────────────────────────────
+  // -- Inject instant-bg CSS kill-switch -----------------------------------
   function injectInstantBgCSS() {
     if (document.getElementById('anhad-instant-bg-style')) return;
     const s = document.createElement('style');
@@ -49,7 +49,7 @@
     document.head.appendChild(s);
   }
 
-  // ── Dual-layer transition active state tracking ──────────────────────────
+  // -- Dual-layer transition active state tracking --------------------------
   let activeLayerIndex = 1;
   function ensureBgLayers() {
     let container = document.getElementById('anhadBgTransitionContainer');
@@ -83,7 +83,7 @@
     return getSlot();
   }
 
-  // ── Update time-of-day attribute on <html> ───────────────────────────────
+  // -- Update time-of-day attribute on <html> -------------------------------
   function applyTimeOfDay() {
     if (!document.documentElement.hasAttribute('data-anhad-home')) {
       document.documentElement.removeAttribute('data-time-of-day');
@@ -180,7 +180,7 @@
     }
   }
 
-  // ── Hero card image map ───────────────────────────────────────────────────
+  // -- Hero card image map ---------------------------------------------------
   const HERO_CARD_IMGS = {
     morning: [
       'assets/HERO CARD IMAGES/morning-darbar-sahib.webp',
@@ -268,7 +268,7 @@
     });
   }
 
-  // ── TIME-ADAPTIVE CARD COLORS ─────────────────────────────────────────────
+  // -- TIME-ADAPTIVE CARD COLORS ---------------------------------------------
   const CARD_PALETTES = {
     morning: { bg: 'rgba(255,235,208,0.84)', bgGlass: 'rgba(255,248,238,0.72)', text: '#1A0402', text2: '#4A1508', shadow: 'rgba(0,0,0,0.08)', border: 'rgba(230,140,60,0.30)', iconBg: 'rgba(255,215,160,0.70)', accent: '#EB6834' },
     day: { bg: '#FFFDF8', bgGlass: 'rgba(255,255,255,0.85)', text: '#1C1C1E', text2: '#8A6D3B', shadow: 'rgba(0,0,0,0.06)', border: 'rgba(212,148,58,0.15)', iconBg: 'rgba(212,148,58,0.1)', accent: '#D4943A' },
@@ -297,7 +297,7 @@
     ].forEach(p => document.documentElement.style.removeProperty(p));
   }
 
-  // ── Track last known slot/mode ────────────────────────────────────────────
+  // -- Track last known slot/mode --------------------------------------------
   let _lastSlot = null;
   let _lastMode = null;
 
@@ -334,7 +334,7 @@
     });
   }
 
-  // ── Init ─────────────────────────────────────────────────────────────────
+  // -- Init -----------------------------------------------------------------
   // This script IS in smooth-navigation.js's SHELL_SCRIPTS, so it executes at
   // most once per JS realm: skipped on SPA revisits to Home, but still injected
   // on first arrival at Home even when the session started on Insights or

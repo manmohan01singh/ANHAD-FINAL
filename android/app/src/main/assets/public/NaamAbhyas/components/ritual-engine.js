@@ -724,7 +724,7 @@ class RitualEngine {
         this.state = 'COMPLETING';
         console.log('[RitualEngine] Session complete - auto-closing');
 
-        // ─── SILENCE AUTO-RESTORE ────────────────────────────────────────────
+        // --- SILENCE AUTO-RESTORE --------------------------------------------
         // If silence was active during this session, restore audio before exiting
         // so the NEXT alarm / ritual fires with sound as expected.
         if (this.silenceMode) {
@@ -741,7 +741,7 @@ class RitualEngine {
             }
             console.log('[RitualEngine] Silence auto-restored on session completion');
         }
-        // ─────────────────────────────────────────────────────────────────────
+        // ---------------------------------------------------------------------
 
         this.cleanup();
 

@@ -35,7 +35,7 @@ body.journey-page {
   background-color: var(--bg-primary, #F8F9FA) !important;
   color: var(--journey-text-main);
   line-height: 1.6;
-  padding-top: calc(env(safe-area-inset-top, 20px) + 54px);
+  padding-top: calc(env(safe-area-inset-top, 20px) + 80px);
   padding-bottom: calc(env(safe-area-inset-bottom, 20px) + 110px);
   overflow-x: hidden;
   min-height: 100vh;
@@ -44,59 +44,166 @@ body.journey-page {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════
-   1. SOLID EDGE-TO-EDGE TOP HEADER BAR
+   DYNAMIC ISLAND NAVIGATION (iOS-Style Pill Header)
    ═══════════════════════════════════════════════════════════════════════════════ */
-.app-bar {
+
+.dynamic-island-nav {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  width: 100%;
-  height: calc(env(safe-area-inset-top, 20px) + 54px);
-  padding-top: env(safe-area-inset-top, 20px);
+  top: max(env(safe-area-inset-top, 0px), 12px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 32px);
+  max-width: 380px;
+  height: 56px;
   z-index: 1000;
-  background: var(--journey-card-bg, #FFFFFF);
-  border-bottom: 1px solid var(--journey-border);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-  display: flex;
-  align-items: center;
-}
-
-[data-theme="dark"] .app-bar,
-.dark-mode .app-bar {
-  background: #18181C;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-}
-
-.app-bar__container {
-  width: 100%;
-  max-width: 680px;
-  margin: 0 auto;
-  padding: 0 16px;
+  
   display: flex;
   align-items: center;
   justify-content: space-between;
+  padding: 0 8px;
+  gap: 12px;
+  
+  /* Dynamic Island Glass Effect */
+  background: rgba(0, 0, 0, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 36px;
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 1px 2px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: island-appear 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes island-appear {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+}
+
+/* Light Theme */
+[data-theme="light"] .dynamic-island-nav,
+html:not([data-theme="dark"]):not(.dark-mode):not([data-time-of-day="night"]) .dynamic-island-nav {
+  background: rgba(255, 255, 255, 0.85);
+  border-color: rgba(0, 0, 0, 0.08);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.12),
+    0 1px 2px rgba(0, 0, 0, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+/* Navigation Buttons */
+.island-nav__back,
+.island-nav__share {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+[data-theme="light"] .island-nav__back,
+[data-theme="light"] .island-nav__share,
+html:not([data-theme="dark"]):not(.dark-mode) .island-nav__back,
+html:not([data-theme="dark"]):not(.dark-mode) .island-nav__share {
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.island-nav__back:hover,
+.island-nav__share:hover {
+  background: rgba(255, 255, 255, 0.12);
+  transform: scale(1.05);
+}
+
+[data-theme="light"] .island-nav__back:hover,
+[data-theme="light"] .island-nav__share:hover,
+html:not([data-theme="dark"]):not(.dark-mode) .island-nav__back:hover,
+html:not([data-theme="dark"]):not(.dark-mode) .island-nav__share:hover {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.island-nav__back:active,
+.island-nav__share:active {
+  transform: scale(0.95);
+  background: rgba(255, 255, 255, 0.2);
+}
+
+[data-theme="light"] .island-nav__back:active,
+[data-theme="light"] .island-nav__share:active,
+html:not([data-theme="dark"]):not(.dark-mode) .island-nav__back:active,
+html:not([data-theme="dark"]):not(.dark-mode) .island-nav__share:active {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+/* Icon Styles */
+.back-icon,
+.share-icon {
+  width: 22px;
+  height: 22px;
+  stroke-width: 2.5;
+}
+
+/* Title */
+.island-nav__title {
+  flex: 1;
+  text-align: center;
+  font-family: var(--font-system, 'Inter', sans-serif);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: rgba(255, 255, 255, 0.98);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0 4px;
+}
+
+[data-theme="light"] .island-nav__title,
+html:not([data-theme="dark"]):not(.dark-mode) .island-nav__title {
+  color: rgba(0, 0, 0, 0.9);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 380px) {
+  .dynamic-island-nav {
+    width: calc(100% - 24px);
+    max-width: none;
+  }
+  
+  .island-nav__title {
+    font-size: 14px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   1. SOLID EDGE-TO-EDGE TOP HEADER BAR (LEGACY - HIDDEN)
+   ═══════════════════════════════════════════════════════════════════════════════ */
+.app-bar {
+  display: none !important;
+}
+
+.app-bar__container {
+  display: none !important;
 }
 
 .app-bar__back {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  border: none;
-  background: transparent;
-  color: var(--journey-text-main);
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  padding: 6px 10px;
-  border-radius: 8px;
-  transition: opacity 0.15s ease, background 0.15s ease;
-}
-
-.app-bar__back:active {
-  opacity: 0.7;
-  background: rgba(0, 0, 0, 0.05);
+  display: none !important;
 }
 
 [data-theme="dark"] .app-bar__back:active,

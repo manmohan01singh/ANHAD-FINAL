@@ -1059,7 +1059,7 @@
 
         // Update eyebrow text
         if (eyebrowEl) {
-          eyebrowEl.textContent = event.isToday ? "✦ TODAY'S HISTORICAL DIWAS" : 'Upcoming Gurpurab';
+          eyebrowEl.textContent = event.isToday ? "✦ TODAY'S HISTORICAL DIWAS" : '✦ UPCOMING GURPURAB';
         }
 
         const badgeValueEl = document.getElementById('eventCountdownBadgeValue');
@@ -1107,6 +1107,26 @@
             if (countEl) countEl.textContent = '🗓️';
             if (labelEl) labelEl.textContent = 'Upcoming';
             if (daysBadge) daysBadge.style.display = 'none';
+          }
+        }
+
+        const badgePillEl = document.getElementById('eventBadgePill');
+        if (badgePillEl) {
+          if (event.isToday) {
+            badgePillEl.textContent = event.eventCategory === 'remembrance' ? 'TODAY 🙏' : 'TODAY ✨';
+            badgePillEl.style.display = 'inline-flex';
+            badgePillEl.classList.remove('event-card__badge-pill--upcoming');
+          } else {
+            const daysNum = (typeof event.daysLeft === 'number' && !isNaN(event.daysLeft)) ? event.daysLeft : null;
+            if (daysNum !== null && daysNum >= 0) {
+              badgePillEl.textContent = `${daysNum} ${daysNum === 1 ? 'day left' : 'days left'}`;
+              badgePillEl.style.display = 'inline-flex';
+              badgePillEl.classList.add('event-card__badge-pill--upcoming');
+            } else {
+              badgePillEl.textContent = 'UPCOMING';
+              badgePillEl.style.display = 'inline-flex';
+              badgePillEl.classList.add('event-card__badge-pill--upcoming');
+            }
           }
         }
 
@@ -1238,7 +1258,7 @@
 
     _updateGuruImage(event) {
 
-      // ── Guru Image Mapping ──
+      // -- Guru Image Mapping --
       // Using guruimages/ folder with .jpeg files as requested
       // PATTERN ORDER MATTERS: Most specific patterns first, generic patterns last
       const guruImageMap = {
@@ -1381,7 +1401,7 @@
 
         console.log('[GuruImage] Updating image to:', src, 'alt:', alt, 'retries left:', retries);
 
-        // ── SMOOTH CROSSFADE: preload in background, then swap ──
+        // -- SMOOTH CROSSFADE: preload in background, then swap --
         // Keep current image fully visible while new one loads
         const wrapper = el.parentElement;
         const preloadImg = new window.Image();
@@ -1832,7 +1852,7 @@
         }
       });
 
-      // ── Realm-scoped from here down ──────────────────────────────────────
+      // -- Realm-scoped from here down --------------------------------------
       // window/document outlive every #app swap, so everything below must bind
       // exactly once per JS realm however many times Home is mounted.
       if (window.__anhadThemeControllerRealmBound) return;
@@ -2663,7 +2683,7 @@
       this.mount();
     },
 
-    // ── REALM-SCOPED. Runs exactly once per JS realm. ───────────────────────
+    // -- REALM-SCOPED. Runs exactly once per JS realm. -----------------------
     initOnce() {
       if (window.__anhadAppInitOnce) return;
       window.__anhadAppInitOnce = true;
@@ -2703,7 +2723,7 @@
       });
     },
 
-    // ── PER-MOUNT. Runs on EVERY entry to Home. Must stay re-runnable. ──────
+    // -- PER-MOUNT. Runs on EVERY entry to Home. Must stay re-runnable. ------
     mount() {
       // Each step is isolated. mount() now runs on EVERY arrival rather than
       // once per session, so a single throw part-way down would otherwise
@@ -2815,7 +2835,7 @@
       window.__anhadHomeMounted = true;
     },
 
-    // ── TEARDOWN. Runs when leaving Home, from both departure paths. ────────
+    // -- TEARDOWN. Runs when leaving Home, from both departure paths. --------
     // Deliberately does NOT clear __anhadAppInitOnce or Scheduler's intervals:
     // those are realm-scoped and must survive so initOnce() stays a no-op.
     unmount() {
@@ -2946,7 +2966,7 @@
   // ═══════════════════════════════════════════════════════════════════════════
   // BOOT
   // ═══════════════════════════════════════════════════════════════════════════
-  // ── SPA re-entry, registered BEFORE boot() ────────────────────────────────
+  // -- SPA re-entry, registered BEFORE boot() --------------------------------
   // Order is load-bearing. This module is one IIFE, and boot()/App.init() below
   // runs a long synchronous chain with no error handling of its own. Registered
   // after boot(), a single throw anywhere in App.init() aborted the IIFE and

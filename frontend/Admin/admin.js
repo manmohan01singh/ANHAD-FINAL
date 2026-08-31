@@ -37,7 +37,7 @@
   let config = null;      // full config as last read from the server
   let selectedId = null;
 
-  // ─── Toast ──────────────────────────────────────────────────────────────
+  // --- Toast --------------------------------------------------------------
   let toastTimer = null;
   function toast(msg, ms = 2400) {
     const el = $('toast');
@@ -55,7 +55,7 @@
     el.className = 'admin-status' + (kind ? ' admin-status--' + kind : '');
   }
 
-  // ─── API ────────────────────────────────────────────────────────────────
+  // --- API ----------------------------------------------------------------
   async function api(path, opts = {}) {
     const resp = await fetch(API_BASE + path, {
       ...opts,
@@ -75,7 +75,7 @@
     return resp.status === 304 ? null : resp.json();
   }
 
-  // ─── Date helpers ───────────────────────────────────────────────────────
+  // --- Date helpers -------------------------------------------------------
   // Campaign dates are ISO-8601 UTC; <input type="datetime-local"> is local
   // wall-clock with no zone. Convert explicitly in both directions and show the
   // resolved UTC window, so scheduling a 40-day window can't be silently off by
@@ -111,7 +111,7 @@
     return 'LIVE now';
   }
 
-  // ─── Render ─────────────────────────────────────────────────────────────
+  // --- Render -------------------------------------------------------------
   function renderStore(store) {
     const el = $('storeInfo');
     if (!el || !store) return;
@@ -217,7 +217,7 @@
     return next;
   }
 
-  // ─── Actions ────────────────────────────────────────────────────────────
+  // --- Actions ------------------------------------------------------------
   async function load() {
     const data = await api('/api/config/admin/campaigns');
     config = data.config;
@@ -321,7 +321,7 @@
     toast('Token forgotten');
   }
 
-  // ─── Wire up ────────────────────────────────────────────────────────────
+  // --- Wire up ------------------------------------------------------------
   function init() {
     $('unlockBtn').addEventListener('click', () => {
       const v = $('tokenInput').value.trim();

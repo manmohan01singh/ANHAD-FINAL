@@ -341,7 +341,7 @@
       const data = this.hukamData || this._getFallbackData();
       const theme = this.currentTheme;
 
-      // ── 1. PALETTE DEFINITIONS ──
+      // -- 1. PALETTE DEFINITIONS --
       let bgGrad, borderColor, borderInnerColor, ikColor, eyebrowColor, dateColor, titleColor, gurmukhiColor, engColor, brandColor;
 
       if (theme === 'gold') {
@@ -398,7 +398,7 @@
       ctx.fillStyle = bgGrad;
       ctx.fillRect(0, 0, width, height);
 
-      // ── 2. ROYAL MULTI-STOP GOLD BORDERS ──
+      // -- 2. ROYAL MULTI-STOP GOLD BORDERS --
       const m = isStory ? 54 : 40;
       ctx.lineWidth = 3;
       ctx.strokeStyle = borderColor;
@@ -423,14 +423,14 @@
         ctx.stroke();
       });
 
-      // ── 3. SACRED IK ONKAR EMBLEM ──
+      // -- 3. SACRED IK ONKAR EMBLEM --
       ctx.textAlign = 'center';
       const ikY = isStory ? 175 : 125;
       ctx.fillStyle = ikColor;
       ctx.font = isStory ? 'bold 64px "Noto Sans Gurmukhi", serif' : 'bold 50px "Noto Sans Gurmukhi", serif';
       ctx.fillText('ੴ', width / 2, ikY);
 
-      // ── 4. HEADER TAGS ──
+      // -- 4. HEADER TAGS --
       const eyebrowY = isStory ? 235 : 170;
       ctx.font = 'bold 22px -apple-system, BlinkMacSystemFont, sans-serif';
       ctx.letterSpacing = '3.5px';
@@ -453,14 +453,14 @@
       ctx.lineTo(width / 2 + 160, divY);
       ctx.stroke();
 
-      // ── 5. TITLE / RAAG HEADING ──
+      // -- 5. TITLE / RAAG HEADING --
       const titleY = isStory ? 385 : 285;
       ctx.fillStyle = titleColor;
       ctx.font = isStory ? 'bold 36px "Noto Sans Gurmukhi", sans-serif' : 'bold 30px "Noto Sans Gurmukhi", sans-serif';
       ctx.letterSpacing = '0px';
       ctx.fillText(data.title, width / 2, titleY);
 
-      // ── 6. SACRED GURMUKHI VERSES (UP TO PAURI 1 / RAHAAO) ──
+      // -- 6. SACRED GURMUKHI VERSES (UP TO PAURI 1 / RAHAAO) --
       ctx.fillStyle = gurmukhiColor;
       const gFontSize = isStory ? (data.gurmukhiLines.length > 4 ? 36 : 42) : (data.gurmukhiLines.length > 4 ? 26 : 30);
       const gLineHeight = isStory ? (data.gurmukhiLines.length > 4 ? 58 : 68) : (data.gurmukhiLines.length > 4 ? 42 : 48);
@@ -477,14 +477,14 @@
         });
       });
 
-      // ── 7. SEPARATOR ORNAMENT ──
+      // -- 7. SEPARATOR ORNAMENT --
       currentY += isStory ? 20 : 10;
       ctx.fillStyle = ikColor;
       ctx.font = '22px sans-serif';
       ctx.fillText('❖  ੴ  ❖', width / 2, currentY);
       currentY += isStory ? 45 : 30;
 
-      // ── 8. ENGLISH TRANSLATION SUMMARY ──
+      // -- 8. ENGLISH TRANSLATION SUMMARY --
       ctx.fillStyle = engColor;
       const engFontSize = isStory ? 26 : 20;
       const engLineHeight = isStory ? 38 : 28;
@@ -497,7 +497,7 @@
         currentY += engLineHeight;
       });
 
-      // ── 9. FOOTER BRANDING ──
+      // -- 9. FOOTER BRANDING --
       const footY = height - (isStory ? 95 : 65);
       ctx.strokeStyle = borderInnerColor;
       ctx.lineWidth = 1;

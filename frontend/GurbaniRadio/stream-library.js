@@ -10,14 +10,14 @@
 (function () {
   'use strict';
 
-  // ─── ALL AVAILABLE STREAMS ───────────────────────────────────────
+  // --- ALL AVAILABLE STREAMS ---------------------------------------
   var ALL_STREAMS = [
-    // ── Core 3 (always built-in, fixed) ─
+    // -- Core 3 (always built-in, fixed) -
     { id: 'darbar',    name: 'Darbar Sahib Live',          sub: 'Sri Harmandir Sahib Ji',          emoji: '🎙️', url: null, fixed: true  },
     { id: 'amritvela', name: 'Amritvela Kirtan',           sub: 'ਅੰਮ੍ਰਿਤ ਵੇਲੇ ਦੀ ਬਾਣੀ',             emoji: '🌅', url: null, fixed: true  },
     { id: 'simran',    name: 'Waheguru Simran',             sub: 'Waheguru Naam Jaap',              emoji: '📿', url: null, fixed: true  },
 
-    // ── Live Gurdwara Streams — HTTPS (radio.sikhnet.com/proxy, port 443) ─
+    // -- Live Gurdwara Streams — HTTPS (radio.sikhnet.com/proxy, port 443) -
     { id: 'sn_bangla',  name: 'Gurdwara Bangla Sahib',     sub: 'New Delhi • Live',                emoji: '🕌', url: 'https://radio.sikhnet.com/proxy/gbanglasahib/live' },
     { id: 'sn_sisganj', name: 'Gurdwara Sis Ganj Sahib',   sub: 'Chandni Chowk, Delhi • Live',     emoji: '⚔️',  url: 'https://radio.sikhnet.com/proxy/gsisganjsahib/live' },
     { id: 'sn_hazur',   name: 'Takhat Sri Hazur Sahib',    sub: 'Nanded • Live Kirtan',            emoji: '🏯', url: 'https://radio.sikhnet.com/proxy/channel7/live' },
@@ -31,7 +31,7 @@
   var MAX_SLOTS = 5;
   var FIXED_SLOT = 'darbar'; // first slot is always Darbar Sahib
 
-  // ─── Helpers ────────────────────────────────────────────────────
+  // --- Helpers ----------------------------------------------------
   function getSlots() {
     try {
       var raw = localStorage.getItem(STORAGE_KEY);
@@ -55,7 +55,7 @@
     return ALL_STREAMS.find(function (s) { return s.id === id; }) || null;
   }
 
-  // ─── Tab renderer (called after slot changes) ────────────────────
+  // --- Tab renderer (called after slot changes) --------------------
   function rebuildTabs(slots) {
     var tabsEl = document.querySelector('.gr-tabs');
     if (!tabsEl) return;
@@ -122,7 +122,7 @@
       tabsEl.appendChild(btn);
     });
 
-    // ── CRITICAL: sync data-active so the golden slider pill sits on the correct tab ──
+    // -- CRITICAL: sync data-active so the golden slider pill sits on the correct tab --
     // The CSS slider position is driven by [data-active="N"] on .gr-tabs, NOT by .active class.
     var activeSlotIdx = slots.indexOf(currentStream);
     if (activeSlotIdx < 0) activeSlotIdx = 0; // fallback to first slot
@@ -181,7 +181,7 @@
     audio.play(streamId);
   }
 
-  // ─── Haptics ─────────────────────────────────────────────────────
+  // --- Haptics -----------------------------------------------------
   function hapticLight() {
     try {
       if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Haptics) {
@@ -192,7 +192,7 @@
     } catch (e) {}
   }
 
-  // ─── Toast ───────────────────────────────────────────────────────
+  // --- Toast -------------------------------------------------------
   function showLibToast(msg) {
     var el = document.getElementById('grToast');
     if (!el) return;
@@ -202,7 +202,7 @@
     el._t = setTimeout(function () { el.classList.remove('show'); }, 3000);
   }
 
-  // ─── Bottom Sheet HTML ───────────────────────────────────────────
+  // --- Bottom Sheet HTML -------------------------------------------
   function createSheet() {
     var overlay = document.createElement('div');
     overlay.id = 'streamLibSheet';
@@ -329,7 +329,7 @@
     if (lbl) lbl.textContent = 'Your tabs (' + slots.length + '/' + MAX_SLOTS + ')';
   }
 
-  // ─── Replace Popup ───────────────────────────────────────────────
+  // --- Replace Popup -----------------------------------------------
   var _pendingStreamId = null;
 
   function openReplacePopup(streamId) {
@@ -418,7 +418,7 @@
     _pendingStreamId = null;
   }
 
-  // ─── Sheet open / close ──────────────────────────────────────────
+  // --- Sheet open / close ------------------------------------------
   function openSheet() {
     var overlay = document.getElementById('streamLibSheet');
     if (!overlay) return;
@@ -443,7 +443,7 @@
     setTimeout(function () { overlay.style.display = 'none'; }, 350);
   }
 
-  // ─── CSS injection ───────────────────────────────────────────────
+  // --- CSS injection -----------------------------------------------
   function injectCSS() {
     var style = document.createElement('style');
     style.id = 'stream-library-css';
@@ -535,7 +535,7 @@
     document.head.appendChild(style);
   }
 
-  // ─── Patch settings button ───────────────────────────────────────
+  // --- Patch settings button ---------------------------------------
   function patchSettingsButton() {
     var btn = document.getElementById('grSettingsBtn');
     if (!btn) return;
@@ -560,7 +560,7 @@
     });
   }
 
-  // ─── Init ────────────────────────────────────────────────────────
+  // --- Init --------------------------------------------------------
   function init() {
     injectCSS();
     createSheet();

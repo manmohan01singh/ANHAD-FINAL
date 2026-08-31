@@ -81,7 +81,7 @@ class BackgroundDownloadUI {
                 
                 <div class="bg-download-controls">
                     <button class="bg-download-control-btn pause" id="bg-dl-pause">
-                        <span class="icon">⏸️</span> Pause
+                        <span class="icon">⏸️️</span> Pause
                     </button>
                     <button class="bg-download-control-btn resume hidden" id="bg-dl-resume">
                         <span class="icon">▶️</span> Resume

@@ -8,7 +8,7 @@
 (function () {
   'use strict';
 
-  /* ─── CONSTANTS ──────────────────────────────────────────────────── */
+  /* --- CONSTANTS ---------------------------------------------------- */
   const DRAG_SCALE   = 1.8;     /* minutes per pixel of drag          */
   const MOM_DECAY    = 0.87;    /* momentum friction coefficient       */
   const MOM_THRESH   = 0.25;    /* min velocity to start momentum      */
@@ -16,7 +16,7 @@
   const HAPTIC_LONG  = [8, 30, 8]; /* on-the-hour tick                */
   const STORAGE_KEY  = 'anhad_cine_v5';
 
-  /* ─── AUDIO LIBRARY ─────────────────────────────── */
+  /* --- AUDIO LIBRARY ------------------------------- */
   // Detect correct audio path based on current location
   const AUDIO_BASE = (() => {
     const loc = window.location;
@@ -66,13 +66,13 @@
     return sound.file;
   }
 
-  /* ─── SKY PALETTE TABLE ──────────────────────────────────────────────
+  /* --- SKY PALETTE TABLE ----------------------------------------------
      t = minutes (0–1440)
      sk0..sk4 = 5 gradient stops top→horizon (RGB arrays)
      s  = star opacity   mo = moon opacity   sun = sun opacity
      fi = fire opacity   bi = birds opacity  vh  = van headlight opacity
      mx = mountain color tints [far, mid, near, front] (hex strings)
-  ─────────────────────────────────────────────────────────────────────── */
+  ----------------------------------------------------------------------- */
   const SKY_TBL = [
     /* 00:00 deep night */
     { t:   0, sk0:[0,0,0],   sk1:[2,2,4],    sk2:[4,4,6],   sk3:[2,2,4],   sk4:[0,0,2],
@@ -150,7 +150,7 @@
       mx:['#0a0a0c','#08080a','#040406','#020202'] },
   ];
 
-  /* ─── SUN ARC ────────────────────────────────────────────────────── */
+  /* --- SUN ARC ------------------------------------------------------ */
   /* rises at 06:00 (360 min), sets at 18:30 (1110 min) */
   const SUN_RISE = 360, SUN_SET = 1110;
   function getSunPos(min) {
@@ -163,7 +163,7 @@
     return { x, y };
   }
 
-  /* ─── MOON ARC ───────────────────────────────────────────────────── */
+  /* --- MOON ARC ----------------------------------------------------- */
   /* rises ~18:00 (1080), sets ~05:30 (330) the next day */
   const MOON_RISE = 1080, MOON_SET = 330;
   function getMoonPos(min) {
@@ -179,7 +179,7 @@
     return { x, y };
   }
 
-  /* ─── STORAGE ────────────────────────────────────────────────────── */
+  /* --- STORAGE ------------------------------------------------------ */
   function loadAlarms() {
     try { const r = localStorage.getItem(STORAGE_KEY); if (r) return JSON.parse(r); } catch {}
     return [
@@ -216,7 +216,7 @@
   }
   function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
 
-  /* ─── STATE ──────────────────────────────────────────────────────── */
+  /* --- STATE -------------------------------------------------------- */
   let alarms        = loadAlarms();
   let currentMin    = 780;        /* start at 1:00 PM */
   let selectedSound = 'a1';
@@ -238,13 +238,13 @@
   let updateRaf = null;
   let hintDone  = false;
 
-  /* ─── MATH HELPERS ───────────────────────────────────────────────── */
+  /* --- MATH HELPERS ------------------------------------------------- */
   const lerp   = (a, b, t) => a + (b - a) * t;
   const lerpRGB= (a, b, t) => a.map((v, i) => Math.round(lerp(v, b[i], t)));
   const clamp  = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
   const wrapMin= m => ((m % 1440) + 1440) % 1440;
 
-  /* ─── SKY INTERPOLATION ──────────────────────────────────────────── */
+  /* --- SKY INTERPOLATION -------------------------------------------- */
   function getSkyAt(rawMin) {
     const m = wrapMin(rawMin);
     const T = SKY_TBL;
@@ -271,7 +271,7 @@
     return T[0];
   }
 
-  /* ─── APPLY SKY TO DOM ───────────────────────────────────────────── */
+  /* --- APPLY SKY TO DOM --------------------------------------------- */
   const RS = document.documentElement.style;
   function applySky(rawMin) {
     const sk  = getSkyAt(rawMin);
@@ -302,7 +302,7 @@
     RS.setProperty('--m1-fill', sk.mx[3]);
   }
 
-  /* ─── FORMAT TIME ────────────────────────────────────────────────── */
+  /* --- FORMAT TIME -------------------------------------------------- */
   function fmtTime(rawMin) {
     const m  = wrapMin(rawMin);
     const h  = Math.floor(m / 60) % 12 || 12;
@@ -310,7 +310,7 @@
     return { digits: `${h}:${mm}`, period: m < 720 ? 'AM' : 'PM' };
   }
 
-  /* ─── HAPTIC ─────────────────────────────────────────────────────── */
+  /* --- HAPTIC ------------------------------------------------------- */
   function haptic(pattern) {
     if ('vibrate' in navigator) navigator.vibrate(pattern);
   }
@@ -324,7 +324,7 @@
     }
   }
 
-  /* ─── DOM CACHE ──────────────────────────────────────────────────── */
+  /* --- DOM CACHE ---------------------------------------------------- */
   let E = {};
   function cacheDOM() {
     const $ = id => document.getElementById(id);
@@ -351,7 +351,7 @@
     };
   }
 
-  /* ─── DISPLAY UPDATE ─────────────────────────────────────────────── */
+  /* --- DISPLAY UPDATE ----------------------------------------------- */
   function updateDisplay(rawMin) {
     const { digits, period } = fmtTime(rawMin);
     E.timeDigits.textContent = digits;
@@ -368,7 +368,7 @@
     });
   }
 
-  /* ─── POINTER / DRAG ─────────────────────────────────────────────── */
+  /* --- POINTER / DRAG ----------------------------------------------- */
   function onPointerDown(e) {
     /* ignore taps on interactive elements */
     if (e.target.closest('button, label, input, .bottom-sheet, .sheet-backdrop')) return;
@@ -420,7 +420,7 @@
     momRaf = requestAnimationFrame(step);
   }
 
-  /* ─── SHEET HELPERS (with history state for mobile back button) ─── */
+  /* --- SHEET HELPERS (with history state for mobile back button) --- */
   let activeSheet = null;
   let activeBackdrop = null;
 
@@ -454,7 +454,7 @@
     }
   });
 
-  /* ─── ALARM SHEET ────────────────────────────────────────────────── */
+  /* --- ALARM SHEET -------------------------------------------------- */
   function renderAlarmSheet() {
     const active = alarms.filter(a => a.on).length;
     E.badgeText.textContent = `${active} active`;
@@ -647,7 +647,7 @@
     });
   }
 
-  /* ─── SOUND SHEET ────────────────────────────────────────────────── */
+  /* --- SOUND SHEET -------------------------------------------------- */
   let previewTimeout = null;
   let currentlyPreviewingId = null;
   
@@ -773,7 +773,7 @@
     });
   }
 
-  /* ─── ADD ALARM ──────────────────────────────────────────────────── */
+  /* --- ADD ALARM ---------------------------------------------------- */
   const LABELS = ['Amritvela','Nitnem','Hukamnama','Simran','Meditation','Rehras Sahib','Sohila Sahib','Asa Di Var','Kirtan'];
   function addAlarm() {
     stopPreview(); // Stop any playing preview before adding alarm
@@ -799,7 +799,7 @@
     E.timeDigits.classList.add('bump');
   }
 
-  /* ─── TOAST ──────────────────────────────────────────────────────── */
+  /* --- TOAST -------------------------------------------------------- */
   let toastTimer = null;
   function showToast(msg) {
     E.toast.textContent = msg;
@@ -808,7 +808,7 @@
     toastTimer = setTimeout(() => E.toast.classList.remove('show'), 2600);
   }
 
-  /* ─── INIT ───────────────────────────────────────────────────────── */
+  /* --- INIT --------------------------------------------------------- */
   function init() {
     cacheDOM();
 
@@ -821,13 +821,13 @@
     updateDisplay(currentMin);
     applySky(currentMin);
 
-    /* ── Pointer events (single codepath for mouse + touch) ── */
+    /* -- Pointer events (single codepath for mouse + touch) -- */
     document.addEventListener('pointerdown',  onPointerDown, { passive: true });
     document.addEventListener('pointermove',  onPointerMove, { passive: true });
     document.addEventListener('pointerup',    onPointerUp);
     document.addEventListener('pointercancel',onPointerUp);
 
-    /* ── Back button ── */
+    /* -- Back button -- */
     E.backBtn.addEventListener('click', () => {
       stopPreview();
       if (typeof handleBack === 'function') handleBack();
@@ -836,7 +836,7 @@
       else window.location.href = '../index.html';
     });
 
-    /* ── Alarms sheet ── */
+    /* -- Alarms sheet -- */
     E.alarmsBtn.addEventListener('click', () => {
       renderAlarmSheet();
       openSheet(E.alarmSheet, E.sheetBackdrop);
@@ -845,7 +845,7 @@
     E.sheetBackdrop.addEventListener('click', () => closeSheet(E.alarmSheet, E.sheetBackdrop));
     E.closeSheet.addEventListener('click',    () => closeSheet(E.alarmSheet, E.sheetBackdrop));
 
-    /* ── Sound sheet ── */
+    /* -- Sound sheet -- */
     E.soundBtn.addEventListener('click', () => {
       renderSoundSheet();
       openSheet(E.soundSheet, E.soundBackdrop);
@@ -854,23 +854,23 @@
     E.soundBackdrop.addEventListener('click',    () => { stopPreview(); closeSheet(E.soundSheet, E.soundBackdrop); });
     E.closeSoundSheet.addEventListener('click',  () => { stopPreview(); closeSheet(E.soundSheet, E.soundBackdrop); });
 
-    /* ── Repeat (placeholder) ── */
+    /* -- Repeat (placeholder) -- */
     E.repeatBtn.addEventListener('click', () => {
       showToast('ਦੁਹਰਾਓ · Repeat — coming soon');
       haptic(HAPTIC_SHORT);
     });
 
-    /* ── Add alarm ── */
+    /* -- Add alarm -- */
     E.addAlarmBtn.addEventListener('click', addAlarm);
 
-    /* ── Dismiss loading screen ── */
+    /* -- Dismiss loading screen -- */
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         if (E.loadScreen) E.loadScreen.classList.add('done');
       });
     });
 
-    /* ── Live clock tick (updates display every minute, not sky) ── */
+    /* -- Live clock tick (updates display every minute, not sky) -- */
     setInterval(() => {
       if (!dragging && !momRaf) updateDisplay(currentMin);
     }, 60_000);

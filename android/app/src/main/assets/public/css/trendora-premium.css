@@ -2565,7 +2565,7 @@ html.dark-mode .sheet__option-arrow,
 ═══════════════════════════════════════════════════════════════════════════════ */
 .mini-player {
   position: fixed;
-  bottom: calc(var(--nav-height) + var(--safe-bottom) + 8px);
+  bottom: calc(98px + max(env(safe-area-inset-bottom, 0px), 6px)) !important;
   left: 50%;
   transform: translateX(-50%) translateY(200%);
   width: calc(100% - 28px);
@@ -2578,11 +2578,11 @@ html.dark-mode .sheet__option-arrow,
   backdrop-filter: blur(var(--blur-lg)) saturate(200%);
   -webkit-backdrop-filter: blur(var(--blur-lg)) saturate(200%);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-xl);
+  box-shadow: 0 4px 18px rgba(212, 148, 58, 0.12), inset 0 1px 2px rgba(255, 255, 255, 0.95);
   z-index: 9000;
   cursor: pointer;
   transition: transform 0.45s var(--ease-ios-spring), opacity 0.3s ease;
-  border: 0.5px solid rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(212, 148, 58, 0.25);
   overflow: hidden;
   opacity: 0;
   pointer-events: none;

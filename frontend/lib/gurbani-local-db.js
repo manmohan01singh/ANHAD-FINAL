@@ -89,7 +89,7 @@
                 request.onsuccess = (event) => {
                     const db = event.target.result;
 
-                    // ── Runtime guard: if store is missing even after a successful open ──
+                    // -- Runtime guard: if store is missing even after a successful open --
                     // This happens when the DB was previously opened at v4 but the
                     // onupgradeneeded was interrupted/crashed and the store was never created.
                     if (!db.objectStoreNames.contains(STORE_NAME)) {

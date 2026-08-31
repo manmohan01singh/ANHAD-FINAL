@@ -26,27 +26,32 @@
   const MAX_RETRIES = 200;
 
   /**
-   * Pages allowed to show the mini player: Home, Favorites, Insights.
-   *
-   * overlay-player.js is loaded by ~30 pages, and the only gate used to be
-   * "hide on the Gurbani Radio page" — so the player followed the user into
-   * every Nitnem bani, every reader, Settings, Notes, everywhere. It has no
-   * business floating over a Bani being read.
-   *
-   * These three are exactly smooth-navigation.js's isShellPage() set, which is
-   * not a coincidence: they are the browsing surfaces, and every other route is
-   * a full document load, so init() re-runs there and correctly bails.
+   * Pages allowed to show the mini player: Homepage, Favorites page, and Sadhsangat page (the last page).
+   * No other page should contain the mini player.
    */
   function isMiniPlayerPage() {
     try {
       var p = window.location.pathname.toLowerCase();
-      // Hide ONLY on dedicated full-screen radio player pages
-      if (p.includes('gurbani-radio.html') || p.includes('gurbani-radio')) {
-        return false;
+      // Remove trailing slash for reliable matching
+      if (p.endsWith('/') && p.length > 1) p = p.slice(0, -1);
+      
+      // 1. Homepage
+      if (p === '' || p === '/' || p === '/index.html' || p.endsWith('/frontend') || p.endsWith('/frontend/index.html') || p.endsWith('/anhad-final') || p.endsWith('/anhad-final/index.html')) {
+        return true;
       }
-      return true;
+      // 2. Favorites page
+      if (p.includes('favorites.html') || p.endsWith('/favorites')) {
+        return true;
+      }
+      // 3. The last page (Sadhsangat Live)
+      if (p.includes('sadhsangat-live') || p.endsWith('/sadhsangat-live')) {
+        return true;
+      }
+      
+      // All other pages (readers, nitnem, settings, calendar, notes, insights, etc.) are strictly excluded
+      return false;
     } catch (e) {
-      return true;
+      return false;
     }
   }
 

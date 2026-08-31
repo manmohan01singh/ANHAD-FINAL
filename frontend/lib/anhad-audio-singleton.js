@@ -23,7 +23,7 @@
   const CDN_BASE_SIMRAN = 'https://pub-8bf31fc1f2a44451b40a3ded7e07fac2.r2.dev/waheguru';
   const SGPC_LIVE = 'https://live.sgpc.net:8443/;nocache=1';
 
-  // ── HTTPS proxy for HTTP Icecast streams ──
+  // -- HTTPS proxy for HTTP Icecast streams --
   // On HTTPS web (Vercel), browsers block http:// audio (mixed content).
   // We proxy via /api/stream?url=... edge function.
   // On Capacitor (Android/iOS), direct audio is allowed via usesCleartextTraffic.
@@ -185,7 +185,7 @@
         return `${CDN_BASE_SIMRAN}/${encodeURIComponent(filename)}?v=2.1.5`;
       }
     },
-    // ── SikhNet Live Gurdwara Streams (HTTPS, port 443, no proxy needed) ──
+    // -- SikhNet Live Gurdwara Streams (HTTPS, port 443, no proxy needed) --
     // Source: https://radio.sikhnet.com/proxy/ — verified 2025-07-20
     sn_bangla: {
       name: 'Gurdwara Bangla Sahib',
@@ -262,7 +262,7 @@
     ];
   }
 
-  // ─── STATE MANAGEMENT ───
+  // --- STATE MANAGEMENT ---
   let currentStream = null;
   let isPlaying = false;
   let isLoading = false;
@@ -360,7 +360,7 @@
     } catch(e) {}
   }
 
-  // ─── SHUFFLE ENGINE ───
+  // --- SHUFFLE ENGINE ---
   function regenerateShuffleOrder(epoch, cycle, length) {
     let seed = (epoch || 0) + cycle * 2654435761;
     function rand() {
@@ -378,7 +378,7 @@
     return shuffleOrder;
   }
 
-  // ─── VIRTUAL LIVE BROADCAST ENGINE ───
+  // --- VIRTUAL LIVE BROADCAST ENGINE ---
   // Represents a continuous television broadcast calculated directly from current UTC time.
   const VirtualLiveEngine = {
     getPlaylist(streamName) {
@@ -454,7 +454,7 @@
     }
   };
 
-  // ─── PLAYBACK QUEUE CONTROLLER ───
+  // --- PLAYBACK QUEUE CONTROLLER ---
   // Serializes all HTML5 Audio operations into a Promise queue to avoid race conditions.
   const PlaybackQueueController = {
     audio: null,
@@ -891,7 +891,7 @@
     }
   };
 
-  // ─── DARBAR LIVE STREAM MANAGER ───
+  // --- DARBAR LIVE STREAM MANAGER ---
   const DarbarLiveManager = {
     play(streamName) {
       const streamObj = streamName ? STREAMS[streamName] : null;
@@ -907,7 +907,7 @@
     }
   };
 
-  // ─── TRACK TRANSITION & PLAYBACK CONTROLLER ───
+  // --- TRACK TRANSITION & PLAYBACK CONTROLLER ---
   function playStream(streamName) {
     if (!STREAMS[streamName]) return;
     currentStream = streamName;
@@ -1048,7 +1048,7 @@
     }
   }
 
-  // ─── API CONTROL GATEWAYS ───
+  // --- API CONTROL GATEWAYS ---
   function play(streamName) {
     if (streamName) {
       playStream(streamName);
@@ -1236,7 +1236,7 @@
     persistState();
   }
 
-  // ─── STATE PERSISTENCE ───
+  // --- STATE PERSISTENCE ---
   function persistState() {
     if (!currentStream) return;
     try {
@@ -1320,7 +1320,7 @@
     return resolveAsset(cover);
   }
 
-  // ─── OS LOCKSCREEN (MEDIA SESSION) ───
+  // --- OS LOCKSCREEN (MEDIA SESSION) ---
   function updateMediaSession() {
     if (!currentStream) return;
     const stream = STREAMS[currentStream];
@@ -1402,7 +1402,7 @@
     } catch(e) { /* silently fail */ }
   }
 
-  // ─── UTILITIES & ACCESSORS ───
+  // --- UTILITIES & ACCESSORS ---
   function getLiveOffset() {
     if (!currentStream || STREAMS[currentStream].type !== 'playlist') return 0;
     return manualOffset || 0;
@@ -1475,7 +1475,7 @@
     };
   }
 
-  // ─── NATIVE MEDIA COMMAND LISTENER ───
+  // --- NATIVE MEDIA COMMAND LISTENER ---
   let _nativeListenerInitialized = false;
   function initNativeMediaListener() {
     if (_nativeListenerInitialized) return;
@@ -1511,7 +1511,7 @@
     }
   }
 
-  // ─── CO-ORDINATOR REGISTER ───
+  // --- CO-ORDINATOR REGISTER ---
   function registerWithCoordinator() {
     if (window.AudioCoordinator) {
       window.AudioCoordinator.register('AnhadAudio', {
@@ -1522,7 +1522,7 @@
     }
   }
 
-  // ─── INITIALIZATION ───
+  // --- INITIALIZATION ---
   loadState();
   PlaybackQueueController.init();
   registerWithCoordinator();
@@ -1534,7 +1534,7 @@
     if (stream) play(stream);
   });
 
-  // ─── DEFENSIVE BACKGROUND-KILL PROTECTION ───
+  // --- DEFENSIVE BACKGROUND-KILL PROTECTION ---
   // pause()/pauseFromNative() are normally the only things that create a
   // pauseAnchor, which is what lets resume() reconstruct the exact pre-pause
   // timeline position no matter how long the pause lasted. But if the OS
@@ -1559,7 +1559,7 @@
     persistState();
   }
 
-  // ─── RECOVERY: the network came back ───
+  // --- RECOVERY: the network came back ---
   // This engine previously had NO reaction to reconnection at all — the whole
   // file contained zero addEventListener('online'), and navigator.onLine was
   // read once, purely to pick an error string. Every recovery path was a timer
@@ -1591,7 +1591,7 @@
 
   window.addEventListener('online', () => recoverAfterReconnect('Network restored'));
 
-  // ─── ACTIVE NETWORK HEARTBEAT & AUTO-RETRIEVAL WATCHDOG ───
+  // --- ACTIVE NETWORK HEARTBEAT & AUTO-RETRIEVAL WATCHDOG ---
   // Smart TVs, desktop browsers, and certain network cards frequently drop
   // or restore WiFi/Ethernet without firing the browser 'online' event.
   // This active watchdog probes network health every 6s whenever playback was
@@ -1650,7 +1650,7 @@
     if (e.persisted) recoverAfterReconnect('Restored from bfcache');
   });
 
-  // ─── PERIODIC LIVE-DRIFT CORRECTION ───
+  // --- PERIODIC LIVE-DRIFT CORRECTION ---
   // The timeline model assumes real playback runs at exactly 1x wall-clock
   // speed forever once started, with no periodic re-check — so a stall/
   // rebuffer that doesn't trip the stall watchdog or an 'error' event can
