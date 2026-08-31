@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="transparent">
+    <meta name="apple-mobile-web-app-status-bar-style" content="transparent">
     <title>About ANHAD • The Journey</title>
     
     <!-- Inline Critical Theme Script -->
@@ -37,37 +39,174 @@
     <link rel="stylesheet" href="../css/global-mini-player.css?v=5">
     <link rel="stylesheet" href="../css/desktop-responsive.css?v=26">
     
+    <!-- NUCLEAR OPTION: Self-contained Dynamic Island with maximum specificity -->
+    <style>
+      /* FORCE HIDE EVERYTHING THAT COULD BE A HEADER */
+      nav:not(#dynamicIslandNav),
+      header,
+      .glass-nav,
+      .app-bar,
+      .app-header,
+      [class*="nav"],
+      [class*="header"],
+      [class*="bar"] {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        height: 0 !important;
+        overflow: hidden !important;
+      }
+      
+      /* KILL ALL RED BARS AND PSEUDO ELEMENTS */
+      *::before,
+      *::after {
+        background: transparent !important;
+        border-color: transparent !important;
+      }
+      
+      /* SELF-CONTAINED DYNAMIC ISLAND - MAXIMUM SPECIFICITY */
+      #dynamicIslandNav {
+        display: flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        position: fixed !important;
+        top: max(env(safe-area-inset-top, 0px), 16px) !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        width: calc(100% - 32px) !important;
+        max-width: 380px !important;
+        height: 56px !important;
+        z-index: 99999 !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        padding: 0 8px !important;
+        gap: 12px !important;
+        background: rgba(0, 0, 0, 0.88) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        border-radius: 36px !important;
+        backdrop-filter: blur(24px) saturate(180%) !important;
+        -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+      }
+      
+      /* KILL ANY RED/CORAL BACKGROUNDS */
+      #dynamicIslandNav,
+      #dynamicIslandNav * {
+        background-image: none !important;
+      }
+      
+      #dynamicIslandNav::before,
+      #dynamicIslandNav::after {
+        content: none !important;
+        display: none !important;
+      }
+      
+      [data-theme="light"] #dynamicIslandNav,
+      html:not([data-theme="dark"]):not(.dark-mode) #dynamicIslandNav {
+        background: rgba(255, 255, 255, 0.85) !important;
+        border-color: rgba(0, 0, 0, 0.08) !important;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.5) !important;
+      }
+      
+      #dynamicIslandNav .island-btn {
+        width: 40px !important;
+        height: 40px !important;
+        border-radius: 50% !important;
+        border: none !important;
+        background: transparent !important;
+        color: rgba(255, 255, 255, 0.95) !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        cursor: pointer !important;
+        transition: all 0.2s ease !important;
+        flex-shrink: 0 !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+      
+      [data-theme="light"] #dynamicIslandNav .island-btn,
+      html:not([data-theme="dark"]):not(.dark-mode) #dynamicIslandNav .island-btn {
+        color: rgba(0, 0, 0, 0.85) !important;
+      }
+      
+      #dynamicIslandNav .island-btn:hover {
+        background: rgba(255, 255, 255, 0.12) !important;
+        transform: scale(1.05) !important;
+      }
+      
+      [data-theme="light"] #dynamicIslandNav .island-btn:hover,
+      html:not([data-theme="dark"]):not(.dark-mode) #dynamicIslandNav .island-btn:hover {
+        background: rgba(0, 0, 0, 0.06) !important;
+      }
+      
+      #dynamicIslandNav .island-btn:active {
+        transform: scale(0.95) !important;
+      }
+      
+      #dynamicIslandNav .island-btn svg {
+        width: 22px !important;
+        height: 22px !important;
+        stroke-width: 2.5 !important;
+      }
+      
+      #dynamicIslandNav .island-title {
+        flex: 1 !important;
+        text-align: center !important;
+        font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif !important;
+        font-size: 15px !important;
+        font-weight: 600 !important;
+        letter-spacing: -0.02em !important;
+        color: rgba(255, 255, 255, 0.98) !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        padding: 0 4px !important;
+        margin: 0 !important;
+      }
+      
+      [data-theme="light"] #dynamicIslandNav .island-title,
+      html:not([data-theme="dark"]):not(.dark-mode) #dynamicIslandNav .island-title {
+        color: rgba(0, 0, 0, 0.9) !important;
+      }
+    </style>
+    
     <!-- Scripts -->
     <script src="../lib/anhad-svg-sprite.js"></script>
     <script src="../lib/global-theme.js" defer></script>
     <script src="../lib/desktop-sidebar.js" defer></script>
     <script src="../js/anhad-core.js" defer></script>
     <script src="journey.js" defer></script>
+    
+    <!-- Status Bar Handler for Capacitor -->
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.StatusBar) {
+          const StatusBar = window.Capacitor.Plugins.StatusBar;
+          StatusBar.setStyle({ style: 'DARK' });
+          StatusBar.setBackgroundColor({ color: '#00000000' }); // Transparent
+          StatusBar.setOverlaysWebView({ overlay: true });
+        }
+      });
+    </script>
 </head>
 <body class="journey-page" data-anhad-core>
 
-    <!-- Clean Top App Bar -->
-    <header class="app-bar" role="banner">
-        <div class="app-bar__container">
-            <button class="app-bar__back" id="journeyBackBtn" aria-label="Go Back">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="19" y1="12" x2="5" y2="12"></line>
-                    <polyline points="12 19 5 12 12 5"></polyline>
-                </svg>
-                <span class="back-text">Back</span>
-            </button>
-            <span class="app-bar__title">About ANHAD</span>
-            <button class="app-bar__action" id="journeyShareTopBtn" aria-label="Share ANHAD">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="18" cy="5" r="3"></circle>
-                    <circle cx="6" cy="12" r="3"></circle>
-                    <circle cx="18" cy="19" r="3"></circle>
-                    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
-                    <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
-                </svg>
-            </button>
-        </div>
-    </header>
+    <!-- SELF-CONTAINED DYNAMIC ISLAND -->
+    <nav id="dynamicIslandNav">
+        <button class="island-btn" id="journeyBackBtn" aria-label="Back">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M15 18l-6-6 6-6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
+        <span class="island-title">About ANHAD</span>
+        <button class="island-btn" id="journeyShareTopBtn" aria-label="Share">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+            </svg>
+        </button>
+    </nav>
 
     <!-- Main Content Stream -->
     <main class="page-content" id="journeyContent">
