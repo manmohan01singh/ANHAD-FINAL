@@ -1110,6 +1110,26 @@
           }
         }
 
+        const badgePillEl = document.getElementById('eventBadgePill');
+        if (badgePillEl) {
+          if (event.isToday) {
+            badgePillEl.textContent = event.eventCategory === 'remembrance' ? 'TODAY 🙏' : 'TODAY ✨';
+            badgePillEl.style.display = 'inline-flex';
+            badgePillEl.classList.remove('event-card__badge-pill--upcoming');
+          } else {
+            const daysNum = (typeof event.daysLeft === 'number' && !isNaN(event.daysLeft)) ? event.daysLeft : null;
+            if (daysNum !== null && daysNum >= 0) {
+              badgePillEl.textContent = `${daysNum} ${daysNum === 1 ? 'day left' : 'days left'}`;
+              badgePillEl.style.display = 'inline-flex';
+              badgePillEl.classList.add('event-card__badge-pill--upcoming');
+            } else {
+              badgePillEl.textContent = 'UPCOMING';
+              badgePillEl.style.display = 'inline-flex';
+              badgePillEl.classList.add('event-card__badge-pill--upcoming');
+            }
+          }
+        }
+
         // Update Guru image
         this._updateGuruImage(event);
 

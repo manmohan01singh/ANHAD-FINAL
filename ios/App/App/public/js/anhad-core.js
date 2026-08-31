@@ -222,6 +222,9 @@
   };
 
   function _runAll(o) {
+    if (window.AnhadSvgSprite && typeof window.AnhadSvgSprite.ensure === 'function') {
+      window.AnhadSvgSprite.ensure();
+    }
     initBack(o.homeHref);
     if (o.transition !== false) initTransition(o.transitionSelector);
     initOfflineBanner();

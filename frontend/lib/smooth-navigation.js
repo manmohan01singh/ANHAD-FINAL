@@ -235,6 +235,7 @@
   }
 
   const SHELL_SCRIPTS = [
+    'anhad-svg-sprite.js',
     'overlay-player.js',
     'smooth-navigation.js',
     'global-theme.js',
@@ -595,6 +596,7 @@
     // swapped as page content nor synced as shell unless it is listed here.
     // (Dropping them is why the Learning page lost its heading on SPA nav.)
     const shellSelectors = [
+      '#anhadSvgSprite',
       '#mainNav', '#main-nav', '#pageHeader', '#globalPlayer',
       '.tab-bar', '.sidebar', '.desktop-sidebar', '.app-header',
       // Page-owned but declared OUTSIDE #app, so the content swap can't reach
@@ -612,7 +614,7 @@
 
     // Shell elements that belong ABOVE the page content. Appending these to the
     // end of <body> (the old default) renders a page header below everything.
-    const SHELL_BEFORE_APP = ['#pageHeader', '.app-header', '.desktop-sidebar'];
+    const SHELL_BEFORE_APP = ['#anhadSvgSprite', '#pageHeader', '.app-header', '.desktop-sidebar'];
 
     shellSelectors.forEach(selector => {
       const newNode = newDoc.querySelector(selector);
@@ -780,6 +782,12 @@
     resolveRelativePaths(currentApp, url);
     absoluteifyShellLinks();
 
+    // Ensure global SVG sprite and refresh all SVG <use> elements across DOM
+    if (window.AnhadSvgSprite && typeof window.AnhadSvgSprite.ensure === 'function') {
+      window.AnhadSvgSprite.ensure();
+    }
+    refreshSvgUses(document);
+
     // Re-init core components
     if (window.AnhadCore && window.AnhadCore.init) {
       window.AnhadCore.init();
@@ -789,6 +797,22 @@
     
     // Dispatch standard page changed event
     window.dispatchEvent(new CustomEvent('anhad_page_changed', { detail: { url } }));
+  }
+
+  /**
+   * Refreshes SVG <use> elements so browser engine re-evaluates symbol instances
+   */
+  function refreshSvgUses(container = document) {
+    try {
+      const uses = container.querySelectorAll('use');
+      uses.forEach(useEl => {
+        const href = useEl.getAttribute('href') || useEl.getAttribute('xlink:href');
+        if (href && href.startsWith('#')) {
+          useEl.setAttribute('href', href);
+          useEl.setAttribute('xlink:href', href);
+        }
+      });
+    } catch(e) {}
   }
 
   /**

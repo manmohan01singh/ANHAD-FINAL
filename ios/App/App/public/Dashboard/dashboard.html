@@ -100,6 +100,7 @@
   <!-- Global Theme System -->
   <link rel="stylesheet" href="../css/theme-variables.css">
   <link rel="stylesheet" href="../css/desktop-responsive.css?v=26">
+  <script src="../lib/anhad-svg-sprite.js"></script>
   <script src="../lib/global-theme.js"></script>
   
   <title>Dashboard • ANHAD</title>
@@ -645,27 +646,25 @@
     })();
   </script>
   
-  <!-- Floating Tab Bar  Same as Home Page -->
+  <!-- Floating Tab Bar -->
   <nav class="tab-bar" id="mainNav" aria-label="Main Navigation">
-  <a href="../index.html" class="tab-item">
-    <span class="tab-icon">🏠</span>
-    <span class="tab-label">Home</span>
-  </a>
-  <a href="../Insights/insights.html" class="tab-item">
-    <span class="tab-icon">📚</span>
-    <span class="tab-label">Learning</span>
-  </a>
-  <a href="../Favorites/favorites.html" class="tab-item">
-    <span class="tab-icon">❤️</span>
-    <span class="tab-label">Favorites</span>
-  </a>
-  <a href="../sadhsangat-live/index.html" class="tab-item">
-    <span class="tab-icon" style="font-size:0;line-height:0;">
-      <img decoding="async" src="../assets/app-logo.png" alt="Sadhsangat" style="width:26px;height:26px;border-radius:8px;object-fit:cover;display:block;">
-    </span>
-    <span class="tab-label">Sadhsangat</span>
-  </a>
-</nav>
+    <a href="../index.html" class="tab-item">
+      <span class="tab-icon"><svg width="22" height="22" aria-hidden="true"><use href="#icon-home"/></svg></span>
+      <span class="tab-label">Home</span>
+    </a>
+    <a href="../Insights/insights.html" class="tab-item">
+      <span class="tab-icon"><svg width="22" height="22" aria-hidden="true"><use href="#icon-library-books"/></svg></span>
+      <span class="tab-label">Learning</span>
+    </a>
+    <a href="../Favorites/favorites.html" class="tab-item">
+      <span class="tab-icon"><svg width="22" height="22" aria-hidden="true"><use href="#icon-heart-fav"/></svg></span>
+      <span class="tab-label">Favorites</span>
+    </a>
+    <a href="../sadhsangat-live/index.html" class="tab-item">
+      <span class="tab-icon"><svg width="22" height="22" aria-hidden="true"><use href="#icon-radio-broadcast"/></svg></span>
+      <span class="tab-label">Sadhsangat</span>
+    </a>
+  </nav>
 
     <!-- Global Alarm/Notification Engine + Back Button + Widget Bridge -->
     <script src="../lib/capacitor-notifications-global.js"></script>
