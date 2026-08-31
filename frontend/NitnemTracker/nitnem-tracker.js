@@ -23,19 +23,53 @@ const CONFIG = {
         MALA_LOG: 'nitnemTracker_malaLog',
         ALARM_LOG: 'nitnemTracker_alarmLog',
         STREAK_DATA: 'anhad_streak_data',
+        STREAK_DATA_LEGACY: 'nitnemTracker_streakData',
         ACHIEVEMENTS: 'nitnemTracker_achievements',
         SELECTED_BANIS: 'nitnemTracker_selectedBanis',
         THEME: 'nitnemTracker_theme',
-        // Real user-data keys that Export/Import/Reset previously omitted
-        // despite "Export All Data" / "Reset All Data" implying full coverage.
         SELECTED_BANIS_HISTORY: 'nitnemTracker_selectedBanis_history',
         NITNEM_PROGRESS: 'nitnemTracker_progress',
         DAILY_GOALS: 'anhad_daily_goals',
-        NAAM_ABHYAS_HISTORY: 'naam_abhyas_history',
+        MALA_COUNTER_V1: 'anhad_mala_counter_v1',
         MY_POTHI_ORDER: 'anhad_my_pothi',
         MY_POTHI_DATA: 'anhad_my_pothi_data',
         MY_POTHI_COMPLETED: 'anhad_my_pothi_completed',
-        MY_POTHI_SNAPSHOTS: 'anhad_pothi_snapshots'
+        MY_POTHI_SNAPSHOTS: 'anhad_pothi_snapshots',
+        MY_POTHI_ADDITIONS: 'anhad_pothi_bani_additions',
+        POTHI_INSIGHTS_TAB: 'pothi_insights_tab',
+        SEHAJ_STATE: 'sehajPaathState',
+        SEHAJ_PROGRESS: 'sehajPaathProgress',
+        SEHAJ_PROGRESS_ALT: 'gurbani_sehajPaath_progress',
+        SEHAJ_BOOKMARKS: 'sehajPaathBookmarks',
+        SEHAJ_BOOKMARK_FOLDERS: 'sehajPaathBookmarkFolders',
+        SEHAJ_HISTORY: 'sehajPaathHistory',
+        SEHAJ_NOTES: 'sehajPaathNotes',
+        SEHAJ_ACHIEVEMENTS: 'sehajPaathAchievements',
+        SEHAJ_SETTINGS: 'sehajPaathSettings',
+        SEHAJ_STATS: 'sehajPaathStats',
+        COMPLETED_PAATHS: 'completedPaaths',
+        NAAM_ABHYAS_HISTORY: 'naam_abhyas_history',
+        NAAM_ABHYAS_CONFIG: 'naam_abhyas_config',
+        NAAM_ABHYAS_SCHEDULE: 'naam_abhyas_schedule',
+        ANHAD_FAVORITES: 'anhad_favorites',
+        GURBANI_FAVORITE_SHABADS: 'gurbani_favorite_shabads',
+        GURBANI_SHABAD_BOOKMARKS: 'gurbani_shabad_bookmarks',
+        USER_NOTES: 'userNotes',
+        SEARCH_HISTORY: 'searchHistory',
+        BANI_SETTINGS: 'baniSettings',
+        BANI_READER_SETTINGS: 'baniReader_settings',
+        SHABAD_SETTINGS: 'gurbani_shabad_settings',
+        GURBANI_FONT: 'gurbaniFont',
+        GURBANI_KHOJ_FONT: 'gurbaniKhoj_font',
+        ANHAD_THEME: 'anhad_theme',
+        ANHAD_TIME_OF_DAY: 'anhad_forced_time_of_day',
+        ANHAD_NOTIFICATIONS: 'anhad_notification_prefs',
+        CINE_ALARMS: 'cine_alarms_v4',
+        SMART_REMINDERS_SETTINGS: 'sr_settings_v7',
+        SMART_REMINDERS_LOG: 'sr_reminders_v7',
+        UNIFIED_STATS: 'anhad_unified_stats',
+        USER_STATS: 'anhad_user_stats',
+        DAILY_ANALYTICS: 'anhad_daily_analytics'
     },
 
     // Amritvela Time Slots (in hours, 24h format)
@@ -974,9 +1008,49 @@ const StorageManager = {
      */
     exportData() {
         const data = {};
+        // 1. Export all CONFIG.STORAGE_KEYS
         Object.entries(CONFIG.STORAGE_KEYS).forEach(([name, key]) => {
-            data[name] = this.load(key);
+            const val = this.load(key);
+            if (val !== null && val !== undefined) {
+                data[name] = val;
+                data[key] = val;
+            }
         });
+
+        // 2. Export all app keys in localStorage (covering all past & current modules)
+        for (let i = 0; i < localStorage.length; i++) {
+            const k = localStorage.key(i);
+            if (k && (
+                k.startsWith('nitnem') ||
+                k.startsWith('anhad_') ||
+                k.startsWith('sehaj') ||
+                k.startsWith('gurbani') ||
+                k.startsWith('sr_') ||
+                k.startsWith('cine_') ||
+                k.startsWith('user') ||
+                k.startsWith('bani') ||
+                k.startsWith('search') ||
+                k.startsWith('pothi') ||
+                k.startsWith('completed') ||
+                k.startsWith('naam_')
+            )) {
+                try {
+                    const rawVal = localStorage.getItem(k);
+                    if (rawVal !== null) {
+                        try {
+                            data[k] = JSON.parse(rawVal);
+                        } catch(e) {
+                            data[k] = rawVal;
+                        }
+                    }
+                } catch(e) {}
+            }
+        }
+
+        data.exportDate = Utils.getTodayString();
+        data.exportTimestamp = new Date().toISOString();
+        data.appVersion = CONFIG.APP_VERSION || '2.0';
+        data.appName = 'ANHAD Divine Gurbani & Nitnem Tracker';
         return JSON.stringify(data, null, 2);
     },
 
@@ -985,54 +1059,140 @@ const StorageManager = {
      */
     parseBackupSummary(jsonString) {
         try {
-            let raw = JSON.parse(jsonString);
+            let raw = typeof jsonString === 'object' && jsonString !== null ? jsonString : JSON.parse(jsonString);
             if (typeof raw !== 'object' || raw === null) {
                 return { isValid: false, categoriesCount: 0, categoriesList: [] };
             }
 
-            // Handle nested wrapped payload (e.g. { data: { ... } })
-            let payload = raw.data && typeof raw.data === 'object' ? raw.data : raw;
+            // Handle nested wrapped payload (e.g. { data: { ... } } or { backup: { ... } })
+            let payload = (raw.data && typeof raw.data === 'object') ? raw.data :
+                          (raw.backup && typeof raw.backup === 'object') ? raw.backup : raw;
 
             const categoryLabels = {
                 SETTINGS: 'App Settings',
                 nitnemTracker_settings: 'App Settings',
-                AMRITVELA_LOG: 'Amritvela Logs',
-                nitnemTracker_amritvelaLog: 'Amritvela Logs',
-                NITNEM_LOG: 'Nitnem Completion Log',
-                nitnemTracker_nitnemLog: 'Nitnem Completion Log',
-                MALA_LOG: 'Mala Logs',
-                nitnemTracker_malaLog: 'Mala Logs',
-                ALARM_LOG: 'Alarm Logs',
-                nitnemTracker_alarmLog: 'Alarm Logs',
-                STREAK_DATA: 'Streak & Session Stats',
-                anhad_streak_data: 'Streak & Session Stats',
-                ACHIEVEMENTS: 'Achievements Data',
-                nitnemTracker_achievements: 'Achievements Data',
-                SELECTED_BANIS: 'Selected Banis',
-                nitnemTracker_selectedBanis: 'Selected Banis',
+                BANI_SETTINGS: 'Bani Reader Preferences',
+                baniSettings: 'Bani Reader Preferences',
+                BANI_READER_SETTINGS: 'Bani Reader Preferences',
+                baniReader_settings: 'Bani Reader Preferences',
+                SHABAD_SETTINGS: 'Shabad Reader Settings',
+                gurbani_shabad_settings: 'Shabad Reader Settings',
+                GURBANI_FONT: 'Gurbani Font Preferences',
+                gurbaniFont: 'Gurbani Font Preferences',
+                GURBANI_KHOJ_FONT: 'Khoj Font Preferences',
+                gurbaniKhoj_font: 'Khoj Font Preferences',
+                ANHAD_THEME: 'Theme Preference',
+                anhad_theme: 'Theme Preference',
                 THEME: 'Theme Preference',
                 nitnemTracker_theme: 'Theme Preference',
-                SELECTED_BANIS_HISTORY: 'Bani Selection History',
-                nitnemTracker_selectedBanis_history: 'Bani Selection History',
+                ANHAD_TIME_OF_DAY: 'Time of Day Theme',
+                anhad_forced_time_of_day: 'Time of Day Theme',
+                ANHAD_NOTIFICATIONS: 'Notification Settings',
+                anhad_notification_prefs: 'Notification Settings',
+
+                AMRITVELA_LOG: 'Amritvela Logs & History',
+                nitnemTracker_amritvelaLog: 'Amritvela Logs & History',
+                
+                NITNEM_LOG: 'Nitnem Completion History',
+                nitnemTracker_nitnemLog: 'Nitnem Completion History',
                 NITNEM_PROGRESS: 'Nitnem Progress Stats',
                 nitnemTracker_progress: 'Nitnem Progress Stats',
-                DAILY_GOALS: 'Daily Goals',
-                anhad_daily_goals: 'Daily Goals',
-                NAAM_ABHYAS_HISTORY: 'Naam Abhyas History',
-                naam_abhyas_history: 'Naam Abhyas History',
-                MY_POTHI_ORDER: 'My Pothi Order',
-                anhad_my_pothi: 'My Pothi Order',
-                MY_POTHI_DATA: 'My Pothi Banis',
-                anhad_my_pothi_data: 'My Pothi Banis',
-                MY_POTHI_COMPLETED: 'My Pothi History',
-                anhad_my_pothi_completed: 'My Pothi History',
+                
+                MALA_LOG: 'Mala Logs & Daily Jaap',
+                nitnemTracker_malaLog: 'Mala Logs & Daily Jaap',
+                MALA_COUNTER_V1: 'Waheguru Simran Mala Jaap',
+                anhad_mala_counter_v1: 'Waheguru Simran Mala Jaap',
+                
+                ALARM_LOG: 'Alarm Logs',
+                nitnemTracker_alarmLog: 'Alarm Logs',
+                CINE_ALARMS: 'Smart Alarm Reminders',
+                cine_alarms_v4: 'Smart Alarm Reminders',
+                SMART_REMINDERS_SETTINGS: 'Smart Reminder Settings',
+                sr_settings_v7: 'Smart Reminder Settings',
+                SMART_REMINDERS_LOG: 'Smart Reminder Log',
+                sr_reminders_v7: 'Smart Reminder Log',
+                
+                STREAK_DATA: 'Streaks & Milestones',
+                anhad_streak_data: 'Streaks & Milestones',
+                STREAK_DATA_LEGACY: 'Streak Data',
+                nitnemTracker_streakData: 'Streak Data',
+                USER_DATA: 'User Profile & Streaks',
+                nitnemTracker_userData: 'User Profile & Streaks',
+                UNIFIED_STATS: 'Unified Spiritual Stats',
+                anhad_unified_stats: 'Unified Spiritual Stats',
+                USER_STATS: 'User Lifetime Stats',
+                anhad_user_stats: 'User Lifetime Stats',
+                DAILY_ANALYTICS: 'Daily Analytics',
+                anhad_daily_analytics: 'Daily Analytics',
+                
+                ACHIEVEMENTS: 'Nitnem Achievements',
+                nitnemTracker_achievements: 'Nitnem Achievements',
+                SEHAJ_ACHIEVEMENTS: 'Sehaj Paath Achievements',
+                sehajPaathAchievements: 'Sehaj Paath Achievements',
+                
+                SELECTED_BANIS: 'Selected Banis Routine',
+                nitnemTracker_selectedBanis: 'Selected Banis Routine',
+                SELECTED_BANIS_HISTORY: 'Bani Selection History',
+                nitnemTracker_selectedBanis_history: 'Bani Selection History',
+                DAILY_GOALS: 'Daily Spiritual Goals',
+                anhad_daily_goals: 'Daily Spiritual Goals',
+                
+                MY_POTHI_ORDER: 'My Pothi Bani Collection',
+                anhad_my_pothi: 'My Pothi Bani Collection',
+                MY_POTHI_DATA: 'My Pothi Banis Data',
+                anhad_my_pothi_data: 'My Pothi Banis Data',
+                MY_POTHI_COMPLETED: 'My Pothi Reading Progress History',
+                anhad_my_pothi_completed: 'My Pothi Reading Progress History',
                 MY_POTHI_SNAPSHOTS: 'My Pothi Snapshots',
-                anhad_pothi_snapshots: 'My Pothi Snapshots'
+                anhad_pothi_snapshots: 'My Pothi Snapshots',
+                MY_POTHI_ADDITIONS: 'My Pothi Addition History',
+                anhad_pothi_bani_additions: 'My Pothi Addition History',
+                POTHI_INSIGHTS_TAB: 'Pothi Insights Preference',
+                pothi_insights_tab: 'Pothi Insights Preference',
+                
+                SEHAJ_STATE: 'Sehaj Paath Current State',
+                sehajPaathState: 'Sehaj Paath Current State',
+                SEHAJ_PROGRESS: 'Sehaj Paath Progress',
+                sehajPaathProgress: 'Sehaj Paath Progress',
+                SEHAJ_PROGRESS_ALT: 'Sehaj Paath Reading Log',
+                gurbani_sehajPaath_progress: 'Sehaj Paath Reading Log',
+                SEHAJ_BOOKMARKS: 'Sehaj Paath Ang Bookmarks',
+                sehajPaathBookmarks: 'Sehaj Paath Ang Bookmarks',
+                SEHAJ_BOOKMARK_FOLDERS: 'Sehaj Paath Folders',
+                sehajPaathBookmarkFolders: 'Sehaj Paath Folders',
+                SEHAJ_HISTORY: 'Sehaj Paath History',
+                sehajPaathHistory: 'Sehaj Paath History',
+                SEHAJ_NOTES: 'Sehaj Paath Reflections & Notes',
+                sehajPaathNotes: 'Sehaj Paath Reflections & Notes',
+                SEHAJ_SETTINGS: 'Sehaj Paath Settings',
+                sehajPaathSettings: 'Sehaj Paath Settings',
+                SEHAJ_STATS: 'Sehaj Paath Stats',
+                sehajPaathStats: 'Sehaj Paath Stats',
+                COMPLETED_PAATHS: 'Completed Paaths Archive',
+                completedPaaths: 'Completed Paaths Archive',
+                
+                NAAM_ABHYAS_HISTORY: 'Naam Abhyas Meditation History',
+                naam_abhyas_history: 'Naam Abhyas Meditation History',
+                NAAM_ABHYAS_CONFIG: 'Naam Abhyas Config',
+                naam_abhyas_config: 'Naam Abhyas Config',
+                NAAM_ABHYAS_SCHEDULE: 'Naam Abhyas Schedule',
+                naam_abhyas_schedule: 'Naam Abhyas Schedule',
+                
+                ANHAD_FAVORITES: 'Favorite Banis & Shabads',
+                anhad_favorites: 'Favorite Banis & Shabads',
+                GURBANI_FAVORITE_SHABADS: 'Favorite Shabads',
+                gurbani_favorite_shabads: 'Favorite Shabads',
+                GURBANI_SHABAD_BOOKMARKS: 'Shabad Bookmarks',
+                gurbani_shabad_bookmarks: 'Shabad Bookmarks',
+                USER_NOTES: 'User Notes & Reflections',
+                userNotes: 'User Notes & Reflections',
+                SEARCH_HISTORY: 'Search History',
+                searchHistory: 'Search History'
             };
 
             const foundCategories = new Set();
             Object.keys(payload).forEach(key => {
-                if (categoryLabels[key] && payload[key] !== null) {
+                if (categoryLabels[key] && payload[key] !== null && payload[key] !== undefined) {
                     foundCategories.add(categoryLabels[key]);
                 }
             });
@@ -1074,7 +1234,7 @@ const StorageManager = {
             });
 
             Object.entries(data).forEach(([keyOrName, value]) => {
-                const storageKey = keyMap[keyOrName];
+                const storageKey = keyMap[keyOrName] || (typeof keyOrName === 'string' && keyOrName.startsWith('anhad_') || keyOrName.startsWith('nitnem') || keyOrName.startsWith('sehaj') || keyOrName.startsWith('gurbani') ? keyOrName : null);
                 if (storageKey && value !== null && value !== undefined) {
                     this.save(storageKey, value);
                     restoredCount++;
@@ -1085,6 +1245,74 @@ const StorageManager = {
                 console.error('Import error: no recognized backup keys restored');
                 return false;
             }
+
+            // Refresh in-memory manager state immediately
+            try {
+                if (typeof NitnemManager !== 'undefined') {
+                    NitnemManager.loadSelectedBanis?.();
+                    NitnemManager.loadTodayProgress?.();
+                    NitnemManager.renderAllLists?.();
+                    NitnemManager.updatePeriodStats?.();
+                }
+                if (typeof AmritvelaManager !== 'undefined') {
+                    AmritvelaManager.checkTodayStatus?.();
+                    AmritvelaManager.updateTimeDisplay?.();
+                }
+                if (typeof MalaManager !== 'undefined') {
+                    MalaManager.loadTodayData?.();
+                    MalaManager.updateDisplay?.();
+                }
+                if (typeof StreakManager !== 'undefined') {
+                    StreakManager.calculateStreak?.();
+                    StreakManager.updateUI?.();
+                }
+            } catch(refreshErr) {
+                console.warn('Manager refresh notice:', refreshErr);
+            }
+
+            // Sync with IndexedDB if available
+            try {
+                if (window.GurbaniStorage && window.GurbaniStorage.isReady) {
+                    Object.values(CONFIG.STORAGE_KEYS).forEach(key => {
+                        const val = localStorage.getItem(key);
+                        if (val) window.GurbaniStorage.set('nitnemTracker', key, JSON.parse(val));
+                    });
+                }
+            } catch (idbErr) {}
+
+            // Dispatch global synchronization events
+            try {
+                window.dispatchEvent(new StorageEvent('storage', {
+                    key: CONFIG.STORAGE_KEYS.NITNEM_LOG,
+                    newValue: localStorage.getItem(CONFIG.STORAGE_KEYS.NITNEM_LOG),
+                    url: window.location.href
+                }));
+                window.dispatchEvent(new StorageEvent('storage', {
+                    key: CONFIG.STORAGE_KEYS.SELECTED_BANIS,
+                    newValue: localStorage.getItem(CONFIG.STORAGE_KEYS.SELECTED_BANIS),
+                    url: window.location.href
+                }));
+                window.dispatchEvent(new StorageEvent('storage', {
+                    key: CONFIG.STORAGE_KEYS.MALA_LOG,
+                    newValue: localStorage.getItem(CONFIG.STORAGE_KEYS.MALA_LOG),
+                    url: window.location.href
+                }));
+                window.dispatchEvent(new StorageEvent('storage', {
+                    key: CONFIG.STORAGE_KEYS.MY_POTHI_COMPLETED,
+                    newValue: localStorage.getItem(CONFIG.STORAGE_KEYS.MY_POTHI_COMPLETED),
+                    url: window.location.href
+                }));
+                window.dispatchEvent(new StorageEvent('storage', {
+                    key: CONFIG.STORAGE_KEYS.STREAK_DATA,
+                    newValue: localStorage.getItem(CONFIG.STORAGE_KEYS.STREAK_DATA),
+                    url: window.location.href
+                }));
+                window.dispatchEvent(new CustomEvent('nitnemUpdated', { detail: { restored: true } }));
+                window.dispatchEvent(new CustomEvent('malaUpdated', { detail: { restored: true } }));
+                window.dispatchEvent(new CustomEvent('statsChanged', { detail: { restored: true } }));
+                window.dispatchEvent(new CustomEvent('streakUpdated', { detail: { restored: true } }));
+                window.dispatchEvent(new CustomEvent('nitnemCompletionUpdated', { detail: { restored: true } }));
+            } catch (evErr) {}
 
             return true;
         } catch (error) {
@@ -4136,6 +4364,37 @@ const NitnemManager = {
         log[today] = this.completedToday;
         StorageManager.save(CONFIG.STORAGE_KEYS.NITNEM_LOG, log);
 
+        // ═══ SYNC WITH MY POTHI COMPLETED ═══
+        try {
+            const completedPothiIds = [];
+            const seen = new Set();
+            Object.keys(this.selectedBanis || {}).forEach(period => {
+                const list = this.selectedBanis[period] || [];
+                const completedUIDs = this.completedToday[period] || [];
+                list.forEach(b => {
+                    if (b && b.id && completedUIDs.includes(b.uid) && !seen.has(b.id)) {
+                        seen.add(b.id);
+                        completedPothiIds.push(b.id);
+                    }
+                });
+            });
+
+            const pothiCompleted = JSON.parse(localStorage.getItem('anhad_my_pothi_completed') || '{}');
+            pothiCompleted[today] = completedPothiIds;
+            localStorage.setItem('anhad_my_pothi_completed', JSON.stringify(pothiCompleted));
+            
+            window.dispatchEvent(new StorageEvent('storage', {
+                key: 'anhad_my_pothi_completed',
+                newValue: JSON.stringify(pothiCompleted),
+                url: window.location.href
+            }));
+            window.dispatchEvent(new CustomEvent('nitnemCompletionUpdated', {
+                detail: { today, completed: completedPothiIds }
+            }));
+        } catch (pothiErr) {
+            console.warn('[NitnemManager] Error syncing to My Pothi completed:', pothiErr);
+        }
+
         // Sync with UnifiedStats
         if (window.UnifiedStats && typeof window.UnifiedStats.syncNitnemProgress === 'function') {
             let totalBanis = 0;
@@ -5266,17 +5525,24 @@ const SettingsManager = {
      * Export all data
      */
     exportData() {
-        if (typeof ReportsManager !== 'undefined' && ReportsManager.exportReport) {
-            ReportsManager.exportReport();
+        const data = StorageManager.exportData();
+        if (typeof ReportsManager !== 'undefined' && ReportsManager.downloadBackupFile) {
+            ReportsManager.downloadBackupFile(data, 'data.json');
         } else {
-            const data = StorageManager.exportData();
-            const filename = `anhad-backup-${Utils.getTodayString()}.json`;
-            if (typeof ReportsManager !== 'undefined' && ReportsManager.downloadBackupFile) {
-                ReportsManager.downloadBackupFile(data, filename);
-            } else {
-                navigator.clipboard?.writeText?.(data);
-                Toast.success('Export Copied', 'JSON backup copied to clipboard');
-            }
+            const blob = new Blob([data], { type: 'application/json;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = 'data.json';
+            a.setAttribute('download', 'data.json');
+            document.body.appendChild(a);
+            a.click();
+            setTimeout(() => {
+                if (a.parentNode) document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }, 1000);
+            Toast.success('Export Saved', 'data.json downloaded successfully');
         }
     },
 
@@ -5721,10 +5987,21 @@ const MalaManager = {
     loadTodayData() {
         const today = Utils.getTodayString();
         const log = StorageManager.load(CONFIG.STORAGE_KEYS.MALA_LOG, {});
+        let homeMala = {};
+        try {
+            homeMala = JSON.parse(localStorage.getItem('anhad_mala_counter_v1') || '{}');
+        } catch(e) {}
 
-        if (log[today]) {
-            this.state.completedMalas = log[today].completedMalas || 0;
-            this.state.totalToday = log[today].totalCount || 0;
+        const logToday = log[today] || {};
+        if (homeMala.date === today) {
+            this.state.completedMalas = Math.max(logToday.completedMalas || 0, homeMala.rounds || 0);
+            this.state.totalToday = Math.max(logToday.totalCount || 0, homeMala.totalJaap || 0);
+            if (homeMala.count && this.state.count === 0) {
+                this.state.count = homeMala.count;
+            }
+        } else if (logToday.totalCount || logToday.completedMalas) {
+            this.state.completedMalas = logToday.completedMalas || 0;
+            this.state.totalToday = logToday.totalCount || 0;
         } else {
             this.state.completedMalas = 0;
             this.state.totalToday = 0;
@@ -5745,6 +6022,34 @@ const MalaManager = {
         };
 
         StorageManager.save(CONFIG.STORAGE_KEYS.MALA_LOG, log);
+
+        // Sync with Home Screen Mala Jaap Counter
+        try {
+            localStorage.setItem('anhad_mala_counter_v1', JSON.stringify({
+                date: today,
+                count: this.state.count,
+                rounds: this.state.completedMalas,
+                totalJaap: this.state.totalToday,
+                target: this.state.beadsPerMala
+            }));
+
+            window.dispatchEvent(new StorageEvent('storage', {
+                key: 'nitnemTracker_malaLog',
+                newValue: JSON.stringify(log),
+                url: window.location.href
+            }));
+
+            window.dispatchEvent(new CustomEvent('malaUpdated', {
+                detail: {
+                    _source: 'nitnem_tracker',
+                    count: this.state.count,
+                    rounds: this.state.completedMalas,
+                    totalJaap: this.state.totalToday,
+                    target: this.state.beadsPerMala,
+                    date: today
+                }
+            }));
+        } catch(e) {}
     },
 
     /**
@@ -5867,6 +6172,20 @@ const MalaManager = {
         // Settings/Menu button
         this.elements.settingsBtn?.addEventListener('click', () => {
             this.showMalaMenu();
+        });
+
+        // Listen for external Mala Jaap updates (e.g. from Home Screen)
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'anhad_mala_counter_v1' || e.key === 'nitnemTracker_malaLog') {
+                this.loadTodayData();
+                this.updateDisplay();
+            }
+        });
+        window.addEventListener('malaUpdated', (e) => {
+            if (e && e.detail && e.detail._source !== 'nitnem_tracker') {
+                this.loadTodayData();
+                this.updateDisplay();
+            }
         });
 
         // Load custom mala options
@@ -9751,13 +10070,16 @@ const ReportsManager = {
     },
 
     /**
-     * Export report - Show popup with download button
+     * Export report - Immediately download data.json and show status modal
      */
     exportReport() {
         // Generate comprehensive backup data
         const backupData = this.generateBackupData();
         
-        // Create and show export modal
+        // Immediately trigger direct file download of data.json
+        this.downloadBackupFile(backupData, 'data.json');
+
+        // Also show export modal with download status and file details
         this.showExportModal(backupData);
     },
 
@@ -9788,8 +10110,7 @@ const ReportsManager = {
      * Show export modal with download progress bar & multi-sharing options
      */
     showExportModal(data) {
-        const today = Utils.getTodayString();
-        const filename = `anhad-backup-${today}.json`;
+        const filename = 'data.json';
         const jsonStr = typeof data === 'string' ? data : JSON.stringify(data, null, 2);
         const fileSizeKb = (jsonStr.length / 1024).toFixed(1);
 
@@ -9804,7 +10125,7 @@ const ReportsManager = {
             <div class="modal-container export-modal-container">
                 <div class="modal-handle"></div>
                 <div class="modal-header">
-                    <h2 class="modal-title">📥 Export Nitnem Backup</h2>
+                    <h2 class="modal-title">📥 Export Complete App Backup</h2>
                     <button class="modal-close-btn" data-close-export aria-label="Close">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M18 6L6 18M6 6l12 12" />
@@ -9822,21 +10143,24 @@ const ReportsManager = {
                             <div class="export-progress-fill" id="exportProgressBar" style="width: 100%;"></div>
                         </div>
                         <div class="export-progress-footer">
-                            <span id="exportProgressSubtext">Complete Nitnem JSON backup payload ready</span>
+                            <span id="exportProgressSubtext">Complete All-App JSON backup payload generated (100% of data)</span>
                             <span id="exportProgressPercent">100%</span>
                         </div>
                     </div>
 
                     <!-- Included Content Section -->
                     <div class="export-content-section">
-                        <span class="export-section-label">Included in this Backup:</span>
+                        <span class="export-section-label">Included in this Complete Backup:</span>
                         <div class="export-chips-grid">
                             <div class="export-chip"><span class="chip-icon">📖</span> Nitnem History</div>
                             <div class="export-chip"><span class="chip-icon">🌅</span> Amritvela Logs</div>
-                            <div class="export-chip"><span class="chip-icon">📿</span> Mala & Streaks</div>
-                            <div class="export-chip"><span class="chip-icon">📚</span> My Pothi Banis</div>
-                            <div class="export-chip"><span class="chip-icon">🏆</span> Achievements</div>
-                            <div class="export-chip"><span class="chip-icon">⚙️</span> App Settings</div>
+                            <div class="export-chip"><span class="chip-icon">📿</span> Mala & Simran Logs</div>
+                            <div class="export-chip"><span class="chip-icon">📚</span> My Pothi Banis & Progress</div>
+                            <div class="export-chip"><span class="chip-icon">📖</span> Sehaj Paath Data</div>
+                            <div class="export-chip"><span class="chip-icon">🧘</span> Naam Abhyas History</div>
+                            <div class="export-chip"><span class="chip-icon">🏆</span> All Achievements</div>
+                            <div class="export-chip"><span class="chip-icon">⚙️</span> App & Reader Settings</div>
+                            <div class="export-chip"><span class="chip-icon">🔖</span> Favorites & Bookmarks</div>
                         </div>
                     </div>
 
@@ -9846,7 +10170,7 @@ const ReportsManager = {
                             <span class="export-file-icon">📄</span>
                             <div class="export-file-details">
                                 <span class="export-filename">${filename}</span>
-                                <span class="export-filesize">${fileSizeKb} KB • Universal JSON Format</span>
+                                <span class="export-filesize">${fileSizeKb} KB • Universal JSON Backup</span>
                             </div>
                         </div>
                         <button class="btn btn-primary export-card-download-btn" id="downloadCardBtn">
@@ -9878,6 +10202,45 @@ const ReportsManager = {
             el.addEventListener('click', () => this.closeExportModal());
         });
 
+        // Robust copy helper
+        const copyJsonToClipboard = () => {
+            const performFallback = () => {
+                try {
+                    const ta = document.createElement('textarea');
+                    ta.value = jsonStr;
+                    ta.style.position = 'fixed';
+                    ta.style.top = '-9999px';
+                    ta.style.left = '-9999px';
+                    ta.setAttribute('readonly', '');
+                    document.body.appendChild(ta);
+                    ta.focus();
+                    ta.select();
+                    ta.setSelectionRange(0, ta.value.length);
+                    const successful = document.execCommand('copy');
+                    document.body.removeChild(ta);
+                    if (successful) {
+                        Toast.success('Copied!', 'Complete JSON backup copied to clipboard');
+                        HapticManager.success();
+                    } else {
+                        throw new Error('execCommand copy failed');
+                    }
+                } catch (e) {
+                    Toast.error('Copy Failed', 'Please use Save File option');
+                }
+            };
+
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(jsonStr).then(() => {
+                    Toast.success('Copied!', 'Complete JSON backup copied to clipboard');
+                    HapticManager.success();
+                }).catch(() => {
+                    performFallback();
+                });
+            } else {
+                performFallback();
+            }
+        };
+
         // Share button handler
         const shareBtn = modal.querySelector('#shareBackupBtn');
         if (shareBtn) {
@@ -9889,18 +10252,7 @@ const ReportsManager = {
         // Copy JSON button handler
         const copyBtn = modal.querySelector('#copyBackupBtn');
         if (copyBtn) {
-            copyBtn.addEventListener('click', () => {
-                if (navigator.clipboard && navigator.clipboard.writeText) {
-                    navigator.clipboard.writeText(jsonStr).then(() => {
-                        Toast.success('Copied!', 'JSON backup copied to clipboard');
-                        HapticManager.success();
-                    }).catch(() => {
-                        Toast.error('Copy Failed', 'Unable to copy to clipboard');
-                    });
-                } else {
-                    Toast.error('Clipboard Unavailable', 'Please use Save File option');
-                }
-            });
+            copyBtn.addEventListener('click', copyJsonToClipboard);
         }
 
         // Save File button handlers (both card download & footer download)
@@ -9934,8 +10286,8 @@ const ReportsManager = {
             if (navigator.canShare && navigator.canShare({ files: [file] })) {
                 navigator.share({
                     files: [file],
-                    title: 'Nitnem Tracker Backup',
-                    text: 'Nitnem Tracker JSON backup file'
+                    title: 'ANHAD Complete App Backup',
+                    text: 'ANHAD Complete JSON backup file'
                 }).then(() => {
                     Toast.success('Shared!', 'Backup file shared successfully');
                     HapticManager.success();
@@ -9946,11 +10298,13 @@ const ReportsManager = {
                 });
             } else if (navigator.share) {
                 navigator.share({
-                    title: 'Nitnem Tracker Backup',
+                    title: 'ANHAD Complete App Backup',
                     text: jsonStr
                 }).catch(() => {});
             } else {
-                navigator.clipboard?.writeText?.(jsonStr);
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(jsonStr).catch(() => {});
+                }
                 Toast.success('Copied!', 'JSON backup copied to clipboard for sharing');
                 HapticManager.success();
             }
@@ -9961,16 +10315,12 @@ const ReportsManager = {
     },
 
     /**
-     * Download backup file (Safe Blob URL + Data URI with Capacitor, Web Share & WebView support)
+     * Download backup file (Direct HTML5 Blob Download of data.json + Capacitor Filesystem)
      */
-    downloadBackupFile(data, filename) {
+    downloadBackupFile(data, filename = 'data.json') {
         try {
+            filename = filename || 'data.json';
             const jsonStr = typeof data === 'string' ? data : JSON.stringify(data, null, 2);
-
-            // Copy to clipboard as safe background measure
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(jsonStr).catch(() => {});
-            }
 
             // Animate progress bar in export modal if visible
             const progressFill = document.getElementById('exportProgressBar');
@@ -9978,48 +10328,20 @@ const ReportsManager = {
             const progressSubtext = document.getElementById('exportProgressSubtext');
 
             if (progressFill && statusBadge) {
-                progressFill.style.width = '20%';
+                progressFill.style.width = '30%';
                 statusBadge.textContent = 'Saving...';
                 statusBadge.className = 'export-progress-badge active';
-                if (progressSubtext) progressSubtext.textContent = 'Preparing JSON file download...';
+                if (progressSubtext) progressSubtext.textContent = `Preparing ${filename} download...`;
 
                 setTimeout(() => {
-                    progressFill.style.width = '70%';
+                    progressFill.style.width = '80%';
                 }, 100);
             }
 
-            // 1. Try Native Web Share with File object (best for Android/iOS mobile to save to Downloads/Drive/Files)
-            const blob = new Blob([jsonStr], { type: 'application/json' });
-            let fileObj = null;
-            try {
-                fileObj = new File([blob], filename, { type: 'application/json' });
-            } catch(e) {}
+            // 1. Direct Browser / WebView File Download
+            this._triggerBlobDownload(jsonStr, filename);
 
-            const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || (window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
-
-            if (isMobile && fileObj && navigator.canShare && navigator.canShare({ files: [fileObj] })) {
-                navigator.share({
-                    files: [fileObj],
-                    title: filename,
-                    text: 'Nitnem Tracker Backup File'
-                }).then(() => {
-                    if (progressFill) progressFill.style.width = '100%';
-                    if (statusBadge) {
-                        statusBadge.textContent = 'Saved!';
-                        statusBadge.className = 'export-progress-badge success';
-                    }
-                    if (progressSubtext) progressSubtext.textContent = 'File shared/saved & copied to clipboard';
-                    Toast.success('Backup Ready!', 'Saved to destination & copied to clipboard');
-                    HapticManager.success();
-                }).catch((err) => {
-                    if (err && err.name !== 'AbortError') {
-                        this._triggerBlobDownload(jsonStr, filename);
-                    }
-                });
-                return;
-            }
-
-            // 2. Try Capacitor Filesystem + Share if in native container
+            // 2. Also write to Capacitor Filesystem if running in native app
             const isNativeApp = !!(window.Capacitor && (
                 (typeof window.Capacitor.isNativePlatform === 'function' && window.Capacitor.isNativePlatform()) ||
                 (typeof window.Capacitor.getPlatform === 'function' && window.Capacitor.getPlatform() !== 'web') ||
@@ -10032,34 +10354,10 @@ const ReportsManager = {
                     data: jsonStr,
                     directory: 'DOCUMENTS',
                     encoding: 'utf8'
-                }).then((res) => {
-                    if (progressFill) progressFill.style.width = '100%';
-                    if (statusBadge) {
-                        statusBadge.textContent = 'Saved!';
-                        statusBadge.className = 'export-progress-badge success';
-                    }
-                    if (progressSubtext) progressSubtext.textContent = 'Saved to Documents & copied to clipboard';
-                    
-                    // If Capacitor Share is available, offer to share the written file
-                    if (window.Capacitor.Plugins.Share && res && res.uri) {
-                        window.Capacitor.Plugins.Share.share({
-                            title: filename,
-                            url: res.uri,
-                            dialogTitle: 'Save Nitnem Backup'
-                        }).catch(() => {});
-                    }
-
-                    Toast.success('Backup Saved!', 'Saved to Documents folder & copied to clipboard');
-                    HapticManager.success();
                 }).catch((err) => {
-                    console.warn('Capacitor Filesystem write error, falling back to download link:', err);
-                    this._triggerBlobDownload(jsonStr, filename);
+                    console.warn('Capacitor Filesystem write notice:', err);
                 });
-                return;
             }
-
-            // 3. Fallback: Browser Download (Blob + Data URI)
-            this._triggerBlobDownload(jsonStr, filename);
         } catch (error) {
             console.error('Export failed:', error);
             Toast.error('Export Failed', 'Could not save backup file');
@@ -10069,8 +10367,9 @@ const ReportsManager = {
     /**
      * Helper to trigger HTML5 Blob / Data URI download
      */
-    _triggerBlobDownload(jsonStr, filename) {
+    _triggerBlobDownload(jsonStr, filename = 'data.json') {
         try {
+            filename = filename || 'data.json';
             const blob = new Blob([jsonStr], { type: 'application/json;charset=utf-8;' });
             const blobUrl = URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -10112,18 +10411,13 @@ const ReportsManager = {
                 statusBadge.textContent = 'Downloaded!';
                 statusBadge.className = 'export-progress-badge success';
             }
-            if (progressSubtext) progressSubtext.textContent = 'JSON file saved to Downloads & copied to clipboard';
+            if (progressSubtext) progressSubtext.textContent = `${filename} saved to Downloads`;
 
-            Toast.success('Backup Ready!', 'JSON backup downloaded & copied to clipboard');
+            Toast.success('File Downloaded!', `${filename} saved to Downloads folder`);
             HapticManager.success();
         } catch (err) {
-            console.warn('Blob download warning, falling back to Web Share / Clipboard:', err);
-            if (navigator.share) {
-                this.shareBackupFile(jsonStr, filename);
-            } else {
-                Toast.success('Backup Copied!', 'JSON backup copied to clipboard');
-                HapticManager.success();
-            }
+            console.error('Download error:', err);
+            Toast.error('Download Failed', 'Unable to download file');
         }
     },
 
@@ -12348,8 +12642,9 @@ if (document.readyState === 'loading') {
 
         // Back button navigation
         const backBtn = document.getElementById('backBtn');
-        if (backBtn) {
-            backBtn.addEventListener('click', () => {
+        if (backBtn && !backBtn._nitnemBackBound) {
+            backBtn._nitnemBackBound = true;
+            backBtn.addEventListener('click', (e) => {
                 if (typeof HapticManager !== 'undefined') HapticManager.light();
                 if (typeof window.anhadGoBack === 'function') {
                     window.anhadGoBack();
@@ -12383,8 +12678,9 @@ if (document.readyState === 'loading') {
 
     // Back button navigation
     const backBtn = document.getElementById('backBtn');
-    if (backBtn) {
-        backBtn.addEventListener('click', () => {
+    if (backBtn && !backBtn._nitnemBackBound) {
+        backBtn._nitnemBackBound = true;
+        backBtn.addEventListener('click', (e) => {
             if (typeof HapticManager !== 'undefined') HapticManager.light();
             if (typeof window.anhadGoBack === 'function') {
                 window.anhadGoBack();

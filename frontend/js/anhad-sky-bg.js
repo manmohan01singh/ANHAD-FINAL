@@ -24,7 +24,7 @@
     morning: 'assets/darbar-sahib-morning-bg.webp',
     day: 'assets/darbar-sahib-day-bg.webp',
     evening: 'assets/darbar-sahib-evening-bg.webp',
-    night: 'assets/HERO CARD IMAGES/new-night-bg.webp',
+    night: '',
   };
 
   // -- Pre-load all bg images for instant swap ------------------------------
@@ -109,7 +109,14 @@
     applyTimeAdaptiveCardColors(slot);
 
     const bgUrl = BG_IMAGES[slot];
-    if (!bgUrl) return;
+    if (!bgUrl) {
+      document.documentElement.style.removeProperty('--dynamic-bg-url');
+      const l1 = document.getElementById('anhadBgLayer1');
+      const l2 = document.getElementById('anhadBgLayer2');
+      if (l1) { l1.style.backgroundImage = 'none'; l1.classList.remove('active'); }
+      if (l2) { l2.style.backgroundImage = 'none'; l2.classList.remove('active'); }
+      return;
+    }
 
     // Ensure transition layers exist in DOM
     ensureBgLayers();
@@ -278,7 +285,10 @@
 
   function applyTimeAdaptiveCardColors(slot) {
     const mode = document.documentElement.getAttribute('data-theme-mode') || 'light';
-    if (mode !== 'auto') return;
+    if (mode !== 'auto' || slot === 'night') {
+      clearTimeAdaptiveCardColors();
+      return;
+    }
     const p = CARD_PALETTES[slot] || CARD_PALETTES.day;
     const root = document.documentElement;
     root.style.setProperty('--sky-card-bg', p.bg);

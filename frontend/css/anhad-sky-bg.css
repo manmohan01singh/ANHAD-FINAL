@@ -50,23 +50,23 @@
   --sky-bg-glass-border: rgba(190, 80, 20, 0.22);
 }
 
-/* NIGHT — glowing warm ivory / antique gold on deep dark (HOME ONLY) */
+/* NIGHT — Matches Pure Dark Mode Exactly */
 [data-anhad-home][data-theme-mode="auto"][data-time-of-day="night"] {
-  --sky-txt-primary:   #FFFFFF;
-  --sky-txt-secondary: #FFF2D1;
-  --sky-txt-label:     #FFE399;
-  --sky-txt-accent:    #FFD566;
-  --sky-txt-gold:      #FFC429;
-  --sky-text-shadow-dark: 0 1px 4px rgba(0, 0, 0, 0.8);
-  --sky-text-shadow-light: 0 1px 4px rgba(0, 0, 0, 0.8);
+  --sky-txt-primary:   #F5F5F7;
+  --sky-txt-secondary: #8E8E93;
+  --sky-txt-label:     #8E8E93;
+  --sky-txt-accent:    #D4943A;
+  --sky-txt-gold:      #FFD60A;
+  --sky-text-shadow-dark: none;
+  --sky-text-shadow-light: none;
   --sky-greeting-bg:   transparent;
-  --sky-bg-glass:      rgba(28, 28, 30, 0.62);
-  --sky-bg-glass-border: rgba(170, 140, 60, 0.22);
+  --sky-bg-glass:      rgba(28, 28, 30, 0.88);
+  --sky-bg-glass-border: rgba(255, 255, 255, 0.08);
 }
 
-/* Apply contrast to key page elements (HOME ONLY) */
-[data-anhad-home][data-theme-mode="auto"] .home-header .header__title,
-[data-anhad-home][data-theme-mode="auto"] .home-header .header-title {
+/* Apply contrast to key page elements (HOME ONLY - Morning/Day/Evening) */
+[data-anhad-home][data-theme-mode="auto"]:not([data-time-of-day="night"]) .home-header .header__title,
+[data-anhad-home][data-theme-mode="auto"]:not([data-time-of-day="night"]) .home-header .header-title {
   color: #FFFFFF !important;
   text-shadow: 0 2px 12px rgba(0, 0, 0, 0.75), 0 1px 4px rgba(0, 0, 0, 0.9) !important;
   font-weight: 700 !important;
@@ -80,8 +80,8 @@
   font-weight: 700 !important;
 }
 
-[data-anhad-home][data-theme-mode="auto"] .home-header .header__title-gurmukhi,
-[data-anhad-home][data-theme-mode="auto"] .home-header .gurmukhi-title {
+[data-anhad-home][data-theme-mode="auto"]:not([data-time-of-day="night"]) .home-header .header__title-gurmukhi,
+[data-anhad-home][data-theme-mode="auto"]:not([data-time-of-day="night"]) .home-header .gurmukhi-title {
   color: #FFFFFF !important;
   text-shadow: 0 2px 10px rgba(0, 0, 0, 0.75), 0 1px 3px rgba(0, 0, 0, 0.9) !important;
   font-weight: 600 !important;
@@ -142,12 +142,12 @@
   color: var(--sky-txt-primary, #1A0402) !important;
   text-shadow: 0 1px 4px rgba(0,0,0,0.15) !important;
 }
-[data-anhad-home][data-theme-mode="auto"] .app-header {
+[data-anhad-home][data-theme-mode="auto"]:not([data-time-of-day="night"]) .app-header {
   background: rgba(0, 0, 0, 0.3) !important;
   backdrop-filter: blur(10px) !important;
   -webkit-backdrop-filter: blur(10px) !important;
 }
-[data-anhad-home][data-theme-mode="auto"] .header-blur-bg {
+[data-anhad-home][data-theme-mode="auto"]:not([data-time-of-day="night"]) .header-blur-bg {
   background: rgba(0, 0, 0, 0.4) !important;
 }
 

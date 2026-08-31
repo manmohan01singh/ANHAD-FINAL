@@ -458,7 +458,8 @@
       } catch(e) {}
     }
 
-    if (isShellPage(absoluteUrl)) {
+    const hasCurrentApp = !!document.getElementById(MAIN_TARGET_ID);
+    if (hasCurrentApp && isShellPage(absoluteUrl)) {
       // performSwap clears navInFlight in its own finally block.
       performSwap(absoluteUrl, options);
     } else {

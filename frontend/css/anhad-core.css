@@ -53,15 +53,16 @@ html, body {
   overflow: hidden;
 }
 
-/* Show orbs only in DAY and NIGHT auto mode */
-[data-theme-mode="auto"][data-time-of-day="day"] .time-orb,
-[data-theme-mode="auto"][data-time-of-day="night"] .time-orb {
+/* Show orbs only in DAY auto mode */
+[data-theme-mode="auto"][data-time-of-day="day"] .time-orb {
   opacity: 0.5;
 }
 
-/* Hide orbs in other modes */
+/* Hide orbs in other modes (including night mode to match pure dark mode) */
 [data-theme-mode="light"] .time-orb,
 [data-theme-mode="dark"] .time-orb,
+[data-time-of-day="night"] .time-orb,
+[data-theme-mode="auto"][data-time-of-day="night"] .time-orb,
 [data-theme-mode="auto"][data-time-of-day="morning"] .time-orb,
 [data-theme-mode="auto"][data-time-of-day="evening"] .time-orb {
   opacity: 0;
@@ -82,18 +83,13 @@ html, body {
   opacity: 0;
 }
 
-/* NIGHT TIME — Dark Blue ambient orb */
-[data-theme-mode="auto"][data-time-of-day="night"] .time-orb-1 {
-  width: 280px;
-  height: 280px;
-  background: radial-gradient(circle, rgba(28, 45, 61, 0.8) 0%, rgba(42, 61, 74, 0.5) 50%, transparent 75%);
-  top: -60px;
-  left: 0px;
-}
-
-[data-theme-mode="auto"][data-time-of-day="night"] .time-orb-2 {
+/* NIGHT TIME — Completely hidden to match pure dark mode */
+[data-theme-mode="auto"][data-time-of-day="night"] .time-orb-1,
+[data-theme-mode="auto"][data-time-of-day="night"] .time-orb-2,
+[data-time-of-day="night"] .time-orb-1,
+[data-time-of-day="night"] .time-orb-2 {
   display: none !important;
-  opacity: 0;
+  opacity: 0 !important;
 }
 
 /* HEADER ORB — Behind title bar */
@@ -111,8 +107,10 @@ html, body {
   background: radial-gradient(ellipse, rgba(112, 181, 245, 0.4) 0%, rgba(70, 155, 235, 0.15) 50%, transparent 75%);
 }
 
-[data-theme-mode="auto"][data-time-of-day="night"] .time-orb-header {
-  background: radial-gradient(ellipse, rgba(28, 45, 61, 0.8) 0%, rgba(42, 61, 74, 0.5) 50%, transparent 75%);
+[data-theme-mode="auto"][data-time-of-day="night"] .time-orb-header,
+[data-time-of-day="night"] .time-orb-header {
+  display: none !important;
+  opacity: 0 !important;
 }
 
 /* ─── Design token fallbacks (resolved by trendora-premium.css if loaded) ─── */
@@ -772,8 +770,13 @@ img[src*="guruimages/"] {
   transition: transform 0.3s var(--ac-spring) !important;
 }
 
+/* Specific adjustment for Guru Teg Bahadur Sahib Ji (moved frame down to capture full face, dastar & halo nicely) */
+img[src*="gurutegbahadursahebji.jpeg"] {
+  object-position: center 30% !important;
+  transform: scale(1.05) !important;
+}
+
 /* Specific adjustment for vertical/taller portraits */
-img[src*="gurutegbahadursahebji.jpeg"],
 img[src*="gurugobindsinghsahebji.jpeg"] {
   object-position: center 20% !important;
 }

@@ -442,9 +442,15 @@ function _anhadHomepageDataInit() {
       if (sb) {
         const p = JSON.parse(sb);
         totalBanis = (p.amritvela?.length || 0) + (p.rehras?.length || 0) + (p.sohila?.length || 0);
-      } else {
-        totalBanis = 11; // Default only if no selection exists
       }
+      if (totalBanis === 0) {
+        const pothi = localStorage.getItem('anhad_my_pothi');
+        if (pothi) {
+          const p = JSON.parse(pothi);
+          if (Array.isArray(p) && p.length > 0) totalBanis = p.length;
+        }
+      }
+      if (totalBanis === 0) totalBanis = 11;
     } catch (e) { }
     try {
       const today = new Date().toLocaleDateString('en-CA');
@@ -452,16 +458,13 @@ function _anhadHomepageDataInit() {
       if (nl) {
         const p = JSON.parse(nl);
         if (p[today]) {
-          // Handle different data structure formats
           if (Array.isArray(p[today])) {
             completedToday = p[today].length;
           } else if (typeof p[today] === 'object') {
             const td = p[today];
-            // Check for completed array (newer format)
             if (Array.isArray(td.completed)) {
               completedToday = td.completed.length;
             } else {
-              // Fallback to individual bani arrays
               completedToday = (td.amritvela?.length || 0) + (td.rehras?.length || 0) + (td.sohila?.length || 0);
             }
           } else if (typeof p[today] === 'number') {
@@ -469,6 +472,17 @@ function _anhadHomepageDataInit() {
           }
         }
       }
+
+      // Check My Pothi completion log
+      try {
+        const pothiStr = localStorage.getItem('anhad_my_pothi_completed');
+        if (pothiStr) {
+          const pothiObj = JSON.parse(pothiStr);
+          if (pothiObj && Array.isArray(pothiObj[today])) {
+            completedToday = Math.max(completedToday, pothiObj[today].length);
+          }
+        }
+      } catch(e) {}
 
       // SYNC: Use UnifiedStats for streak data
       if (window.UnifiedStats) {
@@ -481,12 +495,13 @@ function _anhadHomepageDataInit() {
       }
     } catch (e) { }
     const streakEl = document.getElementById('nitnemStreak'), textEl = document.getElementById('streakText'), ringFill = document.getElementById('nitnemRingFill'), ringText = document.getElementById('nitnemRingText');
-    const circumference = 163.36, progress = completedToday / totalBanis, offset = circumference * (1 - progress);
+    const isComplete = totalBanis > 0 && completedToday >= totalBanis;
+    const circumference = 163.36, progress = isComplete ? 1 : (totalBanis > 0 ? completedToday / totalBanis : 0), offset = circumference * (1 - Math.min(progress, 1));
     if (ringFill) setTimeout(() => { ringFill.style.strokeDashoffset = offset; }, 150);
-    if (ringText) ringText.textContent = `${completedToday}/${totalBanis}`;
+    if (ringText) ringText.textContent = isComplete ? `${totalBanis}/${totalBanis}` : `${completedToday}/${totalBanis}`;
     if (completedToday > 0) {
-      if (textEl) textEl.textContent = completedToday >= totalBanis ? '🎉 All banis completed! Waheguru ji!' : `${completedToday}/${totalBanis} banis completed today`;
-      if (streakEl) streakEl.innerHTML = streak > 0 ? `<span class="quick-card__streak">🔥 ${streak} day${streak > 1 ? 's' : ''}</span>` : `<span class="quick-card__progress">${completedToday}/${totalBanis}</span>`;
+      if (textEl) textEl.textContent = isComplete ? '🎉 All banis completed! Waheguru ji!' : `${completedToday}/${totalBanis} banis completed today`;
+      if (streakEl) streakEl.innerHTML = streak > 0 ? `<span class="quick-card__streak">🔥 ${streak} day${streak > 1 ? 's' : ''}</span>` : `<span class="quick-card__progress">${isComplete ? totalBanis : completedToday}/${totalBanis}</span>`;
     } else if (streak > 0) {
       if (textEl) textEl.textContent = `${streak}-day streak! Start today's Nitnem`;
       if (streakEl) streakEl.innerHTML = `<span class="quick-card__streak">🔥 ${streak} day${streak > 1 ? 's' : ''}</span>`;
@@ -505,7 +520,8 @@ function _anhadHomepageDataInit() {
     if (e.key === 'anhad_streak_data' || 
         e.key === 'nitnemTracker_nitnemLog' || 
         e.key === 'nitnemTracker_progress' ||
-        e.key === 'nitnemTracker_selectedBanis') {
+        e.key === 'nitnemTracker_selectedBanis' ||
+        e.key === 'anhad_my_pothi_completed') {
       console.log('[Homepage] Storage event detected, updating nitnem tracker');
       updateNitnemTracker();
     }
@@ -533,21 +549,68 @@ function _anhadHomepageDataInit() {
   // ━━━ PROGRESS CARD ━━━
   function updateProgressCard() {
     const now = new Date(), hour = now.getHours();
-    let completed = 0, total = 11;
-    try { const sb = localStorage.getItem('nitnemTracker_selectedBanis'); if (sb) { const p = JSON.parse(sb); total = (p.amritvela?.length || 0) + (p.rehras?.length || 0) + (p.sohila?.length || 0); if (total === 0) total = 11; } } catch (e) { }
-    try { const today = now.toLocaleDateString('en-CA'); const nl = localStorage.getItem('nitnemTracker_nitnemLog'); if (nl) { const p = JSON.parse(nl); if (p[today]) { if (Array.isArray(p[today])) completed = p[today].length; else { const td = p[today]; completed = (td.amritvela?.length || 0) + (td.rehras?.length || 0) + (td.sohila?.length || 0); } } } } catch (e) { }
+    let completed = 0, total = 0;
+    try {
+      const sb = localStorage.getItem('nitnemTracker_selectedBanis');
+      if (sb) {
+        const p = JSON.parse(sb);
+        total = (p.amritvela?.length || 0) + (p.rehras?.length || 0) + (p.sohila?.length || 0);
+      }
+      if (total === 0) {
+        const pothi = localStorage.getItem('anhad_my_pothi');
+        if (pothi) {
+          const p = JSON.parse(pothi);
+          if (Array.isArray(p) && p.length > 0) total = p.length;
+        }
+      }
+      if (total === 0) total = 11;
+    } catch (e) { }
+    try {
+      const today = now.toLocaleDateString('en-CA');
+      const nl = localStorage.getItem('nitnemTracker_nitnemLog');
+      if (nl) {
+        const p = JSON.parse(nl);
+        if (p[today]) {
+          if (Array.isArray(p[today])) {
+            completed = p[today].length;
+          } else {
+            const td = p[today];
+            if (Array.isArray(td.completed)) {
+              completed = td.completed.length;
+            } else {
+              completed = (td.amritvela?.length || 0) + (td.rehras?.length || 0) + (td.sohila?.length || 0);
+            }
+          }
+        }
+      }
+      // Also check My Pothi completed
+      const pothiStr = localStorage.getItem('anhad_my_pothi_completed');
+      if (pothiStr) {
+        const pothiObj = JSON.parse(pothiStr);
+        if (pothiObj && Array.isArray(pothiObj[today])) {
+          completed = Math.max(completed, pothiObj[today].length);
+        }
+      }
+    } catch (e) { }
     let suggestion = '';
     if (hour >= 4 && hour < 9) suggestion = completed === 0 ? 'Start Japji Sahib Ji 🌅' : 'Continue Japji Sahib Ji 🌅';
     else if (hour >= 9 && hour < 12) suggestion = completed === 0 ? 'Start morning Nitnem ☀️' : 'Continue morning Nitnem ☀️';
     else if (hour >= 12 && hour < 17) suggestion = completed === 0 ? 'Start Nitnem 🙏' : 'Rehras Sahib Ji in evening 🙏';
     else if (hour >= 17 && hour < 20) suggestion = 'Time for Rehras Sahib Ji 🌆';
     else suggestion = 'Sohila Sahib Ji before bed 🌙';
-    const percent = Math.round((completed / total) * 100);
+    
+    const isComplete = total > 0 && completed >= total;
+    const percent = isComplete ? 100 : (total > 0 ? Math.min(100, Math.round((completed / total) * 100)) : 0);
     const lbl = document.getElementById('progressLabel'), pct = document.getElementById('progressPercent'), txt = document.getElementById('progressText'), fill = document.getElementById('progressFill');
-    if (lbl) lbl.textContent = completed >= total ? '✓ Complete' : (completed === 0 ? '☀️ Start morning Nitnem' : '☀️ Continue morning Nitnem');
+    if (lbl) lbl.textContent = isComplete ? '✓ Complete' : (completed === 0 ? '☀️ Start morning Nitnem' : '☀️ Continue morning Nitnem');
     if (pct) pct.textContent = `${percent}%`;
-    if (txt) txt.textContent = `${completed}/${total} Banis`;
-    if (fill) setTimeout(() => { fill.style.width = `${percent}%`; }, 600);
+    if (txt) txt.textContent = isComplete ? `${total}/${total} Banis` : `${completed}/${total} Banis`;
+    if (fill) {
+      fill.classList.toggle('is-complete', isComplete);
+      setTimeout(() => { 
+        fill.style.setProperty('width', `${percent}%`, 'important'); 
+      }, 50);
+    }
     
     console.log('[Homepage] Progress card updated:', { completed, total, percent });
   }

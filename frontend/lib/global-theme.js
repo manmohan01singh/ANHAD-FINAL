@@ -153,11 +153,8 @@
     }
 
     function toggle() {
-        const current = getTheme();
-        let next;
-        if (current === 'light') next = 'dark';
-        else if (current === 'dark') next = 'auto';
-        else next = 'light';
+        const isCurrentlyDark = isDark() || html.classList.contains('dark-mode') || html.getAttribute('data-theme') === 'dark';
+        const next = isCurrentlyDark ? 'light' : 'dark';
 
         setTheme(next);
         return next;

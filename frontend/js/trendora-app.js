@@ -713,42 +713,58 @@
   // ═══════════════════════════════════════════════════════════════════════════
   const DataManager = {
     getTotalBanis() {
-      // Read from My Pothi order (user's custom bani collection)
+      // 1. Check Nitnem Tracker selected banis (authoritative user routine)
+      const selected = Store.get(KEYS.NITNEM_SELECTED);
+      if (selected && typeof selected === 'object') {
+        const total = (selected.amritvela?.length || 0) +
+          (selected.rehras?.length || 0) +
+          (selected.sohila?.length || 0);
+        if (total > 0) return total;
+      }
+
+      // 2. Check My Pothi order
       const pothiOrder = Store.get(KEYS.POTHI_ORDER);
       if (pothiOrder && Array.isArray(pothiOrder) && pothiOrder.length > 0) {
         return pothiOrder.length;
       }
       
-      // Fallback to Nitnem Tracker if Pothi is empty
-      const selected = Store.get(KEYS.NITNEM_SELECTED);
-      if (!selected) return 11;
-      const total = (selected.amritvela?.length || 0) +
-        (selected.rehras?.length || 0) +
-        (selected.sohila?.length || 0);
-      return total || 11;
+      return 11; // Default
     },
 
     getCompletedToday() {
       const today = new Date().toLocaleDateString('en-CA');
-      
-      // Read from My Pothi completion data
+      let trackerCount = 0;
+      let pothiCount = 0;
+
+      // 1. Read from Nitnem Tracker log
+      const log = Store.get(KEYS.NITNEM_LOG);
+      if (log && log[today]) {
+        const todayData = log[today];
+        if (Array.isArray(todayData)) {
+          trackerCount = todayData.length;
+        } else if (typeof todayData === 'object') {
+          if (Array.isArray(todayData.completed)) {
+            trackerCount = todayData.completed.length;
+          } else {
+            trackerCount = (todayData.amritvela?.length || 0) +
+              (todayData.rehras?.length || 0) +
+              (todayData.sohila?.length || 0);
+          }
+        } else if (typeof todayData === 'number') {
+          trackerCount = todayData;
+        }
+      }
+
+      // 2. Read from My Pothi completion data
       const pothiCompleted = Store.get(KEYS.POTHI_COMPLETED);
       if (pothiCompleted && pothiCompleted[today]) {
         const todayCompleted = pothiCompleted[today];
-        return Array.isArray(todayCompleted) ? todayCompleted.length : 0;
+        if (Array.isArray(todayCompleted)) {
+          pothiCount = todayCompleted.length;
+        }
       }
-      
-      // Fallback to Nitnem Tracker log
-      const log = Store.get(KEYS.NITNEM_LOG);
-      if (!log || !log[today]) return 0;
-      const todayData = log[today];
-      if (Array.isArray(todayData)) return todayData.length;
-      if (typeof todayData === 'object') {
-        return (todayData.amritvela?.length || 0) +
-          (todayData.rehras?.length || 0) +
-          (todayData.sohila?.length || 0);
-      }
-      return 0;
+
+      return Math.max(trackerCount, pothiCount);
     },
 
     getStreak() {
@@ -1027,6 +1043,7 @@
     updateNitnemCard() {
       const completed = DataManager.getCompletedToday();
       const total = DataManager.getTotalBanis();
+      const isComplete = total > 0 && completed >= total;
       const streakInfo = DataManager.getStreak();
       const streak = streakInfo.count;
       const isSaved = streakInfo.isSaved;
@@ -1035,11 +1052,11 @@
       const streakEl = document.getElementById('nitnemStreak');
       const checkEl = document.getElementById('nitnemCheck');
 
-      // Update progress ring
-      this._setRing('nitnemRing', completed / total);
+      // Update progress ring: 100% full ring when complete
+      this._setRing('nitnemRing', isComplete ? 1 : (total > 0 ? completed / total : 0));
 
       if (statusEl) {
-        if (completed >= total) {
+        if (isComplete) {
           statusEl.textContent = '✓ Complete';
           statusEl.className = 'practice-card__status practice-card__status--active';
         } else if (completed > 0) {
@@ -1052,7 +1069,7 @@
       }
 
       if (checkEl) {
-        checkEl.classList.toggle('practice-card__check--visible', completed >= total);
+        checkEl.classList.toggle('practice-card__check--visible', isComplete);
       }
 
       // Streak in quick access
@@ -1693,18 +1710,22 @@
     updateProgressBar() {
       const completed = DataManager.getCompletedToday();
       const total = DataManager.getTotalBanis();
-      const percent = Math.round((completed / total) * 100);
+      const isComplete = total > 0 && completed >= total;
+      const percent = isComplete ? 100 : (total > 0 ? Math.min(100, Math.round((completed / total) * 100)) : 0);
 
       const fillEl = document.getElementById('progressFill');
       const textEl = document.getElementById('progressText');
       const labelEl = document.getElementById('progressLabel');
 
       if (fillEl) {
-        requestAnimationFrame(() => { fillEl.style.width = `${percent}%`; });
+        fillEl.classList.toggle('is-complete', isComplete);
+        requestAnimationFrame(() => { 
+          fillEl.style.setProperty('width', `${percent}%`, 'important');
+        });
       }
-      if (textEl) textEl.textContent = `${completed}/${total} Banis`;
+      if (textEl) textEl.textContent = isComplete ? `${total}/${total} Banis` : `${completed}/${total} Banis`;
       if (labelEl) {
-        if (completed >= total) {
+        if (isComplete) {
           labelEl.textContent = '✓ Complete';
         } else if (completed === 0) {
           labelEl.textContent = '☀️ Start morning Nitnem';

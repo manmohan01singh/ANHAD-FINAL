@@ -117,11 +117,11 @@ class NaamAbhyasThemeEngine {
         htmlEl.style.colorScheme = effective;
 
         if (effective === 'dark') {
-            htmlEl.classList.add('dark', 'dark-mode');
-            document.body.classList.add('dark-mode');
+            if (htmlEl.classList) htmlEl.classList.add('dark', 'dark-mode');
+            if (document.body && document.body.classList) document.body.classList.add('dark-mode');
         } else {
-            htmlEl.classList.remove('dark', 'dark-mode');
-            document.body.classList.remove('dark-mode');
+            if (htmlEl.classList) htmlEl.classList.remove('dark', 'dark-mode');
+            if (document.body && document.body.classList) document.body.classList.remove('dark-mode');
         }
 
         this.updateActiveButton(theme);
@@ -963,14 +963,21 @@ class NaamAbhyas {
     }
 
     init() {
-        this.bindDOM();
-        this.initWisdom();
-        this.startHeaderClock();
-        this.startCountdownTicker();
-        this.updateUI();
-        this.hideLoadingScreen();
+        try {
+            this.bindDOM();
+            this.initWisdom();
+            this.startHeaderClock();
+            this.startCountdownTicker();
+            this.updateUI();
+        } catch (e) {
+            console.error('[NaamAbhyas] Error during init:', e);
+        } finally {
+            this.hideLoadingScreen();
+        }
 
-        this.checkLaunchIntent();
+        try {
+            this.checkLaunchIntent();
+        } catch (e) {}
 
         window.addEventListener('naamAbhyasLaunchReady', (e) => {
             if (e.detail?.autoStart) {
@@ -981,11 +988,16 @@ class NaamAbhyas {
 
     bindDOM() {
         const backBtn = document.getElementById('backBtn');
-        if (backBtn) {
-            backBtn.addEventListener('click', () => {
-                if (window.smartBack) window.smartBack();
-                else if (window.history.length > 1) window.history.back();
-                else window.location.href = '../index.html';
+        if (backBtn && !backBtn._naamBackBound) {
+            backBtn._naamBackBound = true;
+            backBtn.addEventListener('click', (e) => {
+                if (typeof window.anhadGoBack === 'function') {
+                    window.anhadGoBack('../index.html');
+                } else if (window.history.length > 1) {
+                    window.history.back();
+                } else {
+                    window.location.href = '../index.html';
+                }
             });
         }
 
@@ -1577,12 +1589,26 @@ class NaamAbhyas {
 let naamAbhyasInstance = null;
 
 function bootNaamAbhyas() {
-    if (!naamAbhyasInstance) {
-        naamAbhyasInstance = new NaamAbhyas();
-        window.naamAbhyas = naamAbhyasInstance;
-        window.naamAbhyasApp = naamAbhyasInstance;
-        naamAbhyasInstance.init();
-        console.log('[NaamAbhyas] 🚀 Initialized and active');
+    try {
+        if (!naamAbhyasInstance) {
+            naamAbhyasInstance = new NaamAbhyas();
+            window.naamAbhyas = naamAbhyasInstance;
+            window.naamAbhyasApp = naamAbhyasInstance;
+            naamAbhyasInstance.init();
+            console.log('[NaamAbhyas] 🚀 Initialized and active');
+        }
+    } catch (err) {
+        console.error('[NaamAbhyas] Boot error:', err);
+    } finally {
+        const loader = document.getElementById('appLoading');
+        if (loader) {
+            loader.style.opacity = '0';
+            loader.style.pointerEvents = 'none';
+            setTimeout(() => {
+                if (typeof loader.remove === 'function') loader.remove();
+                else loader.style.display = 'none';
+            }, 300);
+        }
     }
 }
 

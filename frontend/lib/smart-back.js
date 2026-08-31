@@ -228,12 +228,12 @@
         } catch (_) {}
       }
 
-      if (referrerMatched) {
+      if (isBackToHome) {
+        shouldHistoryBack = false;
+        console.log('[SmartBack] Target is Home screen, using direct navigation for 100% 1-click return');
+      } else if (referrerMatched) {
         shouldHistoryBack = true;
         console.log('[SmartBack] Referrer matches target URL in history, using history.back() for instant load');
-      } else if (isBackToHome) {
-        shouldHistoryBack = false;
-        console.log('[SmartBack] Target is Home screen but referrer does not match, bypassing history.back()');
       } else {
         if (referrer) {
           // If referrer exists, ensure it's from our own app

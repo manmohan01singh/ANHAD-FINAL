@@ -63,10 +63,14 @@
           morning: 'assets/HERO CARD IMAGES/new morning bg.avif',
           day:     'assets/homepage-hero/darbar-sahib-day-1.png',
           evening: 'assets/darbar-sahib-evening-bg.webp',
-          night:   'assets/HERO CARD IMAGES/new night bg.avif',
+          night:   '',
         };
-        const bgUrl = bgMap[currentTimeOfDay] || bgMap.day;
-        doc.style.setProperty('--dynamic-bg-url', "url('" + bgUrl + "')");
+        const bgUrl = bgMap[currentTimeOfDay] || (currentTimeOfDay === 'night' ? '' : bgMap.day);
+        if (bgUrl) {
+          doc.style.setProperty('--dynamic-bg-url', "url('" + bgUrl + "')");
+        } else {
+          doc.style.removeProperty('--dynamic-bg-url');
+        }
 
         // INLINE CSS VARIABLES — prevent FOUC until theme-variables.css loads
         const cssVars = {
@@ -1752,12 +1756,12 @@
       color: var(--sky-txt-primary, #1A0402) !important;
       text-shadow: 0 1px 4px rgba(0,0,0,0.15) !important;
     }
-    [data-theme-mode="auto"] .app-header {
+    [data-theme-mode="auto"]:not([data-time-of-day="night"]) .app-header {
       background: rgba(0, 0, 0, 0.3) !important;
       backdrop-filter: blur(10px) !important;
       -webkit-backdrop-filter: blur(10px) !important;
     }
-    [data-theme-mode="auto"] .header-blur-bg {
+    [data-theme-mode="auto"]:not([data-time-of-day="night"]) .header-blur-bg {
       background: rgba(0, 0, 0, 0.4) !important;
     }
   </style>
@@ -3067,31 +3071,7 @@
       background: linear-gradient(90deg, #8B6914 0%, #B8860B 50%, #8B6914 100%) !important;
       border-radius: 3px !important;
       position: relative;
-      animation: crackerIgnite 0.8s ease-out;
-    }
-    /* Cracker particle sparks */
-    .progress-inline__fill::after {
-      content: '';
-      position: absolute;
-      right: 0;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 4px;
-      height: 4px;
-      background: #FFD700;
-      border-radius: 50%;
-      box-shadow: 
-        0 0 4px 2px #FFD700,
-        0 0 8px 4px rgba(255, 215, 0, 0.6),
-        -5px -5px 0 1px rgba(255, 215, 0, 0.8),
-        5px -3px 0 1px rgba(255, 165, 0, 0.8),
-        3px 5px 0 1px rgba(255, 140, 0, 0.6);
-      animation: sparkBurst 0.6s ease-out infinite;
-    }
-    @keyframes crackerIgnite {
-      0% { width: 0; opacity: 0.5; }
-      20% { opacity: 1; }
-      100% { opacity: 1; }
+      transition: width 0.8s cubic-bezier(0.19, 1, 0.22, 1);
     }
     @keyframes sparkBurst {
       0%, 100% { 
@@ -3240,8 +3220,8 @@
         display: none !important;
       }
 
-      /* ONLY AUTO THEME - Dynamic background images */
-      html[data-theme-mode="auto"] body::before {
+      /* ONLY AUTO THEME - Dynamic background images (Morning / Day / Evening) */
+      html[data-theme-mode="auto"]:not([data-time-of-day="night"]) body::before {
         content: '' !important;
         position: fixed !important;
         inset: 0 !important;
@@ -3273,9 +3253,11 @@
         display: block !important;
       }
       
-      /* Dark mode - solid black background */
+      /* Dark mode & Dynamic Night mode - solid black background (Zero bluish light) */
       html[data-theme-mode="dark"] body::before,
-      html.dark-mode body::before {
+      html.dark-mode body::before,
+      html[data-time-of-day="night"] body::before,
+      html[data-theme-mode="auto"][data-time-of-day="night"] body::before {
         content: '' !important;
         position: fixed !important;
         inset: 0 !important;
@@ -3535,31 +3517,7 @@
           background: linear-gradient(90deg, #8B6914 0%, #B8860B 50%, #8B6914 100%) !important;
           border-radius: 3px !important;
           position: relative;
-          animation: crackerIgnite 0.8s ease-out;
-        }
-        /* Cracker particle sparks */
-        .progress-inline__fill::after {
-          content: '';
-          position: absolute;
-          right: 0;
-          top: 50%;
-          transform: translateY(-50%);
-          width: 4px;
-          height: 4px;
-          background: #FFD700;
-          border-radius: 50%;
-          box-shadow: 
-            0 0 4px 2px #FFD700,
-            0 0 8px 4px rgba(255, 215, 0, 0.6),
-            -5px -5px 0 1px rgba(255, 215, 0, 0.8),
-            5px -3px 0 1px rgba(255, 165, 0, 0.8),
-            3px 5px 0 1px rgba(255, 140, 0, 0.6);
-          animation: sparkBurst 0.6s ease-out infinite;
-        }
-        @keyframes crackerIgnite {
-          0% { width: 0; opacity: 0.5; }
-          20% { opacity: 1; }
-          100% { opacity: 1; }
+          transition: width 0.8s cubic-bezier(0.19, 1, 0.22, 1);
         }
         @keyframes sparkBurst {
           0%, 100% { 

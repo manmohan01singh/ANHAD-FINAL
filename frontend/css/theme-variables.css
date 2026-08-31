@@ -357,8 +357,13 @@ img[src*="guruimages/"] {
   border-radius: 50% !important;
 }
 
+/* Specific adjustment for Guru Teg Bahadur Sahib Ji (moved frame down to capture full face, dastar & halo nicely) */
+img[src*="gurutegbahadursahebji.jpeg"] {
+  object-position: center 30% !important;
+  transform: scale(1.05) !important;
+}
+
 /* Vertical portrait optimization */
-img[src*="gurutegbahadursahebji.jpeg"],
 img[src*="gurugobindsinghsahebji.jpeg"] {
   object-position: center 20% !important;
 }
