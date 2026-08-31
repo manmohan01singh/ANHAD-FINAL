@@ -48,6 +48,7 @@ public class AudioServicePlugin extends Plugin {
         String stream = call.getString("stream", "darbar");
 
         Intent intent = new Intent(getContext(), AudioForegroundService.class);
+        intent.setAction(AudioForegroundService.ACTION_SYNC_PLAY);
         intent.putExtra("title", title);
         intent.putExtra("artist", artist);
         intent.putExtra("stream", stream);
@@ -66,7 +67,7 @@ public class AudioServicePlugin extends Plugin {
     @PluginMethod
     public void stop(PluginCall call) {
         Intent intent = new Intent(getContext(), AudioForegroundService.class);
-        intent.setAction("STOP");
+        intent.setAction(AudioForegroundService.ACTION_STOP);
         getContext().startService(intent);
 
         JSObject result = new JSObject();
@@ -81,6 +82,7 @@ public class AudioServicePlugin extends Plugin {
         String stream = call.getString("stream", "darbar");
 
         Intent intent = new Intent(getContext(), AudioForegroundService.class);
+        intent.setAction(AudioForegroundService.ACTION_UPDATE_META);
         intent.putExtra("title", title);
         intent.putExtra("artist", artist);
         intent.putExtra("stream", stream);
@@ -94,37 +96,18 @@ public class AudioServicePlugin extends Plugin {
         call.resolve();
     }
 
-    private long lastPlayTime = 0;
-    private static final long PLAY_DEBOUNCE_MS = 2000;
-
     @PluginMethod
     public void updateState(PluginCall call) {
         String action = call.getString("action", "PLAY");
-        long now = System.currentTimeMillis();
-
-        // Debounce rapid PLAY commands to prevent 1.5s reset loop
-        if ("PLAY".equals(action) && (now - lastPlayTime < PLAY_DEBOUNCE_MS)) {
-            System.out.println("[AudioService] Debouncing PLAY command, last=" + (now - lastPlayTime) + "ms ago");
-            call.resolve();
-            return;
-        }
-
-        if ("PLAY".equals(action)) {
-            lastPlayTime = now;
-        }
 
         Intent intent = new Intent(getContext(), AudioForegroundService.class);
-        if ("NEXT".equals(action)) {
-            intent.setAction(AudioForegroundService.ACTION_NEXT);
-        } else if ("PREV".equals(action)) {
-            intent.setAction(AudioForegroundService.ACTION_PREV);
-        } else if ("PAUSE".equals(action)) {
-            intent.setAction(AudioForegroundService.ACTION_PAUSE);
+        if ("PAUSE".equals(action)) {
+            intent.setAction(AudioForegroundService.ACTION_SYNC_PAUSE);
         } else {
-            intent.setAction(AudioForegroundService.ACTION_PLAY);
+            intent.setAction(AudioForegroundService.ACTION_SYNC_PLAY);
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && "PLAY".equals(action)) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && !"PAUSE".equals(action)) {
             getContext().startForegroundService(intent);
         } else {
             getContext().startService(intent);

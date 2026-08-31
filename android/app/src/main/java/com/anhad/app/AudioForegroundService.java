@@ -44,6 +44,9 @@ public class AudioForegroundService extends Service {
     public static final String ACTION_STOP = "com.anhad.app.ACTION_STOP";
     public static final String ACTION_NEXT = "com.anhad.app.ACTION_NEXT";
     public static final String ACTION_PREV = "com.anhad.app.ACTION_PREV";
+    public static final String ACTION_SYNC_PLAY = "com.anhad.app.ACTION_SYNC_PLAY";
+    public static final String ACTION_SYNC_PAUSE = "com.anhad.app.ACTION_SYNC_PAUSE";
+    public static final String ACTION_UPDATE_META = "com.anhad.app.ACTION_UPDATE_META";
     
     private PowerManager.WakeLock wakeLock;
     private MediaSessionCompat mediaSession;
@@ -80,7 +83,7 @@ public class AudioForegroundService extends Service {
                 switch (focusChange) {
                     case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
                     case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
-                        Log.d(TAG, "Audio focus transient loss (phone call / reel playing)");
+                        Log.d(TAG, "Audio focus transient loss");
                         if (isPlaying) {
                             wasPlayingBeforeInterruption = true;
                             isPlaying = false;
@@ -168,12 +171,12 @@ public class AudioForegroundService extends Service {
             } else {
                 updateNotification();
             }
-            broadcastCommand("RECONNECT");
             return START_STICKY;
         }
 
         String action = intent.getAction();
         
+        // 1. User clicked Stop on notification
         if (ACTION_STOP.equals(action) || "STOP".equals(action)) {
             isPlaying = false;
             wasPlayingBeforeInterruption = false;
@@ -185,23 +188,66 @@ public class AudioForegroundService extends Service {
             return START_NOT_STICKY;
         }
         
-        if (ACTION_PAUSE.equals(action) || "PAUSE".equals(action)) {
+        // 2. User clicked Pause on notification
+        if (ACTION_PAUSE.equals(action)) {
             isPlaying = false;
             abandonAudioFocus();
             updateMediaSessionState();
             updateNotification();
             detachForeground();
-            broadcastCommand("PAUSE");
+            broadcastCommand("PAUSE"); // Inform JS
             return START_STICKY;
         }
         
-        if (ACTION_PLAY.equals(action) || "PLAY".equals(action)) {
+        // 3. User clicked Play on notification
+        if (ACTION_PLAY.equals(action)) {
             isPlaying = true;
             wasPlayingBeforeInterruption = false;
             requestAudioFocus();
             updateMediaSessionState();
             startForeground(NOTIFICATION_ID, buildNotification());
-            broadcastCommand("PLAY");
+            broadcastCommand("PLAY"); // Inform JS
+            return START_STICKY;
+        }
+
+        // 4. JS Sync: Play state updated from web layer (DO NOT ECHO BROADCAST BACK TO JS)
+        if (ACTION_SYNC_PLAY.equals(action)) {
+            String title = intent.getStringExtra("title");
+            String artist = intent.getStringExtra("artist");
+            String stream = intent.getStringExtra("stream");
+            if (title != null) currentTitle = title;
+            if (artist != null) currentArtist = artist;
+            if (stream != null) currentStream = stream;
+
+            isPlaying = true;
+            wasPlayingBeforeInterruption = false;
+            requestAudioFocus();
+            updateMediaSessionMetadata();
+            updateMediaSessionState();
+            startForeground(NOTIFICATION_ID, buildNotification());
+            return START_STICKY;
+        }
+
+        // 5. JS Sync: Pause state updated from web layer (DO NOT ECHO BROADCAST BACK TO JS)
+        if (ACTION_SYNC_PAUSE.equals(action)) {
+            isPlaying = false;
+            abandonAudioFocus();
+            updateMediaSessionState();
+            updateNotification();
+            detachForeground();
+            return START_STICKY;
+        }
+
+        // 6. JS Sync: Metadata update only
+        if (ACTION_UPDATE_META.equals(action)) {
+            String title = intent.getStringExtra("title");
+            String artist = intent.getStringExtra("artist");
+            String stream = intent.getStringExtra("stream");
+            if (title != null) currentTitle = title;
+            if (artist != null) currentArtist = artist;
+            if (stream != null) currentStream = stream;
+            updateMediaSessionMetadata();
+            updateNotification();
             return START_STICKY;
         }
 
