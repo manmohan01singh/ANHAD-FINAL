@@ -304,9 +304,13 @@
         var dur = state.duration || 3600;
         var seekTime = pct * dur;
 
-        var audioEl = audio.getAudio();
-        if (audioEl) {
-          audioEl.currentTime = seekTime;
+        if (typeof audio.seekTo === 'function') {
+          audio.seekTo(seekTime);
+        } else {
+          var audioEl = audio.getAudio();
+          if (audioEl) {
+            audioEl.currentTime = seekTime;
+          }
         }
       }
 
@@ -736,7 +740,12 @@
       if (audio) {
         var audioEl = audio.getAudio();
         if (audioEl && audio.getState().currentStream !== 'darbar') {
-          audioEl.currentTime = Math.max(0, audioEl.currentTime - 15);
+          var target = Math.max(0, audioEl.currentTime - 15);
+          if (typeof audio.seekTo === 'function') {
+            audio.seekTo(target);
+          } else {
+            audioEl.currentTime = target;
+          }
         }
       }
     });
@@ -756,7 +765,12 @@
           }
           // Clamp skip to the live edge boundary (offset = 0)
           var maxAllowedTime = Math.max(0, audioEl.currentTime + offset - 2);
-          audioEl.currentTime = Math.min(maxAllowedTime, audioEl.currentTime + 15);
+          var target = Math.min(maxAllowedTime, audioEl.currentTime + 15);
+          if (typeof audio.seekTo === 'function') {
+            audio.seekTo(target);
+          } else {
+            audioEl.currentTime = target;
+          }
         }
       }
     });

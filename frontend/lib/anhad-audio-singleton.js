@@ -340,6 +340,13 @@
         ? SIMRAN_KNOWN_DURATIONS[trackIndex]
         : null;
     if (Number.isFinite(known)) return known;
+
+    try {
+      const cache = getDurationCache();
+      const cached = cache[streamName] && cache[streamName][trackIndex];
+      if (Number.isFinite(cached) && cached > 60) return cached;
+    } catch(e) {}
+
     return fallback;
   }
 
@@ -492,8 +499,22 @@
         persistState();
         // Dispatch UI timeupdate
         const dur = this.audio.duration || 3600;
-        const pct = Math.max(0, Math.min(100, (this.audio.currentTime / dur) * 100));
-        emit('timeupdate', { currentTime: this.audio.currentTime, duration: dur, progress: pct });
+        const cur = this.audio.currentTime || 0;
+        const pct = Math.max(0, Math.min(100, (cur / dur) * 100));
+        emit('timeupdate', { currentTime: cur, duration: dur, progress: pct });
+
+        // Update MediaSession lockscreen position state for playlist streams
+        if ('mediaSession' in navigator && typeof navigator.mediaSession.setPositionState === 'function' && currentStream && STREAMS[currentStream]?.type === 'playlist') {
+          if (Number.isFinite(dur) && dur > 0 && Number.isFinite(cur) && cur >= 0 && cur <= dur) {
+            try {
+              navigator.mediaSession.setPositionState({
+                duration: dur,
+                playbackRate: this.audio.playbackRate || 1.0,
+                position: cur
+              });
+            } catch (e) {}
+          }
+        }
       });
       this.audio.addEventListener('durationchange', () => {
         if (currentStream && STREAMS[currentStream].type === 'playlist') {
@@ -1169,6 +1190,33 @@
     }
   }
 
+  function seekTo(targetTime) {
+    if (!Number.isFinite(targetTime) || targetTime < 0) return;
+    if (!currentStream) return;
+
+    if (STREAMS[currentStream]?.type === 'playlist') {
+      const playlist = VirtualLiveEngine.getPlaylist(currentStream);
+      const track = playlist[currentTrackIndex];
+      const dur = track ? track.duration : 3600;
+      const safeTime = Math.max(0, Math.min(targetTime, dur - 1));
+
+      const liveTime = VirtualLiveEngine.getCurrentTimelineValue();
+      const expectedUserTime = liveTime - manualOffset;
+      const totalDur = VirtualLiveEngine.getPlaylistTotalDuration(playlist);
+      const currentCycle = totalDur > 0 ? Math.floor(expectedUserTime / totalDur) : 0;
+
+      const newU = VirtualLiveEngine.convertToTimelineCoordinate(currentStream, currentTrackIndex, safeTime, currentCycle);
+      manualOffset = Math.max(0, liveTime - newU);
+      pauseAnchor = null;
+      persistState();
+
+      PlaybackQueueController.seek(safeTime);
+      emit('statechange', getPublicState());
+    } else {
+      PlaybackQueueController.seek(targetTime);
+    }
+  }
+
   function playNextTrack(isForward) {
     if (!currentStream || STREAMS[currentStream].type !== 'playlist') return;
     
@@ -1303,6 +1351,23 @@
       navigator.mediaSession.setActionHandler('stop', () => stop());
       navigator.mediaSession.setActionHandler('previoustrack', () => playNextTrack(false));
       navigator.mediaSession.setActionHandler('nexttrack', () => playNextTrack(true));
+      try {
+        navigator.mediaSession.setActionHandler('seekto', (details) => {
+          if (details && typeof details.seekTime === 'number') {
+            seekTo(details.seekTime);
+          }
+        });
+        navigator.mediaSession.setActionHandler('seekbackward', (details) => {
+          const skip = (details && details.seekOffset) || 15;
+          const cur = PlaybackQueueController.audio ? PlaybackQueueController.audio.currentTime : 0;
+          seekTo(Math.max(0, cur - skip));
+        });
+        navigator.mediaSession.setActionHandler('seekforward', (details) => {
+          const skip = (details && details.seekOffset) || 15;
+          const cur = PlaybackQueueController.audio ? PlaybackQueueController.audio.currentTime : 0;
+          seekTo(cur + skip);
+        });
+      } catch (e) {}
     }
 
     // Native Capacitor foreground service notification
@@ -1643,6 +1708,7 @@
     toggle,
     stop,
     jumpToLive,
+    seekTo,
     playNextTrack,
     setVolume,
     registerStream,

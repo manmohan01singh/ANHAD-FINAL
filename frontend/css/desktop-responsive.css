@@ -1225,41 +1225,61 @@
     color: #F7C634 !important;
   }
 
+  .event-card__date-pill {
+    font-size: 0.76rem !important;
+    font-weight: 750 !important;
+    padding: 4px 10px !important;
+    border-radius: 8px !important;
+    background: rgba(212, 148, 58, 0.16) !important;
+    border: 1px solid rgba(212, 148, 58, 0.32) !important;
+    color: #824400 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+  }
+  html.dark-mode .event-card__date-pill,
+  [data-theme="dark"] .event-card__date-pill {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border: 1px solid rgba(212, 148, 58, 0.30) !important;
+    color: #F7C634 !important;
+  }
+
   .event-card__learn-btn {
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
     gap: 4px !important;
-    padding: 4.5px 14px !important;
-    background: linear-gradient(135deg, #D4943A 0%, #B8781E 100%) !important;
+    padding: 5px 14px !important;
+    background: linear-gradient(135deg, #E69526 0%, #BD6E09 100%) !important;
     color: #FFFFFF !important;
     border: none !important;
     border-radius: 9999px !important;
     font-size: 0.76rem !important;
-    font-weight: 700 !important;
+    font-weight: 750 !important;
     cursor: pointer !important;
-    box-shadow: 0 2px 8px rgba(212, 148, 58, 0.32), inset 0 1px 1.5px rgba(255, 255, 255, 0.4) !important;
+    box-shadow: 0 3px 12px rgba(212, 148, 58, 0.42), inset 0 1px 1.5px rgba(255, 255, 255, 0.5) !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25) !important;
     transition: transform 0.15s ease, box-shadow 0.15s ease !important;
     flex-shrink: 0 !important;
     margin: 0 !important;
   }
   .event-card__learn-btn:hover {
     transform: translateY(-1px) scale(1.04) !important;
-    box-shadow: 0 4px 12px rgba(212, 148, 58, 0.45) !important;
+    box-shadow: 0 5px 16px rgba(212, 148, 58, 0.52) !important;
   }
   .event-card__learn-btn:active {
     transform: scale(0.96) !important;
   }
 
   .event-card__guru-img-wrapper {
-    width: 78px !important;
-    height: 78px !important;
-    min-width: 78px !important;
-    min-height: 78px !important;
+    width: 88px !important;
+    height: 88px !important;
+    min-width: 88px !important;
+    min-height: 88px !important;
     border-radius: 50% !important;
     padding: 2.5px !important;
-    background: linear-gradient(135deg, #FCE3A1 0%, #D4943A 50%, #9A6214 100%) !important;
-    box-shadow: 0 4px 16px rgba(212, 148, 58, 0.32), inset 0 1px 2px rgba(255, 255, 255, 0.6) !important;
+    background: linear-gradient(135deg, #FDE6A6 0%, #E69D35 50%, #A86508 100%) !important;
+    box-shadow: 0 4px 18px rgba(212, 148, 58, 0.36), inset 0 1px 2px rgba(255, 255, 255, 0.7) !important;
     overflow: visible !important;
     flex-shrink: 0 !important;
     display: flex !important;
