@@ -6681,6 +6681,17 @@
               window.AnhadAudio.play(stream);
               showHeroQuickPlayToast('▶ Playing ' + (HERO_QUICK_PLAY_STREAM_NAMES[stream] || 'Live'));
 
+              // Ensure mini-player appears statically immediately
+              setTimeout(() => {
+                if (window.AnhadUpdateOverlayUI) window.AnhadUpdateOverlayUI();
+                const gmp = document.getElementById('gmp');
+                if (gmp) {
+                  gmp.style.display = 'flex';
+                  gmp.classList.add('gmp--visible');
+                  document.body.classList.add('has-mini-player');
+                }
+              }, 50);
+
               if (window.CapacitorHaptics) {
                 window.CapacitorHaptics.impact({ style: 'medium' });
               } else if (navigator.vibrate) {

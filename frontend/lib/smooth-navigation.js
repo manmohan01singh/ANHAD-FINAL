@@ -323,8 +323,12 @@
 
   function isShellPage(url) {
     try {
-      const pathname = new URL(url, window.location.origin).pathname;
+      const pathname = new URL(url, window.location.origin).pathname.toLowerCase();
       const cleanPath = pathname.replace(/\/index\.html$/, '/').replace(/\/$/, '');
+
+      if (isHomeUrl(url)) return true;
+      if (cleanPath.includes('/insights') || cleanPath.includes('insights')) return true;
+      if (cleanPath.includes('/favorites') || cleanPath.includes('favorites')) return true;
 
       return cleanPath.endsWith('/frontend') ||
              cleanPath.endsWith('/frontend/index.html') ||
@@ -332,11 +336,7 @@
              cleanPath.endsWith('/index.html') ||
              cleanPath.endsWith('/index') ||
              cleanPath.endsWith('/') || 
-             cleanPath === '' ||
-             cleanPath.endsWith('/Insights/insights.html') ||
-             cleanPath.endsWith('/Insights/insights') ||
-             cleanPath.endsWith('/Favorites/favorites.html') ||
-             cleanPath.endsWith('/Favorites/favorites');
+             cleanPath === '';
     } catch (e) {
       return false;
     }
@@ -425,17 +425,12 @@
 
     if (normalized === currentActiveUrl && !options.force) return;
 
-    // currentActiveUrl is only assigned at the very END of applyNewContent, and
-    // two awaits sit in between (syncHeadAssets, executePageScripts — the latter
-    // network-bound). For that whole window the dedupe check above still sees
-    // the OLD url, so a second tap started a concurrent performSwap: two runs
-    // interleaved `currentApp.innerHTML = ...`, both called pushState, and the
-    // second one's script-cleanup removed <script> nodes the first was still
-    // awaiting, leaving those promises to settle only via onerror.
-    if (navInFlight && !options.force) {
-      console.warn('[SmoothNav] Navigation already in flight, ignoring:', normalized);
-      return;
-    }
+    // If an identical destination is already in flight, ignore (duplicate tap).
+    // BUT if the user tapped a DIFFERENT tab, cancel the old flight and start fresh
+    // — this is the core fix for "takes 3 taps to navigate": previously any in-flight
+    // nav blocked ALL subsequent taps until the swap finished, so rapid tab switches
+    // would silently drop the 2nd and 3rd taps.
+    if (navInFlight && navInFlight === normalized && !options.force) return;
     navInFlight = normalized;
 
     // Run page cleanup before leaving
@@ -797,6 +792,14 @@
     
     // Dispatch standard page changed event
     window.dispatchEvent(new CustomEvent('anhad_page_changed', { detail: { url } }));
+
+    // Refresh mini-player so it reliably reappears when coming back from full-screen pages
+    // (e.g. Gurbani Radio → Home/Favorites/Insights) without requiring a play-button tap
+    setTimeout(() => {
+      if (typeof window.AnhadUpdateOverlayUI === 'function') {
+        window.AnhadUpdateOverlayUI();
+      }
+    }, 80);
   }
 
   /**

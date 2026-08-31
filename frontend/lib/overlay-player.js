@@ -40,19 +40,13 @@
   function isMiniPlayerPage() {
     try {
       var p = window.location.pathname.toLowerCase();
-      // Strip .html FIRST, then the index segment, then any trailing slash:
-      //   /index.html            -> ''
-      //   /                      -> ''
-      //   /frontend/index.html   -> '/frontend'
-      //   /Favorites/favorites.html -> '/favorites/favorites'
-      //   /nitnem/index.html     -> '/nitnem'        (correctly not allowed)
-      var clean = p.replace(/\.html$/, '').replace(/\/index$/, '/').replace(/\/$/, '');
-      if (clean === '' || clean === '/frontend') return true;              // Home
-      if (/\/insights\/insights$/.test(clean)) return true;                // Learning
-      if (/\/favorites\/favorites$/.test(clean)) return true;              // Favorites
-      return false;
+      // Hide ONLY on dedicated full-screen radio player pages
+      if (p.includes('gurbani-radio.html') || p.includes('gurbani-radio')) {
+        return false;
+      }
+      return true;
     } catch (e) {
-      return false;
+      return true;
     }
   }
 
@@ -278,4 +272,5 @@
 
   // Expose global controller mapping so legacy overlay calls still resolve
   window.AnhadOverlayPlayerUIExposed = true;
+  window.AnhadUpdateOverlayUI = updateUI;
 })();
