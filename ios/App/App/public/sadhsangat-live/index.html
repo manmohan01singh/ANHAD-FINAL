@@ -7200,7 +7200,7 @@
         if (main && (!State.live || State.live.length === 0) && (!State.myChannels || State.myChannels.length === 0)) {
           main.innerHTML = `
             <div style="padding:40px 20px; text-align:center;">
-              <div style="font-size:48px; margin-bottom:16px;">âš </div>
+              <div style="font-size:48px; margin-bottom:16px;">âš </div>
               <div style="font-size:16px; font-weight:700; color:var(--text-primary); margin-bottom:8px;">Connection Failed</div>
               <div style="font-size:13px; color:var(--text-secondary); margin-bottom:16px;">Unable to connect to Sadhsangat Live servers. Please check your network connection.</div>
               <button onclick="window.location.reload()" style="background:var(--gold-gradient); border:none; padding:10px 20px; border-radius:30px; font-weight:600; color:#000; cursor:pointer;">Retry Connection</button>
@@ -7838,7 +7838,7 @@
         
         $('previewCard').classList.add('visible');
       } catch (err) {
-        showToast('âš  ' + err.message);
+        showToast('âš  ' + err.message);
       } finally {
         $('searchBtn').disabled = false;
         $('searchBtn').textContent = 'Find';
@@ -9067,7 +9067,7 @@
       } catch (e) {
         container.innerHTML = `
           <div style="padding: 12px 16px;"><button id="backToChListBtn" style="background:none; border:none; color:var(--yt-red); font-weight:700;">Back</button></div>
-          <div class="empty-state"><div class="empty-icon">âš </div><div class="empty-heading">Could not load playlists</div></div>
+          <div class="empty-state"><div class="empty-icon">âš </div><div class="empty-heading">Could not load playlists</div></div>
         `;
         $('backToChListBtn').addEventListener('click', () => {
           State.selectedChannelId = 'all';
@@ -9270,7 +9270,7 @@
         showToast('Display order updated');
         await loadData();
       } catch(err) {
-        showToast('âš  ' + err.message);
+        showToast('âš  ' + err.message);
       }
     }
 
@@ -9286,7 +9286,7 @@
         State.videos = [];
         await loadData();
       } catch (err) {
-        showToast('âš  ' + err.message);
+        showToast('âš  ' + err.message);
       }
     }
 
@@ -9539,7 +9539,7 @@
           return;
         }
         if (!v.channelId) {
-          showToast('âš  Channel ID not available');
+          showToast('âš  Channel ID not available');
           return;
         }
         
@@ -9554,10 +9554,10 @@
             showToast(`🔔 Subscribed to ${v.channelName || 'Channel'}`);
             await loadData();
           } else {
-            showToast('âš  ' + (data.error || 'Failed to subscribe'));
+            showToast('âš  ' + (data.error || 'Failed to subscribe'));
           }
         } catch(err) {
-          showToast('âš  Error subscribing');
+          showToast('âš  Error subscribing');
         }
       });
       
@@ -9814,11 +9814,11 @@
             await loadData();
             updateSubscribeBtnState(found);
           } else {
-            showToast('âš  Channel not found');
+            showToast('âš  Channel not found');
           }
         }
       } catch (e) {
-        showToast('âš  Action failed');
+        showToast('âš  Action failed');
       } finally {
         btn.disabled = false;
       }
@@ -10400,7 +10400,7 @@
       navigator.clipboard.writeText(url).then(() => {
         showToast('📋 Link copied to clipboard');
       }).catch(() => {
-        showToast('âš  Link: ' + url);
+        showToast('âš  Link: ' + url);
       });
     });
 

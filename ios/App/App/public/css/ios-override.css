@@ -648,7 +648,7 @@ body {
 ═══════════════════════════════════════════════════════════════════════════════ */
 .mini-player {
   position: fixed;
-  bottom: calc(76px + max(env(safe-area-inset-bottom, 0px), 8px) + 24px) !important;
+  bottom: calc(98px + max(env(safe-area-inset-bottom, 0px), 6px)) !important;
   left: 50% !important;
   transform: translateX(-50%) translateY(200%);
   width: calc(100% - 24px) !important;
@@ -666,19 +666,17 @@ body {
 }
 
 /* Only show when --visible class is added (when kirtan is playing) */
-    opacity 0.3s ease;
-}
-
-/* Only show when --visible class is added (when kirtan is playing) */
 .mini-player--visible {
-  transform: translateX(-50%) translateY(0);
-  opacity: 1;
-  pointer-events: auto;
+  transform: translateX(-50%) translateY(0) !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
 }
 
-.dark-mode .mini-player {
-  background: rgba(28, 28, 30, 0.92);
-  border-color: rgba(255, 255, 255, 0.08);
+.dark-mode .mini-player,
+[data-theme="dark"] .mini-player {
+  background: rgba(28, 28, 30, 0.94) !important;
+  border-color: rgba(212, 148, 58, 0.3) !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7) !important;
 }
 
 /* ── Bottom Nav — stays same, no collision now ── */
@@ -1569,15 +1567,7 @@ html.dark-mode .practice-card__ring {
   color: var(--sky-card-text) !important;
 }
 
-/* Header Buttons Overrides for Auto Mode */
-/* .header__back/.glass-nav__back deliberately NOT scoped to .home-header
-   here — both are shared component classes used by 13+ other pages'
-   (Settings, Profile, Journey, legal pages, etc.) own back buttons, not
-   Home-exclusive, so this glassmorphism treatment is plausibly an
-   intentional shared style rather than a Home-specific leak. Only
-   .header__btn/.header-btn--glass are confirmed Home-exclusive. */
-[data-theme-mode="auto"] .home-header .header__btn,
-[data-theme-mode="auto"] .home-header .header-btn--glass,
+/* Header Back Button Overrides for Auto Mode */
 [data-theme-mode="auto"] .header__back,
 [data-theme-mode="auto"] .glass-nav__back {
   background: var(--sky-card-bg-glass) !important;
@@ -1588,21 +1578,15 @@ html.dark-mode .practice-card__ring {
   -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
 }
 
-[data-theme-mode="auto"] .home-header .header__btn svg,
-[data-theme-mode="auto"] .home-header .header-btn--glass svg,
 [data-theme-mode="auto"] .header__back svg,
 [data-theme-mode="auto"] .glass-nav__back svg {
   color: var(--sky-card-text) !important;
 }
 
-[data-theme-mode="auto"] .home-header .header__btn img,
-[data-theme-mode="auto"] .home-header .header-btn--glass img,
 [data-theme-mode="auto"] .header__back img {
   filter: brightness(0) invert(1) !important;
 }
 
-[data-theme-mode="auto"] .home-header .header__btn:active,
-[data-theme-mode="auto"] .home-header .header-btn--glass:active,
 [data-theme-mode="auto"] .header__back:active,
 [data-theme-mode="auto"] .glass-nav__back:active {
   background: var(--sky-card-bg) !important;
@@ -1622,12 +1606,50 @@ html.dark-mode .practice-card__ring {
   color: var(--sky-card-text2) !important;
 }
 
-[data-theme-mode="auto"] .tab-item.active {
-  color: var(--sky-card-accent) !important;
-  background: var(--sky-card-icon-bg) !important;
+[data-theme-mode="auto"] .tab-item.active,
+[data-theme-mode="auto"][data-time-of-day="morning"] .tab-item.active,
+[data-theme-mode="auto"][data-time-of-day="day"] .tab-item.active,
+[data-theme-mode="auto"][data-time-of-day="evening"] .tab-item.active {
+  color: #C8821E !important;
+  border: none !important;
+  border-radius: 22px !important;
+  background: linear-gradient(155deg,
+    rgba(255,255,255,1) 0%,
+    rgba(255,243,222,0.98) 50%,
+    rgba(248,232,200,0.95) 100%) !important;
+  box-shadow:
+    0 6px 18px rgba(212, 148, 58, 0.18),
+    0 2px 6px rgba(0, 0, 0, 0.06),
+    -3px -3px 8px rgba(255,255,255,0.98),
+    inset 2px 2px 5px rgba(255,255,255,1),
+    inset -1px -1px 4px rgba(200, 130, 30, 0.08) !important;
+  transform: scale(1.03) !important;
 }
 
-[data-theme-mode="auto"] .tab-item.active .tab-icon {
+[data-theme-mode="auto"][data-time-of-day="night"] .tab-item.active,
+[data-theme="dark"][data-theme-mode="auto"] .tab-item.active {
+  color: #F0A83A !important;
+  border: none !important;
+  border-radius: 22px !important;
+  background: linear-gradient(155deg,
+    rgba(52, 42, 24, 0.98) 0%,
+    rgba(36, 28, 14, 0.98) 55%,
+    rgba(24, 18, 8, 0.97) 100%) !important;
+  box-shadow:
+    0 6px 20px rgba(0, 0, 0, 0.6),
+    0 2px 8px rgba(0, 0, 0, 0.4),
+    -2px -2px 6px rgba(255, 255, 255, 0.04),
+    inset 2px 2px 5px rgba(212, 148, 58, 0.28),
+    inset -2px -2px 5px rgba(0, 0, 0, 0.5) !important;
+  transform: scale(1.03) !important;
+}
+
+[data-theme-mode="auto"] .tab-item.active .tab-icon svg,
+[data-theme-mode="auto"] .tab-item.active .tab-label {
+  color: #C8821E !important;
+  fill: #C8821E !important;
+  font-weight: 800 !important;
+}
   filter: none !important;
 }
 
@@ -1806,19 +1828,23 @@ html.dark-mode .practice-card__ring {
     inset -2.5px -2.5px 6px rgba(212, 148, 58, 0.10) !important;
 }
 
-[data-theme-mode="auto"][data-time-of-day="evening"] .home-header .header__btn,
-[data-theme-mode="auto"][data-time-of-day="evening"] .home-header .header-btn--glass,
 [data-theme-mode="auto"][data-time-of-day="evening"] .header__back,
-[data-theme-mode="auto"][data-time-of-day="evening"] .glass-nav__back,
-[data-theme-mode="auto"][data-time-of-day="evening"] .event-card__learn-btn,
-[data-theme-mode="auto"][data-time-of-day="evening"] .tab-item.active {
-  background: linear-gradient(135deg, #F29A2E 0%, #D48218 100%) !important;
-  border: none !important;
-  box-shadow: 0 4px 14px rgba(242, 154, 46, 0.35) !important;
+[data-theme-mode="auto"][data-time-of-day="evening"] .glass-nav__back {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 238, 210, 0.85)) !important;
+  border: 1px solid rgba(212, 148, 58, 0.3) !important;
+  box-shadow: 0 4px 14px rgba(212, 148, 58, 0.2) !important;
   border-radius: 9999px !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
 }
+
+[data-theme-mode="auto"][data-time-of-day="evening"] .event-card__learn-btn {
+  background: linear-gradient(135deg, #E69526 0%, #BD6E09 100%) !important;
+  color: #FFFFFF !important;
+  border: none !important;
+  box-shadow: 0 3px 12px rgba(212, 148, 58, 0.42), inset 0 1px 1.5px rgba(255, 255, 255, 0.5) !important;
+  border-radius: 9999px !important;
+}
+
+
 
 /* ── Day Event Card — gold button ── */
 [data-theme-mode="auto"][data-time-of-day="day"] .event-card__learn-btn,

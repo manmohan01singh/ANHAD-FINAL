@@ -420,7 +420,7 @@
         <span>✅</span> Enable All
       </button>
       <button class="quick-btn" onclick="toggleAllNotifications(false)">
-        <span>⏸️</span> Pause All
+        <span>⏸️️</span> Pause All
       </button>
       <button class="quick-btn" onclick="resetToDefaults()">
         <span>🔄</span> Reset Times
@@ -572,7 +572,7 @@
         manager.updateSetting(k, { enabled: enable });
       });
       renderUI();
-      showToast(enable ? '✅ All 15 notifications enabled' : '⏸️ All notifications paused');
+      showToast(enable ? '✅ All 15 notifications enabled' : '⏸️️ All notifications paused');
     }
 
     function resetToDefaults() {

@@ -59,15 +59,12 @@ body::before {
   opacity: 1;
 }
 
-/* In dark mode (manual dark theme), make it slightly darker — NO blur filter */
-html.dark-mode:not([data-theme-mode="auto"]) .anhad-bg-fade-layer,
-[data-theme="dark"] .anhad-bg-fade-layer {
-  filter: brightness(0.65) saturate(0.9);
-}
-
-/* In auto mode at night */
+/* In dark mode and auto mode at night */
+html.dark-mode .anhad-bg-fade-layer,
+[data-theme="dark"] .anhad-bg-fade-layer,
+html[data-time-of-day="night"] .anhad-bg-fade-layer,
 html[data-theme-mode="auto"][data-time-of-day="night"] .anhad-bg-fade-layer {
-  filter: brightness(1.0) saturate(1.0) !important;
+  filter: brightness(0.65) saturate(0.9);
 }
 
 /* ── MAIN APP CONTAINER ── */

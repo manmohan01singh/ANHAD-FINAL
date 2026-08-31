@@ -36,7 +36,7 @@
   if (window.__anhadCampaignRendererInit) return;
   window.__anhadCampaignRendererInit = true;
 
-  // ── One-time purge of the retired permanent-dismissal flag ────────────────
+  // -- One-time purge of the retired permanent-dismissal flag ----------------
   // v1 shipped an X that wrote a never-expiring suppression record. Dismissal
   // is gone entirely now, but anyone who tapped that X would otherwise stay
   // suppressed forever. Nothing writes this key again, so no versioning needed.
@@ -84,7 +84,7 @@
     } catch (e) { return false; }
   }
 
-  // ── Content ───────────────────────────────────────────────────────────────
+  // -- Content ---------------------------------------------------------------
   // Clamped hard. Both panes are absolutely positioned, so they are not clipped
   // by their parent and .greeting is overflow:visible — an over-long remote
   // string would spill across the portrait and the progress bar below it.
@@ -146,7 +146,7 @@
     });
   }
 
-  // ── State ─────────────────────────────────────────────────────────────────
+  // -- State -----------------------------------------------------------------
   // The controller's ENTIRE DOM authority is one attribute on one node. That is
   // what makes "never fights PortraitSlider" provable rather than hopeful:
   // PortraitSlider owns the .greeting__slide--* classes on descendants and the
@@ -286,7 +286,7 @@
     );
   }
 
-  // ── Resolution and precedence ─────────────────────────────────────────────
+  // -- Resolution and precedence ---------------------------------------------
   /**
    * The one thing that must not be got wrong: "remote unreachable" is NOT the
    * same as "nothing is active".
@@ -330,7 +330,7 @@
     });
   }
 
-  // ── Wiring ────────────────────────────────────────────────────────────────
+  // -- Wiring ----------------------------------------------------------------
   window.addEventListener('anhadCampaignUpdated', update);
   window.addEventListener('anhad_page_changed', update);
 

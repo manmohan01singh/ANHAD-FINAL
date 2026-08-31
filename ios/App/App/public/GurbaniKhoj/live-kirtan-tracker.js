@@ -515,7 +515,7 @@
 
     function updatePauseButton() {
         if (elements.pauseBtn) {
-            elements.pauseBtn.textContent = trackerState.isPaused ? '▶ Resume' : '⏸ Pause';
+            elements.pauseBtn.textContent = trackerState.isPaused ? '▶ Resume' : '⏸️ Pause';
         }
     }
 

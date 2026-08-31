@@ -82,7 +82,7 @@
     }
   } catch(e) {}
 
-  // ─── COLD START: Truly first visit → redirect to welcome/splash ───
+  // --- COLD START: Truly first visit → redirect to welcome/splash ---
   // Mark as seen BEFORE redirect so the splash itself won't loop
   try { localStorage.setItem(SEEN_KEY, 'true'); } catch(e) {}
   window.location.replace('./Homepage/ios-homepage.html');

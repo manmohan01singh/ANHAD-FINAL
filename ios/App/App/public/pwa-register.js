@@ -4,7 +4,7 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  * 
  * STRATEGY FOR AUTO-UPDATES ON ALL DEVICES:
- * ──────────────────────────────────────────
+ * ------------------------------------------
  * 1. Polls version.json every 60 seconds (cache-busted)
  * 2. If server version differs from local, triggers SW update check
  * 3. New SW installs → skipWaiting → claims clients → ONE reload
@@ -12,7 +12,7 @@
  * 5. On visibility change (app opens from background), checks immediately
  * 
  * ANTI-LOOP PROTECTION:
- * ─────────────────────
+ * ---------------------
  * - sessionStorage tracks reload timestamps to prevent loops
  * - 30-second cooldown after any reload
  * - controllerchange only reloads ONCE per session

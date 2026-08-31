@@ -26,19 +26,19 @@
 (function AnhadCore() {
   'use strict';
 
-  /* ─── SVG chevron used in back buttons ──────────────────────────────────── */
+  /* --- SVG chevron used in back buttons ------------------------------------ */
   const CHEVRON_SVG = `<svg class="back-chevron" viewBox="0 0 9 16" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
     <path d="M8 1L1 8L8 15" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
   </svg>`;
 
-  /* ─── Haptic feedback ────────────────────────────────────────────────────── */
+  /* --- Haptic feedback ------------------------------------------------------ */
   function haptic(pattern) {
     try {
       if (navigator.vibrate) navigator.vibrate(pattern || 8);
     } catch (_) {}
   }
 
-  /* ─── Smart back navigation ─────────────────────────────────────────────── */
+  /* --- Smart back navigation ----------------------------------------------- */
   function initBack(homeHref) {
     const fallback = homeHref || _resolveHome();
 
@@ -80,7 +80,7 @@
     return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   }
 
-  /* ─── Page-enter transition ─────────────────────────────────────────────── */
+  /* --- Page-enter transition ----------------------------------------------- */
   function initTransition(selector) {
     // NATIVE APP FIX: Skip page-enter animation if returning to Home
     const isReturning = window.HomeStateManager?.isReturningFromNavigation();
@@ -126,7 +126,7 @@
     });
   }
 
-  /* ─── Offline banner ─────────────────────────────────────────────────────── */
+  /* --- Offline banner ------------------------------------------------------- */
   function initOfflineBanner() {
     var banner = document.querySelector('.ac-offline-banner');
     if (!banner) {
@@ -166,7 +166,7 @@
     window.addEventListener('online',  function() { _render(true);  });
   }
 
-  /* ─── Compact nav on scroll ─────────────────────────────────────────────── */
+  /* --- Compact nav on scroll ----------------------------------------------- */
   function initNavCompact() {
     if (window.__anhadCoreNavCompactBound) return;
     window.__anhadCoreNavCompactBound = true;
@@ -185,7 +185,7 @@
     }, { passive: true });
   }
 
-  /* ─── Tappable spring feedback (supplement CSS :active) ─────────────────── */
+  /* --- Tappable spring feedback (supplement CSS :active) ------------------- */
   function initHaptics() {
     // One document-level listener per session, not per navigation. Each copy
     // ran a closest() tree walk on every tap, so after N page changes a single
@@ -200,7 +200,7 @@
     }, { passive: true });
   }
 
-  /* ─── Public API ─────────────────────────────────────────────────────────── */
+  /* --- Public API ----------------------------------------------------------- */
   window.AnhadCore = {
     initBack:         initBack,
     initTransition:   initTransition,

@@ -117,11 +117,11 @@ class NaamAbhyasThemeEngine {
         htmlEl.style.colorScheme = effective;
 
         if (effective === 'dark') {
-            htmlEl.classList.add('dark', 'dark-mode');
-            document.body.classList.add('dark-mode');
+            if (htmlEl.classList) htmlEl.classList.add('dark', 'dark-mode');
+            if (document.body && document.body.classList) document.body.classList.add('dark-mode');
         } else {
-            htmlEl.classList.remove('dark', 'dark-mode');
-            document.body.classList.remove('dark-mode');
+            if (htmlEl.classList) htmlEl.classList.remove('dark', 'dark-mode');
+            if (document.body && document.body.classList) document.body.classList.remove('dark-mode');
         }
 
         this.updateActiveButton(theme);
@@ -440,8 +440,20 @@ class NaamScheduleManager {
             const raw = localStorage.getItem(NAAM_CONFIG.STORAGE_KEYS.SCHEDULE);
             if (raw) {
                 const parsed = JSON.parse(raw);
-                if (parsed && typeof parsed === 'object' && Object.keys(parsed).length > 0) {
-                    return parsed;
+                // Support both plain schedule objects and { date, schedule } wrappers
+                if (parsed && typeof parsed === 'object') {
+                    // If wrapped with date, check freshness
+                    if (parsed._date) {
+                        if (parsed._date === today && parsed._schedule && Object.keys(parsed._schedule).length > 0) {
+                            return parsed._schedule;
+                        }
+                        // Stale — fall through to regenerate
+                    } else if (Object.keys(parsed).length > 0 && !parsed._date) {
+                        // Legacy plain schedule — check if any of the hours are reasonable
+                        // We'll accept it but mark today's date on next save
+                        this._scheduleDate = today;
+                        return parsed;
+                    }
                 }
             }
         } catch (e) {}
@@ -451,7 +463,9 @@ class NaamScheduleManager {
 
     saveSchedule() {
         try {
-            localStorage.setItem(NAAM_CONFIG.STORAGE_KEYS.SCHEDULE, JSON.stringify(this.currentSchedule));
+            const today = new Date().toLocaleDateString('en-CA');
+            const wrapper = { _date: today, _schedule: this.currentSchedule };
+            localStorage.setItem(NAAM_CONFIG.STORAGE_KEYS.SCHEDULE, JSON.stringify(wrapper));
         } catch (e) {}
     }
 
@@ -531,8 +545,10 @@ class NaamScheduleManager {
     getNextSession() {
         const now = new Date();
         const currentHour = now.getHours();
-        const currentMin = now.getMinutes();
         const nowMs = now.getTime();
+        const config = this.app.config;
+        const startHour = Number(config.activeHours?.start || 5);
+        const endHour = Number(config.activeHours?.end || 22);
 
         const sortedHours = Object.keys(this.currentSchedule)
             .map(Number)
@@ -550,7 +566,22 @@ class NaamScheduleManager {
             }
         }
 
-        return null;
+        // Outside active hours — return tomorrow's Amritvela (5 AM) so we
+        // never show a misleading "All Done!" when 0 sessions were completed.
+        const tomorrow5AM = new Date(now);
+        tomorrow5AM.setDate(tomorrow5AM.getDate() + 1);
+        tomorrow5AM.setHours(startHour, 0, 0, 0);
+        return {
+            hour: startHour,
+            startMinute: 0,
+            endMinute: 2,
+            durationMinutes: 2,
+            startTime: this.formatTime12h(startHour, 0),
+            endTime: this.formatTime12h(startHour, 2),
+            status: 'pending',
+            _isTomorrow: true,
+            _targetMs: tomorrow5AM.getTime()
+        };
     }
 
     markHourCompleted(hour) {
@@ -963,14 +994,21 @@ class NaamAbhyas {
     }
 
     init() {
-        this.bindDOM();
-        this.initWisdom();
-        this.startHeaderClock();
-        this.startCountdownTicker();
-        this.updateUI();
-        this.hideLoadingScreen();
+        try {
+            this.bindDOM();
+            this.initWisdom();
+            this.startHeaderClock();
+            this.startCountdownTicker();
+            this.updateUI();
+        } catch (e) {
+            console.error('[NaamAbhyas] Error during init:', e);
+        } finally {
+            this.hideLoadingScreen();
+        }
 
-        this.checkLaunchIntent();
+        try {
+            this.checkLaunchIntent();
+        } catch (e) {}
 
         window.addEventListener('naamAbhyasLaunchReady', (e) => {
             if (e.detail?.autoStart) {
@@ -981,11 +1019,16 @@ class NaamAbhyas {
 
     bindDOM() {
         const backBtn = document.getElementById('backBtn');
-        if (backBtn) {
-            backBtn.addEventListener('click', () => {
-                if (window.smartBack) window.smartBack();
-                else if (window.history.length > 1) window.history.back();
-                else window.location.href = '../index.html';
+        if (backBtn && !backBtn._naamBackBound) {
+            backBtn._naamBackBound = true;
+            backBtn.addEventListener('click', (e) => {
+                if (typeof window.anhadGoBack === 'function') {
+                    window.anhadGoBack('../index.html');
+                } else if (window.history.length > 1) {
+                    window.history.back();
+                } else {
+                    window.location.href = '../index.html';
+                }
             });
         }
 
@@ -1236,9 +1279,47 @@ class NaamAbhyas {
             const cdValEl = document.getElementById('countdownValue');
 
             if (!next) {
+                // Fallback — should rarely hit now that getNextSession always returns something
                 if (timeEl) timeEl.textContent = 'All Done! ✨';
                 if (subEl) subEl.textContent = 'Today\'s practice completed';
                 if (cdValEl) cdValEl.textContent = 'Rest & peace';
+                return;
+            }
+
+            // Tomorrow's Amritvela sentinel: count down to next morning
+            if (next._isTomorrow) {
+                const activeHoursCount = this.getActiveHoursCount();
+                const todayStats = this.statsEngine.getTodayStats(activeHoursCount);
+                const completedToday = todayStats.completed || 0;
+
+                // If we actually completed everything, show congratulations
+                if (completedToday > 0 && completedToday >= (todayStats.totalExpected || 1)) {
+                    if (timeEl) timeEl.textContent = 'All Done! ✨';
+                    if (subEl) subEl.textContent = 'Today\'s practice completed';
+                    if (cdValEl) cdValEl.textContent = 'Rest & peace';
+                    return;
+                }
+
+                // Otherwise count down to tomorrow's Amritvela
+                if (timeEl) timeEl.textContent = next.startTime;
+                const now = new Date();
+                const targetMs = next._targetMs || (() => {
+                    const t = new Date(now);
+                    t.setDate(t.getDate() + 1);
+                    t.setHours(next.hour, 0, 0, 0);
+                    return t.getTime();
+                })();
+                const diff = targetMs - now.getTime();
+                if (diff > 0) {
+                    const hours = Math.floor(diff / (1000 * 60 * 60));
+                    const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                    const secs = Math.floor((diff % (1000 * 60)) / 1000);
+                    let cdText = '';
+                    if (hours > 0) cdText += `${hours}h `;
+                    cdText += `${mins}m ${secs}s`;
+                    if (cdValEl) cdValEl.textContent = cdText;
+                }
+                if (subEl) subEl.textContent = 'Next: Amritvela tomorrow';
                 return;
             }
 
@@ -1577,12 +1658,26 @@ class NaamAbhyas {
 let naamAbhyasInstance = null;
 
 function bootNaamAbhyas() {
-    if (!naamAbhyasInstance) {
-        naamAbhyasInstance = new NaamAbhyas();
-        window.naamAbhyas = naamAbhyasInstance;
-        window.naamAbhyasApp = naamAbhyasInstance;
-        naamAbhyasInstance.init();
-        console.log('[NaamAbhyas] 🚀 Initialized and active');
+    try {
+        if (!naamAbhyasInstance) {
+            naamAbhyasInstance = new NaamAbhyas();
+            window.naamAbhyas = naamAbhyasInstance;
+            window.naamAbhyasApp = naamAbhyasInstance;
+            naamAbhyasInstance.init();
+            console.log('[NaamAbhyas] 🚀 Initialized and active');
+        }
+    } catch (err) {
+        console.error('[NaamAbhyas] Boot error:', err);
+    } finally {
+        const loader = document.getElementById('appLoading');
+        if (loader) {
+            loader.style.opacity = '0';
+            loader.style.pointerEvents = 'none';
+            setTimeout(() => {
+                if (typeof loader.remove === 'function') loader.remove();
+                else loader.style.display = 'none';
+            }, 300);
+        }
     }
 }
 

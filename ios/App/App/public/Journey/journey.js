@@ -11,7 +11,7 @@
   let ardaasCount = 0;
   let toastTimer = null;
 
-  // ─── Haptic Feedback ───
+  // --- Haptic Feedback ---
   function triggerHaptic(style = 'MEDIUM') {
     try {
       if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Haptics) {
@@ -22,7 +22,7 @@
     } catch (e) {}
   }
 
-  // ─── Toast System ───
+  // --- Toast System ---
   function showToast(message) {
     const toast = document.getElementById('journeyToast');
     if (!toast) return;
@@ -36,7 +36,7 @@
     }, 2800);
   }
 
-  // ─── Version Loader ───
+  // --- Version Loader ---
   async function syncAppVersion() {
     try {
       const response = await fetch('../version.json?t=' + Date.now());
@@ -55,7 +55,7 @@
     }
   }
 
-  // ─── Ardaas Blessing Engine with Gentle Particle Bloom ───
+  // --- Ardaas Blessing Engine with Gentle Particle Bloom ---
   function initArdaasEngine() {
     const btn = document.getElementById('sendArdaasBtn');
     const pill = document.getElementById('ardaasCountPill');
@@ -128,7 +128,7 @@
     }
   }
 
-  // ─── Sharing Engine ───
+  // --- Sharing Engine ---
   function initSharing() {
     const shareData = {
       title: 'ANHAD • Complete Gurbani Sanctuary',
@@ -159,7 +159,7 @@
     if (shareAppBtn) shareAppBtn.addEventListener('click', handleShare);
   }
 
-  // ─── Back Button ───
+  // --- Back Button ---
   function initBackButton() {
     const backBtn = document.getElementById('journeyBackBtn');
     if (backBtn) {
@@ -174,7 +174,7 @@
     }
   }
 
-  // ─── Bootstrapping ───
+  // --- Bootstrapping ---
   function boot() {
     initBackButton();
     syncAppVersion();

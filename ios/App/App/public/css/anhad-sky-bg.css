@@ -50,23 +50,23 @@
   --sky-bg-glass-border: rgba(190, 80, 20, 0.22);
 }
 
-/* NIGHT — glowing warm ivory / antique gold on deep dark (HOME ONLY) */
+/* NIGHT — Matches Pure Dark Mode Exactly */
 [data-anhad-home][data-theme-mode="auto"][data-time-of-day="night"] {
-  --sky-txt-primary:   #FFFFFF;
-  --sky-txt-secondary: #FFF2D1;
-  --sky-txt-label:     #FFE399;
-  --sky-txt-accent:    #FFD566;
-  --sky-txt-gold:      #FFC429;
-  --sky-text-shadow-dark: 0 1px 4px rgba(0, 0, 0, 0.8);
-  --sky-text-shadow-light: 0 1px 4px rgba(0, 0, 0, 0.8);
+  --sky-txt-primary:   #F5F5F7;
+  --sky-txt-secondary: #8E8E93;
+  --sky-txt-label:     #8E8E93;
+  --sky-txt-accent:    #D4943A;
+  --sky-txt-gold:      #FFD60A;
+  --sky-text-shadow-dark: none;
+  --sky-text-shadow-light: none;
   --sky-greeting-bg:   transparent;
-  --sky-bg-glass:      rgba(28, 28, 30, 0.62);
-  --sky-bg-glass-border: rgba(170, 140, 60, 0.22);
+  --sky-bg-glass:      rgba(28, 28, 30, 0.88);
+  --sky-bg-glass-border: rgba(255, 255, 255, 0.08);
 }
 
-/* Apply contrast to key page elements (HOME ONLY) */
-[data-anhad-home][data-theme-mode="auto"] .home-header .header__title,
-[data-anhad-home][data-theme-mode="auto"] .home-header .header-title {
+/* Apply contrast to key page elements (HOME ONLY - Morning/Day/Evening) */
+[data-anhad-home][data-theme-mode="auto"]:not([data-time-of-day="night"]) .home-header .header__title,
+[data-anhad-home][data-theme-mode="auto"]:not([data-time-of-day="night"]) .home-header .header-title {
   color: #FFFFFF !important;
   text-shadow: 0 2px 12px rgba(0, 0, 0, 0.75), 0 1px 4px rgba(0, 0, 0, 0.9) !important;
   font-weight: 700 !important;
@@ -80,8 +80,8 @@
   font-weight: 700 !important;
 }
 
-[data-anhad-home][data-theme-mode="auto"] .home-header .header__title-gurmukhi,
-[data-anhad-home][data-theme-mode="auto"] .home-header .gurmukhi-title {
+[data-anhad-home][data-theme-mode="auto"]:not([data-time-of-day="night"]) .home-header .header__title-gurmukhi,
+[data-anhad-home][data-theme-mode="auto"]:not([data-time-of-day="night"]) .home-header .gurmukhi-title {
   color: #FFFFFF !important;
   text-shadow: 0 2px 10px rgba(0, 0, 0, 0.75), 0 1px 3px rgba(0, 0, 0, 0.9) !important;
   font-weight: 600 !important;
@@ -94,59 +94,60 @@
   text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5) !important;
   font-weight: 600 !important;
 }
-[data-anhad-home][data-theme-mode="auto"] .english-title {
+/* DAYTIME / MORNING / EVENING Sky contrast overrides (Excluded at NIGHT so night mode is 100% identical to pure dark mode) */
+[data-anhad-home][data-theme-mode="auto"]:not([data-time-of-day="night"]) .english-title {
   color: var(--sky-txt-gold, #D4943A) !important;
   text-shadow: var(--sky-text-shadow-light, 0 1px 8px rgba(0,0,0,0.18)) !important;
 }
-[data-anhad-home][data-theme-mode="auto"] .header-subtitle {
+[data-anhad-home][data-theme-mode="auto"]:not([data-time-of-day="night"]) .header-subtitle {
   color: var(--sky-txt-secondary, #4A1508) !important;
   text-shadow: var(--sky-text-shadow-dark, 0 1px 4px rgba(0,0,0,0.12)) !important;
 }
-[data-anhad-home][data-theme-mode="auto"] #greetingSalutation,
-[data-anhad-home][data-theme-mode="auto"] .greeting__salutation {
+[data-anhad-home][data-theme-mode="auto"]:not([data-time-of-day="night"]) #greetingSalutation,
+[data-anhad-home][data-theme-mode="auto"]:not([data-time-of-day="night"]) .greeting__salutation {
   color: var(--sky-txt-accent, #9C3610) !important;
   text-shadow: var(--sky-text-shadow-dark, 0 1px 6px rgba(0,0,0,0.16)) !important;
   font-weight: 700 !important;
 }
-[data-anhad-home][data-theme-mode="auto"] #greetingGurbani,
-[data-anhad-home][data-theme-mode="auto"] .greeting__gurbani {
+[data-anhad-home][data-theme-mode="auto"]:not([data-time-of-day="night"]) #greetingGurbani,
+[data-anhad-home][data-theme-mode="auto"]:not([data-time-of-day="night"]) .greeting__gurbani {
   color: var(--sky-txt-primary, #260804) !important;
   text-shadow: var(--sky-text-shadow-dark, 0 1px 8px rgba(0,0,0,0.12)) !important;
   font-weight: 600 !important;
 }
-[data-anhad-home][data-theme-mode="auto"] #greetingTranslation,
-[data-anhad-home][data-theme-mode="auto"] .greeting__translation {
+[data-anhad-home][data-theme-mode="auto"]:not([data-time-of-day="night"]) #greetingTranslation,
+[data-anhad-home][data-theme-mode="auto"]:not([data-time-of-day="night"]) .greeting__translation {
   color: var(--sky-txt-secondary, #4A1508) !important;
   text-shadow: var(--sky-text-shadow-dark, none) !important;
   font-weight: 600 !important;
 }
-[data-anhad-home][data-theme-mode="auto"] .progress-inline__label {
+[data-anhad-home][data-theme-mode="auto"]:not([data-time-of-day="night"]) .progress-inline__label {
   color: var(--sky-txt-label, #6B2810) !important;
   text-shadow: var(--sky-text-shadow-dark, none) !important;
 }
-[data-anhad-home][data-theme-mode="auto"] .progress-inline__text {
+[data-anhad-home][data-theme-mode="auto"]:not([data-time-of-day="night"]) .progress-inline__text {
   color: var(--sky-txt-secondary, #4A1508) !important;
   text-shadow: var(--sky-text-shadow-dark, none) !important;
 }
-[data-anhad-home][data-theme-mode="auto"] .greeting__text {
+[data-anhad-home][data-theme-mode="auto"]:not([data-time-of-day="night"]) .greeting__text {
   background: var(--sky-greeting-bg, transparent);
   border-radius: 50%;
   padding: 15px 0 !important;
   margin-top: -10px;
 }
 
-/* Nitnem Tracker specific text visibility (HOME ONLY) */
-[data-anhad-home][data-theme-mode="auto"] .card-title,
-[data-anhad-home][data-theme-mode="auto"] .card-subtitle {
+/* Nitnem Tracker specific text visibility (HOME ONLY - daytime only) */
+[data-anhad-home][data-theme-mode="auto"]:not([data-time-of-day="night"]) .card-title,
+[data-anhad-home][data-theme-mode="auto"]:not([data-time-of-day="night"]) .card-subtitle {
   color: var(--sky-txt-primary, #1A0402) !important;
   text-shadow: 0 1px 4px rgba(0,0,0,0.15) !important;
 }
-[data-anhad-home][data-theme-mode="auto"] .app-header {
+[data-anhad-home][data-theme-mode="auto"]:not([data-time-of-day="night"]) .app-header {
   background: rgba(0, 0, 0, 0.3) !important;
   backdrop-filter: blur(10px) !important;
   -webkit-backdrop-filter: blur(10px) !important;
 }
-[data-anhad-home][data-theme-mode="auto"] .header-blur-bg {
+[data-anhad-home][data-theme-mode="auto"]:not([data-time-of-day="night"]) .header-blur-bg {
   background: rgba(0, 0, 0, 0.4) !important;
 }
 

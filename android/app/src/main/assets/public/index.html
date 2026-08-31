@@ -63,10 +63,14 @@
           morning: 'assets/HERO CARD IMAGES/new morning bg.avif',
           day:     'assets/homepage-hero/darbar-sahib-day-1.png',
           evening: 'assets/darbar-sahib-evening-bg.webp',
-          night:   'assets/HERO CARD IMAGES/new night bg.avif',
+          night:   '',
         };
-        const bgUrl = bgMap[currentTimeOfDay] || bgMap.day;
-        doc.style.setProperty('--dynamic-bg-url', "url('" + bgUrl + "')");
+        const bgUrl = bgMap[currentTimeOfDay] || (currentTimeOfDay === 'night' ? '' : bgMap.day);
+        if (bgUrl) {
+          doc.style.setProperty('--dynamic-bg-url', "url('" + bgUrl + "')");
+        } else {
+          doc.style.removeProperty('--dynamic-bg-url');
+        }
 
         // INLINE CSS VARIABLES — prevent FOUC until theme-variables.css loads
         const cssVars = {
@@ -1752,12 +1756,12 @@
       color: var(--sky-txt-primary, #1A0402) !important;
       text-shadow: 0 1px 4px rgba(0,0,0,0.15) !important;
     }
-    [data-theme-mode="auto"] .app-header {
+    [data-theme-mode="auto"]:not([data-time-of-day="night"]) .app-header {
       background: rgba(0, 0, 0, 0.3) !important;
       backdrop-filter: blur(10px) !important;
       -webkit-backdrop-filter: blur(10px) !important;
     }
-    [data-theme-mode="auto"] .header-blur-bg {
+    [data-theme-mode="auto"]:not([data-time-of-day="night"]) .header-blur-bg {
       background: rgba(0, 0, 0, 0.4) !important;
     }
   </style>
@@ -3067,31 +3071,7 @@
       background: linear-gradient(90deg, #8B6914 0%, #B8860B 50%, #8B6914 100%) !important;
       border-radius: 3px !important;
       position: relative;
-      animation: crackerIgnite 0.8s ease-out;
-    }
-    /* Cracker particle sparks */
-    .progress-inline__fill::after {
-      content: '';
-      position: absolute;
-      right: 0;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 4px;
-      height: 4px;
-      background: #FFD700;
-      border-radius: 50%;
-      box-shadow: 
-        0 0 4px 2px #FFD700,
-        0 0 8px 4px rgba(255, 215, 0, 0.6),
-        -5px -5px 0 1px rgba(255, 215, 0, 0.8),
-        5px -3px 0 1px rgba(255, 165, 0, 0.8),
-        3px 5px 0 1px rgba(255, 140, 0, 0.6);
-      animation: sparkBurst 0.6s ease-out infinite;
-    }
-    @keyframes crackerIgnite {
-      0% { width: 0; opacity: 0.5; }
-      20% { opacity: 1; }
-      100% { opacity: 1; }
+      transition: width 0.8s cubic-bezier(0.19, 1, 0.22, 1);
     }
     @keyframes sparkBurst {
       0%, 100% { 
@@ -3240,8 +3220,8 @@
         display: none !important;
       }
 
-      /* ONLY AUTO THEME - Dynamic background images */
-      html[data-theme-mode="auto"] body::before {
+      /* ONLY AUTO THEME - Dynamic background images (Morning / Day / Evening) */
+      html[data-theme-mode="auto"]:not([data-time-of-day="night"]) body::before {
         content: '' !important;
         position: fixed !important;
         inset: 0 !important;
@@ -3273,9 +3253,11 @@
         display: block !important;
       }
       
-      /* Dark mode - solid black background */
+      /* Dark mode & Dynamic Night mode - solid black background (Zero bluish light) */
       html[data-theme-mode="dark"] body::before,
-      html.dark-mode body::before {
+      html.dark-mode body::before,
+      html[data-time-of-day="night"] body::before,
+      html[data-theme-mode="auto"][data-time-of-day="night"] body::before {
         content: '' !important;
         position: fixed !important;
         inset: 0 !important;
@@ -3535,31 +3517,7 @@
           background: linear-gradient(90deg, #8B6914 0%, #B8860B 50%, #8B6914 100%) !important;
           border-radius: 3px !important;
           position: relative;
-          animation: crackerIgnite 0.8s ease-out;
-        }
-        /* Cracker particle sparks */
-        .progress-inline__fill::after {
-          content: '';
-          position: absolute;
-          right: 0;
-          top: 50%;
-          transform: translateY(-50%);
-          width: 4px;
-          height: 4px;
-          background: #FFD700;
-          border-radius: 50%;
-          box-shadow: 
-            0 0 4px 2px #FFD700,
-            0 0 8px 4px rgba(255, 215, 0, 0.6),
-            -5px -5px 0 1px rgba(255, 215, 0, 0.8),
-            5px -3px 0 1px rgba(255, 165, 0, 0.8),
-            3px 5px 0 1px rgba(255, 140, 0, 0.6);
-          animation: sparkBurst 0.6s ease-out infinite;
-        }
-        @keyframes crackerIgnite {
-          0% { width: 0; opacity: 0.5; }
-          20% { opacity: 1; }
-          100% { opacity: 1; }
+          transition: width 0.8s cubic-bezier(0.19, 1, 0.22, 1);
         }
         @keyframes sparkBurst {
           0%, 100% { 
@@ -3725,25 +3683,32 @@
         inset 0 -1px 1px rgba(0, 0, 0, 0.4) !important;
     }
 
-    /* Nav Active Item — Sacred Cushion Clay Highlight with High Legibility */
+    /* Nav Active Item — Sacred Cushion Clay Highlight */
     .nav-glass__item--active,
     .bottom-nav__item.active,
     .tab-item.active {
-      background: linear-gradient(145deg, #FFFFFF 0%, #FFF5E6 100%) !important;
-      border-radius: 20px !important;
-      border: 1px solid rgba(212, 148, 58, 0.28) !important;
-      color: #A85A00 !important;
-      box-shadow: 
-        0 4px 14px rgba(212, 148, 58, 0.22),
-        inset 0 1px 2px #FFFFFF !important;
-      transform: translateY(-2px) scale(1.02) !important;
-      transition: all 0.25s cubic-bezier(0.25, 1, 0.5, 1) !important;
+      color: #C8821E !important;
+      border: none !important;
+      border-radius: 22px !important;
+      background: linear-gradient(155deg,
+        rgba(255,255,255,1) 0%,
+        rgba(255,243,222,0.98) 50%,
+        rgba(248,232,200,0.95) 100%) !important;
+      box-shadow:
+        0 6px 18px rgba(212, 148, 58, 0.18),
+        0 2px 6px rgba(0, 0, 0, 0.06),
+        -3px -3px 8px rgba(255,255,255,0.98),
+        inset 2px 2px 5px rgba(255,255,255,1),
+        inset -1px -1px 4px rgba(200, 130, 30, 0.08) !important;
+      transform: scale(1.03) !important;
+      transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
     }
     .tab-item.active .tab-label,
     .tab-item.active svg,
     .tab-item.active .tab-icon {
-      color: #A85A00 !important;
-      fill: #A85A00 !important;
+      color: #C8821E !important;
+      fill: #C8821E !important;
+      stroke: #C8821E !important;
       font-weight: 800 !important;
     }
     html.dark-mode .nav-glass__item--active,
@@ -3752,13 +3717,23 @@
     [data-theme="dark"] .nav-glass__item--active,
     [data-theme="dark"] .bottom-nav__item.active,
     [data-theme="dark"] .tab-item.active,
-    [data-time-of-day="night"] .tab-item.active {
-      background: linear-gradient(145deg, #2A241C 0%, #1A1611 100%) !important;
-      border: 1px solid rgba(212, 148, 58, 0.35) !important;
-      color: #F5C542 !important;
-      box-shadow: 
-        0 4px 16px rgba(0, 0, 0, 0.6),
-        0 0 12px rgba(212, 148, 58, 0.18) !important;
+    [data-time-of-day="night"] .tab-item.active,
+    [data-theme-mode="auto"][data-time-of-day="night"] .tab-item.active,
+    [data-theme-mode="dark"] .tab-item.active {
+      color: #F0A83A !important;
+      border: none !important;
+      border-radius: 22px !important;
+      background: linear-gradient(155deg,
+        rgba(52, 42, 24, 0.98) 0%,
+        rgba(36, 28, 14, 0.98) 55%,
+        rgba(24, 18, 8, 0.97) 100%) !important;
+      box-shadow:
+        0 6px 20px rgba(0, 0, 0, 0.6),
+        0 2px 8px rgba(0, 0, 0, 0.4),
+        -2px -2px 6px rgba(255, 255, 255, 0.04),
+        inset 2px 2px 5px rgba(212, 148, 58, 0.28),
+        inset -2px -2px 5px rgba(0, 0, 0, 0.5) !important;
+      transform: scale(1.03) !important;
     }
     html.dark-mode .tab-item.active .tab-label,
     html.dark-mode .tab-item.active svg,
@@ -3769,8 +3744,9 @@
     [data-time-of-day="night"] .tab-item.active .tab-label,
     [data-time-of-day="night"] .tab-item.active svg,
     [data-time-of-day="night"] .tab-item.active .tab-icon {
-      color: #F5C542 !important;
-      fill: #F5C542 !important;
+      color: #F0A83A !important;
+      fill: #F0A83A !important;
+      stroke: #F0A83A !important;
     }
 
     /* 3. Global Mini Player — Floating Island with 16px Clearance */

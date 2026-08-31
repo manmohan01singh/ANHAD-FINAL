@@ -547,47 +547,165 @@
             }
         }
 
-        async testNotification(categoryKey = 'hukamnama') {
-            await this.fetchContentPromise;
-            const meta = this.meta[categoryKey] || this.meta.hukamnama;
-            const msg = this.getMessage(categoryKey, 0);
+        async testNotification(categoryKey = 'amritvela') {
+            try {
+                if (!this.content) {
+                    await this.fetchContent();
+                }
 
-            if (this.isNative() && window.Capacitor.Plugins.LocalNotifications) {
-                const LN = window.Capacitor.Plugins.LocalNotifications;
-                await this.ensureChannel();
-                await LN.schedule({
-                    notifications: [{
-                        id: 99901,
-                        title: msg.title || `${meta.icon} ${meta.label}`,
-                        body: msg.body,
-                        schedule: { at: new Date(Date.now() + 1000), allowWhileIdle: true, exact: true },
-                        channelId: 'spiritual_reminders',
-                        sound: 'default',
-                        smallIcon: 'ic_stat_notify',
-                        extra: {
-                            action: meta.action,
-                            target: meta.label,
-                            url: meta.url,
-                            category: categoryKey,
-                            translation: msg.translation || ''
+                const meta = this.meta[categoryKey] || this.meta.amritvela || { label: 'Spiritual Reminder', icon: '🔔' };
+                
+                // Pick a random message from the 2,600+ line notifications-content.json for this topic
+                let msg;
+                if (this.content && this.content[categoryKey] && this.content[categoryKey].length > 0) {
+                    const list = this.content[categoryKey];
+                    const randomIndex = Math.floor(Math.random() * list.length);
+                    msg = list[randomIndex];
+                } else {
+                    msg = this.getMessage(categoryKey, Math.floor(Math.random() * 20));
+                }
+
+                const notificationTitle = msg.title || `${meta.icon} ${meta.label}`;
+                const notificationBody = msg.body || `Waheguru Ji... Time for ${meta.label}. 🙏`;
+
+                let firedLocally = false;
+
+                // 1. Native Capacitor LocalNotification
+                if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.LocalNotifications) {
+                    try {
+                        const LN = window.Capacitor.Plugins.LocalNotifications;
+                        await this.ensureChannel();
+                        const permStatus = await LN.checkPermissions();
+                        if (permStatus.display !== 'granted') {
+                            await LN.requestPermissions();
                         }
-                    }]
-                });
+                        await LN.schedule({
+                            notifications: [{
+                                id: Math.floor(Date.now() % 100000),
+                                title: notificationTitle,
+                                body: notificationBody,
+                                schedule: { at: new Date(Date.now() + 300), allowWhileIdle: true, exact: true },
+                                channelId: 'spiritual_reminders',
+                                sound: 'default',
+                                smallIcon: 'ic_stat_notify',
+                                extra: {
+                                    category: categoryKey,
+                                    translation: msg.translation || ''
+                                }
+                            }]
+                        });
+                        firedLocally = true;
+                    } catch (capErr) {
+                        console.warn('[SpiritualNotifications] Capacitor notification error:', capErr);
+                    }
+                }
+
+                // 2. Standard Web Notification API
+                if (!firedLocally && 'Notification' in window) {
+                    try {
+                        if (Notification.permission !== 'granted' && typeof Notification.requestPermission === 'function') {
+                            await Notification.requestPermission();
+                        }
+                        if (Notification.permission === 'granted') {
+                            try {
+                                new Notification(notificationTitle, {
+                                    body: notificationBody,
+                                    icon: resolveAppUrl('assets/icon-192x192.png'),
+                                    badge: resolveAppUrl('assets/icon-72x72.png')
+                                });
+                                firedLocally = true;
+                            } catch (notifConstructErr) {
+                                if (navigator.serviceWorker && navigator.serviceWorker.ready) {
+                                    const reg = await navigator.serviceWorker.ready;
+                                    reg.showNotification(notificationTitle, {
+                                        body: notificationBody,
+                                        icon: resolveAppUrl('assets/icon-192x192.png')
+                                    });
+                                    firedLocally = true;
+                                }
+                            }
+                        }
+                    } catch (webErr) {
+                        console.warn('[SpiritualNotifications] Web notification error:', webErr);
+                    }
+                }
+
+                // 3. Instant Glassmorphic In-App Notification Card + Sound + Haptic Feedback
+                this.showInAppNotificationTestCard(notificationTitle, notificationBody, msg.translation, meta);
+
+                if (window.HapticManager && typeof window.HapticManager.success === 'function') {
+                    window.HapticManager.success();
+                }
+
                 return true;
-            } else if ('Notification' in window) {
-                if (Notification.permission !== 'granted') {
-                    await Notification.requestPermission();
-                }
-                if (Notification.permission === 'granted') {
-                    new Notification(msg.title || `${meta.icon} ${meta.label}`, {
-                        body: msg.body,
-                        icon: resolveAppUrl('assets/icon-192x192.png'),
-                        badge: resolveAppUrl('assets/icon-72x72.png')
-                    });
-                    return true;
-                }
+            } catch (err) {
+                console.error('[SpiritualNotifications] testNotification error:', err);
+                return false;
             }
-            return false;
+        }
+
+        showInAppNotificationTestCard(title, body, translation, meta) {
+            let container = document.getElementById('anhadInAppNotifContainer');
+            if (!container) {
+                container = document.createElement('div');
+                container.id = 'anhadInAppNotifContainer';
+                container.style.cssText = `
+                    position: fixed;
+                    top: 16px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    width: calc(100% - 32px);
+                    max-width: 420px;
+                    z-index: 999999;
+                    pointer-events: none;
+                `;
+                document.body.appendChild(container);
+            }
+
+            const card = document.createElement('div');
+            card.style.cssText = `
+                pointer-events: auto;
+                background: rgba(28, 28, 30, 0.96);
+                backdrop-filter: blur(25px) saturate(180%);
+                -webkit-backdrop-filter: blur(25px) saturate(180%);
+                border: 1px solid rgba(212, 148, 58, 0.4);
+                border-radius: 20px;
+                padding: 16px 18px;
+                color: #ffffff;
+                box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+                margin-bottom: 12px;
+                transform: translateY(-20px) scale(0.95);
+                opacity: 0;
+                transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            `;
+
+            card.innerHTML = `
+                <div style="display: flex; align-items: flex-start; gap: 12px;">
+                    <div style="font-size: 24px; line-height: 1; flex-shrink: 0; padding-top: 2px;">${meta.icon || '🔔'}</div>
+                    <div style="flex: 1; min-width: 0;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+                            <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #D4943A;">TEST NOTIFICATION</span>
+                            <span style="font-size: 11px; color: rgba(255,255,255,0.5);">now</span>
+                        </div>
+                        <div style="font-size: 15px; font-weight: 700; color: #ffffff; margin-top: 2px; line-height: 1.3;">${title}</div>
+                        <div style="font-size: 13px; color: rgba(255,255,255,0.85); margin-top: 4px; line-height: 1.4;">${body}</div>
+                        ${translation ? `<div style="font-size: 12px; color: rgba(212,148,58,0.9); margin-top: 6px; font-style: italic;">"${translation}"</div>` : ''}
+                    </div>
+                </div>
+            `;
+
+            container.appendChild(card);
+
+            requestAnimationFrame(() => {
+                card.style.transform = 'translateY(0) scale(1)';
+                card.style.opacity = '1';
+            });
+
+            setTimeout(() => {
+                card.style.transform = 'translateY(-20px) scale(0.95)';
+                card.style.opacity = '0';
+                setTimeout(() => card.remove(), 400);
+            }, 5000);
         }
 
         async scheduleNitnemCompletionNotification() {

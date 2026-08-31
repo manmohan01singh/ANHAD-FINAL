@@ -1554,8 +1554,12 @@ a:active {
   border-radius: var(--radius-full);
   box-shadow: none;
   width: 0%;
-  transition: width 1.4s var(--ease-out-expo);
+  transition: width 0.8s cubic-bezier(0.19, 1, 0.22, 1);
   position: relative;
+}
+
+.progress-inline__fill.is-complete {
+  width: 100% !important;
 }
 
 /* PERF: Shimmer animation REMOVED — was running 24/7 even when fill is 0% */

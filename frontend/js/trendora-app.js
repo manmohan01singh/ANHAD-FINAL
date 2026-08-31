@@ -713,22 +713,28 @@
   // ═══════════════════════════════════════════════════════════════════════════
   const DataManager = {
     getTotalBanis() {
-      // 1. Check Nitnem Tracker selected banis (authoritative user routine)
+      // 1. Check My Pothi order (user's personal pothi collection)
+      const pothiOrder = Store.get(KEYS.POTHI_ORDER);
+      if (pothiOrder && Array.isArray(pothiOrder) && pothiOrder.length > 0) {
+        return pothiOrder.length;
+      }
+
+      // 2. Check Nitnem Tracker unique banis
       const selected = Store.get(KEYS.NITNEM_SELECTED);
       if (selected && typeof selected === 'object') {
+        const uniqueSet = new Set();
+        (selected.amritvela || []).forEach(b => b && (b.id || b.name) && uniqueSet.add(b.id || b.name));
+        (selected.rehras || []).forEach(b => b && (b.id || b.name) && uniqueSet.add(b.id || b.name));
+        (selected.sohila || []).forEach(b => b && (b.id || b.name) && uniqueSet.add(b.id || b.name));
+        if (uniqueSet.size > 0) return uniqueSet.size;
+
         const total = (selected.amritvela?.length || 0) +
           (selected.rehras?.length || 0) +
           (selected.sohila?.length || 0);
         if (total > 0) return total;
       }
-
-      // 2. Check My Pothi order
-      const pothiOrder = Store.get(KEYS.POTHI_ORDER);
-      if (pothiOrder && Array.isArray(pothiOrder) && pothiOrder.length > 0) {
-        return pothiOrder.length;
-      }
       
-      return 11; // Default
+      return 10; // Default
     },
 
     getCompletedToday() {

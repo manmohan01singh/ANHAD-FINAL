@@ -895,17 +895,15 @@
                     if (manager && typeof manager.handleNotificationLaunch === 'function') {
                         manager.handleNotificationLaunch();
                     } 
-                    // Fallback: dispatch event for naam-abhyas.js to pick up
+                    // Direct execution on naam-abhyas instance
                     else if (window.naamAbhyas && typeof window.naamAbhyas.executeAutoStart === 'function') {
-                        window.naamAbhyas._capturedAutoStartParams = {
-                            autoStart: true,
-                            hour: ex.hour,
-                            minute: ex.minute
-                        };
-                        window.naamAbhyas.executeAutoStart();
+                        window.naamAbhyas.executeAutoStart(ex);
                     }
-                    // Last resort: dispatch custom event
+                    // Dispatch custom events for listeners
                     else {
+                        window.dispatchEvent(new CustomEvent('naamAbhyasLaunchReady', {
+                            detail: { hour: ex.hour, minute: ex.minute, autoStart: true }
+                        }));
                         window.dispatchEvent(new CustomEvent('naamAbhyasNotificationClick', {
                             detail: { hour: ex.hour, minute: ex.minute, autoStart: true }
                         }));

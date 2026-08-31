@@ -23,7 +23,7 @@
   // on every normal tab foreground (user switching browser tabs).
   var _needsRecovery = false;
 
-  // ─── PAGESHOW: Runs when page is shown (including bfcache restore) ───
+  // --- PAGESHOW: Runs when page is shown (including bfcache restore) ---
   window.addEventListener('pageshow', function (event) {
     // Always clean up, whether from bfcache (persisted=true) or fresh load
     _needsRecovery = false; // clear before recovery; pageshow is authoritative
@@ -35,13 +35,13 @@
     }
   });
 
-  // ─── PAGEHIDE: Proactively clean up BEFORE bfcache stores the page ───
+  // --- PAGEHIDE: Proactively clean up BEFORE bfcache stores the page ---
   window.addEventListener('pagehide', function () {
     _needsRecovery = true; // mark that recovery may be needed on next show
     cleanBeforeCache();
   });
 
-  // ─── Also handle visibilitychange for tab-switch edge cases ───
+  // --- Also handle visibilitychange for tab-switch edge cases ---
   // PERF: Only run the DOM walk if we went through a pagehide cycle.
   // On normal tab foreground events, _needsRecovery is false → no DOM queries.
   document.addEventListener('visibilitychange', function () {
@@ -175,7 +175,7 @@
     document.documentElement.style.overflow = '';
   }
 
-  // ─── GLOBAL EXPOSURE for other scripts ───
+  // --- GLOBAL EXPOSURE for other scripts ---
   // Single assignment. There used to be two of these — an earlier one exposing
   // { recover, quickRecover } and this one exposing { recover, clean } — and
   // because this one ran second it silently overwrote the first, leaving
@@ -186,7 +186,7 @@
     clean: cleanBeforeCache
   };
 
-  // ─── NATIVE FEEL: Global haptic feedback on all button taps ───
+  // --- NATIVE FEEL: Global haptic feedback on all button taps ---
   // Uses Capacitor Haptics plugin for Android native feel instead of web vibrate
   document.addEventListener('pointerdown', function (e) {
     try {
@@ -197,7 +197,7 @@
     } catch (ex) { }
   }, { passive: true });
 
-  // ─── NATIVE FEEL: Restore native Android overscroll-behavior ───
+  // --- NATIVE FEEL: Restore native Android overscroll-behavior ---
   try {
     document.documentElement.style.overscrollBehaviorY = 'auto';
     document.body.style.overscrollBehaviorY = 'auto';

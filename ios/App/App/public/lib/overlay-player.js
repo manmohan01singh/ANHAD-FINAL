@@ -26,30 +26,29 @@
   const MAX_RETRIES = 200;
 
   /**
-   * Pages allowed to show the mini player: Home, Favorites, Insights.
-   *
-   * overlay-player.js is loaded by ~30 pages, and the only gate used to be
-   * "hide on the Gurbani Radio page" — so the player followed the user into
-   * every Nitnem bani, every reader, Settings, Notes, everywhere. It has no
-   * business floating over a Bani being read.
-   *
-   * These three are exactly smooth-navigation.js's isShellPage() set, which is
-   * not a coincidence: they are the browsing surfaces, and every other route is
-   * a full document load, so init() re-runs there and correctly bails.
+   * Pages allowed to show the mini player: Homepage, Favorites page, and Insights/Learning page.
+   * No other page should contain the mini player.
    */
   function isMiniPlayerPage() {
     try {
       var p = window.location.pathname.toLowerCase();
-      // Strip .html FIRST, then the index segment, then any trailing slash:
-      //   /index.html            -> ''
-      //   /                      -> ''
-      //   /frontend/index.html   -> '/frontend'
-      //   /Favorites/favorites.html -> '/favorites/favorites'
-      //   /nitnem/index.html     -> '/nitnem'        (correctly not allowed)
-      var clean = p.replace(/\.html$/, '').replace(/\/index$/, '/').replace(/\/$/, '');
-      if (clean === '' || clean === '/frontend') return true;              // Home
-      if (/\/insights\/insights$/.test(clean)) return true;                // Learning
-      if (/\/favorites\/favorites$/.test(clean)) return true;              // Favorites
+      // Remove trailing slash for reliable matching
+      if (p.endsWith('/') && p.length > 1) p = p.slice(0, -1);
+      
+      // 1. Homepage
+      if (p === '' || p === '/' || p === '/index.html' || p.endsWith('/frontend') || p.endsWith('/frontend/index.html') || p.endsWith('/anhad-final') || p.endsWith('/anhad-final/index.html')) {
+        return true;
+      }
+      // 2. Favorites page
+      if (p.includes('favorites.html') || p.endsWith('/favorites')) {
+        return true;
+      }
+      // 3. Insights / Learning page
+      if (p.includes('insights.html') || p.includes('/insights') || p.endsWith('/insights')) {
+        return true;
+      }
+      
+      // All other pages (readers, nitnem, settings, calendar, notes, sadhsangat, etc.) are strictly excluded
       return false;
     } catch (e) {
       return false;
@@ -278,4 +277,5 @@
 
   // Expose global controller mapping so legacy overlay calls still resolve
   window.AnhadOverlayPlayerUIExposed = true;
+  window.AnhadUpdateOverlayUI = updateUI;
 })();

@@ -281,7 +281,11 @@ class SehajPaathApp {
 
     setupEventListeners() {
         // Back button
-        document.getElementById('backBtn')?.addEventListener('click', () => this.goBack());
+        const backBtn = document.getElementById('backBtn');
+        if (backBtn && !backBtn._sehajBackBound) {
+            backBtn._sehajBackBound = true;
+            backBtn.addEventListener('click', () => this.goBack());
+        }
 
         // Continue reading button
         document.getElementById('continueReadingBtn')?.addEventListener('click', () => this.openReader());

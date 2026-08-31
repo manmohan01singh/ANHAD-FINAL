@@ -1,22 +1,32 @@
 /**
  * ═══════════════════════════════════════════════════════════════════════════════
- * NAAM ABHYAS - Hourly Spiritual Practice Reminder System
- * ─────────────────────────────────────────────────────────────────────────────
- * Core Application Logic for Gurbani Radio PWA
+ * NAAM ABHYAS - Sacred Hourly Practice Engine
+ * -----------------------------------------------------------------------------
+ * Complete, Unified, High-Precision Naam Abhyas Controller for ANHAD
+ * 
+ * Features:
+ *  1. Single Source of Truth Notification & Intent Lifecycle
+ *  2. High-Precision Timer Player with SVG Ring & Breathing Animation
+ *  3. Sacred Completion Modal with Blessings, Streaks & Next Session Info
+ *  4. Canonical Stats Engine (Streak, Ring %, Weekly Minutes, Perfect Days)
+ *  5. Extra Naam Simran Support (Start Now 2m, Quick 30s, Deep 11m)
+ *  6. Cross-App Sync (Nitnem Tracker, Profile, Dashboard, Widgets)
+ *  7. Full Claymorphic UI/UX Preservation with Theme Sync
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
 'use strict';
 
 /* ═══════════════════════════════════════════════════════════════════════════════
-   CONFIGURATION
+   1. CONFIGURATION & CONSTANTS
 ═══════════════════════════════════════════════════════════════════════════════ */
 
 const NAAM_CONFIG = {
     STORAGE_KEYS: {
         CONFIG: 'naam_abhyas_config',
         HISTORY: 'naam_abhyas_history',
-        SCHEDULE: 'naam_abhyas_schedule'
+        SCHEDULE: 'naam_abhyas_schedule',
+        PENDING_LAUNCH: 'anhad_pending_naam_launch'
     },
 
     DEFAULTS: {
@@ -28,28 +38,26 @@ const NAAM_CONFIG = {
         },
         notifications: {
             hourStart: true,
-            preReminder: true,
-            preReminderMinutes: 2,
             sound: 'gentle-bell',
             vibration: true,
             soundEnabled: true
         },
-        autoStartTimer: false,
+        autoStartTimer: true,
         theme: 'system'
     },
 
     ACHIEVEMENTS: [
-        { id: 'first_session', name: 'First Step', description: 'Complete your first Naam Abhyas', icon: '🏅', condition: 'completedSessions >= 1' },
-        { id: 'streak_5', name: 'Getting Started', description: '5-hour streak', icon: '⚡', condition: 'currentStreak >= 5' },
-        { id: 'streak_10', name: 'Dedicated Seeker', description: '10-hour streak', icon: '🔥', condition: 'currentStreak >= 10' },
-        { id: 'streak_24', name: 'Perfect Day', description: '24-hour streak', icon: '🌟', condition: 'currentStreak >= 24' },
-        { id: 'sessions_10', name: 'Devoted', description: '10 sessions completed', icon: '📿', condition: 'completedSessions >= 10' },
-        { id: 'sessions_50', name: 'Regular Practice', description: '50 sessions completed', icon: '🎯', condition: 'completedSessions >= 50' },
-        { id: 'sessions_100', name: 'Centurion', description: '100 sessions completed', icon: '💯', condition: 'completedSessions >= 100' },
-        { id: 'sessions_500', name: 'Devoted Soul', description: '500 sessions completed', icon: '👑', condition: 'completedSessions >= 500' },
-        { id: 'time_30min', name: 'Half Hour', description: '30 minutes in Naam Abhyas', icon: '⏰', condition: 'totalTimeSeconds >= 1800' },
-        { id: 'time_1hour', name: 'Hour of Devotion', description: '1 hour in Naam Abhyas', icon: '🕐', condition: 'totalTimeSeconds >= 3600' },
-        { id: 'time_5hours', name: 'Deep Practice', description: '5 hours in Naam Abhyas', icon: '🙏', condition: 'totalTimeSeconds >= 18000' }
+        { id: 'first_session', name: 'First Step', description: 'Complete your first Naam Abhyas', icon: '🏅', condition: stats => (stats.completedSessions || 0) >= 1 },
+        { id: 'streak_5', name: 'Getting Started', description: '5-hour streak', icon: '⚡', condition: stats => (stats.currentStreak || 0) >= 5 },
+        { id: 'streak_10', name: 'Dedicated Seeker', description: '10-hour streak', icon: '🔥', condition: stats => (stats.currentStreak || 0) >= 10 },
+        { id: 'streak_24', name: 'Perfect Day', description: '24-hour streak', icon: '🌟', condition: stats => (stats.currentStreak || 0) >= 24 },
+        { id: 'sessions_10', name: 'Devoted', description: '10 sessions completed', icon: '📿', condition: stats => (stats.completedSessions || 0) >= 10 },
+        { id: 'sessions_50', name: 'Regular Practice', description: '50 sessions completed', icon: '🎯', condition: stats => (stats.completedSessions || 0) >= 50 },
+        { id: 'sessions_100', name: 'Centurion', description: '100 sessions completed', icon: '💯', condition: stats => (stats.completedSessions || 0) >= 100 },
+        { id: 'sessions_500', name: 'Devoted Soul', description: '500 sessions completed', icon: '👑', condition: stats => (stats.completedSessions || 0) >= 500 },
+        { id: 'time_30min', name: 'Half Hour', description: '30 minutes in Naam Abhyas', icon: '⏰', condition: stats => (stats.totalTimeSeconds || 0) >= 1800 },
+        { id: 'time_1hour', name: 'Hour of Devotion', description: '1 hour in Naam Abhyas', icon: '🕐', condition: stats => (stats.totalTimeSeconds || 0) >= 3600 },
+        { id: 'time_5hours', name: 'Deep Practice', description: '5 hours in Naam Abhyas', icon: '🙏', condition: stats => (stats.totalTimeSeconds || 0) >= 18000 }
     ],
 
     WISDOM_QUOTES: [
@@ -58,3705 +66,127 @@ const NAAM_CONFIG = {
         { gurmukhi: "ਸਿਮਰਉ ਸਿਮਰਿ ਸਿਮਰਿ ਸੁਖ ਪਾਵਉ", translation: "Meditating, meditating, meditating, I find peace", source: "Sri Guru Granth Sahib Ji, Ang 262" },
         { gurmukhi: "ਮਨ ਤੂੰ ਜੋਤਿ ਸਰੂਪੁ ਹੈ ਆਪਣਾ ਮੂਲੁ ਪਛਾਣੁ", translation: "O my mind, you are the embodiment of Light - recognize your origin", source: "Sri Guru Granth Sahib Ji, Ang 441" },
         { gurmukhi: "ਹਰਿ ਕਾ ਨਾਮੁ ਜਪਿ ਦਿਨਸੁ ਰਾਤਿ", translation: "Chant the Lord's Name, day and night", source: "Sri Guru Granth Sahib Ji, Ang 185" },
-        { gurmukhi: "ਨਾਮ ਬਿਨਾ ਸਭੁ ਜਗੁ ਕਮਲਾਨਾ", translation: "Without the Naam, the whole world is insane", source: "Sri Guru Granth Sahib Ji, Ang 366" },
+        { gurmukhi: "ਨਾਮ ਬਿਨਾ ਸਭੁ ਜਗੁ ਕਮਲਾਨਾ", translation: "Without the Naam, the whole world is in confusion", source: "Sri Guru Granth Sahib Ji, Ang 366" },
         { gurmukhi: "ਏਕੋ ਨਾਮੁ ਹੁਕਮੁ ਹੈ ਨਾਨਕ ਸਤਿਗੁਰਿ ਦੀਆ ਬੁਝਾਇ", translation: "The One Name is the Lord's Command; the True Guru has given understanding", source: "Sri Guru Granth Sahib Ji, Ang 72" },
         { gurmukhi: "ਗੁਰਮੁਖਿ ਨਾਮੁ ਜਪਹੁ ਮਨ ਮੇਰੇ", translation: "O my mind, chant the Naam as Gurmukh", source: "Sri Guru Granth Sahib Ji, Ang 560" }
+    ],
+
+    BLESSINGS: [
+        "Wonderful! You remembered Guru Maharaj Ji 🙏",
+        "Beautiful! Waheguru was with you ✨",
+        "Sat Sri Akal! Your Simran is complete 🌸",
+        "ਧੰਨ ਧੰਨ! Blessed is this sacred moment 🌺",
+        "You have honored your daily spiritual practice 🙏",
+        "Discipline compounds. Every breath with Waheguru shines ✨"
     ]
 };
 
 /* ═══════════════════════════════════════════════════════════════════════════════
-   THEME ENGINE
+   2. THEME ENGINE
 ═══════════════════════════════════════════════════════════════════════════════ */
 
 class NaamAbhyasThemeEngine {
     constructor() {
-        // ALWAYS follow the global theme from anhad_theme key
-        const globalTheme = localStorage.getItem('anhad_theme');
-        // Default to dark theme to match dark cosmos background
-        this.currentTheme = globalTheme || 'dark';
-
+        const globalTheme = localStorage.getItem('anhad_theme') || 'auto';
+        this.currentTheme = globalTheme;
         this.init();
     }
 
     init() {
         this.applyTheme(this.currentTheme);
-        this.setupSystemThemeListener();
+        this.setupListeners();
         this.bindThemeButtons();
-
-        // Listen for global theme changes (same-page dispatches)
-        window.addEventListener('themechange', (e) => {
-            if (e.detail && e.detail.theme) {
-                this.currentTheme = e.detail.theme;
-                this.applyTheme(e.detail.theme);
-            }
-        });
-
-        // Listen for cross-tab theme changes via localStorage
-        window.addEventListener('storage', (e) => {
-            if (e.key === 'anhad_theme' && e.newValue) {
-                this.currentTheme = e.newValue;
-                this.applyTheme(e.newValue);
-            }
-        });
-
-        // Auto-refresh for 'auto' time-based mode (check every minute)
-        // Gated behind document visibility to save background CPU cycles
-        setInterval(() => {
-            if (this.currentTheme === 'auto' && !document.hidden) {
-                this.applyTheme('auto');
-            }
-        }, 60000);
     }
 
     applyTheme(theme) {
         const htmlEl = document.documentElement;
-        document.body.classList.remove('theme-light', 'theme-dark');
+        let effective = theme;
+        let timeOfDay = localStorage.getItem('anhad_forced_time_of_day');
 
-        // Resolve actual theme: 'system' uses global anhad_theme first, then prefers-color-scheme
-        let actualTheme = theme;
-        if (theme === 'auto') {
-            // 'auto' = time-based: light 6AM-6PM, dark otherwise
-            const hour = new Date().getHours();
-            actualTheme = (hour >= 6 && hour < 18) ? 'light' : 'dark';
-        } else if (theme === 'system') {
-            const stored = localStorage.getItem('anhad_theme');
-            if (stored && stored !== 'system') {
-                actualTheme = stored;
+        if (theme === 'auto' || theme === 'system') {
+            if (timeOfDay && ['morning', 'day', 'evening', 'night'].includes(timeOfDay)) {
+                effective = (timeOfDay === 'night') ? 'dark' : 'light';
             } else {
-                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                actualTheme = prefersDark ? 'dark' : 'light';
+                const hour = new Date().getHours();
+                effective = (hour >= 5 && hour < 20) ? 'light' : 'dark';
             }
         }
 
-        // Apply classes and attributes
-        document.body.classList.add(`theme-${actualTheme}`);
-        htmlEl.setAttribute('data-theme', actualTheme);
+        htmlEl.setAttribute('data-theme', effective);
+        htmlEl.setAttribute('data-theme-mode', theme);
+        htmlEl.style.colorScheme = effective;
 
-        // Also apply the dark/light classes that the global theme system uses
-        if (actualTheme === 'dark') {
-            htmlEl.classList.add('dark', 'dark-mode');
-            htmlEl.style.colorScheme = 'dark';
-        } else if (theme !== 'system' || actualTheme !== 'dark') {
-            // Only remove if we are explicitly setting light or if system is light
-            htmlEl.classList.remove('dark', 'dark-mode');
-            htmlEl.style.colorScheme = 'light';
+        if (effective === 'dark') {
+            if (htmlEl.classList) htmlEl.classList.add('dark', 'dark-mode');
+            if (document.body && document.body.classList) document.body.classList.add('dark-mode');
+        } else {
+            if (htmlEl.classList) htmlEl.classList.remove('dark', 'dark-mode');
+            if (document.body && document.body.classList) document.body.classList.remove('dark-mode');
         }
 
         this.updateActiveButton(theme);
-        // Save to global key so other pages stay in sync
-        localStorage.setItem('anhad_theme', theme);
         this.currentTheme = theme;
-
-        // Update meta theme-color
-        const metaThemeColor = document.querySelector('meta[name="theme-color"]');
-        if (metaThemeColor) {
-            const isDark = actualTheme === 'dark';
-            metaThemeColor.setAttribute('content', isDark ? '#0a0a14' : '#FFF5E6');
-        }
     }
 
-    setupSystemThemeListener() {
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-            if (this.currentTheme === 'system') {
-                this.applyTheme('system');
+    setupListeners() {
+        window.addEventListener('themechange', (e) => {
+            if (e.detail && e.detail.theme) this.applyTheme(e.detail.theme);
+        });
+
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'anhad_theme' && e.newValue) {
+                this.applyTheme(e.newValue);
             }
         });
     }
 
     bindThemeButtons() {
-        // Both data-theme buttons and original radio inputs
-        document.querySelectorAll('[data-theme]').forEach(btn => {
-            btn.addEventListener('click', () => {
-                this.applyTheme(btn.dataset.theme);
-            });
-        });
-
-        // Handle the radio buttons in the settings modal
-        document.querySelectorAll('input[name="theme"]').forEach(radio => {
-            radio.addEventListener('change', (e) => {
-                this.applyTheme(e.target.value);
+        const options = document.querySelectorAll('.theme-option');
+        options.forEach(opt => {
+            opt.addEventListener('click', () => {
+                const val = opt.getAttribute('data-theme');
+                if (val) {
+                    localStorage.setItem('anhad_theme', val);
+                    this.applyTheme(val);
+                }
             });
         });
     }
 
     updateActiveButton(theme) {
-        document.querySelectorAll('[data-theme]').forEach(btn => {
-            btn.classList.toggle('active', btn.dataset.theme === theme);
+        const inputs = document.querySelectorAll('input[name="theme"]');
+        inputs.forEach(input => {
+            input.checked = (input.value === theme);
         });
-        // Sync radio buttons
-        const radio = document.querySelector(`input[name="theme"][value="${theme}"]`);
-        if (radio) radio.checked = true;
     }
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════
-   SCHEDULE MANAGER
+   3. CANONICAL STATS & HISTORY ENGINE
 ═══════════════════════════════════════════════════════════════════════════════ */
 
-class ScheduleManager {
-    constructor(appInstance) {
-        this.app = appInstance;
-        this.REFRESH_TIMES = [0, 12]; // Hours: midnight and noon
-        this.checkAndRefresh();
-        this.setupAutoRefresh();
-    }
-
-    checkAndRefresh() {
-        const lastRefresh = localStorage.getItem('schedule_lastRefresh');
-        const now = new Date();
-
-        if (!lastRefresh || this.needsRefresh(new Date(lastRefresh), now)) {
-            this.refreshSchedule();
-        }
-    }
-
-    needsRefresh(lastRefresh, now) {
-        const lastDate = lastRefresh.toDateString();
-        const nowDate = now.toDateString();
-
-        if (lastDate !== nowDate) return true;
-
-        const lastHour = lastRefresh.getHours();
-        const nowHour = now.getHours();
-
-        for (const refreshHour of this.REFRESH_TIMES) {
-            if (lastHour < refreshHour && nowHour >= refreshHour) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    refreshSchedule() {
-        console.log('📅 ScheduleManager: Refreshing today\'s schedule...');
-        this.app.generateDailySchedule();
-        localStorage.setItem('schedule_lastRefresh', new Date().toISOString());
-    }
-
-    setupAutoRefresh() {
-        // Check every hour
-        setInterval(() => this.checkAndRefresh(), 60 * 60 * 1000);
-    }
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════════
-   NAAM ABHYAS MAIN CLASS
-═══════════════════════════════════════════════════════════════════════════════ */
-
-class NaamAbhyas {
+class NaamStatsEngine {
     constructor() {
-        this.config = this.loadConfig();
         this.history = this.loadHistory();
-        this.currentSchedule = {};
-        this.activeTimer = null;
-        this.countdownInterval = null;
-        this.hourlyRefreshTimeout = null;
-        this.isInitialized = false;
-
-        // Component instances
-        this.timerEngine = null;
-        this.notificationEngine = null;
-        this.statsTracker = null;
-        this.audioManager = null;
-        this.themeEngine = null;
-        this.scheduleManager = null;
-        this.ritualEngine = null; // Sacred micro-commitment ritual system
-        this.disciplineMetrics = null; // Product-minded KPI tracking
-
-        // Sound preview state
-        this.isPreviewPlaying = false;
-        this.previewAudio = null;
-        this.previewTimeout = null;
-
-        // Timer completion guard — prevents double-fire on completeMeditation
-        this._completionInProgress = false;
-
-        // SAFETY: Force hide loading screen after 5 seconds no matter what
-        setTimeout(() => {
-            if (!this.isInitialized) {
-                console.warn('⚠️ Force hiding loading screen after timeout');
-                this.hideLoadingScreen();
-                this.isInitialized = true;
-            }
-        }, 5000);
-    }
-
-    /* ═════════════════════════════════════════════════════════════════════════
-       INITIALIZATION
-    ═════════════════════════════════════════════════════════════════════════ */
-    async init() {
-        try {
-            console.log('🙏 Initializing Naam Abhyas...');
-
-            // Capture auto-start params from URL (notification click) BEFORE cleaning URL
-            try {
-                const urlParams = new URLSearchParams(window.location.search);
-                if (urlParams.get('autoStart') === 'true') {
-                    this._capturedAutoStartParams = {
-                        autoStart: true,
-                        hour: urlParams.get('hour'),
-                        minute: urlParams.get('minute')
-                    };
-                    window.history.replaceState({}, '', window.location.pathname);
-                    console.log('[NaamAbhyas] 📩 Captured auto-start params from notification:', this._capturedAutoStartParams);
-                } else {
-                    // Fallback: check localStorage for pending launch (cold-start bridge)
-                    try {
-                        var pendingRaw = localStorage.getItem('anhad_pending_naam_launch');
-                        if (pendingRaw) {
-                            var pending = JSON.parse(pendingRaw);
-                            // Extended to 60s window — cold starts can be slow on low-end devices
-                            if (pending && pending.autoStart && (Date.now() - (pending.timestamp || 0)) < 60000) {
-                                this._capturedAutoStartParams = {
-                                    autoStart: true,
-                                    hour: pending.hour,
-                                    minute: pending.minute
-                                };
-                                localStorage.removeItem('anhad_pending_naam_launch');
-                                console.log('[NaamAbhyas] 📩 Captured auto-start from localStorage fallback:', this._capturedAutoStartParams);
-                            } else {
-                                localStorage.removeItem('anhad_pending_naam_launch');
-                            }
-                        }
-                    } catch (e) {}
-                }
-            } catch (e) {
-                console.error('❌ URL param capture failed:', e);
-            }
-
-            // Phase 1: CRITICAL PATH - Must complete fast
-            try {
-                this.config = this.loadConfig();
-                this.history = this.loadHistory();
-            } catch (e) {
-                console.error('❌ Config/History loading failed:', e);
-            }
-
-            // Initialize core UI first
-            try {
-                this.themeEngine = new NaamAbhyasThemeEngine();
-                this.themeEngine.applyTheme(this.themeEngine.currentTheme);
-            } catch (e) {
-                console.error('❌ Theme init failed:', e);
-            }
-
-            // Generate schedule early (needed for UI)
-            try {
-                this.generateDailySchedule();
-            } catch (e) {
-                console.error('❌ Schedule generation failed:', e);
-            }
-
-            // Show UI immediately
-            try {
-                this.updateUI();
-            } catch (e) {
-                console.error('❌ UI update failed:', e);
-            }
-
-            // Load initial UI state
-            try {
-                this.loadInitialState();
-            } catch (e) {
-                console.error('❌ Initial state loading failed:', e);
-            }
-
-            // Bind event listeners IMMEDIATELY
-            try {
-                this.bindEvents();
-            } catch (e) {
-                console.error('❌ Event binding failed:', e);
-            }
-
-            // Notification Engine init
-            try {
-                if (typeof NotificationEngine !== 'undefined') {
-                    this.notificationEngine = new NotificationEngine();
-                }
-            } catch (e) {
-                console.error('❌ NotificationEngine init failed:', e);
-            }
-
-            // If already enabled, start countdown and schedule notifications
-            if (this.config.enabled) {
-                try {
-                    this.startCountdownUpdates();
-                    this.scheduleUpcomingNotifications();
-                } catch (e) {
-                    console.error('❌ Failed to start enabled state features:', e);
-                }
-            }
-
-            // Always schedule random spiritual notifications (regardless of enabled state)
-            // Deferred to not block initial render
-            setTimeout(() => {
-                try { this.scheduleRandomSpiritualNotifications(); } catch (e) { /* non-critical */ }
-            }, 2000);
-
-            // HIDE LOADING SCREEN NOW
-            this.hideLoadingScreen();
-            this.isInitialized = true;
-            console.log('✅ Naam Abhyas core initialized');
-
-            // Phase 2: DEFERRED - Non-critical operations
-            const initDeferred = () => {
-                console.log('🔄 Running deferred initialization...');
-
-                try {
-                    this.initializeComponents(); // Now includes RitualEngine
-                    this.scheduleManager = new ScheduleManager(this);
-                } catch (e) {
-                    console.error('❌ Deferred initialization failed:', e);
-                }
-
-                this.executeAutoStart();
-                this.checkForMissedSessions();
-            };
-
-            if ('requestIdleCallback' in window) {
-                requestIdleCallback(initDeferred, { timeout: 500 });
-            } else {
-                setTimeout(initDeferred, 100);
-            }
-
-        } catch (error) {
-            console.error('❌ CRITICAL: Failed to initialize Naam Abhyas:', error);
-            this.hideLoadingScreen();
-            this.showToast('Failed to initialize. Please refresh.', 'error');
-        }
-    }
-
-    /**
-     * Setup listener for Service Worker queries (for background notification support)
-     * The SW may ask for schedule data when checking for due notifications
-     */
-    setupServiceWorkerListener() {
-        if (!('serviceWorker' in navigator)) return;
-
-        navigator.serviceWorker.addEventListener('message', (event) => {
-            const { type, currentHour, currentMinute, today } = event.data || {};
-
-            // Respond to schedule queries from service worker
-            if (type === 'GET_NAAM_ABHYAS_SCHEDULE' && event.ports[0]) {
-                const sessions = [];
-                const schedule = this.currentSchedule || {};
-
-                Object.entries(schedule).forEach(([hour, session]) => {
-                    if (session && session.status === 'pending') {
-                        sessions.push({
-                            hour: parseInt(hour),
-                            startMinute: session.startMinute,
-                            duration: this.config.duration || 2,
-                            notified: !!session.notified
-                        });
-                    }
-                });
-
-                event.ports[0].postMessage({
-                    sessions,
-                    enabled: this.config.enabled,
-                    duration: this.config.duration
-                });
-            }
-
-            // Handle notification-shown confirmation from SW
-            if (type === 'NAAM_ABHYAS_NOTIFIED' && event.data.hour !== undefined) {
-                const hour = event.data.hour;
-                if (this.currentSchedule[hour]) {
-                    this.currentSchedule[hour].notified = true;
-                    // Trigger the session alert modal since notification was shown
-                    this.triggerSessionAlert(this.currentSchedule[hour]);
-                }
-            }
-        });
-
-        // ═══ Fix 4: foreground alarm event from capacitor-notifications-global ═══
-        // When the user is already on this page and a Naam alarm fires,
-        // the global script dispatches this event so we handle it natively.
-        window.addEventListener('naamAbhyasAlarmFired', (evt) => {
-            const { hour } = evt.detail || {};
-            const hourNum = parseInt(hour);
-            const session = (this.currentSchedule && this.currentSchedule[hourNum])
-                || (this.currentSchedule && this.currentSchedule[new Date().getHours()]);
-            if (session) this.triggerSessionAlert(session);
-        });
-
-        // ═══ CRITICAL FIX: Handle notification click when already on page (prevents freeze) ═══
-        window.addEventListener('naamAbhyasNotificationClick', (evt) => {
-            console.log('[NaamAbhyas] 🔔 Notification clicked while on page, triggering session');
-            const { hour, minute, autoStart } = evt.detail || {};
-            
-            if (autoStart) {
-                this._capturedAutoStartParams = {
-                    autoStart: true,
-                    hour: hour,
-                    minute: minute
-                };
-                this.executeAutoStart();
-            }
-        });
-    }
-
-
-    /**
-     * ═══ BUG 7 FIX: Execute auto-start using params captured on critical path ═══
-     * Uses this._capturedAutoStartParams instead of reading URL (which is already cleaned).
-     * Called from deferred init after ritualEngine is ready.
-     * Includes retry if ritualEngine isn't initialized yet.
-     */
-    executeAutoStart() {
-        const params = this._capturedAutoStartParams;
-        if (!params || !params.autoStart) return;
-
-        // Clear captured params to prevent re-execution
-        this._capturedAutoStartParams = null;
-
-        console.log('[NaamAbhyas] 🚀 Executing auto-start from notification click:', params);
-
-        // Get the current session or use the provided hour/minute
-        const hour = parseInt(params.hour) || new Date().getHours();
-        const minute = parseInt(params.minute) || new Date().getMinutes();
-
-        // Find the matching session or create one
-        let targetSession = this.currentSchedule[hour];
-        if (!targetSession) {
-            targetSession = this.getNextScheduledSession() || {
-                hour: hour,
-                startMinute: minute,
-                startTime: this.formatTime12h(hour, minute),
-                status: 'pending'
-            };
-        }
-
-        // Start meditation — retry up to 3 times if ritualEngine isn't ready
-        const startSession = (retryCount) => {
-            if (this.ritualEngine) {
-                console.log('[NaamAbhyas] ✅ RitualEngine ready, triggering session');
-                this.ritualEngine.triggerScheduledSession(targetSession, this.config.duration || 2);
-            } else if (retryCount > 0) {
-                console.log(`[NaamAbhyas] ⏳ RitualEngine not ready, retrying in 500ms (${retryCount} left)`);
-                setTimeout(() => startSession(retryCount - 1), 500);
-            } else {
-                console.warn('[NaamAbhyas] ❌ RitualEngine never initialized, using fallback');
-                this.startMeditation();
-            }
-        };
-
-        // Small delay for UI to settle, then start
-        setTimeout(() => startSession(3), 300);
-    }
-
-    /**
-     * Legacy checkAutoStart — kept for backward compatibility but now just delegates
-     */
-    checkAutoStart() {
-        // URL params are now captured on critical path (this._capturedAutoStartParams)
-        // This method is only called if something invokes it directly
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('autoStart') === 'true') {
-            this._capturedAutoStartParams = {
-                autoStart: true,
-                hour: urlParams.get('hour'),
-                minute: urlParams.get('minute')
-            };
-            window.history.replaceState({}, '', window.location.pathname);
-            this.executeAutoStart();
-        }
-    }
-
-    initializeComponents() {
-        // Initialize Timer Engine
-        if (typeof TimerEngine !== 'undefined') {
-            this.timerEngine = new TimerEngine();
-        }
-
-        // NotificationEngine already initialized on critical path in init()
-        // Only create if not already done (safety fallback)
-        if (!this.notificationEngine && typeof NotificationEngine !== 'undefined') {
-            this.notificationEngine = new NotificationEngine();
-        }
-
-        // Initialize Stats Tracker
-        if (typeof StatsTracker !== 'undefined') {
-            this.statsTracker = new StatsTracker(this.history);
-        }
-
-        // Initialize Audio Manager & preload key sounds
-        if (typeof AudioManager !== 'undefined') {
-            this.audioManager = new AudioManager();
-            // Preload notification + session sounds on first user interaction
-            const preloadOnce = () => {
-                if (this.audioManager) {
-                    this.audioManager.initAudioContext();
-                    this.audioManager.preloadAll();
-                }
-                document.removeEventListener('click', preloadOnce);
-                document.removeEventListener('touchstart', preloadOnce);
-            };
-            document.addEventListener('click', preloadOnce, { once: true });
-            document.addEventListener('touchstart', preloadOnce, { once: true });
-        }
-
-        // Initialize Ritual Engine - Sacred Micro-Commitment System
-        if (typeof RitualEngine !== 'undefined') {
-            this.ritualEngine = new RitualEngine(this);
-            console.log('🙏 Ritual Engine initialized - Sacred micro-commitment system active');
-        }
-
-        // Initialize Discipline Metrics - Product-minded KPI tracking
-        if (typeof DisciplineMetrics !== 'undefined') {
-            this.disciplineMetrics = new DisciplineMetrics(this.history);
-            console.log('📊 Discipline Metrics initialized - KPI tracking active');
-        }
-
-        // Initialize Dynamic Island Header Clock
-        this.initializeHeaderClock();
-    }
-
-    /**
-     * Initialize the Dynamic Island header clock
-     * Updates every second with current time
-     */
-    initializeHeaderClock() {
-        this.updateHeaderClock();
-        this.headerClockInterval = setInterval(() => {
-            if (!document.hidden) {
-                this.updateHeaderClock();
-            }
-        }, 1000);
-    }
-
-    /**
-     * Update the header clock display
-     */
-    updateHeaderClock() {
-        const timeElement = document.getElementById('currentTime');
-        if (timeElement) {
-            const now = new Date();
-            const hours = now.getHours();
-            const minutes = now.getMinutes();
-            const ampm = hours >= 12 ? 'PM' : 'AM';
-            const displayHours = hours % 12 || 12;
-            timeElement.textContent = `${displayHours}:${minutes.toString().padStart(2, '0')} ${ampm}`;
-        }
-
-        // Also update header streak count
-        const streakElement = document.getElementById('headerStreakCount');
-        if (streakElement && this.history && this.history.statistics) {
-            streakElement.textContent = this.history.statistics.currentStreak || 0;
-        }
-    }
-
-    bindEvents() {
-        // Back button
-        const backBtn = document.getElementById('backBtn');
-        if (backBtn) {
-            backBtn.addEventListener('click', () => {
-                if (window.navigateTo) window.navigateTo('../index.html'); else window.location.href = '../index.html';
-            });
-        }
-
-        // Main toggle
-        const toggle = document.getElementById('naamAbhyasToggle');
-        if (toggle) {
-            toggle.addEventListener('change', (e) => {
-                if (e.target.checked) this.enable();
-                else this.disable();
-            });
-        }
-
-        // ─── Duration: custom number input + preset buttons ───────────────────
-        const durationInput = document.getElementById('durationCustomInput');
-        if (durationInput) {
-            durationInput.addEventListener('change', (e) => {
-                let val = parseInt(e.target.value);
-                if (val < 2) val = 2;
-                if (val > 60) val = 60;
-                e.target.value = val;
-                this.config.duration = val;
-                this.saveConfig();
-                this.regenerateSchedule(true);
-                this.updateUI();
-                this._updateActivePreset(val);
-            });
-        }
-
-        document.querySelectorAll('.preset-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const mins = parseInt(btn.dataset.min);
-                if (durationInput) durationInput.value = mins;
-                this.config.duration = mins;
-                this.saveConfig();
-                this.regenerateSchedule(true);
-                this.updateUI();
-                this._updateActivePreset(mins);
-                this.showToast(`Duration: ${mins}m`, 'success');
-            });
-        });
-
-        // ─── Quick Action Cards ──────────────────────────────────────────────
-        const startNowBtn = document.getElementById('startNowBtn');
-        if (startNowBtn) {
-            startNowBtn.addEventListener('click', () => {
-                if (this.ritualEngine) {
-                    this.ritualEngine.triggerManualSession(this.config.duration || 2, false);
-                } else {
-                    this.startMeditation(this.config.duration || 2);
-                }
-            });
-        }
-
-        const quickNaamBtn = document.getElementById('quickNaamBtn');
-        if (quickNaamBtn) {
-            quickNaamBtn.addEventListener('click', () => {
-                if (this.ritualEngine) {
-                    this.ritualEngine.triggerManualSession(0.5, false); // 30 seconds
-                } else {
-                    this.startMeditation(0.5);
-                }
-            });
-        }
-
-        const deepModeBtn = document.getElementById('deepModeBtn');
-        if (deepModeBtn) {
-            deepModeBtn.addEventListener('click', () => {
-                if (this.ritualEngine) {
-                    this.ritualEngine.triggerManualSession(11, false); // 11 minutes
-                } else {
-                    this.startMeditation(11);
-                }
-            });
-        }
-
-        const viewFullStatsBtn = document.getElementById('viewFullStatsBtn');
-        if (viewFullStatsBtn) {
-            viewFullStatsBtn.addEventListener('click', () => {
-                this.showStatsPanel();
-            });
-        }
-
-        const closeStatsBtn = document.getElementById('closeStatsBtn');
-        if (closeStatsBtn) {
-            closeStatsBtn.addEventListener('click', () => {
-                this.hideStatsPanel();
-            });
-        }
-
-        const statsPanelBackdrop = document.getElementById('statsPanelBackdrop');
-        if (statsPanelBackdrop) {
-            statsPanelBackdrop.addEventListener('click', () => {
-                this.hideStatsPanel();
-            });
-        }
-
-        // ─── Modals: Session Alert (Ready / Silent / Skip) ─────────────────────
-        const alertStartNowBtn = document.getElementById('alertStartNowBtn');
-        const alertSilentBtn = document.getElementById('alertSilentBtn');
-        const skipSessionBtn = document.getElementById('skipSessionBtn');
-
-        if (alertStartNowBtn) {
-            alertStartNowBtn.addEventListener('click', () => {
-                this.hideAlertModal();
-                if (this.ritualEngine) {
-                    const session = this.currentAlertSession || this.getNextScheduledSession();
-                    this.ritualEngine.triggerScheduledSession(session, this.config.duration);
-                } else {
-                    this.startMeditation();
-                }
-            });
-        }
-
-        if (alertSilentBtn) {
-            alertSilentBtn.addEventListener('click', () => {
-                this.hideAlertModal();
-                if (this.ritualEngine) {
-                    const session = this.currentAlertSession || this.getNextScheduledSession();
-                    // Trigger with silent flag
-                    this.ritualEngine.triggerScheduledSession(session, this.config.duration, true);
-                }
-            });
-        }
-
-        if (skipSessionBtn) {
-            skipSessionBtn.addEventListener('click', () => {
-                this.hideAlertModal();
-                this.skipCurrentSession();
-            });
-        }
-
-        // ─── Modals: Meditation Overlay (Present / Silent / Skip) ──────────────
-        const medPresentBtn = document.getElementById('medPresentBtn');
-        const medSilentBtn = document.getElementById('medSilentBtn');
-        const skipMeditationBtn = document.getElementById('skipMeditationBtn');
-
-        if (medPresentBtn) {
-            medPresentBtn.addEventListener('click', () => {
-                // Flash effect for presence acknowledgment
-                medPresentBtn.classList.add('acknowledging');
-                setTimeout(() => medPresentBtn.classList.remove('acknowledging'), 500);
-                
-                if (this.ritualEngine && typeof this.ritualEngine.recordPresence === 'function') {
-                    try { this.ritualEngine.recordPresence(); } catch(e) {}
-                } else if (typeof this.recordSession === 'function') {
-                    try {
-                        this.recordSession({
-                            hour: new Date().getHours(),
-                            duration: (this.config && this.config.duration) ? this.config.duration * 60 : 120,
-                            status: 'completed',
-                            endedEarly: false,
-                            startedAt: new Date().toISOString(),
-                            endedAt: new Date().toISOString()
-                        });
-                        if (typeof this.updateStreak === 'function') this.updateStreak();
-                        if (typeof this.updateUI === 'function') this.updateUI();
-                    } catch(e) {}
-                }
-                
-                if (typeof this.showToast === 'function') {
-                    this.showToast('✅ Presence Recorded! Waheguru Ji', 'success');
-                }
-            });
-        }
-
-        if (medSilentBtn) {
-            medSilentBtn.addEventListener('click', () => {
-                const isMuted = medSilentBtn.dataset.muted === 'true';
-                const nextMuted = !isMuted;
-                medSilentBtn.dataset.muted = nextMuted;
-
-                const icon = document.getElementById('silentBtnIcon');
-                const label = document.getElementById('silentBtnLabel');
-
-                if (nextMuted) {
-                    if (icon) icon.textContent = '🔇';
-                    if (label) label.textContent = 'Muted';
-                    medSilentBtn.classList.add('muted-active');
-                    if (this.audioManager) this.audioManager.mute();
-                } else {
-                    if (icon) icon.textContent = '🔊';
-                    if (label) label.textContent = 'Silent';
-                    medSilentBtn.classList.remove('muted-active');
-                    if (this.audioManager) this.audioManager.unmute();
-                }
-            });
-        }
-
-        if (skipMeditationBtn) {
-            skipMeditationBtn.addEventListener('click', () => {
-                this.endMeditationEarly();
-            });
-        }
-
-        // ─── Modals: Completion ──────────────────────────────────────────────
-        const continueBtn = document.getElementById('continueBtn');
-        if (continueBtn) {
-            continueBtn.addEventListener('click', () => {
-                this.hideCompletionModal();
-            });
-        }
-
-        // ─── Other Controls ──────────────────────────────────────────────────
-        this.bindToggle('hourStartNotification', 'notifications.hourStart');
-        this.bindToggle('vibrationEnabled', 'notifications.vibration');
-        this.bindToggle('soundEnabled', 'notifications.soundEnabled');
-
-        const closeSettingsBtn = document.getElementById('closeSettingsBtn');
-        if (closeSettingsBtn) {
-            closeSettingsBtn.addEventListener('click', () => this.hideSettingsModal());
-        }
-
-        const settingsPageBtn = document.getElementById('settingsPageBtn');
-        if (settingsPageBtn) {
-            settingsPageBtn.addEventListener('click', () => this.showSettingsModal());
-        }
-
-        const previewSoundBtn = document.getElementById('previewSoundBtn');
-        if (previewSoundBtn) {
-            previewSoundBtn.addEventListener('click', () => {
-                this.playIosChime('notification');
-                this.showToast('Testing notification chime... 🙏', 'info');
-            });
-        }
-
-        const wisdomRefreshBtn = document.getElementById('wisdomRefreshBtn');
-        if (wisdomRefreshBtn) {
-            wisdomRefreshBtn.addEventListener('click', () => {
-                this.showNewWisdom();
-            });
-        }
-
-        // Initialize wisdom on load
-        this.initWisdom();
-
-        // Bind Spiritual Sync Hub events
-        const syncNitnem = document.getElementById('syncNitnemItem');
-        const syncGpt = document.getElementById('syncGptItem');
-        const syncSangat = document.getElementById('syncSangatItem');
-
-        if (syncNitnem) {
-            syncNitnem.addEventListener('click', () => {
-                if (window.navigateTo) window.navigateTo('../NitnemTracker/nitnem-tracker.html');
-                else window.location.href = '../NitnemTracker/nitnem-tracker.html';
-            });
-        }
-        if (syncGpt) {
-            syncGpt.addEventListener('click', () => {
-                // Gurbani GPT is Coming Soon — show toast instead of navigating
-                const toastEl = document.getElementById('toast') || document.querySelector('.toast');
-                if (toastEl) {
-                    toastEl.textContent = '📿 Deep Vichar Companion is Coming Soon!';
-                    toastEl.classList.add('show', 'visible');
-                    setTimeout(() => toastEl.classList.remove('show', 'visible'), 3000);
-                } else if (typeof this.showToast === 'function') {
-                    this.showToast('📿 Deep Vichar Companion is Coming Soon!');
-                } else {
-                    alert('📿 Deep Vichar Companion is Coming Soon!');
-                }
-            });
-        }
-        if (syncSangat) {
-            syncSangat.addEventListener('click', () => {
-                if (window.navigateTo) window.navigateTo('../sadhsangat-live/index.html');
-                else window.location.href = '../sadhsangat-live/index.html';
-            });
-        }
-    }
-
-    bindToggle(elementId, configPath) {
-        const element = document.getElementById(elementId);
-        if (element) {
-            element.addEventListener('change', (e) => {
-                this.setNestedConfig(configPath, e.target.checked);
-                this.saveConfig();
-            });
-        }
-    }
-
-    setNestedConfig(path, value) {
-        const keys = path.split('.');
-        let obj = this.config;
-        for (let i = 0; i < keys.length - 1; i++) {
-            obj = obj[keys[i]];
-        }
-        obj[keys[keys.length - 1]] = value;
-    }
-
-    loadInitialState() {
-        // Set toggle state
-        const toggle = document.getElementById('naamAbhyasToggle');
-        if (toggle) {
-            toggle.checked = this.config.enabled;
-        }
-
-        // ═══ FIX BUG 1: Sync UI state with persisted config.enabled ═══
-        // The HTML hardcodes "Currently disabled" and doesn't add/remove 
-        // the disabled-state class on body. Fix: sync on every load.
-        const statusText = document.getElementById('toggleStatusText');
-        if (this.config.enabled) {
-            document.body.classList.remove('disabled-state');
-            if (statusText) statusText.textContent = 'Active';
-        } else {
-            document.body.classList.add('disabled-state');
-            if (statusText) statusText.textContent = 'Currently disabled';
-        }
-
-        // Set theme radio
-        const themeRadio = document.querySelector(`input[name="theme"][value="${this.config.theme}"]`);
-        if (themeRadio) {
-            themeRadio.checked = true;
-        }
-
-        // Set duration custom input and sync presets
-        const durationInput = document.getElementById('durationCustomInput');
-        if (durationInput) {
-            durationInput.value = this.config.duration || 2;
-            this._updateActivePreset(this.config.duration);
-        }
-
-        // Set active hours
-        const startHour = document.getElementById('activeHoursStart');
-        const endHour = document.getElementById('activeHoursEnd');
-        if (startHour) startHour.value = this.config.activeHours.start;
-        if (endHour) endHour.value = this.config.activeHours.end;
-
-        // Set notification toggles
-        this.setToggleState('hourStartNotification', this.config.notifications.hourStart);
-        this.setToggleState('preReminderNotification', this.config.notifications.preReminder);
-        this.setToggleState('vibrationEnabled', this.config.notifications.vibration);
-        this.setToggleState('soundEnabled', this.config.notifications.soundEnabled);
-        this.setToggleState('autoStartTimer', this.config.autoStartTimer);
-
-        // Set sound selection
-        const soundSelect = document.getElementById('notificationSound');
-        if (soundSelect) {
-            soundSelect.value = this.config.notifications.sound;
-        }
-
-        // Load today's schedule if exists
-        const today = this.getTodayString();
-        if (this.history.scheduleHistory && this.history.scheduleHistory[today]) {
-            this.currentSchedule = this.history.scheduleHistory[today];
-        }
-    }
-
-    setToggleState(elementId, value) {
-        const element = document.getElementById(elementId);
-        if (element) {
-            element.checked = value;
-        }
-    }
-
-    hideLoadingScreen() {
-        const loadingScreen = document.getElementById('appLoading');
-        if (loadingScreen) {
-            loadingScreen.classList.add('hidden');
-            setTimeout(() => {
-                loadingScreen.style.display = 'none';
-            }, 500);
-        }
-    }
-
-    /* ═════════════════════════════════════════════════════════════════════════
-       WELCOME MODAL
-    ═════════════════════════════════════════════════════════════════════════ */
-
-    showWelcomeModal() {
-        const modal = document.getElementById('welcomeModal');
-        if (!modal) return;
-
-        // Populate stats from history
-        const stats = this.getQuickStats();
-        const welcomeStreak = document.getElementById('welcomeStreak');
-        const welcomeToday = document.getElementById('welcomeToday');
-        const welcomeTotal = document.getElementById('welcomeTotal');
-
-        if (welcomeStreak) welcomeStreak.textContent = stats.streak || 0;
-        if (welcomeToday) welcomeToday.textContent = stats.today || 0;
-        if (welcomeTotal) welcomeTotal.textContent = stats.total || 0;
-
-        // Show modal with animation
-        modal.classList.add('active');
-
-        // Bind welcome modal events
-        this.bindWelcomeModalEvents();
-
-        console.log('🙏 Welcome modal shown');
-    }
-
-    hideWelcomeModal() {
-        const modal = document.getElementById('welcomeModal');
-        if (modal) {
-            modal.classList.remove('active');
-        }
-    }
-
-    bindWelcomeModalEvents() {
-        const startBtn = document.getElementById('welcomeStartBtn');
-        const dismissBtn = document.getElementById('welcomeDismissBtn');
-        const backdrop = document.querySelector('#welcomeModal .welcome-backdrop');
-
-        if (startBtn) {
-            startBtn.onclick = () => {
-                this.hideWelcomeModal();
-                // Start a manual session
-                setTimeout(() => {
-                    if (this.ritualEngine) {
-                        this.ritualEngine.triggerManualSession(this.config.duration || 2, true);
-                    }
-                }, 300);
-            };
-        }
-
-        if (dismissBtn) {
-            dismissBtn.onclick = () => {
-                this.hideWelcomeModal();
-            };
-        }
-
-        if (backdrop) {
-            backdrop.onclick = () => {
-                this.hideWelcomeModal();
-            };
-        }
-    }
-
-    getQuickStats() {
-        const today = this.getTodayString();
-        const todayHistory = (this.history.daily && this.history.daily[today]) || { completed: 0, total: 0 };
-
-        return {
-            streak: this.history.currentStreak || 0,
-            today: todayHistory.completed || 0,
-            total: this.history.totalCompleted || 0
-        };
-    }
-
-    /* ═════════════════════════════════════════════════════════════════════════
-       ENABLE/DISABLE SYSTEM
-    ═════════════════════════════════════════════════════════════════════════ */
-
-    async enable() {
-        // Request notification permission FIRST before enabling
-        if ('Notification' in window && Notification.permission === 'default') {
-            console.log('[NaamAbhyas] 🔔 Requesting notification permission...');
-            const permission = await Notification.requestPermission();
-
-            if (permission !== 'granted') {
-                this.showToast('⚠️ Notifications blocked. Alarms may not work when app is closed.', 'warning');
-                console.warn('[NaamAbhyas] ⚠️ Notification permission denied');
-                // Continue anyway - user can still use the app
-            } else {
-                console.log('[NaamAbhyas] ✅ Notification permission granted');
-            }
-        }
-
-        this.config.enabled = true;
-        this.saveConfig();
-
-        // Update UI state
-        document.body.classList.remove('disabled-state');
-        const statusText = document.getElementById('toggleStatusText');
-        if (statusText) {
-            statusText.textContent = 'Active';
-        }
-
-        // Generate schedule for today
-        this.generateDailySchedule();
-
-        // ═══ BUG 2 FIX: Persist schedule to dedicated key for global scheduler sync ═══
-        // The global scheduler (capacitor-notifications-global.js) runs on EVERY page,
-        // not just naam-abhyas.html. It reads from 'naam_abhyas_schedule' to get correct times.
-        try {
-            localStorage.setItem('naam_abhyas_schedule', JSON.stringify(this.currentSchedule));
-            console.log('[NaamAbhyas] 💾 Schedule persisted to naam_abhyas_schedule for cross-page sync');
-        } catch (e) { /* storage full, non-critical */ }
-
-        // Start countdown updates
-        this.startCountdownUpdates();
-
-        // Schedule hourly refresh
-        this.scheduleHourlyRefresh();
-
-        // ═══ SCHEDULE NOTIFICATIONS for upcoming sessions ═══
-        this.scheduleUpcomingNotifications();
-
-        // ═══ CAPACITOR-NATIVE: Schedule batch hourly notifications (works when app is closed) ═══
-        if (this.notificationEngine && this.notificationEngine.scheduleCapacitorHourlyBatch) {
-            console.log('[NaamAbhyas] 📅 Passing currentSchedule to notification engine:', Object.keys(this.currentSchedule).length, 'hours');
-            this.notificationEngine.scheduleCapacitorHourlyBatch({
-                enabled: true,
-                startHour: this.config.activeHours?.start || 5,
-                endHour: this.config.activeHours?.end || 22,
-                currentSchedule: this.currentSchedule,
-                activeHours: this.config.activeHours
-            });
-        }
-
-        // ═══ REGISTER PERIODIC BACKGROUND SYNC for reliable background alarms ═══
-        await this.registerPeriodicBackgroundSync();
-
-        // Update all UI
-        this.updateUI();
-
-        this.showToast('Naam Abhyas enabled! 🙏', 'success');
-    }
-
-    /**
-     * Register periodic background sync to wake Service Worker for alarm checks
-     * ENHANCED: Multiple wake strategies for maximum reliability
-     * This is critical for background alarm reliability when app is closed
-     */
-    async registerPeriodicBackgroundSync() {
-        if (!('serviceWorker' in navigator)) {
-            console.log('[NaamAbhyas] Service Worker not supported, skipping periodic sync');
-            return;
-        }
-
-        try {
-            const registration = await navigator.serviceWorker.ready;
-
-            // ═══ STRATEGY 1: PeriodicSync API (Chrome/Edge) ═══
-            if ('periodicSync' in registration) {
-                try {
-                    // Register for Naam Abhyas alarm checks every minute minimum
-                    await registration.periodicSync.register('anhad-notification-check', {
-                        minInterval: 60 * 1000 // 1 minute minimum
-                    });
-                    console.log('[NaamAbhyas] ✅ Periodic background sync registered (alarms will fire even when closed!)');
-                } catch (syncErr) {
-                    console.warn('[NaamAbhyas] PeriodicSync registration failed:', syncErr);
-                }
-            } else {
-                console.log('[NaamAbhyas] Periodic sync not supported, using fallback strategies');
-            }
-
-            // ═══ STRATEGY 2: Store alarms in IndexedDB for SW to check on wake ═══
-            await this.saveAlarmsToIndexedDB();
-
-            // ═══ STRATEGY 3: Send wake-up interval to SW ═══
-            if (navigator.serviceWorker.controller) {
-                navigator.serviceWorker.controller.postMessage({
-                    type: 'SET_ALARM_CHECK_INTERVAL',
-                    interval: 60000 // Check every minute
-                });
-                console.log('[NaamAbhyas] ✅ Sent alarm check interval to Service Worker');
-            }
-
-        } catch (err) {
-            console.warn('[NaamAbhyas] Failed to register periodic sync:', err);
-            // Continue - alarms will still work via IndexedDB when SW wakes for other reasons
-        }
-    }
-
-    /**
-     * Save current alarm schedule to IndexedDB for Service Worker access
-     * This allows SW to check alarms even when app is closed
-     */
-    async saveAlarmsToIndexedDB() {
-        try {
-            if (!('indexedDB' in window)) {
-                console.log('[NaamAbhyas] IndexedDB not supported');
-                return;
-            }
-
-            const DB_NAME = 'GurbaniRadioSW';
-            const DB_VERSION = 2;
-            const STORE_NAME = 'notification_schedule';
-
-            // Open database
-            const request = indexedDB.open(DB_NAME, DB_VERSION);
-
-            request.onupgradeneeded = (event) => {
-                const db = event.target.result;
-                if (!db.objectStoreNames.contains(STORE_NAME)) {
-                    const store = db.createObjectStore(STORE_NAME, { keyPath: 'id' });
-                    store.createIndex('scheduledTime', 'scheduledTime', { unique: false });
-                    store.createIndex('fired', 'fired', { unique: false });
-                }
-            };
-
-            request.onsuccess = (event) => {
-                const db = event.target.result;
-                const transaction = db.transaction([STORE_NAME], 'readwrite');
-                const store = transaction.objectStore(STORE_NAME);
-
-                // Cursor-based deletion: clean up only old Naam Abhyas keys starting with 'naam_'
-                const cursorRequest = store.openCursor();
-                cursorRequest.onsuccess = (e) => {
-                    const cursor = e.target.result;
-                    if (cursor) {
-                        const key = cursor.key;
-                        if (typeof key === 'string' && key.startsWith('naam_')) {
-                            cursor.delete();
-                        }
-                        cursor.continue();
-                    } else {
-                        // All previous Naam alarms cleared. Now write the new upcoming alarms.
-                        const now = new Date();
-                        const today = now.toLocaleDateString('en-CA');
-
-                        Object.entries(this.currentSchedule).forEach(([hour, session]) => {
-                            const hourNum = parseInt(hour);
-                            const scheduledTime = new Date();
-                            scheduledTime.setHours(hourNum, session.startMinute, 0, 0);
-
-                            // Only schedule future alarms
-                            if (scheduledTime > now) {
-                                store.put({
-                                    id: `naam_${hour}_${session.startMinute}`,
-                                    title: '🌸 ਨਾਮ ਅਭਿਆਸ | Naam Abhyas 🌺',
-                                    body: `Leave all work. Remember Vaheguru for ${this.config.duration || 2} minutes. 🙏`,
-                                    scheduledTime: scheduledTime.getTime(),
-                                    hour: hourNum,
-                                    startMinute: session.startMinute,
-                                    duration: this.config.duration || 2,
-                                    fired: false,
-                                    createdAt: Date.now(),
-                                    data: {
-                                        hour: hourNum,
-                                        startMinute: session.startMinute,
-                                        duration: this.config.duration || 2
-                                    },
-                                    tag: `naam-abhyas-${today}-${hour}`
-                                });
-                            }
-                        });
-                        console.log('[NaamAbhyas] ✅ Alarms saved to IndexedDB (notification_schedule) for SW access');
-                    }
-                };
-            };
-
-            request.onerror = (event) => {
-                console.error('[NaamAbhyas] IndexedDB error:', event.target.error);
-            };
-        } catch (err) {
-            console.warn('[NaamAbhyas] Failed to save alarms to IndexedDB:', err);
-        }
-    }
-
-    /**
-     * Check for missed sessions while app was closed
-     * Shows notification for any sessions that were missed
-     */
-    checkForMissedSessions() {
-        if (!this.config.enabled) return;
-
-        const now = new Date();
-        const today = now.toDateString();
-        const currentHour = now.getHours();
-        const currentMinute = now.getMinutes();
-
-        let missedCount = 0;
-        const missedSessions = [];
-
-        Object.entries(this.currentSchedule).forEach(([hour, session]) => {
-            const hourNum = parseInt(hour);
-            const sessionEndMinute = session.endMinute || session.startMinute + (this.config.duration || 2);
-
-            // Check if session has ended and is still pending
-            const isPastSession = hourNum < currentHour || (hourNum === currentHour && currentMinute >= sessionEndMinute);
-
-            if (isPastSession && session.status === 'pending') {
-                missedCount++;
-                missedSessions.push({
-                    hour: hourNum,
-                    startTime: session.startTime
-                });
-            }
-        });
-
-        if (missedCount > 0) {
-            console.log(`[NaamAbhyas] Detected ${missedCount} missed sessions while app was closed`);
-
-            // Show notification about missed sessions
-            const message = missedCount === 1
-                ? `You missed 1 Naam Abhyas session at ${missedSessions[0].startTime}`
-                : `You missed ${missedCount} Naam Abhyas sessions today`;
-
-            this.showToast(message, 'warning');
-
-            // Log missed sessions without wiping multi-day streak
-            if (this.history && this.history.statistics) {
-                this.history.statistics.skippedSessions = (this.history.statistics.skippedSessions || 0) + missedCount;
-                this.saveHistory();
-            }
-        }
-    }
-
-    /**
-     * Schedule notifications for all upcoming sessions
-     * This ensures reminders work even when app is in background
-     * Uses both local setTimeout AND Service Worker for maximum reliability
-     */
-    scheduleUpcomingNotifications() {
-        // Local notification engine (setTimeout-based, works while page is open)
-        if (this.notificationEngine) {
-            this.notificationEngine.cancelAll();
-        }
-
-        const now = new Date();
-        const today = now.toDateString();
-        const currentHour = now.getHours();
-
-        // Schedule notifications for each pending session
-        Object.entries(this.currentSchedule).forEach(([hour, session]) => {
-            const hourNum = parseInt(hour);
-
-            // Schedule for current hour (if session is still upcoming) and future sessions
-            const isFutureHour = hourNum > currentHour;
-            const isCurrentHourUpcoming = hourNum === currentHour && session.startMinute > now.getMinutes();
-            if ((isFutureHour || isCurrentHourUpcoming) && session.status === 'pending') {
-                // 1. Local notification engine (fallback, foreground only)
-                if (this.notificationEngine) {
-                    this.notificationEngine.scheduleSessionNotifications(
-                        {
-                            hour: hourNum,
-                            startMinute: session.startMinute,
-                            endMinute: session.endMinute,
-                            startTime: session.startTime,
-                            endTime: session.endTime
-                        },
-                        this.config.notifications
-                    );
-                }
-
-                // 2. Service Worker notification (persistent, works in background)
-                this.scheduleServiceWorkerNotification(session, hourNum, today);
-            }
-        });
-
-        if (this.notificationEngine && this.notificationEngine.scheduleCapacitorHourlyBatch) {
-            this.notificationEngine.scheduleCapacitorHourlyBatch({
-                enabled: this.config.enabled,
-                startHour: this.config.activeHours?.start || 5,
-                endHour: this.config.activeHours?.end || 22,
-                currentSchedule: this.currentSchedule,
-                activeHours: this.config.activeHours
-            });
-        }
-
-        console.log('🔔 Scheduled notifications for upcoming sessions (local + SW)');
-
-        // Also schedule random spiritual nudges (always, not just when Naam Abhyas is on)
-        try { this.scheduleRandomSpiritualNotifications(); } catch (e) { /* non-critical */ }
-    }
-
-    /**
-     * Schedule a notification via Service Worker for persistent background delivery
-     * AND native Capacitor notifications for mobile (works even when app is closed!)
-     */
-    scheduleServiceWorkerNotification(session, hour, today) {
-        try {
-            const scheduledTime = new Date();
-            scheduledTime.setHours(hour, session.startMinute, 0, 0);
-
-            // Only schedule if in the future
-            if (scheduledTime <= new Date()) {
-                return;
-            }
-
-            const notificationId = `naam_${hour}_${session.startMinute}`;
-            const title = '🙏 ਨਾਮ ਅਭਿਆਸ ਦਾ ਸਮਾਂ';
-            const spiritualMessages = [
-                'ਸਬ ਕੰਮ ਛੱਡੋ, ਵਾਹਿਗੁਰੂ ਜੀ ਦਾ ਸਿਮਰਨ ਕਰੋ',
-                'This moment is sacred. Meditate on Naam for ' + (this.config.duration || 2) + ' minutes.',
-                'ਸਿਮਰਉ ਸਿਮਰਿ ਸਿਮਰਿ ਸੁਖ ਪਾਵਉ — Remember the Name and find peace',
-                'Your soul is calling. Pause and connect with Vaheguru Ji.',
-                'ਜਪਿ ਮਨ ਸਤਿ ਨਾਮੁ ਸਦਾ ਸਤਿ ਨਾਮੁ — Chant the True Name always',
-                'Be still. Breathe. Remember Vaheguru for ' + (this.config.duration || 2) + ' sacred minutes.',
-                'ਤੂੰ ਮੇਰਾ ਪਿਤਾ ਤੂੰਹੈ ਮੇਰਾ ਮਾਤਾ — You are my Father, You are my Mother'
-            ];
-            const body = spiritualMessages[Math.floor(Math.random() * spiritualMessages.length)];
-
-            // Build notification payload
-            const notificationPayload = {
-                id: notificationId,
-                title: title,
-                body: body,
-                scheduledTime: scheduledTime.getTime(),
-                tag: `naam-abhyas-${today}-${hour}`,
-                requireInteraction: true,
-                actions: [
-                    { action: 'start', title: '🙏 Start Now' },
-                    { action: 'dismiss', title: 'Skip' }
-                ],
-                data: {
-                    url: '/NaamAbhyas/naam-abhyas.html',
-                    type: 'naamAbhyas',
-                    hour: hour,
-                    startMinute: session.startMinute
-                }
-            };
-
-            // 1. NATIVE MOBILE (Capacitor) - Works when app is completely closed!
-            // ═══ ENHANCED: Use CapacitorNotifications wrapper for better reliability ═══
-            if (window.CapacitorNotifications?.isCapacitorAvailable?.()) {
-                window.CapacitorNotifications.scheduleNotification({
-                    id: notificationId,
-                    title: title,
-                    body: body,
-                    scheduledTime: scheduledTime,
-                    icon: '/assets/icon-192x192.png',
-                    badge: '/assets/icon-72x72.png',
-                    tag: notificationPayload.tag,
-                    requireInteraction: true,
-                    data: notificationPayload.data
-                }).then(() => {
-                    console.log(`[NaamAbhyas] ✅ CAPACITOR notification scheduled for ${session.startTime} (works when closed!)`);
-                }).catch(err => {
-                    console.warn('[NaamAbhyas] Capacitor notification failed:', err);
-                });
-            } else if (window.NativeNotifications?.isNativePlatform?.()) {
-                // Fallback to old NativeNotifications API
-                window.NativeNotifications.schedule({
-                    id: notificationId,
-                    title: title,
-                    body: body,
-                    at: scheduledTime,
-                    recurring: false,
-                    data: notificationPayload.data
-                }).then(success => {
-                    if (success) {
-                        console.log(`[NaamAbhyas] ✅ NATIVE notification scheduled for ${session.startTime} (works when closed!)`);
-                    }
-                });
-            }
-
-            // 2. SERVICE WORKER (Web) - Works when browser tab is closed but browser is running
-            this.scheduleViaSW(notificationPayload, session.startTime);
-
-            // 3. FALLBACK SYSTEM - Works without Service Worker (setTimeout + localStorage)
-            if (window.fallbackAlarmSystem) {
-                window.fallbackAlarmSystem.scheduleAlarm({
-                    id: notificationId,
-                    title: title,
-                    body: body,
-                    scheduledTime: scheduledTime.getTime(),
-                    tag: notificationPayload.tag,
-                    icon: '/assets/icon-192x192.png',
-                    badge: '/assets/icon-72x72.png',
-                    data: notificationPayload.data
-                });
-                console.log(`[NaamAbhyas] ✅ FALLBACK alarm scheduled for ${session.startTime} (no SW needed!)`);
-            }
-
-            // 4. ELECTRON DESKTOP - Works when minimized to system tray!
-            if (window.electronAPI?.isElectron) {
-                window.electronAPI.scheduleNotification({
-                    id: notificationId,
-                    title: title,
-                    body: body,
-                    scheduledTime: scheduledTime.getTime(),
-                    url: '/NaamAbhyas/naam-abhyas.html'
-                });
-                console.log(`[NaamAbhyas] ✅ ELECTRON notification scheduled for ${session.startTime} (works in tray!)`);
-            }
-            // ═══ PRE-NOTIFICATION: Schedule 30 seconds BEFORE the session ═══
-            // This gives user a humble Nimrata warning so they can finish work
-            const preNotifTime = new Date(scheduledTime.getTime() - 30000);
-            if (preNotifTime > new Date()) {
-                const preNimrataMessages = [
-                    'ਨਾਮ ਅਭਿਆਸ ਦਾ ਸਮਾਂ ਆ ਰਿਹਾ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਸਾਰੇ ਕੰਮ ਛੱਡ ਦਿਓ \uD83D\uDE4F',
-                    'Waheguru Ji is calling in 30 seconds. Please wrap up, dear Gurmukh. \uD83C\uDF38',
-                    'ਵਾਹਿਗੁਰੂ ਜੀ ਦਾ ਸਿਮਰਨ ਥੋੜੀ ਦੇਰ ਵਿੱਚ ਸ਼ੁਰੂ ਹੋਵੇਗਾ। ਤਿਆਰ ਹੋ ਜਾਓ \u262C',
-                    '30 seconds remain. Please leave all work and prepare for Naam Simran. \uD83D\uDE4F',
-                    'ਬੱਸ 30 ਸਕਿੰਟ ਬਚੇ ਹਨ। ਮਨ ਨੂੰ ਸ਼ਾਂਤ ਕਰੋ। ਵਾਹਿਗੁਰੂ \u262C'
-                ];
-                const preBody = preNimrataMessages[Math.floor(Math.random() * preNimrataMessages.length)];
-                const preNotifId = 'naam_pre30_' + hour + '_' + session.startMinute;
-                const preTitle = '\uD83C\uDF38 ਨਾਮ ਅਭਿਆਸ ਆ ਰਿਹਾ ਹੈ | Naam Abhyas Coming';
-
-                // Schedule via Capacitor or Fallback Alarm
-                if (window.CapacitorNotifications && window.CapacitorNotifications.isCapacitorAvailable && window.CapacitorNotifications.isCapacitorAvailable()) {
-                    window.CapacitorNotifications.scheduleNotification({
-                        id: preNotifId, title: preTitle, body: preBody,
-                        scheduledTime: preNotifTime, icon: '/assets/icon-192x192.png',
-                        tag: 'naam-abhyas-pre-' + today + '-' + hour,
-                        data: { url: '/NaamAbhyas/naam-abhyas.html', type: 'naamAbhyasPre', hour: hour }
-                    }).catch(function (e) { console.warn('[NaamAbhyas] Pre-notification Capacitor failed:', e); });
-                }
-                if (window.fallbackAlarmSystem) {
-                    window.fallbackAlarmSystem.scheduleAlarm({
-                        id: preNotifId, title: preTitle, body: preBody,
-                        scheduledTime: preNotifTime.getTime(),
-                        tag: 'naam-abhyas-pre-' + today + '-' + hour,
-                        data: { url: '/NaamAbhyas/naam-abhyas.html', type: 'naamAbhyasPre' }
-                    });
-                }
-                console.log('[NaamAbhyas] ✅ PRE-notification scheduled 30s before ' + session.startTime);
-            }
-
-        } catch (error) {
-            console.warn('[NaamAbhyas] Failed to schedule notification:', error);
-        }
-    }
-
-    /**
-     * Schedule notification via Service Worker
-     * Uses controller if available, otherwise waits for SW ready
-     */
-    async scheduleViaSW(payload, sessionTime) {
-        if (!('serviceWorker' in navigator)) {
-            console.log('[NaamAbhyas] Service Worker not supported');
-            return;
-        }
-
-        // ─── STEP 1: Persist to IndexedDB for background resilience ───
-        try {
-            await this.saveAlarmToIndexedDB(payload);
-            console.log(`[NaamAbhyas] 💾 Alarm persisted to IndexedDB for ${sessionTime}`);
-        } catch (dbError) {
-            console.warn('[NaamAbhyas] Failed to save to IndexedDB:', dbError);
-            // Continue - we'll still try the SW approach
-        }
-
-        // ─── STEP 2: Also notify Service Worker for immediate scheduling ───
-        try {
-            // Try using controller first (faster if available)
-            if (navigator.serviceWorker.controller) {
-                navigator.serviceWorker.controller.postMessage({
-                    type: 'SCHEDULE_NOTIFICATION',
-                    payload: payload
-                });
-                console.log(`[NaamAbhyas] ✅ SW notification scheduled for ${sessionTime}`);
-                return;
-            }
-
-            // Fallback: wait for SW to be ready
-            const registration = await navigator.serviceWorker.ready;
-            if (registration.active) {
-                registration.active.postMessage({
-                    type: 'SCHEDULE_NOTIFICATION',
-                    payload: payload
-                });
-                console.log(`[NaamAbhyas] ✅ SW notification scheduled (via ready) for ${sessionTime}`);
-            }
-        } catch (error) {
-            console.warn('[NaamAbhyas] Failed to schedule via SW:', error);
-        }
-    }
-
-    /**
-     * Save alarm to IndexedDB for Service Worker background access
-     * This allows the SW to fire notifications even when the app is closed
-     */
-    async saveAlarmToIndexedDB(payload) {
-        return new Promise((resolve, reject) => {
-            const DB_NAME = 'GurbaniRadioSW';
-            const DB_VERSION = 2;
-            const STORE_NAME = 'notification_schedule';
-
-            const request = indexedDB.open(DB_NAME, DB_VERSION);
-
-            request.onerror = () => reject(request.error);
-            request.onsuccess = () => {
-                const db = request.result;
-                const tx = db.transaction(STORE_NAME, 'readwrite');
-                const store = tx.objectStore(STORE_NAME);
-
-                // Create alarm entry
-                const scheduledTime = payload.scheduledTime || Date.now();
-                const alarmId = payload.id || `naam_${payload.data?.hour || 0}_${payload.data?.startMinute || 0}_${Date.now()}`;
-
-                const entry = {
-                    id: alarmId,
-                    title: payload.title || '🌸 ਨਾਮ ਅਭਿਆਸ | Naam Abhyas 🌺',
-                    body: payload.body || `Leave all work. Remember Vaheguru for ${payload.data?.duration || 2} minutes. 🙏`,
-                    scheduledTime: scheduledTime,
-                    hour: payload.data?.hour || 0,
-                    startMinute: payload.data?.startMinute || 0,
-                    duration: payload.data?.duration || 2,
-                    fired: false,
-                    createdAt: Date.now(),
-                    data: payload.data || {},
-                    tag: payload.tag || `naam-abhyas-${new Date().toLocaleDateString('en-CA')}-${payload.data?.hour || 0}`
-                };
-
-                const putRequest = store.put(entry);
-                putRequest.onsuccess = () => {
-                    db.close();
-                    resolve();
-                };
-                putRequest.onerror = () => {
-                    db.close();
-                    reject(putRequest.error);
-                };
-            };
-
-            request.onupgradeneeded = (event) => {
-                const db = event.target.result;
-                if (!db.objectStoreNames.contains(STORE_NAME)) {
-                    const store = db.createObjectStore(STORE_NAME, { keyPath: 'id' });
-                    store.createIndex('scheduledTime', 'scheduledTime', { unique: false });
-                    store.createIndex('fired', 'fired', { unique: false });
-                }
-            };
-        });
-    }
-
-    /**
-     * ═══════════════════════════════════════════════════════════════════════
-     * RANDOM SPIRITUAL NOTIFICATIONS — 5-6 daily spiritual nudges
-     * These fire at random times regardless of Naam Abhyas enabled state.
-     * Deep-links to relevant pages (Hukamnama, Nitnem, Radio, etc.)
-     * ═══════════════════════════════════════════════════════════════════════
-     */
-    scheduleRandomSpiritualNotifications() {
-        if (!('Notification' in window) || Notification.permission !== 'granted') {
-            console.log('[NaamAbhyas] Random spiritual notifs: permission not granted, skipping');
-            return;
-        }
-
-        // Only schedule once per day
-        const today = new Date().toLocaleDateString('en-CA');
-        const lastScheduled = localStorage.getItem('anhad_random_notif_scheduled_date');
-        if (lastScheduled === today) {
-            console.log('[NaamAbhyas] Random spiritual notifs already scheduled for today');
-            return;
-        }
-
-        // Mark as scheduled for today
-        localStorage.setItem('anhad_random_notif_scheduled_date', today);
-
-        // ─── Define the pool of random spiritual nudges ───
-        const SPIRITUAL_NUDGES = [
-            {
-                id: 'rn_hukamnama',
-                title: '📖 ਅੱਜ ਦਾ ਹੁਕਮਨਾਮਾ | Hukamnama',
-                messages: [
-                    'ਅੱਜ ਦਾ ਹੁਕਮਨਾਮਾ ਸਾਹਿਬ ਪੜ੍ਹਿਆ? ਜੇ ਨਹੀਂ ਤਾਂ ਹੁਣੇ ਕਰ ਸਕਦੇ ਹੋ 🙏',
-                    'Waheguru Ji\'s divine command for today is waiting for you. Read Hukamnama now 📖',
-                    'ਗੁਰੂ ਦੀ ਕ੍ਰਿਪਾ — ਅੱਜ ਦਾ ਹੁਕਮਨਾਮਾ ਸਾਹਿਬ ਪੜ੍ਹੋ',
-                    'Start your day with divine guidance. Today\'s Hukamnama Sahib awaits 🌅'
-                ],
-                url: 'Hukamnama/daily-hukamnama.html',
-                icon: 'assets/icon-192x192.png',
-                timeWindows: [{ startHour: 6, endHour: 10 }, { startHour: 12, endHour: 14 }]
-            },
-            {
-                id: 'rn_nitnem',
-                title: '🙏 ਨਿਤਨੇਮ | Nitnem Reminder',
-                messages: [
-                    'ਅੱਜ ਦਾ ਨਿਤਨੇਮ ਕੀਤਾ? ਗੁਰਬਾਣੀ ਦਾ ਪਾਠ ਕਰੋ ਅਤੇ ਮਨ ਨੂੰ ਸ਼ਾਂਤੀ ਮਿਲੇਗੀ 📿',
-                    'Have you completed your Nitnem today? Japji Sahib is just a tap away 🌸',
-                    'ਗੁਰੂ ਕੀ ਬਾਣੀ ਪੜ੍ਹੋ — ਨਿਤਨੇਮ ਦਾ ਸਮਾਂ ਹੈ',
-                    'Nitnem is your daily bread for the soul. Take 15 minutes right now 🙏'
-                ],
-                url: 'NitnemTracker/nitnem-tracker.html',
-                icon: 'assets/icon-192x192.png',
-                timeWindows: [{ startHour: 5, endHour: 9 }, { startHour: 18, endHour: 20 }]
-            },
-            {
-                id: 'rn_kirtan',
-                title: '🎵 ਕੀਰਤਨ ਸੁਣੋ | Listen to Kirtan',
-                messages: [
-                    'ਕੀਰਤਨ ਸੁਣੋ ਅਤੇ ਮਨ ਨੂੰ ਸ਼ਾਂਤੀ ਦਿਓ — Darbar Sahib live kirtan is on 🎵',
-                    'Tune in to live kirtan from Sri Harmandir Sahib right now 🕌',
-                    'ਸ਼ਬਦ ਸੁਣਿਆ ਸਭਨਾ ਭਾਇਆ — Listen to shabad kirtan and feel the divine',
-                    'Live kirtan is playing. Plug in your earphones and connect with Waheguru 🎧'
-                ],
-                url: 'GurbaniRadio/gurbani-radio.html',
-                icon: 'assets/Darbar-sahib-AMRITVELA.webp',
-                timeWindows: [{ startHour: 8, endHour: 12 }, { startHour: 15, endHour: 19 }]
-            },
-            {
-                id: 'rn_simran',
-                title: '☬ ਵਾਹਿਗੁਰੂ ਸਿਮਰਨ | Naam Simran',
-                messages: [
-                    'ਵਾਹਿਗੁਰੂ ਵਾਹਿਗੁਰੂ ਵਾਹਿਗੁਰੂ ਵਾਹਿਗੁਰੂ... ਜਪੋ ਜੀ ਸਤਿ ਨਾਮੁ 🙏',
-                    'Take 2 minutes right now for Naam Simran. Breathe in Waheguru, breathe out peace ☬',
-                    'ਸਿਮਰਉ ਸਿਮਰਿ ਸਿਮਰਿ ਸੁਖ ਪਾਵਉ — Remember the Name and find peace',
-                    'Your soul is calling. Close your eyes for just 2 minutes and chant Waheguru 🕊️'
-                ],
-                url: 'NaamAbhyas/naam-abhyas.html',
-                icon: 'assets/icon-192x192.png',
-                timeWindows: [{ startHour: 7, endHour: 11 }, { startHour: 13, endHour: 17 }, { startHour: 20, endHour: 22 }]
-            },
-            {
-                id: 'rn_gurpurab',
-                title: '🌸 ਗੁਰਪੁਰਬ ਯਾਦ | Gurpurab Reminder',
-                messages: [
-                    'ਅੱਜ ਕੋਈ ਗੁਰਪੁਰਬ ਹੈ? ਐਪ ਵਿੱਚ ਦੇਖੋ ਅਤੇ ਜਾਣਕਾਰੀ ਲਵੋ 📅',
-                    'Check today\'s Gurpurab calendar. Every day is blessed by the Gurus 🌺',
-                    'ਗੁਰੂ ਦੀ ਕ੍ਰਿਪਾ — ਅੱਜ ਦੇ ਗੁਰਪੁਰਬ ਬਾਰੇ ਜਾਣੋ',
-                    'Guru\'s blessings are always flowing. See what\'s happening in the Sikh world today 📖'
-                ],
-                url: 'index.html',
-                icon: 'assets/icon-192x192.png',
-                timeWindows: [{ startHour: 9, endHour: 12 }, { startHour: 17, endHour: 20 }]
-            },
-            {
-                id: 'rn_wisdom',
-                title: '💎 ਗੁਰੂ ਦੀ ਸਿੱਖਿਆ | Guru\'s Wisdom',
-                messages: [
-                    'ਇੱਕ ਪਲ ਲਈ ਰੁਕੋ — ਗੁਰਬਾਣੀ ਦੀ ਇੱਕ ਪੰਕਤੀ ਯਾਦ ਕਰੋ 💎',
-                    '"ਨਾਨਕ ਨਾਮੁ ਜਪਹੁ ਮਨ ਮੇਰੇ" — Have you reflected on Gurbani today?',
-                    'ਸਤਿ ਨਾਮੁ ਕਰਤਾ ਪੁਰਖੁ — The True Name is the Creator Being. Remember this today 🙏',
-                    'A moment of reflection: "ਵਾਹਿਗੁਰੂ" is the answer to every question life asks you ☬'
-                ],
-                url: 'index.html',
-                icon: 'assets/icon-192x192.png',
-                timeWindows: [{ startHour: 10, endHour: 14 }, { startHour: 16, endHour: 21 }]
-            }
-        ];
-
-        // ─── Pick 5-6 notifications distributed across the day ───
-        const selectedNudges = SPIRITUAL_NUDGES.sort(() => Math.random() - 0.5).slice(0, 5 + Math.floor(Math.random() * 2));
-        const now = new Date();
-
-        let scheduledCount = 0;
-        selectedNudges.forEach((nudge, index) => {
-            // Pick a valid time window for this nudge
-            const validWindows = nudge.timeWindows.filter(w => {
-                const windowStartMinutes = w.startHour * 60;
-                const nowMinutes = now.getHours() * 60 + now.getMinutes();
-                return windowStartMinutes > nowMinutes + 30; // Must be at least 30min in future
-            });
-
-            if (validWindows.length === 0) return; // No valid windows today
-
-            // Pick a random window and random time within it
-            const window = validWindows[Math.floor(Math.random() * validWindows.length)];
-            const randomHour = window.startHour + Math.floor(Math.random() * (window.endHour - window.startHour));
-            const randomMinute = Math.floor(Math.random() * 60);
-
-            const scheduledTime = new Date();
-            scheduledTime.setHours(randomHour, randomMinute, 0, 0);
-
-            if (scheduledTime <= now) return; // Safety check
-
-            // Pick random message
-            const message = nudge.messages[Math.floor(Math.random() * nudge.messages.length)];
-
-            // Build payload and save to IndexedDB for SW background delivery
-            const payload = {
-                id: `${nudge.id}_${today}`,
-                title: nudge.title,
-                body: message,
-                scheduledTime: scheduledTime.getTime(),
-                tag: `anhad-spiritual-${nudge.id}-${today}`,
-                requireInteraction: false,
-                data: {
-                    url: nudge.url,
-                    type: 'spiritualNudge',
-                    nudgeId: nudge.id,
-                    timestamp: scheduledTime.getTime()
-                },
-                icon: nudge.icon || 'assets/icon-192x192.png'
-            };
-
-            // Save to IndexedDB for background delivery (same pipeline as Naam Abhyas sessions)
-            this.saveRandomNotifToIndexedDB(payload).then(() => {
-                console.log(`[NaamAbhyas] ✅ Random spiritual notif scheduled: "${nudge.id}" at ${randomHour}:${String(randomMinute).padStart(2, '0')}`);
-            }).catch(e => {
-                console.warn('[NaamAbhyas] Failed to save random notif:', e);
-            });
-
-            // Also post to SW for in-memory scheduling
-            this.scheduleViaSW(payload, `${randomHour}:${String(randomMinute).padStart(2, '0')}`);
-
-            scheduledCount++;
-        });
-
-        console.log(`[NaamAbhyas] 🔔 Scheduled ${scheduledCount} random spiritual notifications for today`);
-    }
-
-    /**
-     * Save a random spiritual notification to IndexedDB
-     * Uses a separate store 'random_spiritual_notifs' from Naam Abhyas alarms
-     */
-    async saveRandomNotifToIndexedDB(payload) {
-        return new Promise((resolve, reject) => {
-            const DB_NAME = 'GurbaniRadioSW';
-            const DB_VERSION = 3; // Incremented to add new store
-            const STORE_NAME = 'random_spiritual_notifs';
-
-            const request = indexedDB.open(DB_NAME, DB_VERSION);
-
-            request.onerror = () => reject(request.error);
-            request.onsuccess = () => {
-                const db = request.result;
-                if (!db.objectStoreNames.contains(STORE_NAME)) {
-                    db.close();
-                    resolve(); // Store not yet created (DB version mismatch), will retry after upgrade
-                    return;
-                }
-                const tx = db.transaction(STORE_NAME, 'readwrite');
-                const store = tx.objectStore(STORE_NAME);
-                const entry = {
-                    id: payload.id,
-                    title: payload.title,
-                    body: payload.body,
-                    scheduledTime: payload.scheduledTime,
-                    tag: payload.tag,
-                    icon: payload.icon || 'assets/icon-192x192.png',
-                    fired: false,
-                    createdAt: Date.now(),
-                    data: payload.data || {}
-                };
-                const putRequest = store.put(entry);
-                putRequest.onsuccess = () => { db.close(); resolve(); };
-                putRequest.onerror = () => { db.close(); reject(putRequest.error); };
-            };
-
-            request.onupgradeneeded = (event) => {
-                const db = event.target.result;
-                // Ensure notification_schedule store exists (created by saveAlarmToIndexedDB)
-                if (!db.objectStoreNames.contains('notification_schedule')) {
-                    const ns = db.createObjectStore('notification_schedule', { keyPath: 'id' });
-                    ns.createIndex('scheduledTime', 'scheduledTime', { unique: false });
-                    ns.createIndex('fired', 'fired', { unique: false });
-                }
-                // Create new random spiritual notifs store
-                if (!db.objectStoreNames.contains(STORE_NAME)) {
-                    const rs = db.createObjectStore(STORE_NAME, { keyPath: 'id' });
-                    rs.createIndex('scheduledTime', 'scheduledTime', { unique: false });
-                    rs.createIndex('fired', 'fired', { unique: false });
-                }
-            };
-        });
-    }
-
-    disable() {
-        this.config.enabled = false;
-        this.saveConfig();
-
-        // Update UI state
-        document.body.classList.add('disabled-state');
-        document.getElementById('toggleStatusText').textContent = 'Currently disabled';
-
-        // Stop countdown updates
-        this.stopCountdownUpdates();
-
-        // Clear hourly refresh
-        if (this.hourlyRefreshTimeout) {
-            clearTimeout(this.hourlyRefreshTimeout);
-        }
-
-        // ═══ CLEAR INDEXEDDB ALARMS from Service Worker ═══
-        this.clearSWAlarms();
-
-        // ═══ CAPACITOR-NATIVE: Cancel all hourly notifications ═══
-        if (this.notificationEngine && this.notificationEngine.cancelCapacitorBatch) {
-            this.notificationEngine.cancelCapacitorBatch();
-        }
-
-        try {
-            localStorage.removeItem('naam_abhyas_schedule');
-            localStorage.removeItem('naam_abhyas_native_schedule_v2');
-            localStorage.setItem('naam_abhyas_disabled_at', String(Date.now()));
-        } catch (e) { /* non-critical */ }
-
-        // Update UI
-        this.updateUI();
-
-        this.showToast('Naam Abhyas disabled', 'info');
-    }
-
-    /**
-     * Clear all Naam Abhyas alarms from Service Worker IndexedDB
-     * Called when disabling Naam Abhyas to prevent stale alarms
-     */
-    clearSWAlarms() {
-        if (!('serviceWorker' in navigator)) return;
-
-        try {
-            // Notify Service Worker to clear all Naam alarms from IndexedDB
-            if (navigator.serviceWorker.controller) {
-                navigator.serviceWorker.controller.postMessage({
-                    type: 'CLEAR_NAAM_ALARMS'
-                });
-                console.log('[NaamAbhyas] Sent CLEAR_NAAM_ALARMS to SW');
-            }
-        } catch (err) {
-            console.warn('[NaamAbhyas] Failed to clear SW alarms:', err);
-        }
-    }
-
-    /* ═════════════════════════════════════════════════════════════════════════
-       THEME MANAGEMENT
-    ═════════════════════════════════════════════════════════════════════════ */
-
-    applyTheme(themeName) {
-        const theme = themeName || this.config.theme || 'system';
-        document.documentElement.setAttribute('data-theme', theme);
-
-        if (this.themeEngine) {
-            this.themeEngine.applyTheme(theme);
-        }
-    }
-
-    /* ═════════════════════════════════════════════════════════════════════════
-       SCHEDULE GENERATION
-    ═════════════════════════════════════════════════════════════════════════ */
-
-    generateDailySchedule() {
-        const now = new Date();
-        const startHour = this.config.activeHours.start;
-        const endHour = this.config.activeHours.end;
-        const today = this.getTodayString();
-        const duration = this.config.duration || 2; // Duration in minutes
-
-        // Calculate spacing based on duration
-        // 2 min duration = 20 min spacing, 3 min = 30 min spacing, 5 min = 40 min spacing
-        const spacingMinutes = duration <= 2 ? 20 : (duration <= 3 ? 30 : 40);
-
-        console.log(`📅 Generating schedule: duration=${duration}min, spacing=${spacingMinutes}min`);
-
-        // Check if we already have a schedule for today
-        // ═══ MIGRATION: Detect old fixed-interval schedule and force-regenerate ═══
-        // Old schedules had all sessions at same minute (e.g., 5:40, 6:40, 7:40).
-        // New random schedules have varied minutes. Detect the old format and clear it.
-        if (this.history.scheduleHistory && this.history.scheduleHistory[today]) {
-            const existing = this.history.scheduleHistory[today];
-            const sessionMinutes = Object.keys(existing)
-                .filter(k => k !== '_duration' && k !== '_spacing' && existing[k] && typeof existing[k].startMinute === 'number')
-                .map(k => existing[k].startMinute);
-            const allSame = sessionMinutes.length > 2 && sessionMinutes.every(m => m === sessionMinutes[0]);
-            if (allSame) {
-                console.log('📅 Detected old fixed-interval schedule — clearing for random regeneration');
-                delete this.history.scheduleHistory[today];
-            }
-        }
-
-        if (this.history.scheduleHistory && this.history.scheduleHistory[today]) {
-            // Check if duration changed - if so, regenerate
-            const existingDuration = this.history.scheduleHistory[today]._duration;
-            if (existingDuration && existingDuration !== duration) {
-                console.log(`📅 Duration changed from ${existingDuration} to ${duration}, regenerating schedule`);
-                this.currentSchedule = this.generateDurationBasedSchedule(startHour, endHour, spacingMinutes, duration);
-                this.history.scheduleHistory[today] = this.currentSchedule;
-                this.saveHistory();
-            } else {
-                this.currentSchedule = this.history.scheduleHistory[today];
-                console.log('📅 Using existing schedule for today');
-
-                // Cleanup sessions outside current active hours
-                let cleaned = false;
-                Object.keys(this.currentSchedule).forEach(hour => {
-                    const hourNum = parseInt(hour);
-                    if (hourNum < startHour || hourNum > endHour) {
-                        delete this.currentSchedule[hour];
-                        cleaned = true;
-                    }
-                });
-
-                // Fill in missing hours if any
-                for (let hour = startHour; hour <= endHour; hour++) {
-                    if (!this.currentSchedule[hour]) {
-                        this.currentSchedule[hour] = this.generateRandomTimeForHour(hour, duration);
-                        cleaned = true;
-                    }
-                }
-
-                if (cleaned) {
-                    this.history.scheduleHistory[today] = this.currentSchedule;
-                    this.saveHistory();
-                }
-            }
-
-            // Ensure refresher count exists for today
-            if (typeof this.history.dailyRefreshes === 'undefined') {
-                this.history.dailyRefreshes = {};
-            }
-            if (typeof this.history.dailyRefreshes[today] === 'undefined') {
-                this.history.dailyRefreshes[today] = 0;
-            }
-        } else {
-            // Generate new schedule based on duration
-            this.currentSchedule = this.generateDurationBasedSchedule(startHour, endHour, spacingMinutes, duration);
-
-            // Save to history
-            if (!this.history.scheduleHistory) {
-                this.history.scheduleHistory = {};
-            }
-            this.history.scheduleHistory[today] = this.currentSchedule;
-
-            // Initialize refresh count
-            if (!this.history.dailyRefreshes) {
-                this.history.dailyRefreshes = {};
-            }
-            this.history.dailyRefreshes[today] = 0;
-
-            this.saveHistory();
-        }
-
-        this.renderScheduleTimeline();
-        this.updateRefreshButtonState();
-
-        // ═══ BUG 2 FIX: Always persist to dedicated key for global scheduler ═══
-        try {
-            localStorage.setItem('naam_abhyas_schedule', JSON.stringify(this.currentSchedule));
-        } catch (e) { /* non-critical */ }
-    }
-
-    /**
-     * Generate schedule with one TRULY RANDOM time per active hour.
-     * ═══ FIXED: Old version used fixed intervals (n:00, n:20, n:40).
-     *            New version assigns random minutes (e.g. 6:32, 7:14, 8:51).
-     * Each active hour [startHour, endHour] gets exactly one session
-     * at a random minute between 3 and 57 (avoids very start/end of hour).
-     */
-    generateDurationBasedSchedule(startHour, endHour, spacingMinutes, duration) {
-        const schedule = {};
-        let sessionIndex = 0;
-
-        for (let hour = startHour; hour <= endHour; hour++) {
-            // Random minute between 3 and 57 for natural-feeling times
-            // This avoids :00 and :59 which feel too "on the hour"
-            const randomMinute = 3 + Math.floor(Math.random() * 55); // 3–57
-
-            schedule[hour] = {
-                hour: hour,
-                startMinute: randomMinute,
-                endMinute: Math.min(59, randomMinute + duration),
-                startTime: this.formatTime12h(hour, randomMinute),
-                endTime: this.formatTime12h(hour, randomMinute + duration),
-                duration: duration,
-                status: 'pending',
-                index: sessionIndex++
-            };
-
-            console.log(`📅 Session ${sessionIndex}: ${schedule[hour].startTime} (random minute: ${randomMinute})`);
-        }
-
-        // Store duration for change detection
-        schedule._duration = duration;
-        schedule._spacing = spacingMinutes; // kept for compatibility
-
-        return schedule;
-    }
-
-    regenerateSchedule(forceRefresh = false) {
-        const today = this.getTodayString();
-
-        // Force clear today's schedule to ensure random times
-        if (this.history.scheduleHistory && this.history.scheduleHistory[today]) {
-            delete this.history.scheduleHistory[today];
-            console.log('📅 Cleared cached schedule for today');
-        }
-
-        // Also clear global schedule cache
-        localStorage.removeItem('naam_abhyas_schedule');
-
-        // 1. Check Refresh Limit (bypass if forceRefresh is true)
-        if (!this.history.dailyRefreshes) {
-            this.history.dailyRefreshes = {};
-        }
-
-        const refreshesUsed = this.history.dailyRefreshes[today] || 0;
-        const REFRESH_LIMIT = 10; // Strict limit: 1 refresh per day
-
-        if (!forceRefresh && refreshesUsed >= REFRESH_LIMIT) {
-            this.showToast('Daily refresh limit reached (10/day)', 'info');
-            this.updateRefreshButtonState();
-            return;
-        }
-
-        const now = new Date();
-        const currentHour = now.getHours();
-        const startHour = this.config.activeHours.start;
-        const endHour = this.config.activeHours.end;
-
-        // 2. Cleanup and Regenerate
-        // Cleanup hours that are no longer active
-        Object.keys(this.currentSchedule).forEach(hour => {
-            const h = parseInt(hour);
-            if (h < startHour || h > endHour) {
-                delete this.currentSchedule[hour];
-            }
-        });
-
-        // Regenerate future sessions
-        let modifiedCount = 0;
-
-        for (let hour = Math.max(startHour, currentHour + 1); hour <= endHour; hour++) {
-            // Preservation check: If a future session was somehow already completed (unlikely but safe), skip it
-            if (this.currentSchedule[hour] && this.currentSchedule[hour].status === 'completed') {
-                continue;
-            }
-
-            this.currentSchedule[hour] = this.generateRandomTimeForHour(hour);
-            modifiedCount++;
-        }
-
-        // Fill in missing hours that might have been skipped due to currentHour logic but are within active range
-        for (let hour = startHour; hour <= endHour; hour++) {
-            if (!this.currentSchedule[hour]) {
-                this.currentSchedule[hour] = this.generateRandomTimeForHour(hour);
-                modifiedCount++;
-            }
-        }
-
-        if (modifiedCount === 0) {
-            this.showToast('No future sessions to refresh', 'info');
-            return;
-        }
-
-        // Increment refresh count
-        this.history.dailyRefreshes[today] = refreshesUsed + 1;
-
-        // Save to history
-        if (!this.history.scheduleHistory) {
-            this.history.scheduleHistory = {};
-        }
-        this.history.scheduleHistory[today] = this.currentSchedule;
-        this.saveHistory();
-
-        this.renderScheduleTimeline();
-        this.updateNextSession();
-        this.updateRefreshButtonState();
-
-        const remaining = REFRESH_LIMIT - (refreshesUsed + 1);
-        this.showToast(`Schedule updated. ${remaining} refreshes left today.`, 'success');
-    }
-
-    updateRefreshButtonState() {
-        const refreshBtn = document.getElementById('refreshScheduleBtn');
-        if (!refreshBtn) return;
-
-        const today = this.getTodayString();
-        const refreshesUsed = (this.history.dailyRefreshes && this.history.dailyRefreshes[today]) || 0;
-        const REFRESH_LIMIT = 10;
-
-        if (refreshesUsed >= REFRESH_LIMIT) {
-            refreshBtn.classList.add('disabled');
-            refreshBtn.style.opacity = '0.5';
-            refreshBtn.style.cursor = 'not-allowed';
-            refreshBtn.title = 'Daily refresh limit reached';
-        } else {
-            refreshBtn.classList.remove('disabled');
-            refreshBtn.style.opacity = '1';
-            refreshBtn.style.cursor = 'pointer';
-            refreshBtn.title = 'Refresh future schedule';
-        }
-    }
-
-    generateRandomTimeForHour(hour) {
-        // Enforce active hours bounds check
-        const startHour = this.config.activeHours.start || 5;
-        const endHour = this.config.activeHours.end || 22;
-
-        if (hour < startHour || hour > endHour) {
-            console.warn(`[NaamAbhyas] Attempted to generate session for hour ${hour} which is outside active hours (${startHour}-${endHour})`);
-            return null;
-        }
-
-        // Generate purely random minute between 0 and 59 for completely random times
-        const randomMinute = Math.floor(Math.random() * 60);
-
-        return {
-            hour: hour,
-            startMinute: randomMinute,
-            endMinute: randomMinute + this.config.duration,
-            startTime: this.formatTime12h(hour, randomMinute),
-            endTime: this.formatTime12h(hour, randomMinute + this.config.duration),
-            status: 'pending' // pending, completed, skipped
-        };
-    }
-
-    /**
-     * Requirement: Issue 2 - Always calculate next valid session respecting active hours
-     */
-    calculateNextSession() {
-        const now = new Date();
-        let nextSession = this.getNextScheduledSession();
-
-        // If no more sessions today, look for tomorrow's first
-        if (!nextSession) {
-            const startHour = this.config.activeHours.start || 5;
-            const tomorrow = new Date();
-            tomorrow.setDate(tomorrow.getDate() + 1);
-            tomorrow.setHours(startHour, 0, 0, 0);
-            return tomorrow;
-        }
-
-        // Safety: if hour/startMinute are missing (stale data), treat as no session
-        if (nextSession.hour === undefined || nextSession.startMinute === undefined) {
-            console.warn('[NaamAbhyas] calculateNextSession: session missing hour/startMinute, falling back to tomorrow');
-            const startHour = this.config.activeHours.start || 5;
-            const tomorrow = new Date();
-            tomorrow.setDate(tomorrow.getDate() + 1);
-            tomorrow.setHours(startHour, 0, 0, 0);
-            return tomorrow;
-        }
-
-        const nextTime = new Date();
-        nextTime.setHours(nextSession.hour, nextSession.startMinute, 0, 0);
-
-        // Enforce active hours
-        const nextHour = nextTime.getHours();
-        const startHour = this.config.activeHours.start || 5;
-        const endHour = this.config.activeHours.end || 22;
-
-        if (nextHour < startHour) {
-            nextTime.setHours(startHour, 0, 0, 0);
-        } else if (nextHour >= endHour) {
-            nextTime.setDate(nextTime.getDate() + 1);
-            nextTime.setHours(startHour, 0, 0, 0);
-        }
-
-        return nextTime;
-    }
-
-    /* ═════════════════════════════════════════════════════════════════════════
-       COUNTDOWN & SCHEDULING
-    ═════════════════════════════════════════════════════════════════════════ */
-
-    startCountdownUpdates() {
-        // Update immediately
-        this.updateCountdown();
-
-        // Then update every second
-        this.countdownInterval = setInterval(() => {
-            this.updateCountdown();
-        }, 1000);
-    }
-
-    stopCountdownUpdates() {
-        if (this.countdownInterval) {
-            clearInterval(this.countdownInterval);
-            this.countdownInterval = null;
-        }
-        console.log('[NaamAbhyas] ✅ Countdown timer stopped safely');
-    }
-
-    updateCountdown() {
-        const nextTime = this.calculateNextSession();
-        const now = new Date();
-        const diff = nextTime - now;
-
-        if (diff <= 0) {
-            // Time to start!
-            const nextSession = this.getNextScheduledSession();
-            if (nextSession && !this.sessionAlertTriggeredFor) {
-                // Guard: Track which session was triggered to prevent repeated alerts
-                this.sessionAlertTriggeredFor = `${nextSession.hour}_${nextSession.startMinute}`;
-                this.triggerSessionAlert(nextSession);
-
-                // Reset the guard after the session window ends (duration + 1 minute buffer)
-                const resetDelay = ((this.config.duration || 2) + 1) * 60 * 1000;
-                setTimeout(() => {
-                    this.sessionAlertTriggeredFor = null;
-                }, resetDelay);
-            }
-            return;
-        }
-
-        // ═══ 30-SECOND PRE-ALERT: Show humble Nimrata banner when <=30s remain ═══
-        const nextSession = this.getNextScheduledSession();
-        if (nextSession && diff > 0 && diff <= 30000) {
-            const preKey = 'pre_' + nextSession.hour + '_' + nextSession.startMinute;
-            if (!this._preAlertShownFor || this._preAlertShownFor !== preKey) {
-                this._preAlertShownFor = preKey;
-                setTimeout(() => { if (this._preAlertShownFor === preKey) this._preAlertShownFor = null; }, 35000);
-                this.showNimrataPreAlert(nextSession, Math.ceil(diff / 1000));
-            }
-        } else if (diff > 30000 && this._preAlertShownFor) {
-            this._preAlertShownFor = null;
-        }
-
-        // Clear trigger guard if we're waiting for a new session
-        if (nextSession) {
-            const sessionKey = `${nextSession.hour}_${nextSession.startMinute}`;
-            if (this.sessionAlertTriggeredFor && this.sessionAlertTriggeredFor !== sessionKey) {
-                this.sessionAlertTriggeredFor = null;
-            }
-        }
-
-        // Update display (with null-safety for DOM elements)
-        const timeEl = document.getElementById('nextSessionTime');
-        const countdownEl = document.getElementById('countdownValue');
-        const subtitleEl = document.getElementById('nextSessionSubtitle');
-
-        if (nextSession) {
-            if (timeEl) timeEl.textContent = nextSession.startTime || '--:--';
-            if (countdownEl) countdownEl.textContent = this.formatCountdown(diff);
-            if (subtitleEl) subtitleEl.textContent = `${nextSession.startTime} - ${nextSession.endTime}`;
-        } else {
-            // Tomorrow's session
-            const startHour = this.config.activeHours.start || 5;
-            if (timeEl) timeEl.textContent = this.formatTime12h(startHour, 0);
-            if (countdownEl) countdownEl.textContent = this.formatCountdown(diff);
-            if (subtitleEl) subtitleEl.textContent = 'Starting fresh tomorrow morning';
-        }
-    }
-
-    formatCountdown(milliseconds) {
-        // Safety: handle NaN or negative values gracefully
-        if (!Number.isFinite(milliseconds) || milliseconds < 0) {
-            return '--';
-        }
-        const totalSeconds = Math.floor(milliseconds / 1000);
-        const hours = Math.floor(totalSeconds / 3600);
-        const minutes = Math.floor((totalSeconds % 3600) / 60);
-        const seconds = totalSeconds % 60;
-
-        if (hours > 0) {
-            return `${hours}h ${minutes}m`;
-        } else if (minutes > 0) {
-            return `${minutes}m ${seconds}s`;
-        } else {
-            return `${seconds}s`;
-        }
-    }
-
-    getNextScheduledSession() {
-        if (!this.config.enabled) {
-            return null;
-        }
-        const now = new Date();
-        const currentHour = now.getHours();
-        const currentMinute = now.getMinutes();
-        const startHour = this.config.activeHours.start;
-        const endHour = this.config.activeHours.end;
-
-        // First, mark any past sessions as missed (if they're still pending)
-        for (let hour = startHour; hour < currentHour; hour++) {
-            const session = this.currentSchedule[hour];
-            if (session && session.status === 'pending') {
-                session.status = 'missed';
-                console.log(`[NaamAbhyas] Auto-marked hour ${hour} as missed`);
-            }
-        }
-
-        // Check current hour - if session time has passed, mark as missed
-        const currentHourSession = this.currentSchedule[currentHour];
-        if (currentHourSession && currentHourSession.status === 'pending') {
-            if (currentHourSession.startMinute + (this.config.duration || 2) < currentMinute) {
-                // Session window has fully passed
-                currentHourSession.status = 'missed';
-                console.log(`[NaamAbhyas] Auto-marked current hour ${currentHour} as missed (session was at ${currentHourSession.startMinute})`);
-            }
-        }
-
-        // Now search for next pending session
-        for (let hour = currentHour; hour <= endHour; hour++) {
-            const session = this.currentSchedule[hour];
-            if (session && session.status === 'pending') {
-                // ═══ FIX BUG 2 (safety): Ensure `hour` property always exists ═══
-                // Sessions from older schedules or generateDurationBasedSchedule()
-                // may not have the `hour` property. Inject it from the key.
-                if (session.hour === undefined) {
-                    session.hour = hour;
-                }
-
-                // For current hour, check if session hasn't started yet
-                if (hour === currentHour) {
-                    // Session is valid if its start time is in the future
-                    if (session.startMinute > currentMinute) {
-                        return session;
-                    }
-                    // Or if we're within the session window
-                    if (session.startMinute <= currentMinute && currentMinute < session.startMinute + (this.config.duration || 2)) {
-                        return session;
-                    }
-                } else {
-                    // Future hour's session
-                    return session;
-                }
-            }
-        }
-
-        return null;
-    }
-
-    scheduleHourlyRefresh() {
-        const now = new Date();
-        const nextHour = new Date(now);
-        nextHour.setHours(now.getHours() + 1, 0, 0, 0);
-        const timeUntilNextHour = nextHour - now;
-
-        this.hourlyRefreshTimeout = setTimeout(() => {
-            this.onNewHour();
-            // Schedule again
-            this.scheduleHourlyRefresh();
-        }, timeUntilNextHour);
-    }
-
-    onNewHour() {
-        const now = new Date();
-        const currentHour = now.getHours();
-
-        // Check if we need a new day's schedule
-        if (currentHour === 0) {
-            this.generateDailySchedule();
-        }
-
-        // Update UI
-        this.updateUI();
-    }
-
-
-    /* ═════════════════════════════════════════════════════════════════════════
-       SESSION HANDLING
-    ═════════════════════════════════════════════════════════════════════════ */
-
-
-    /**
-     * Show a humble in-app Nimrata banner 30 seconds before a session.
-     * Fires a soft top-of-screen banner with Gurmukhi and English messages.
-     */
-    showNimrataPreAlert(session, secondsLeft) {
-        const msgs = [
-            'ਨਾਮ ਅਭਿਆਸ ਦਾ ਸਮਾਂ ਆ ਰਿਹਾ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਸਾਰੇ ਕੰਮ ਛੱਡ ਦਿਓ \uD83D\uDE4F',
-            'ਵਾਹਿਗੁਰੂ ਜੀ ਦਾ ਸਿਮਰਨ ਥੋੜੀ ਦੇਰ ਵਿੱਚ ਸ਼ੁਰੂ ਹੋਵੇਗਾ। ਤਿਆਰ ਹੋ ਜਾਓ \u2741',
-            'Please leave all work, dear Gurmukh. Naam Abhyas begins in ' + secondsLeft + ' seconds. \uD83D\uDE4F',
-            'ਬੱਸ ' + secondsLeft + ' ਸਕਿੰਟ ਬਚੇ ਹਨ। ਮਨ ਨੂੰ ਸ਼ਾਂਤ ਕਰੋ। ਵਾਹਿਗੁਰੂ \u2741',
-            '30 seconds remain. Please wrap up and prepare your heart for Simran. \uD83C\uDF38',
-            'ਨਾਮ ਜਪਣ ਦਾ ਵੇਲਾ ਆਉਂਦਾ ਹੈ। ਹਰ ਕੰਮ ਛੱਡ ਕੇ ਤਿਆਰ ਹੋ ਜਾਓ \uD83D\uDE4F'
-        ];
-        const msg = msgs[Math.floor(Math.random() * msgs.length)];
-
-        // Show as a top-positioned Nimrata banner (8 seconds — give user time to read)
-        this.showToast('\uD83C\uDF38 ' + msg, 'nimrata', 8000);
-
-        // Gentle single vibration — loving nudge, not startling
-        if (this.config.notifications && this.config.notifications.vibration && navigator.vibrate) {
-            navigator.vibrate([80]);
-        }
-
-        console.log('[NaamAbhyas] \uD83C\uDF38 Nimrata pre-alert shown for', session.startTime, '(' + secondsLeft + 's remaining)');
-    }
-
-    triggerSessionAlert(session) {
-        console.log('[NaamAbhyas] 🔔 triggerSessionAlert called for session:', session);
-
-        // Store session reference
-        this.currentAlertSession = session;
-
-        // 1. FIRST - Play sound and vibrate to get attention
-        if (this.config.notifications?.soundEnabled) {
-            this.playNotificationSound();
-        }
-        if (this.config.notifications?.vibration && navigator.vibrate) {
-            navigator.vibrate([200, 100, 200, 100, 200]);
-        }
-
-        const spiritualBodies = [
-            'ਸਬ ਕੰਮ ਛੱਡੋ, ਵਾਹਿਗੁਰੂ ਜੀ ਦਾ ਸਿਮਰਨ ਕਰੋ ☙',
-            'Your soul is calling. Connect with Vaheguru for ' + (this.config.duration || 2) + ' sacred minutes. 🙏',
-            'ਸਿਮਰਉ ਸਿਮਰਿ ਸਿਮਰਿ ਸੁਖ ਪਾਵਉ — Meditate and find eternal peace ✙',
-            'Be still. Breathe. Remember the One. ' + (this.config.duration || 2) + ' minutes of Naam. ☬'
-        ];
-        const randomBody = spiritualBodies[Math.floor(Math.random() * spiritualBodies.length)];
-        this.showBrowserNotification('🌸 ਨਾਮ ਅਭਿਆਸ ਦਾ ਸਮਾਂ | Naam Abhyas 🌺', {
-            body: randomBody,
-            tag: 'naam-abhyas-session',
-            requireInteraction: true,
-            data: {
-                url: '/NaamAbhyas/naam-abhyas.html',
-                type: 'naamAbhyas',
-                hour: session.hour,
-                startMinute: session.startMinute,
-                timestamp: Date.now()
-            }
-        });
-
-        // ═══ FIX BUG 4: Respect autoStartTimer setting ═══
-        // If auto-start is enabled, skip the alert modal and start the session directly
-        if (this.config.autoStartTimer) {
-            console.log('[NaamAbhyas] ⚡ Auto-start enabled — starting meditation directly');
-            if (this.ritualEngine) {
-                this.ritualEngine.triggerScheduledSession(session, this.config.duration || 2);
-            } else {
-                this.startMeditation();
-            }
-            return;
-        }
-
-        // 3. Show the SESSION ALERT MODAL (user must click to start timer)
-        // Flow: Notification → Popup → User clicks "Start Now" → Timer starts
-        this.showAlertModal(session);
-
-        console.log('[NaamAbhyas] ✅ Alert modal shown - waiting for user to click Start');
-    }
-
-    showAlertModal(session) {
-        const modal = document.getElementById('sessionAlertModal');
-        if (modal) {
-            modal.classList.add('active');
-
-            // Update message with correct duration
-            const message = modal.querySelector('.alert-message');
-            if (message) {
-                message.innerHTML = `Leave all work. Close your eyes.<br>Remember Vaheguru for ${this.config.duration} minutes.`;
-            }
-        }
-
-        // Store current session reference
-        this.currentAlertSession = session;
-    }
-
-    hideAlertModal() {
-        const modal = document.getElementById('sessionAlertModal');
-        if (modal) {
-            modal.classList.remove('active');
-        }
-    }
-
-    async startMeditation() {
-        const session = this.currentAlertSession || this.getNextScheduledSession();
-        if (!session) return;
-
-        // Mark session as in progress
-        session.status = 'in_progress';
-        session.startedAt = new Date().toISOString();
-
-        // Show meditation overlay
-        const overlay = document.getElementById('meditationOverlay');
-        if (overlay) {
-            overlay.classList.add('active');
-        }
-
-        // Keep screen awake if possible
-        await this.requestWakeLock();
-
-        // Play start bell
-        if (this.config.notifications.soundEnabled) {
-            this.playSound('start-bell');
-        }
-
-        // Auto-play Vaheguru Jaap in background
-        if (this.audioManager) {
-            this.audioManager.playAmbient(0.25).catch(e => console.log('Vaheguru Jaap failed:', e));
-        }
-
-        // Start timer
-        const duration = this.config.duration * 60; // seconds
-        let remaining = duration;
-
-        const timerDisplay = document.getElementById('timerDisplay');
-        const progressBar = document.getElementById('timerProgressBar');
-
-        // Clear existing timer first to prevent race conditions
-        if (this.activeTimer) {
-            clearInterval(this.activeTimer);
-            this.activeTimer = null;
-            console.log('[NaamAbhyas] ⚠️ Cleared existing active timer before starting new one');
-        }
-
-        this._completionInProgress = false;
-        this.activeTimer = setInterval(() => {
-            remaining--;
-
-            // Update display
-            const minutes = Math.floor(remaining / 60);
-            const seconds = remaining % 60;
-            if (timerDisplay) {
-                timerDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-            }
-
-            // Update progress
-            const progress = ((duration - remaining) / duration) * 100;
-            if (progressBar) {
-                progressBar.style.width = `${progress}%`;
-            }
-
-            // Timer complete — IMMEDIATELY stop the interval to prevent infinite loop
-            if (remaining <= 0) {
-                const timerRef = this.activeTimer;
-                this.activeTimer = null; // null FIRST before clearInterval
-                if (timerRef) clearInterval(timerRef);
-                this.completeMeditation(session);
-            }
-        }, 1000);
-    }
-
-    async completeMeditation(session) {
-        // Guard against double-completion (e.g., if called from interval AND manually)
-        if (this._completionInProgress) {
-            console.warn('[NaamAbhyas] completeMeditation called while already completing — suppressed');
-            return;
-        }
-        this._completionInProgress = true;
-
-        // Clear timer if still running (safety net)
-        if (this.activeTimer) {
-            clearInterval(this.activeTimer);
-            this.activeTimer = null;
-        }
-
-        // Release wake lock
-        this.releaseWakeLock();
-
-        // Play completion bell
-        if (this.config.notifications.soundEnabled) {
-            this.playSound('end-bell');
-        }
-
-        // Vibrate completion
-        if (this.config.notifications.vibration && navigator.vibrate) {
-            navigator.vibrate([200, 100, 200]);
-        }
-
-        // Stop Vaheguru Jaap
-        if (this.audioManager) {
-            this.audioManager.stopAmbient();
-        }
-
-        // Update session status
-        session.status = 'completed';
-        session.endedAt = new Date().toISOString();
-        session.endedEarly = false;
-
-        // Update schedule
-        if (this.currentSchedule[session.hour]) {
-            this.currentSchedule[session.hour].status = 'completed';
-        }
-
-        // Record in history
-        this.recordSession({
-            hour: session.hour,
-            startTime: session.startTime,
-            startedAt: session.startedAt,
-            endedAt: session.endedAt,
-            duration: this.config.duration * 60,
-            status: 'completed',
-            endedEarly: false
-        });
-
-        // Update streak
-        this.updateStreak();
-
-        // Hide meditation overlay
-        const overlay = document.getElementById('meditationOverlay');
-        if (overlay) {
-            overlay.classList.remove('active');
-        }
-
-        // Show completion modal
-        this.showCompletionModal();
-
-        // Update UI
-        this.updateUI();
-
-        // Check achievements
-        this.checkAchievements();
-
-        // Reset completion guard for next session
-        this._completionInProgress = false;
-    }
-
-    endMeditationEarly() {
-        const session = this.currentAlertSession || { hour: new Date().getHours() };
-
-        // Clear timer
-        if (this.activeTimer) {
-            clearInterval(this.activeTimer);
-            this.activeTimer = null;
-        }
-
-        // Release wake lock
-        this.releaseWakeLock();
-
-        // Stop Vaheguru Jaap
-        if (this.audioManager) {
-            this.audioManager.stopAmbient();
-        }
-
-        // Calculate actual duration
-        const timerDisplay = document.getElementById('timerDisplay');
-        let actualDuration = this.config.duration * 60;
-        if (timerDisplay) {
-            const [mins, secs] = timerDisplay.textContent.split(':').map(Number);
-            const remaining = mins * 60 + secs;
-            actualDuration = (this.config.duration * 60) - remaining;
-        }
-
-        // Update session
-        session.status = 'completed';
-        session.endedEarly = true;
-        session.actualDuration = actualDuration;
-
-        // Record
-        this.recordSession({
-            hour: session.hour,
-            startTime: session.startTime,
-            duration: actualDuration,
-            status: 'completed',
-            endedEarly: true
-        });
-
-        // Update streak
-        this.updateStreak();
-
-        // Hide overlay
-        const overlay = document.getElementById('meditationOverlay');
-        if (overlay) {
-            overlay.classList.remove('active');
-        }
-
-        // Update UI
-        this.updateUI();
-
-        this.showToast('Session ended early', 'info');
-    }
-
-    skipCurrentSession() {
-        const session = this.currentAlertSession || this.getNextScheduledSession();
-        if (!session) return;
-
-        // Update session status
-        session.status = 'skipped';
-
-        // Update schedule
-        if (this.currentSchedule[session.hour]) {
-            this.currentSchedule[session.hour].status = 'skipped';
-        }
-
-        // Record in history
-        this.recordSession({
-            hour: session.hour,
-            startTime: session.startTime,
-            status: 'skipped',
-            skipReason: 'user_skip'
-        });
-
-        // Reset streak
-        this.history.statistics.currentStreak = 0;
-        this.saveHistory();
-
-        // Update UI  
-        this.updateUI();
-
-        this.showToast('Session skipped', 'warning');
-    }
-
-    recordSession(sessionData) {
-        const session = {
-            id: `session_${Date.now()}`,
-            date: this.getTodayString(),
-            ...sessionData,
-            recordedAt: new Date().toISOString()
-        };
-
-        // ─── DUPLICATE GUARD ─────────────────────────────────────────────────
-        // For scheduled sessions (not extra), reject a second completion for the
-        // same hour on the same date. This prevents double-counting when a user
-        // taps a notification twice, or the alarm re-fires before the first record
-        // is written.
-        if (!session.isExtra && session.status === 'completed' && session.hour !== undefined) {
-            const alreadyRecorded = this.history.sessions.some(s =>
-                s.date === session.date &&
-                s.hour === session.hour &&
-                !s.isExtra &&
-                s.status === 'completed'
-            );
-            if (alreadyRecorded) {
-                console.warn(`[NaamAbhyas] Duplicate session for hour ${session.hour} on ${session.date} — suppressed.`);
-                return;
-            }
-        }
-        // ─────────────────────────────────────────────────────────────────────
-
-        this.history.sessions.push(session);
-
-        // Initialize extra session tracking if needed
-        if (!this.history.statistics.extraSessions) {
-            this.history.statistics.extraSessions = 0;
-        }
-        if (!this.history.statistics.extraTimeSeconds) {
-            this.history.statistics.extraTimeSeconds = 0;
-        }
-
-        // Update statistics based on session type
-        if (session.status === 'completed') {
-            this.history.statistics.totalSessions++;
-            this.history.statistics.completedSessions++;
-            this.history.statistics.totalTimeSeconds += session.duration || (this.config.duration * 60);
-
-            // Track extra sessions separately
-            if (session.isExtra) {
-                this.history.statistics.extraSessions++;
-                this.history.statistics.extraTimeSeconds += session.duration || (this.config.duration * 60);
-            }
-        } else {
-            this.history.statistics.skippedSessions++;
-        }
-
-        // Calculate completion rate (only for scheduled sessions, not extra)
-        const scheduledCompleted = this.history.statistics.completedSessions - (this.history.statistics.extraSessions || 0);
-        const scheduledSkipped = this.history.statistics.skippedSessions;
-        const scheduledTotal = scheduledCompleted + scheduledSkipped;
-        this.history.statistics.completionRate = scheduledTotal > 0
-            ? scheduledCompleted / scheduledTotal
-            : 0;
-
-        // Record to Discipline Metrics for enhanced KPI tracking
-        if (this.disciplineMetrics) {
-            this.disciplineMetrics.recordSession(session);
-        }
-
-        this.saveHistory();
-
-        if (session.status === 'completed' && typeof this._syncToNitemTracker === 'function') {
-            this._syncToNitemTracker(session);
-        }
-    }
-
-    updateStreak() {
-        const today = this.getTodayString();
-        // Guard: Streak increments AT MOST once per calendar day
-        if (this.history.statistics.lastStreakDate === today) {
-            console.log(`[NaamAbhyas] 🛡️ Streak already counted for today (${today}) — skipping extra increment`);
-            return;
-        }
-
-        this.history.statistics.lastStreakDate = today;
-        this.history.statistics.currentStreak = (this.history.statistics.currentStreak || 0) + 1;
-
-        if (this.history.statistics.currentStreak > (this.history.statistics.longestStreak || 0)) {
-            this.history.statistics.longestStreak = this.history.statistics.currentStreak;
-        }
-
-        this.saveHistory();
-    }
-
-    /* ═════════════════════════════════════════════════════════════════════════
-       UI UPDATES
-    ═════════════════════════════════════════════════════════════════════════ */
-
-    updateUI() {
-        this.updateNextSession();
-        this.renderScheduleTimeline();
-        this.updateStats();
-        this.updateAchievements();
-        this.updateProgressDots();
-        this.updateRefreshButtonState();
-        this.updateSyncHub();
-    }
-
-    updateSyncHub() {
-        const nitnemProgressEl = document.getElementById('syncNitnemProgress');
-        if (nitnemProgressEl && window.UnifiedStats) {
-            try {
-                const todayStats = window.UnifiedStats.getTodayStats();
-                const totalBanis = 7;
-                const completedCount = todayStats.nitnemBanis ? todayStats.nitnemBanis.length : 0;
-
-                if (todayStats.nitnemComplete || completedCount >= totalBanis) {
-                    nitnemProgressEl.textContent = 'All daily prayers completed! 🌅';
-                } else if (completedCount > 0) {
-                    nitnemProgressEl.textContent = `${completedCount} of ${totalBanis} prayers done today`;
-                } else {
-                    nitnemProgressEl.textContent = 'No prayers completed yet today';
-                }
-            } catch (e) {
-                console.warn('[SyncHub] Failed to fetch Nitnem progress from UnifiedStats:', e);
-                nitnemProgressEl.textContent = 'Tap to open tracker & view progress';
-            }
-        }
-    }
-
-    updateNextSession() {
-        const nextTime = this.calculateNextSession();
-        const nextSession = this.getNextScheduledSession();
-        const timeEl = document.getElementById('nextSessionTime');
-        const subtitleEl = document.getElementById('nextSessionSubtitle');
-        const countdownEl = document.getElementById('countdownValue');
-
-        if (!nextSession) {
-            const startHour = this.config.activeHours.start || 5;
-            if (timeEl) timeEl.textContent = this.formatTime12h(startHour, 0);
-            if (subtitleEl) subtitleEl.textContent = 'Great job! See you tomorrow morning 🌟';
-            if (countdownEl) {
-                const now = new Date();
-                countdownEl.textContent = this.formatCountdown(nextTime - now);
-            }
-        } else {
-            if (timeEl) timeEl.textContent = nextSession.startTime;
-            if (subtitleEl) subtitleEl.textContent = `${nextSession.startTime} - ${nextSession.endTime}`;
-        }
-    }
-
-    renderScheduleTimeline() {
-        const container = document.getElementById('scheduleTimeline');
-        if (!container) return;
-
-        const now = new Date();
-        const currentHour = now.getHours();
-        const currentMinute = now.getMinutes();
-        const today = this.getTodayString();
-
-        let html = '';
-
-        // Group 1: Hourly Reminders
-        html += `<div class="timeline-section-header">Hourly Reminders</div>`;
-        html += `<div class="timeline-scheduled-list">`;
-        let scheduledHtml = '';
-
-        for (let hour = this.config.activeHours.start; hour <= this.config.activeHours.end; hour++) {
-            const session = this.currentSchedule[hour];
-            if (!session) continue;
-
-            let statusClass = 'pending';
-            let statusIcon = '';
-
-            if (session.status === 'completed') {
-                statusClass = 'completed';
-                statusIcon = '✓';
-            } else if (session.status === 'skipped') {
-                statusClass = 'skipped';
-                statusIcon = '✗';
-            } else if (hour === currentHour) {
-                // Check if current hour session time has passed
-                if (session.endMinute !== undefined && currentMinute > session.endMinute) {
-                    statusClass = 'missed';
-                    statusIcon = '✗';
-                } else {
-                    statusClass = 'current';
-                    statusIcon = '●';
-                }
-            } else if (hour < currentHour) {
-                // Past hour with pending status = MISSED
-                statusClass = 'missed';
-                statusIcon = '✗';
-            } else {
-                statusClass = 'upcoming';
-            }
-
-            scheduledHtml += `
-                <div class="schedule-item ${statusClass}">
-                    <div class="schedule-status ${statusClass}">${statusIcon}</div>
-                    <div class="schedule-time">
-                        <div class="schedule-time-value">${session.startTime}</div>
-                        <div class="schedule-time-range">for ${this.config.duration} min</div>
-                    </div>
-                    <div class="schedule-hour">${hour}:00</div>
-                </div>
-            `;
-        }
-
-        if (!scheduledHtml) {
-            scheduledHtml = '<div class="schedule-empty"><p>No scheduled sessions configured</p></div>';
-        }
-        html += scheduledHtml;
-        html += `</div>`;
-
-        // Group 2: Manual Practice (Extra Devotion)
-        const todaysExtraCompleted = this.history.sessions.filter(s => s.date === today && s.isExtra && s.status === 'completed');
-
-        html += `<div class="timeline-section-header extra-header">Extra Simran Sessions</div>`;
-        html += `<div class="timeline-extra-list">`;
-        if (todaysExtraCompleted.length > 0) {
-            todaysExtraCompleted.forEach(s => {
-                const startedTime = s.startedAt ? new Date(s.startedAt).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) : s.startTime || '';
-                const durationText = s.duration ? `${Math.round(s.duration / 60)} min` : `${this.config.duration} min`;
-                html += `
-                    <div class="schedule-item completed extra-session-item">
-                        <div class="schedule-status completed">✓</div>
-                        <div class="schedule-time">
-                            <div class="schedule-time-value">${startedTime}</div>
-                            <div class="schedule-time-range">Manual session completed</div>
-                        </div>
-                        <div class="schedule-hour duration-badge" style="font-size: 11px; opacity: 0.8; font-weight: 600; background: rgba(255, 149, 0, 0.15); color: #FF9500; padding: 4px 8px; border-radius: 8px;">${durationText}</div>
-                    </div>
-                `;
-            });
-        } else {
-            html += `<div class="schedule-empty"><p style="font-size:12px; color:rgba(255,255,255,0.4)">No extra sessions completed today yet.</p></div>`;
-        }
-        html += `</div>`;
-
-        if (!this.config.enabled) {
-            container.innerHTML = '<div class="schedule-empty"><p>Enable Naam Abhyas to see your schedule</p></div>';
-        } else {
-            container.innerHTML = html;
-        }
-    }
-
-    _oldRenderScheduleTimeline() {
-        const container = document.getElementById('scheduleTimeline');
-        if (!container) return;
-
-        const now = new Date();
-        const currentHour = now.getHours();
-        const currentMinute = now.getMinutes();
-
-        let html = '';
-
-        for (let hour = this.config.activeHours.start; hour <= this.config.activeHours.end; hour++) {
-            const session = this.currentSchedule[hour];
-            if (!session) continue;
-
-            let statusClass = 'pending';
-            let statusIcon = '';
-
-            if (session.status === 'completed') {
-                statusClass = 'completed';
-                statusIcon = '✓';
-            } else if (session.status === 'skipped') {
-                statusClass = 'skipped';
-                statusIcon = '✗';
-            } else if (hour === currentHour) {
-                // Check if current hour session time has passed
-                if (session.endMinute !== undefined && currentMinute > session.endMinute) {
-                    statusClass = 'missed';
-                    statusIcon = '✗';
-                } else {
-                    statusClass = 'current';
-                    statusIcon = '●';
-                }
-            } else if (hour < currentHour) {
-                // Past hour with pending status = MISSED
-                statusClass = 'missed';
-                statusIcon = '✗';
-            } else {
-                statusClass = 'upcoming';
-            }
-
-            html += `
-                <div class="schedule-item ${statusClass}">
-                    <div class="schedule-status ${statusClass}">${statusIcon}</div>
-                    <div class="schedule-time">
-                        <div class="schedule-time-value">${session.startTime}</div>
-                        <div class="schedule-time-range">for ${this.config.duration} min</div>
-                    </div>
-                    <div class="schedule-hour">${hour}:00</div>
-                </div>
-            `;
-        }
-
-        if (!html) {
-            html = '<div class="schedule-empty"><p>Enable Naam Abhyas to see your schedule</p></div>';
-        }
-
-        container.innerHTML = html;
-    }
-
-    updateProgressDots() {
-        const container = document.getElementById('progressDots');
-        if (!container) return;
-
-        const now = new Date();
-        const currentHour = now.getHours();
-        const currentMinute = now.getMinutes();
-        let completed = 0;
-        let total = 0;
-        let html = '';
-
-        for (let hour = this.config.activeHours.start; hour <= this.config.activeHours.end; hour++) {
-            const session = this.currentSchedule[hour];
-            if (!session) continue;
-
-            total++;
-            let dotClass = 'progress-dot';
-
-            if (session.status === 'completed') {
-                dotClass += ' completed';
-                completed++;
-            } else if (session.status === 'skipped') {
-                dotClass += ' skipped';
-            } else if (hour === currentHour) {
-                // Check if current hour session time has passed
-                if (session.endMinute !== undefined && currentMinute > session.endMinute) {
-                    dotClass += ' missed';
-                } else {
-                    dotClass += ' current';
-                }
-            } else if (hour < currentHour) {
-                // Past hour with pending status = MISSED
-                dotClass += ' missed';
-            }
-
-            html += `<div class="${dotClass}" title="${session.startTime}"></div>`;
-        }
-
-        container.innerHTML = html;
-
-        // Update counts
-        const completedEl = document.getElementById('completedCount');
-        const totalEl = document.getElementById('totalCount');
-        if (completedEl) completedEl.textContent = completed;
-        if (totalEl) totalEl.textContent = total;
-    }
-
-    updateStats() {
-        const stats = this.history.statistics;
-        const today = this.getTodayString();
-
-        // Today's completed
-        const todaysSessions = this.history.sessions.filter(s =>
-            s.date === today && s.status === 'completed'
-        ).length;
-
-        // Calculate expected sessions today
-        const totalHoursToday = (this.config.activeHours.end - this.config.activeHours.start) + 1;
-        const currentHour = new Date().getHours();
-        const passedSlots = Math.max(0, Math.min(currentHour - this.config.activeHours.start + 1, totalHoursToday));
-
-        // Update basic UI elements
-        this.setTextContent('currentStreak', stats.currentStreak);
-        this.setTextContent('todayCompleted', todaysSessions);
-        this.setTextContent('longestStreak', stats.longestStreak || 0);
-
-        // Format total time
-        const totalMinutes = Math.floor(stats.totalTimeSeconds / 60);
-        const hours = Math.floor(totalMinutes / 60);
-        const mins = totalMinutes % 60;
-        const timeStr = hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
-        this.setTextContent('totalTime', timeStr);
-
-        // === ENHANCED DISCIPLINE DASHBOARD ===
-
-        // Completion Rate Ring
-        const completionRate = this.disciplineMetrics ?
-            parseFloat(this.disciplineMetrics.getCompletionRate().toFixed(0)) :
-            (stats.completionRate * 100).toFixed(0);
-
-        this.setTextContent('completionRateValue', Math.round(completionRate));
-
-        // Update ring visual
-        const circumference = 2 * Math.PI * 40; // r=40
-        const offset = circumference * (1 - completionRate / 100);
-        const ringFill = document.getElementById('completionRingFill');
-        if (ringFill) {
-            ringFill.style.strokeDashoffset = offset;
-        }
-
-        // Today's Progress Bar
-        const todayProgressValue = document.getElementById('todayProgressValue');
-        const todayProgressFill = document.getElementById('todayProgressFill');
-        if (todayProgressValue) {
-            todayProgressValue.textContent = `${todaysSessions}/${passedSlots}`;
-        }
-        if (todayProgressFill) {
-            const progressPercent = passedSlots > 0 ? (todaysSessions / passedSlots) * 100 : 0;
-            todayProgressFill.style.width = `${progressPercent}%`;
-        }
-
-        // Weekly Stats
-        if (this.disciplineMetrics) {
-            const weeklySnapshot = this.disciplineMetrics.getWeeklySnapshot();
-            this.setTextContent('weeklyMinutes', Math.round(weeklySnapshot.totalMinutes));
-            this.setTextContent('perfectDaysCount', weeklySnapshot.perfectDays);
-        } else {
-            this.setTextContent('weeklyMinutes', totalMinutes);
-            this.setTextContent('perfectDaysCount', 0);
-        }
-
-        // Perfect Day Indicator
-        const perfectIndicator = document.getElementById('perfectDayIndicator');
-        if (perfectIndicator) {
-            const isPerfectPossible = passedSlots > 0 && todaysSessions === passedSlots;
-            perfectIndicator.classList.toggle('hidden', !isPerfectPossible);
-        }
-
-        // Dashboard subtitle update
-        const dashboardSubtitle = document.getElementById('dashboardSubtitle');
-        if (dashboardSubtitle) {
-            if (stats.currentStreak >= 5) {
-                dashboardSubtitle.textContent = `🔥 ${stats.currentStreak} hour streak! Keep going!`;
-            } else if (todaysSessions === passedSlots && passedSlots > 0) {
-                dashboardSubtitle.textContent = '🌟 Perfect discipline today!';
-            } else {
-                dashboardSubtitle.textContent = 'Discipline thrives on visibility';
-            }
-        }
-    }
-
-    updateAchievements() {
-        const unlockedCount = this.history.achievements ? this.history.achievements.length : 0;
-        this.setTextContent('achievementsUnlocked', `${unlockedCount} unlocked`);
-
-        // Update achievement badges
-        const badges = document.querySelectorAll('.achievement-badge');
-        badges.forEach(badge => {
-            const id = badge.dataset.id;
-            const isUnlocked = this.history.achievements &&
-                this.history.achievements.find(a => a.id === id);
-
-            if (isUnlocked) {
-                badge.classList.remove('locked');
-                badge.classList.add('unlocked');
-            }
-        });
-    }
-
-    setTextContent(elementId, text) {
-        const el = document.getElementById(elementId);
-        if (el) el.textContent = text;
-    }
-
-    /* ═════════════════════════════════════════════════════════════════════════
-       MODALS
-    ═════════════════════════════════════════════════════════════════════════ */
-
-    showCompletionModal() {
-        const modal = document.getElementById('completionModal');
-        if (!modal) return;
-
-        // Update stats in modal
-        const stats = this.history.statistics;
-        const today = this.getTodayString();
-        const todaysSessions = this.history.sessions.filter(s =>
-            s.date === today && s.status === 'completed'
-        ).length;
-        const totalHours = this.config.activeHours.end - this.config.activeHours.start + 1;
-
-        this.setTextContent('compDuration', `${this.config.duration}:00`);
-        this.setTextContent('compStreak', stats.currentStreak);
-        this.setTextContent('compToday', `${todaysSessions}/${totalHours}`);
-
-        // Next session info
-        const nextSession = this.getNextScheduledSession();
-        const nextInfo = document.getElementById('nextSessionInfo');
-        if (nextInfo) {
-            if (nextSession) {
-                const timeUntil = this.calculateTimeUntil(nextSession.hour, nextSession.startMinute);
-                nextInfo.textContent = `Next session: ${nextSession.startTime} (in ${timeUntil})`;
-            } else {
-                nextInfo.textContent = 'All sessions completed for today! 🎉';
-            }
-        }
-
-        modal.classList.add('active');
-    }
-
-    hideCompletionModal() {
-        const modal = document.getElementById('completionModal');
-        if (modal) {
-            modal.classList.remove('active');
-        }
-    }
-
-    showStatsPanel() {
-        const panel = document.getElementById('statsPanel');
-        if (panel) {
-            panel.classList.add('active');
-            this.renderFullStats();
-        }
-    }
-
-    hideStatsPanel() {
-        const panel = document.getElementById('statsPanel');
-        if (panel) {
-            panel.classList.remove('active');
-        }
-    }
-
-    showSettingsModal() {
-        const modal = document.getElementById('settingsModal');
-        if (modal) {
-            // CRITICAL FIX: Use requestAnimationFrame to prevent lag
-            requestAnimationFrame(() => {
-                modal.classList.add('active');
-                document.body.style.overflow = 'hidden';
-
-                // Performance: Instead of hiding canvas (which causes reflow), 
-                // we just pause the starfield animation if it exists
-                const starsField = document.getElementById('starsField');
-                if (starsField) starsField.style.animationPlayState = 'paused';
-            });
-        }
-    }
-
-    hideSettingsModal() {
-        const modal = document.getElementById('settingsModal');
-        if (modal) {
-            modal.classList.remove('active');
-            document.body.style.overflow = '';
-            // FIXED: Don't resume background animations since we're not hiding them
-            // const canvas = document.getElementById('cosmosCanvas');
-            // if (canvas) canvas.style.display = '';
-            // const starsField = document.getElementById('starsField');
-            // if (starsField) starsField.style.animationPlayState = '';
-        }
-    }
-
-    renderFullStats() {
-        const container = document.getElementById('statsPanelContent');
-        if (!container) return;
-
-        const stats = this.history.statistics;
-        const today = this.getTodayString();
-
-        // Get today's data
-        const todaysSessions = this.history.sessions.filter(s => s.date === today);
-        const todaysCompleted = todaysSessions.filter(s => s.status === 'completed').length;
-        const todaysSkipped = todaysSessions.filter(s => s.status === 'skipped').length;
-
-        // Get this week's data
-        const weekStart = this.getWeekStart();
-        const weekSessions = this.history.sessions.filter(s => new Date(s.date) >= weekStart);
-        const weekCompleted = weekSessions.filter(s => s.status === 'completed').length;
-
-        // Format total time
-        const totalMinutes = Math.floor(stats.totalTimeSeconds / 60);
-        const hours = Math.floor(totalMinutes / 60);
-        const mins = totalMinutes % 60;
-
-        // Generate last 7 days bar chart details
-        let weekBarsHtml = '';
-        const daysOfWeek = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
-        const todayDate = new Date();
-        for (let i = 6; i >= 0; i--) {
-            const d = new Date();
-            d.setDate(todayDate.getDate() - i);
-            const dateStr = d.toISOString().split('T')[0];
-            const dayLabel = daysOfWeek[d.getDay()];
-
-            // Count completed sessions for this dateStr
-            const sessionsForDay = this.history.sessions.filter(s => s.date === dateStr && s.status === 'completed');
-            const completedCount = sessionsForDay.length;
-
-            // Generate bar height (assume max 5 sessions or relative height)
-            const percent = Math.min(100, Math.max(0, completedCount * 20));
-            weekBarsHtml += `
-                <div class="week-bar-col">
-                    <div class="week-bar">
-                        <div class="week-bar-fill" style="height: ${percent}%"></div>
-                    </div>
-                    <span class="week-bar-day">${dayLabel}</span>
-                </div>
-            `;
-        }
-
-        container.innerHTML = `
-            <div class="stats-section">
-                <h3 class="stats-section-title">Today</h3>
-                <div class="stats-row">
-                    <div class="stat-box">
-                        <span class="stat-value-large">${todaysCompleted}</span>
-                        <span class="stat-label-sm">Completed</span>
-                    </div>
-                    <div class="stat-box">
-                        <span class="stat-value-large">${todaysSkipped}</span>
-                        <span class="stat-label-sm">Skipped</span>
-                    </div>
-                    <div class="stat-box">
-                        <span class="stat-value-large">${stats.currentStreak}</span>
-                        <span class="stat-label-sm">Streak</span>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="stats-section">
-                <h3 class="stats-section-title">7-Day Activity</h3>
-                <div class="week-bars">
-                    ${weekBarsHtml}
-                </div>
-            </div>
-
-            <div class="stats-section">
-                <h3 class="stats-section-title">This Week</h3>
-                <div class="stats-row">
-                    <div class="stat-box wide">
-                        <span class="stat-value-large">${weekCompleted}</span>
-                        <span class="stat-label-sm">Sessions</span>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="stats-section">
-                <h3 class="stats-section-title">All Time</h3>
-                <div class="stats-grid-panel">
-                    <div class="stat-item-panel">
-                        <span class="stat-icon-panel">🏆</span>
-                        <span class="stat-value-panel">${stats.completedSessions}</span>
-                        <span class="stat-label-panel">Total Sessions</span>
-                    </div>
-                    <div class="stat-item-panel">
-                        <span class="stat-icon-panel">⏱️</span>
-                        <span class="stat-value-panel">${hours}h ${mins}m</span>
-                        <span class="stat-label-panel">Total Time</span>
-                    </div>
-                    <div class="stat-item-panel">
-                        <span class="stat-icon-panel">🔥</span>
-                        <span class="stat-value-panel">${stats.longestStreak}</span>
-                        <span class="stat-label-panel">Best Streak</span>
-                    </div>
-                    <div class="stat-item-panel">
-                        <span class="stat-icon-panel">📊</span>
-                        <span class="stat-value-panel">${Math.round(stats.completionRate * 100)}%</span>
-                        <span class="stat-label-panel">Completion Rate</span>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="stats-section">
-                <h3 class="stats-section-title">Achievements</h3>
-                <div class="achievements-full-grid">
-                    ${this.renderAchievementsList()}
-                </div>
-            </div>
-        `;
-    }
-
-    renderAchievementsList() {
-        return NAAM_CONFIG.ACHIEVEMENTS.map(achievement => {
-            const isUnlocked = this.history.achievements &&
-                this.history.achievements.find(a => a.id === achievement.id);
-
-            return `
-                <div class="achievement-item ${isUnlocked ? 'unlocked' : 'locked'}">
-                    <span class="achievement-icon-lg">${achievement.icon}</span>
-                    <div class="achievement-info">
-                        <span class="achievement-name">${achievement.name}</span>
-                        <span class="achievement-desc">${achievement.description}</span>
-                    </div>
-                    ${isUnlocked ? '<span class="achievement-check">✓</span>' : ''}
-                </div>
-            `;
-        }).join('');
-    }
-
-    /* ═════════════════════════════════════════════════════════════════════════
-       ACHIEVEMENTS
-    ═════════════════════════════════════════════════════════════════════════ */
-
-    checkAchievements() {
-        const stats = this.history.statistics;
-
-        NAAM_CONFIG.ACHIEVEMENTS.forEach(achievement => {
-            // Check if already unlocked
-            if (this.history.achievements &&
-                this.history.achievements.find(a => a.id === achievement.id)) {
-                return;
-            }
-
-            // Evaluate condition
-            let unlocked = false;
-            try {
-                // Simple condition evaluation
-                const condition = achievement.condition
-                    .replace('completedSessions', stats.completedSessions)
-                    .replace('currentStreak', stats.currentStreak)
-                    .replace('totalTimeSeconds', stats.totalTimeSeconds);
-
-                unlocked = eval(condition);
-            } catch (e) {
-                console.error('Achievement condition error:', e);
-            }
-
-            if (unlocked) {
-                this.unlockAchievement(achievement);
-            }
-        });
-    }
-
-    unlockAchievement(achievement) {
-        if (!this.history.achievements) {
-            this.history.achievements = [];
-        }
-
-        this.history.achievements.push({
-            id: achievement.id,
-            name: achievement.name,
-            unlockedAt: new Date().toISOString()
-        });
-
-        this.saveHistory();
-
-        // Show notification
-        this.showToast(`🎉 Achievement Unlocked: ${achievement.name}`, 'success');
-
-        // Update UI
-        this.updateAchievements();
-    }
-
-    /* ═════════════════════════════════════════════════════════════════════════
-       AUDIO & NOTIFICATIONS
-    ═════════════════════════════════════════════════════════════════════════ */
-
-    playNotificationSound() {
-        this.playSound(this.config.notifications.sound);
-    }
-
-    playSound(soundName) {
-        // Route through AudioManager for proper preloading & AudioContext support
-        if (this.audioManager) {
-            this.audioManager.play(soundName).catch(e => console.log('AudioManager play failed:', e));
-        } else {
-            // Fallback: create audio element directly
-            const audio = new Audio(`assets/sounds/${soundName}.mp3`);
-            audio.play().catch(e => console.log('Audio play failed:', e));
-        }
-    }
-
-    /**
-     * Toggle sound preview (play/stop)
-     */
-    toggleSoundPreview() {
-        if (this.isPreviewPlaying) {
-            this.stopSoundPreview();
-        } else {
-            this.playSoundPreview();
-        }
-    }
-
-    /**
-     * Play sound preview
-     */
-    playSoundPreview() {
-        const soundName = this.config.notifications.sound;
-        if (!soundName) return;
-
-        // Clean up any existing audio first
-        if (this.previewAudio) {
-            this.previewAudio.pause();
-            this.previewAudio = null;
-        }
-
-        // Create new audio for preview
-        this.previewAudio = new Audio(`assets/sounds/${soundName}.mp3`);
-        this.previewAudio.loop = true;
-
-        // Set state BEFORE playing to prevent race conditions
-        this.isPreviewPlaying = true;
-        this.updatePreviewButtonState(true);
-
-        this.previewAudio.play().then(() => {
-            console.log('[NaamAbhyas] Sound preview playing:', soundName);
-        }).catch(e => {
-            console.log('Preview play failed:', e);
-            this.isPreviewPlaying = false;
-            this.updatePreviewButtonState(false);
-            this.previewAudio = null;
-        });
-
-        // Auto-stop after 5 seconds
-        if (this.previewTimeout) clearTimeout(this.previewTimeout);
-        this.previewTimeout = setTimeout(() => {
-            if (this.isPreviewPlaying) {
-                this.stopSoundPreview();
-            }
-        }, 5000);
-    }
-
-    /**
-     * Stop sound preview
-     */
-    stopSoundPreview() {
-        if (this.previewAudio) {
-            this.previewAudio.pause();
-            this.previewAudio = null;
-        }
-
-        if (this.previewTimeout) {
-            clearTimeout(this.previewTimeout);
-            this.previewTimeout = null;
-        }
-
-        this.isPreviewPlaying = false;
-        this.updatePreviewButtonState(false);
-        console.log('[NaamAbhyas] Sound preview stopped');
-    }
-
-    /**
-     * Update preview button UI state
-     */
-    updatePreviewButtonState(isPlaying) {
-        const btn = document.getElementById('previewSoundBtn');
-        if (!btn) return;
-
-        const playIcon = btn.querySelector('.play-icon');
-        const stopIcon = btn.querySelector('.stop-icon');
-
-        if (playIcon) playIcon.style.display = isPlaying ? 'none' : 'block';
-        if (stopIcon) stopIcon.style.display = isPlaying ? 'block' : 'none';
-
-        btn.classList.toggle('playing', isPlaying);
-        btn.setAttribute('aria-label', isPlaying ? 'Stop preview' : 'Preview sound');
-    }
-
-    /**
-     * Show browser notification using Service Worker for better background support
-     * Falls back to basic Notification API if SW is unavailable
-     */
-    async showBrowserNotification(title, options = {}) {
-        if (!('Notification' in window) || Notification.permission !== 'granted') {
-            console.log('[NaamAbhyas] Notification permission not granted');
-            return;
-        }
-
-        const notificationOptions = {
-            icon: '/assets/icon-192x192.png',
-            badge: '/assets/icon-72x72.png',
-            vibrate: [200, 100, 200, 100, 200],
-            requireInteraction: true,
-            tag: 'naam-abhyas-session',
-            renotify: true,
-            data: {
-                url: '/NaamAbhyas/naam-abhyas.html',
-                type: 'naamAbhyas',
-                timestamp: Date.now()
-            },
-            actions: [
-                { action: 'start', title: '🙏 Start Now' },
-                { action: 'dismiss', title: 'Skip' }
-            ],
-            ...options
-        };
-
-        try {
-            // PREFERRED: Use Service Worker registration for background notification support
-            if ('serviceWorker' in navigator && navigator.serviceWorker.ready) {
-                const registration = await navigator.serviceWorker.ready;
-                if (registration.showNotification) {
-                    await registration.showNotification(title, notificationOptions);
-                    console.log('[NaamAbhyas] ✅ SW notification shown:', title);
-                    return;
-                }
-            }
-
-            // FALLBACK: Use basic Notification API (only works in foreground)
-            new Notification(title, {
-                icon: notificationOptions.icon,
-                badge: notificationOptions.badge,
-                body: options.body || '',
-                tag: notificationOptions.tag,
-                requireInteraction: notificationOptions.requireInteraction
-            });
-            console.log('[NaamAbhyas] ⚠️ Fallback notification shown (foreground only):', title);
-        } catch (e) {
-            console.error('[NaamAbhyas] Notification failed:', e);
-        }
-    }
-
-    /* ═════════════════════════════════════════════════════════════════════════
-       WAKE LOCK
-    ═════════════════════════════════════════════════════════════════════════ */
-
-    async requestWakeLock() {
-        if ('wakeLock' in navigator) {
-            try {
-                this.wakeLock = await navigator.wakeLock.request('screen');
-                console.log('Wake lock acquired');
-            } catch (e) {
-                console.log('Wake lock failed:', e);
-            }
-        }
-    }
-
-    releaseWakeLock() {
-        if (this.wakeLock) {
-            this.wakeLock.release();
-            this.wakeLock = null;
-            console.log('Wake lock released');
-        }
-    }
-
-    /* ═════════════════════════════════════════════════════════════════════════
-       STORAGE
-    ═════════════════════════════════════════════════════════════════════════ */
-
-    loadConfig() {
-        try {
-            const stored = localStorage.getItem(NAAM_CONFIG.STORAGE_KEYS.CONFIG);
-            return stored ? { ...NAAM_CONFIG.DEFAULTS, ...JSON.parse(stored) } : { ...NAAM_CONFIG.DEFAULTS };
-        } catch (e) {
-            console.error('Failed to load config:', e);
-            return { ...NAAM_CONFIG.DEFAULTS };
-        }
-    }
-
-    saveConfig() {
-        try {
-            localStorage.setItem(NAAM_CONFIG.STORAGE_KEYS.CONFIG, JSON.stringify(this.config));
-        } catch (e) {
-            console.error('Failed to save config:', e);
-        }
     }
 
     loadHistory() {
         try {
-            const stored = localStorage.getItem(NAAM_CONFIG.STORAGE_KEYS.HISTORY);
-            const history = stored ? JSON.parse(stored) : this.getDefaultHistory();
-
-            // Validate daily streak on load
-            if (history && history.statistics && history.statistics.lastStreakDate) {
-                const today = this.getTodayString();
-                const lastDate = new Date(history.statistics.lastStreakDate);
-                const currentDate = new Date(today);
-                const diffTime = Math.abs(currentDate - lastDate);
-                const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-
-                // If more than 1 day missed (last active was prior to yesterday), reset current streak
-                if (diffDays > 1) {
-                    console.log(`[NaamAbhyas] Daily streak expired (${diffDays} days since last completion) — resetting streak`);
-                    history.statistics.currentStreak = 0;
-                }
-            }
-            return history;
+            const raw = localStorage.getItem(NAAM_CONFIG.STORAGE_KEYS.HISTORY);
+            if (!raw) return this.getDefaultHistory();
+            const parsed = JSON.parse(raw);
+            return this.normalizeHistory(parsed);
         } catch (e) {
-            console.error('Failed to load history:', e);
+            console.error('[NaamStatsEngine] Error loading history:', e);
             return this.getDefaultHistory();
-        }
-    }
-
-    saveHistory() {
-        try {
-            localStorage.setItem(NAAM_CONFIG.STORAGE_KEYS.HISTORY, JSON.stringify(this.history));
-        } catch (e) {
-            console.error('Failed to save history:', e);
         }
     }
 
     getDefaultHistory() {
         return {
             sessions: [],
+            daily: {},
+            scheduleHistory: {},
             statistics: {
                 totalSessions: 0,
                 completedSessions: 0,
@@ -3764,368 +194,1495 @@ class NaamAbhyas {
                 totalTimeSeconds: 0,
                 currentStreak: 0,
                 longestStreak: 0,
-                completionRate: 0
+                extraSessions: 0,
+                completionRate: 0,
+                lastStreakDate: null
             },
             achievements: [],
-            scheduleHistory: {}
+            totalCompleted: 0,
+            currentStreak: 0,
+            longestStreak: 0
         };
     }
 
-    /* ═════════════════════════════════════════════════════════════════════════
-       UTILITY FUNCTIONS
-    ═════════════════════════════════════════════════════════════════════════ */
-
-    getTodayString() {
-        const d = new Date();
-        const year = d.getFullYear();
-        const month = String(d.getMonth() + 1).padStart(2, '0');
-        const day = String(d.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
+    normalizeHistory(h) {
+        const base = this.getDefaultHistory();
+        const merged = { ...base, ...h };
+        merged.statistics = { ...base.statistics, ...(h.statistics || {}) };
+        merged.daily = h.daily || {};
+        merged.sessions = Array.isArray(h.sessions) ? h.sessions : [];
+        merged.scheduleHistory = h.scheduleHistory || {};
+        merged.achievements = Array.isArray(h.achievements) ? h.achievements : [];
+        return merged;
     }
 
-    getWeekStart() {
-        const now = new Date();
-        const dayOfWeek = now.getDay();
-        const diff = now.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
-        return new Date(now.setDate(diff));
-    }
-
-    formatTime12h(hour, minute) {
-        const h = hour % 12 || 12;
-        const m = minute.toString().padStart(2, '0');
-        const ampm = hour >= 12 ? 'PM' : 'AM';
-        return `${h}:${m} ${ampm}`;
-    }
-
-    calculateTimeUntil(targetHour, targetMinute) {
-        const now = new Date();
-        const target = new Date();
-        target.setHours(targetHour, targetMinute, 0, 0);
-
-        const diff = target - now;
-        const minutes = Math.floor(diff / 60000);
-        const hours = Math.floor(minutes / 60);
-
-        if (hours > 0) {
-            return `${hours}h ${minutes % 60}m`;
+    saveHistory() {
+        try {
+            localStorage.setItem(NAAM_CONFIG.STORAGE_KEYS.HISTORY, JSON.stringify(this.history));
+        } catch (e) {
+            console.error('[NaamStatsEngine] Error saving history:', e);
         }
-        return `${minutes}m`;
     }
 
-    /* ═══════════════════════════════════════════════════════════════════════════
-       WISDOM QUOTES - Daily Inspiration
-    ═══════════════════════════════════════════════════════════════════════════ */
-
-    initWisdom() {
-        this.currentWisdomIndex = Math.floor(Math.random() * NAAM_CONFIG.WISDOM_QUOTES.length);
-        this.displayWisdom();
+    getTodayKey() {
+        return new Date().toLocaleDateString('en-CA');
     }
 
-    showNewWisdom() {
-        this.currentWisdomIndex = (this.currentWisdomIndex + 1) % NAAM_CONFIG.WISDOM_QUOTES.length;
+    recordSession(sessionData) {
+        const today = this.getTodayKey();
+        const now = new Date();
+        const duration = Math.max(0, Math.round(Number(sessionData.duration) || 120));
+        const hour = sessionData.hour !== undefined ? Number(sessionData.hour) : now.getHours();
+        const isExtra = !!sessionData.isExtra;
 
-        const card = document.getElementById('wisdomCard');
-        if (card) {
-            card.style.animation = 'none';
-            // Avoid forced synchronous layout (forced reflow) via rAF nesting
-            requestAnimationFrame(() => {
-                requestAnimationFrame(() => {
-                    card.style.animation = 'wisdomAppear 0.6s ease-out';
+        const session = {
+            id: sessionData.id || `session_${now.getTime()}`,
+            date: today,
+            hour: hour,
+            startTime: sessionData.startTime || this.formatTime12h(hour, sessionData.startMinute || 0),
+            duration: duration,
+            status: sessionData.status || 'completed',
+            isExtra: isExtra,
+            presenceConfirmed: !!sessionData.presenceConfirmed,
+            endedEarly: !!sessionData.endedEarly,
+            recordedAt: now.toISOString()
+        };
+
+        // Guard against duplicate recording for same scheduled hour today
+        if (!isExtra && session.status === 'completed') {
+            const alreadyRecorded = this.history.sessions.some(s =>
+                s.date === today && s.hour === hour && !s.isExtra && s.status === 'completed'
+            );
+            if (alreadyRecorded) {
+                console.warn(`[NaamStatsEngine] Duplicate session for hour ${hour} on ${today} prevented`);
+                return session;
+            }
+        }
+
+        this.history.sessions.push(session);
+
+        // Update daily bucket (compatible with Profile and Dashboard)
+        if (!this.history.daily[today]) {
+            this.history.daily[today] = { completed: 0, total: 0, totalMinutes: 0, sessions: [] };
+        }
+        const dailyBucket = this.history.daily[today];
+        dailyBucket.sessions = dailyBucket.sessions || [];
+        dailyBucket.sessions.push(session);
+
+        if (session.status === 'completed') {
+            dailyBucket.completed = (dailyBucket.completed || 0) + 1;
+            dailyBucket.totalMinutes = (dailyBucket.totalMinutes || 0) + Math.round(duration / 60);
+
+            // Update top-level statistics
+            this.history.statistics.completedSessions = (this.history.statistics.completedSessions || 0) + 1;
+            this.history.statistics.totalTimeSeconds = (this.history.statistics.totalTimeSeconds || 0) + duration;
+            this.history.totalCompleted = this.history.statistics.completedSessions;
+
+            if (isExtra) {
+                this.history.statistics.extraSessions = (this.history.statistics.extraSessions || 0) + 1;
+            } else {
+                this.updateStreakInternal(today);
+            }
+        } else if (session.status === 'skipped') {
+            this.history.statistics.skippedSessions = (this.history.statistics.skippedSessions || 0) + 1;
+            this.history.statistics.currentStreak = 0;
+            this.history.currentStreak = 0;
+        }
+
+        this.history.statistics.totalSessions = this.history.sessions.length;
+
+        // Calculate completion rate
+        const totalScheduled = this.history.sessions.filter(s => !s.isExtra).length;
+        const completedScheduled = this.history.sessions.filter(s => !s.isExtra && s.status === 'completed').length;
+        this.history.statistics.completionRate = totalScheduled > 0
+            ? Math.round((completedScheduled / totalScheduled) * 100)
+            : 100;
+
+        // Check and unlock achievements
+        this.checkAchievements();
+
+        // Save
+        this.saveHistory();
+
+        // Broadcast cross-app sync events
+        this.broadcastSync(session);
+
+        return session;
+    }
+
+    updateStreakInternal(today) {
+        const stats = this.history.statistics;
+        stats.currentStreak = (stats.currentStreak || 0) + 1;
+        if (stats.currentStreak > (stats.longestStreak || 0)) {
+            stats.longestStreak = stats.currentStreak;
+        }
+        stats.lastStreakDate = today;
+
+        this.history.currentStreak = stats.currentStreak;
+        this.history.longestStreak = stats.longestStreak;
+    }
+
+    checkAchievements() {
+        const stats = this.history.statistics;
+        const unlockedIds = new Set(this.history.achievements.map(a => a.id));
+
+        NAAM_CONFIG.ACHIEVEMENTS.forEach(ach => {
+            if (!unlockedIds.has(ach.id)) {
+                try {
+                    if (ach.condition(stats)) {
+                        this.history.achievements.push({
+                            id: ach.id,
+                            unlockedAt: new Date().toISOString()
+                        });
+                        window.dispatchEvent(new CustomEvent('naamAchievementUnlocked', { detail: ach }));
+                    }
+                } catch (e) {}
+            }
+        });
+    }
+
+    getTodayStats(activeHoursCount = 18) {
+        const today = this.getTodayKey();
+        const todaysSessions = this.history.sessions.filter(s => s.date === today);
+        const completedSessions = todaysSessions.filter(s => s.status === 'completed');
+        const scheduledCompleted = completedSessions.filter(s => !s.isExtra).length;
+        const extraCompleted = completedSessions.filter(s => s.isExtra).length;
+
+        const totalTimeSeconds = completedSessions.reduce((acc, s) => acc + (s.duration || 0), 0);
+
+        return {
+            today,
+            completed: completedSessions.length,
+            scheduledCompleted,
+            extraCompleted,
+            totalExpected: activeHoursCount,
+            totalTimeSeconds,
+            totalTimeMinutes: Math.round(totalTimeSeconds / 60),
+            currentStreak: this.history.statistics.currentStreak || 0,
+            longestStreak: this.history.statistics.longestStreak || 0,
+            completionRate: activeHoursCount > 0 ? Math.min(100, Math.round((scheduledCompleted / activeHoursCount) * 100)) : 0,
+            isPerfectDay: scheduledCompleted >= activeHoursCount && activeHoursCount > 0
+        };
+    }
+
+    getWeeklyStats(activeHoursCount = 18) {
+        const now = new Date();
+        const dayOfWeek = (now.getDay() + 6) % 7; // Monday = 0
+        const monday = new Date(now);
+        monday.setDate(now.getDate() - dayOfWeek);
+        monday.setHours(0, 0, 0, 0);
+
+        let weeklyMinutes = 0;
+        let perfectDays = 0;
+
+        for (let i = 0; i <= 6; i++) {
+            const d = new Date(monday);
+            d.setDate(monday.getDate() + i);
+            const dateStr = d.toLocaleDateString('en-CA');
+            const daySessions = this.history.sessions.filter(s => s.date === dateStr && s.status === 'completed');
+            const scheduledDone = daySessions.filter(s => !s.isExtra).length;
+            const minutes = daySessions.reduce((acc, s) => acc + Math.round((s.duration || 0) / 60), 0);
+
+            weeklyMinutes += minutes;
+            if (scheduledDone >= activeHoursCount && activeHoursCount > 0) {
+                perfectDays++;
+            }
+        }
+
+        return {
+            weeklyMinutes,
+            perfectDays
+        };
+    }
+
+    broadcastSync(session) {
+        try {
+            // Event 1: Nitnem canonical streak bridge
+            window.dispatchEvent(new CustomEvent('naamAbhyasSessionComplete', { detail: session }));
+            // Event 2: Nitnem Tracker & Global Alarm System
+            window.dispatchEvent(new CustomEvent('naamAbhyasComplete', {
+                detail: {
+                    count: 1,
+                    duration: session.duration,
+                    hour: session.hour,
+                    isScheduled: !session.isExtra,
+                    presenceConfirmed: session.presenceConfirmed
+                }
+            }));
+            // Event 3: Generic completion notice
+            window.dispatchEvent(new CustomEvent('naamSessionCompleted', { detail: session }));
+        } catch (e) {
+            console.warn('[NaamStatsEngine] Error broadcasting sync:', e);
+        }
+    }
+
+    formatTime12h(hour, minute = 0) {
+        const period = hour >= 12 ? 'PM' : 'AM';
+        const displayHour = hour % 12 || 12;
+        const displayMinute = (minute % 60).toString().padStart(2, '0');
+        return `${displayHour}:${displayMinute} ${period}`;
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   4. SCHEDULE MANAGER
+═══════════════════════════════════════════════════════════════════════════════ */
+
+class NaamScheduleManager {
+    constructor(app) {
+        this.app = app;
+        this.currentSchedule = this.loadSchedule();
+    }
+
+    loadSchedule() {
+        const today = new Date().toLocaleDateString('en-CA');
+        try {
+            const raw = localStorage.getItem(NAAM_CONFIG.STORAGE_KEYS.SCHEDULE);
+            if (raw) {
+                const parsed = JSON.parse(raw);
+                // Support both plain schedule objects and { date, schedule } wrappers
+                if (parsed && typeof parsed === 'object') {
+                    // If wrapped with date, check freshness
+                    if (parsed._date) {
+                        if (parsed._date === today && parsed._schedule && Object.keys(parsed._schedule).length > 0) {
+                            return parsed._schedule;
+                        }
+                        // Stale — fall through to regenerate
+                    } else if (Object.keys(parsed).length > 0 && !parsed._date) {
+                        // Legacy plain schedule — check if any of the hours are reasonable
+                        // We'll accept it but mark today's date on next save
+                        this._scheduleDate = today;
+                        return parsed;
+                    }
+                }
+            }
+        } catch (e) {}
+
+        return this.generateDailySchedule();
+    }
+
+    saveSchedule() {
+        try {
+            const today = new Date().toLocaleDateString('en-CA');
+            const wrapper = { _date: today, _schedule: this.currentSchedule };
+            localStorage.setItem(NAAM_CONFIG.STORAGE_KEYS.SCHEDULE, JSON.stringify(wrapper));
+        } catch (e) {}
+    }
+
+    generateDailySchedule(force = false) {
+        const config = this.app.config;
+        const startHour = Number(config.activeHours?.start || 5);
+        const endHour = Number(config.activeHours?.end || 22);
+        const duration = Number(config.duration || 2);
+        const schedule = {};
+
+        for (let h = startHour; h <= endHour; h++) {
+            const min = 0;
+            const endMin = min + duration;
+            schedule[h] = {
+                hour: h,
+                startMinute: min,
+                endMinute: endMin,
+                durationMinutes: duration,
+                startTime: this.formatTime12h(h, min),
+                endTime: this.formatTime12h(h, endMin),
+                status: 'pending'
+            };
+        }
+
+        // Sync with existing completions today from history
+        const today = new Date().toLocaleDateString('en-CA');
+        const completedHours = new Set(
+            this.app.statsEngine.history.sessions
+                .filter(s => s.date === today && s.status === 'completed' && !s.isExtra)
+                .map(s => Number(s.hour))
+        );
+
+        Object.keys(schedule).forEach(h => {
+            if (completedHours.has(Number(h))) {
+                schedule[h].status = 'completed';
+            }
+        });
+
+        this.currentSchedule = schedule;
+        this.saveSchedule();
+        return schedule;
+    }
+
+    refreshRandomMinutes() {
+        const config = this.app.config;
+        const startHour = Number(config.activeHours?.start || 5);
+        const endHour = Number(config.activeHours?.end || 22);
+        const duration = Number(config.duration || 2);
+        const now = new Date();
+        const currentHour = now.getHours();
+
+        for (let h = startHour; h <= endHour; h++) {
+            if (this.currentSchedule[h]?.status === 'completed') continue;
+
+            let min = 0;
+            if (h === currentHour) {
+                min = Math.min(55, Math.max(0, now.getMinutes() + 2));
+            } else {
+                min = Math.floor(Math.random() * 50);
+            }
+
+            const endMin = min + duration;
+            this.currentSchedule[h] = {
+                hour: h,
+                startMinute: min,
+                endMinute: endMin,
+                durationMinutes: duration,
+                startTime: this.formatTime12h(h, min),
+                endTime: this.formatTime12h(h, endMin),
+                status: 'pending'
+            };
+        }
+
+        this.saveSchedule();
+    }
+
+    getNextSession() {
+        const now = new Date();
+        const currentHour = now.getHours();
+        const nowMs = now.getTime();
+        const config = this.app.config;
+        const startHour = Number(config.activeHours?.start || 5);
+        const endHour = Number(config.activeHours?.end || 22);
+
+        const sortedHours = Object.keys(this.currentSchedule)
+            .map(Number)
+            .sort((a, b) => a - b);
+
+        for (const h of sortedHours) {
+            const item = this.currentSchedule[h];
+            if (!item || item.status === 'completed' || item.status === 'skipped') continue;
+
+            const slotTime = new Date(now);
+            slotTime.setHours(h, item.startMinute || 0, 0, 0);
+
+            if (slotTime.getTime() + (item.durationMinutes * 60 * 1000) >= nowMs) {
+                return item;
+            }
+        }
+
+        // Outside active hours — return tomorrow's Amritvela (5 AM) so we
+        // never show a misleading "All Done!" when 0 sessions were completed.
+        const tomorrow5AM = new Date(now);
+        tomorrow5AM.setDate(tomorrow5AM.getDate() + 1);
+        tomorrow5AM.setHours(startHour, 0, 0, 0);
+        return {
+            hour: startHour,
+            startMinute: 0,
+            endMinute: 2,
+            durationMinutes: 2,
+            startTime: this.formatTime12h(startHour, 0),
+            endTime: this.formatTime12h(startHour, 2),
+            status: 'pending',
+            _isTomorrow: true,
+            _targetMs: tomorrow5AM.getTime()
+        };
+    }
+
+    markHourCompleted(hour) {
+        if (this.currentSchedule && this.currentSchedule[hour]) {
+            this.currentSchedule[hour].status = 'completed';
+            this.saveSchedule();
+        }
+    }
+
+    formatTime12h(hour, minute = 0) {
+        const period = hour >= 12 ? 'PM' : 'AM';
+        const displayHour = hour % 12 || 12;
+        const displayMinute = (minute % 60).toString().padStart(2, '0');
+        return `${displayHour}:${displayMinute} ${period}`;
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   5. TIMER PLAYER (Immersive Overlay Experience)
+═══════════════════════════════════════════════════════════════════════════════ */
+
+class NaamTimerPlayer {
+    constructor(app) {
+        this.app = app;
+        this.state = 'IDLE'; // IDLE | RUNNING | COMPLETING
+        this.timerInterval = null;
+        this.targetEndTime = null;
+        this.totalDurationSeconds = 120;
+        this.remainingSeconds = 120;
+        this.currentSessionInfo = null;
+        this.isSilent = false;
+        this.presenceConfirmed = false;
+        this.tenSecondWarningFired = false;
+        this.breathingPhaseIndex = 0;
+        this.breathingInterval = null;
+
+        this.CIRCUMFERENCE = 2 * Math.PI * 85; // 534.07 for r=85
+
+        this.initDOM();
+    }
+
+    initDOM() {
+        this.overlay = document.getElementById('meditationOverlay');
+        this.timerDisplay = document.getElementById('timerDisplay');
+        this.progressRing = document.getElementById('medProgressRing');
+        this.progressBar = document.getElementById('timerProgressBar');
+        this.breathingGuide = document.getElementById('breathingGuide');
+        this.waheguruText = document.getElementById('waheguruText');
+
+        this.medPresentBtn = document.getElementById('medPresentBtn');
+        this.medSilentBtn = document.getElementById('medSilentBtn');
+        this.silentBtnIcon = document.getElementById('silentBtnIcon');
+        this.silentBtnLabel = document.getElementById('silentBtnLabel');
+        this.skipBtn = document.getElementById('skipMeditationBtn');
+        this.chimeToggle = document.getElementById('medChimeToggle');
+
+        this.bindEvents();
+    }
+
+    bindEvents() {
+        if (this.medPresentBtn) {
+            this.medPresentBtn.addEventListener('click', () => this.confirmPresence());
+        }
+
+        if (this.medSilentBtn) {
+            this.medSilentBtn.addEventListener('click', () => this.toggleSilence());
+        }
+
+        if (this.skipBtn) {
+            this.skipBtn.addEventListener('click', () => this.skipOrEndEarly());
+        }
+
+        document.addEventListener('visibilitychange', () => {
+            if (this.state === 'RUNNING' && !document.hidden) {
+                this.tick();
+            }
+        });
+    }
+
+    start(durationMinutes = 2, sessionInfo = null) {
+        this.stop();
+
+        this.state = 'RUNNING';
+        this.totalDurationSeconds = Math.max(10, Math.round(durationMinutes * 60));
+        this.remainingSeconds = this.totalDurationSeconds;
+        this.targetEndTime = Date.now() + (this.totalDurationSeconds * 1000);
+        this.currentSessionInfo = sessionInfo || {
+            hour: new Date().getHours(),
+            startTime: this.app.statsEngine.formatTime12h(new Date().getHours()),
+            isExtra: true
+        };
+        this.presenceConfirmed = false;
+        this.tenSecondWarningFired = false;
+
+        document.body.classList.add('timer-active');
+
+        if (this.medPresentBtn) {
+            this.medPresentBtn.classList.remove('confirmed');
+            this.medPresentBtn.style.boxShadow = '';
+        }
+
+        if (this.overlay) {
+            this.overlay.classList.add('active');
+        }
+
+        if (this.chimeToggle && this.chimeToggle.checked && !this.isSilent) {
+            this.app.audioManager?.playStartBell?.();
+        }
+
+        if (!this.isSilent) {
+            this.app.audioManager?.playAmbient?.(0.25);
+        }
+
+        this.updateDisplay();
+        this.startBreathingGuide();
+
+        this.timerInterval = setInterval(() => this.tick(), 100);
+
+        console.log(`[NaamTimerPlayer] ⏱️ Timer started: ${durationMinutes} min (${this.totalDurationSeconds}s)`);
+    }
+
+    tick() {
+        if (this.state !== 'RUNNING') return;
+
+        const now = Date.now();
+        const diff = Math.max(0, (this.targetEndTime - now) / 1000);
+        this.remainingSeconds = Math.round(diff);
+
+        this.updateDisplay();
+
+        if (this.remainingSeconds <= 10 && !this.tenSecondWarningFired && this.remainingSeconds > 0) {
+            this.tenSecondWarningFired = true;
+            if (!this.isSilent && this.chimeToggle?.checked) {
+                this.app.audioManager?.beep?.(660, 0.3, 0.4);
+            }
+        }
+
+        if (diff <= 0) {
+            this.complete();
+        }
+    }
+
+    updateDisplay() {
+        const mins = Math.floor(this.remainingSeconds / 60);
+        const secs = this.remainingSeconds % 60;
+        const timeStr = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+
+        if (this.timerDisplay) {
+            this.timerDisplay.textContent = timeStr;
+        }
+
+        const elapsed = this.totalDurationSeconds - this.remainingSeconds;
+        const progress = Math.min(1, Math.max(0, elapsed / this.totalDurationSeconds));
+
+        if (this.progressRing) {
+            const offset = this.CIRCUMFERENCE * (1 - progress);
+            this.progressRing.style.strokeDashoffset = offset;
+        }
+
+        if (this.progressBar) {
+            this.progressBar.style.width = `${progress * 100}%`;
+        }
+    }
+
+    startBreathingGuide() {
+        this.stopBreathingGuide();
+        const phases = [
+            "Breathe in... ਸਾਹ ਲਓ...",
+            "Hold gently... ਧਿਆਨ ਧਰੋ...",
+            "Breathe out... ਛੱਡੋ...",
+            "Remember Waheguru... ਵਾਹਿਗੁਰੂ..."
+        ];
+
+        this.breathingPhaseIndex = 0;
+        if (this.breathingGuide) {
+            this.breathingGuide.textContent = phases[0];
+            this.breathingGuide.style.opacity = '1';
+        }
+
+        this.breathingInterval = setInterval(() => {
+            if (this.state !== 'RUNNING') return;
+            this.breathingPhaseIndex = (this.breathingPhaseIndex + 1) % phases.length;
+            if (this.breathingGuide) {
+                this.breathingGuide.style.opacity = '0';
+                setTimeout(() => {
+                    if (this.breathingGuide && this.state === 'RUNNING') {
+                        this.breathingGuide.textContent = phases[this.breathingPhaseIndex];
+                        this.breathingGuide.style.opacity = '1';
+                    }
+                }, 300);
+            }
+        }, 4000);
+    }
+
+    stopBreathingGuide() {
+        if (this.breathingInterval) {
+            clearInterval(this.breathingInterval);
+            this.breathingInterval = null;
+        }
+    }
+
+    confirmPresence() {
+        this.presenceConfirmed = true;
+        if (this.medPresentBtn) {
+            this.medPresentBtn.classList.add('confirmed');
+            this.medPresentBtn.style.boxShadow = '0 0 30px rgba(52, 199, 89, 0.7)';
+        }
+
+        if (navigator.vibrate) navigator.vibrate(60);
+
+        if (!this.isSilent) {
+            this.app.audioManager?.beep?.(880, 0.15, 0.3);
+        }
+
+        this.app.showToast('Presence Recorded! ਵਾਹਿਗੁਰੂ', 'success');
+    }
+
+    toggleSilence() {
+        this.isSilent = !this.isSilent;
+        if (this.isSilent) {
+            this.app.audioManager?.mute?.();
+            if (this.silentBtnIcon) this.silentBtnIcon.textContent = '🔇';
+            if (this.silentBtnLabel) this.silentBtnLabel.textContent = 'Muted';
+            if (this.medSilentBtn) this.medSilentBtn.dataset.muted = 'true';
+        } else {
+            this.app.audioManager?.unmute?.();
+            if (this.silentBtnIcon) this.silentBtnIcon.textContent = '🔊';
+            if (this.silentBtnLabel) this.silentBtnLabel.textContent = 'Silent';
+            if (this.medSilentBtn) this.medSilentBtn.dataset.muted = 'false';
+        }
+    }
+
+    skipOrEndEarly() {
+        const elapsed = this.totalDurationSeconds - this.remainingSeconds;
+        this.stop();
+
+        if (elapsed >= 30) {
+            this.complete(elapsed, true);
+        } else {
+            if (this.currentSessionInfo && !this.currentSessionInfo.isExtra) {
+                this.app.scheduleManager.currentSchedule[this.currentSessionInfo.hour].status = 'skipped';
+                this.app.scheduleManager.saveSchedule();
+            }
+            this.app.showToast('Session ended early', 'info');
+            this.app.updateUI();
+        }
+    }
+
+    complete(actualDurationSeconds = null, endedEarly = false) {
+        if (this.state === 'COMPLETING') return;
+        this.state = 'COMPLETING';
+
+        const finalDuration = actualDurationSeconds || this.totalDurationSeconds;
+        const sessionInfo = this.currentSessionInfo || {};
+
+        this.stop();
+
+        if (!this.isSilent) {
+            this.app.audioManager?.playEndBell?.();
+        }
+        if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+
+        const sessionRecord = {
+            hour: sessionInfo.hour !== undefined ? sessionInfo.hour : new Date().getHours(),
+            startTime: sessionInfo.startTime,
+            duration: finalDuration,
+            status: 'completed',
+            isExtra: !!sessionInfo.isExtra,
+            presenceConfirmed: this.presenceConfirmed,
+            endedEarly: endedEarly
+        };
+
+        if (!sessionInfo.isExtra) {
+            this.app.scheduleManager.markHourCompleted(sessionRecord.hour);
+        }
+
+        const recorded = this.app.statsEngine.recordSession(sessionRecord);
+
+        this.app.completionManager.show(recorded, finalDuration);
+    }
+
+    stop() {
+        this.state = 'IDLE';
+        if (this.timerInterval) {
+            clearInterval(this.timerInterval);
+            this.timerInterval = null;
+        }
+        this.stopBreathingGuide();
+
+        document.body.classList.remove('timer-active');
+        if (this.overlay) {
+            this.overlay.classList.remove('active');
+        }
+
+        this.app.audioManager?.stopAmbient?.();
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   6. COMPLETION MANAGER (Modal & Blessings)
+═══════════════════════════════════════════════════════════════════════════════ */
+
+class NaamCompletionManager {
+    constructor(app) {
+        this.app = app;
+        this.modal = document.getElementById('completionModal');
+        this.titleEl = document.getElementById('completionTitle');
+        this.blessingEl = document.getElementById('completionBlessing');
+        this.nextInfoEl = document.getElementById('nextSessionInfo');
+        this.durationEl = document.getElementById('compDuration');
+        this.streakEl = document.getElementById('compStreak');
+        this.todayEl = document.getElementById('compToday');
+        this.continueBtn = document.getElementById('continueBtn');
+
+        this.bindEvents();
+    }
+
+    bindEvents() {
+        if (this.continueBtn) {
+            this.continueBtn.addEventListener('click', () => this.hide());
+        }
+    }
+
+    show(sessionData, durationSeconds) {
+        if (!this.modal) return;
+
+        const blessings = NAAM_CONFIG.BLESSINGS;
+        const blessing = blessings[Math.floor(Math.random() * blessings.length)];
+        if (this.blessingEl) this.blessingEl.textContent = blessing;
+
+        const mins = Math.floor(durationSeconds / 60);
+        const secs = durationSeconds % 60;
+        if (this.durationEl) {
+            this.durationEl.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        const stats = this.app.statsEngine.getTodayStats(this.app.getActiveHoursCount());
+        if (this.streakEl) {
+            this.streakEl.textContent = stats.currentStreak;
+        }
+
+        if (this.todayEl) {
+            this.todayEl.textContent = `${stats.completed}/${stats.totalExpected}`;
+        }
+
+        const next = this.app.scheduleManager.getNextSession();
+        if (this.nextInfoEl) {
+            if (next) {
+                this.nextInfoEl.textContent = `Next Naam Abhyas at ${next.startTime}`;
+            } else {
+                this.nextInfoEl.textContent = `All scheduled sessions complete today! ✨`;
+            }
+        }
+
+        this.modal.classList.add('active');
+        this.app.updateUI();
+    }
+
+    hide() {
+        if (this.modal) {
+            this.modal.classList.remove('active');
+        }
+        this.app.updateUI();
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   7. MAIN NAAM ABHYAS APPLICATION
+═══════════════════════════════════════════════════════════════════════════════ */
+
+class NaamAbhyas {
+    constructor() {
+        this.config = this.loadConfig();
+        this.statsEngine = new NaamStatsEngine();
+        this.scheduleManager = new NaamScheduleManager(this);
+        this.themeEngine = new NaamAbhyasThemeEngine();
+
+        if (typeof AudioManager !== 'undefined') {
+            this.audioManager = new AudioManager();
+            this.audioManager.preloadAll().catch(() => {});
+        } else {
+            this.audioManager = null;
+        }
+
+        this.timerPlayer = new NaamTimerPlayer(this);
+        this.completionManager = new NaamCompletionManager(this);
+
+        this.clockInterval = null;
+        this.countdownInterval = null;
+    }
+
+    loadConfig() {
+        try {
+            const raw = localStorage.getItem(NAAM_CONFIG.STORAGE_KEYS.CONFIG);
+            if (raw) return { ...NAAM_CONFIG.DEFAULTS, ...JSON.parse(raw) };
+        } catch (e) {}
+        return { ...NAAM_CONFIG.DEFAULTS };
+    }
+
+    saveConfig() {
+        try {
+            localStorage.setItem(NAAM_CONFIG.STORAGE_KEYS.CONFIG, JSON.stringify(this.config));
+        } catch (e) {}
+    }
+
+    getActiveHoursCount() {
+        const start = Number(this.config.activeHours?.start || 5);
+        const end = Number(this.config.activeHours?.end || 22);
+        return Math.max(1, (end - start) + 1);
+    }
+
+    init() {
+        try {
+            this.bindDOM();
+            this.initWisdom();
+            this.startHeaderClock();
+            this.startCountdownTicker();
+            this.updateUI();
+        } catch (e) {
+            console.error('[NaamAbhyas] Error during init:', e);
+        } finally {
+            this.hideLoadingScreen();
+        }
+
+        try {
+            this.checkLaunchIntent();
+        } catch (e) {}
+
+        window.addEventListener('naamAbhyasLaunchReady', (e) => {
+            if (e.detail?.autoStart) {
+                this.executeAutoStart(e.detail);
+            }
+        });
+    }
+
+    bindDOM() {
+        const backBtn = document.getElementById('backBtn');
+        if (backBtn && !backBtn._naamBackBound) {
+            backBtn._naamBackBound = true;
+            backBtn.addEventListener('click', (e) => {
+                if (typeof window.anhadGoBack === 'function') {
+                    window.anhadGoBack('../index.html');
+                } else if (window.history.length > 1) {
+                    window.history.back();
+                } else {
+                    window.location.href = '../index.html';
+                }
+            });
+        }
+
+        const toggle = document.getElementById('naamAbhyasToggle');
+        if (toggle) {
+            toggle.checked = !!this.config.enabled;
+            toggle.addEventListener('change', (e) => {
+                this.config.enabled = e.target.checked;
+                this.saveConfig();
+                this.updateToggleStatus();
+                this.syncNativeNotifications();
+                this.updateUI();
+
+                const msg = this.config.enabled
+                    ? 'Naam Abhyas enabled! Hourly reminders scheduled.'
+                    : 'Naam Abhyas disabled.';
+                this.showToast(msg, this.config.enabled ? 'success' : 'info');
+            });
+        }
+
+        // Quick Actions (Extra Naam Simran)
+        const startNowBtn = document.getElementById('startNowBtn');
+        if (startNowBtn) {
+            startNowBtn.addEventListener('click', () => {
+                const dur = Number(this.config.duration || 2);
+                this.startManualSession(dur);
+            });
+        }
+
+        const quickNaamBtn = document.getElementById('quickNaamBtn');
+        if (quickNaamBtn) {
+            quickNaamBtn.addEventListener('click', () => {
+                this.startManualSession(0.5); // 30 seconds
+            });
+        }
+
+        const deepModeBtn = document.getElementById('deepModeBtn');
+        if (deepModeBtn) {
+            deepModeBtn.addEventListener('click', () => {
+                this.startManualSession(11); // 11 minutes
+            });
+        }
+
+        // Refresh Schedule
+        const refreshScheduleBtn = document.getElementById('refreshScheduleBtn');
+        if (refreshScheduleBtn) {
+            refreshScheduleBtn.addEventListener('click', () => {
+                this.scheduleManager.refreshRandomMinutes();
+                this.updateUI();
+                this.showToast('Schedule randomized for today ✨', 'success');
+            });
+        }
+
+        // Wisdom Refresh
+        const wisdomRefreshBtn = document.getElementById('wisdomRefreshBtn');
+        if (wisdomRefreshBtn) {
+            wisdomRefreshBtn.addEventListener('click', () => this.cycleWisdom());
+        }
+
+        // Settings Modal
+        const settingsPageBtn = document.getElementById('settingsPageBtn');
+        const settingsModal = document.getElementById('settingsModal');
+        const closeSettingsBtn = document.getElementById('closeSettingsBtn');
+        const settingsModalBackdrop = document.getElementById('settingsModalBackdrop');
+
+        if (settingsPageBtn && settingsModal) {
+            settingsPageBtn.addEventListener('click', () => {
+                this.populateSettingsForm();
+                settingsModal.classList.add('active');
+            });
+        }
+
+        const closeSettings = () => {
+            if (settingsModal) settingsModal.classList.remove('active');
+            this.saveSettingsForm();
+        };
+
+        if (closeSettingsBtn) closeSettingsBtn.addEventListener('click', closeSettings);
+        if (settingsModalBackdrop) settingsModalBackdrop.addEventListener('click', closeSettings);
+
+        const presetBtns = document.querySelectorAll('.preset-btn');
+        const customInput = document.getElementById('durationCustomInput');
+        presetBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                presetBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                const mins = Number(btn.getAttribute('data-min') || 2);
+                if (customInput) customInput.value = mins;
+                this.config.duration = mins;
+                this.saveConfig();
+            });
+        });
+
+        if (customInput) {
+            customInput.addEventListener('change', () => {
+                const val = Math.max(1, Math.min(60, Number(customInput.value) || 2));
+                this.config.duration = val;
+                this.saveConfig();
+                presetBtns.forEach(b => {
+                    b.classList.toggle('active', Number(b.getAttribute('data-min')) === val);
                 });
             });
         }
 
-        this.displayWisdom();
+        // Full Stats Modal
+        const viewFullStatsBtn = document.getElementById('viewFullStatsBtn');
+        const statsPanel = document.getElementById('statsPanel');
+        const closeStatsBtn = document.getElementById('closeStatsBtn');
+        const statsPanelBackdrop = document.getElementById('statsPanelBackdrop');
 
-        // Haptic feedback
-        if (navigator.vibrate) navigator.vibrate(10);
-    }
-
-    displayWisdom() {
-        const wisdom = NAAM_CONFIG.WISDOM_QUOTES[this.currentWisdomIndex];
-        if (!wisdom) return;
-
-        const quoteEl = document.getElementById('wisdomQuote');
-        const translationEl = document.getElementById('wisdomTranslation');
-        const sourceEl = document.getElementById('wisdomSource');
-
-        if (quoteEl) quoteEl.textContent = `"${wisdom.gurmukhi}"`;
-        if (translationEl) translationEl.textContent = wisdom.translation;
-        if (sourceEl) sourceEl.textContent = `— ${wisdom.source}`;
-    }
-
-    /* ═══════════════════════════════════════════════════════════════════════════
-       CELEBRATION EFFECTS
-    ═══════════════════════════════════════════════════════════════════════════ */
-
-    showCelebration() {
-        const container = document.querySelector('.meditation-container') || document.body;
-
-        for (let i = 0; i < 30; i++) {
-            const petal = document.createElement('div');
-            petal.className = 'celebration-petal';
-            petal.style.left = `${Math.random() * 100}%`;
-            petal.style.animationDelay = `${Math.random() * 1.5}s`;
-            petal.style.animationDuration = `${2 + Math.random() * 2}s`;
-            container.appendChild(petal);
-
-            setTimeout(() => petal.remove(), 4000);
+        if (viewFullStatsBtn && statsPanel) {
+            viewFullStatsBtn.addEventListener('click', () => {
+                this.renderFullStatsContent();
+                statsPanel.classList.add('active');
+            });
         }
 
-        // Celebration haptic
-        if (navigator.vibrate) {
-            navigator.vibrate([100, 50, 100, 50, 200]);
+        const closeStats = () => {
+            if (statsPanel) statsPanel.classList.remove('active');
+        };
+
+        if (closeStatsBtn) closeStatsBtn.addEventListener('click', closeStats);
+        if (statsPanelBackdrop) statsPanelBackdrop.addEventListener('click', closeStats);
+
+        // Hub Navigation Links
+        const syncNitnemItem = document.getElementById('syncNitnemItem');
+        if (syncNitnemItem) {
+            syncNitnemItem.addEventListener('click', () => {
+                window.location.href = '../NitnemTracker/nitnem-tracker.html';
+            });
+        }
+
+        const syncSangatItem = document.getElementById('syncSangatItem');
+        if (syncSangatItem) {
+            syncSangatItem.addEventListener('click', () => {
+                window.location.href = '../sadhsangat-live/index.html';
+            });
+        }
+
+        const syncGptItem = document.getElementById('syncGptItem');
+        if (syncGptItem) {
+            syncGptItem.addEventListener('click', () => {
+                window.location.href = '../GurbaniKhoj/gurbani-khoj.html';
+            });
         }
     }
 
-    showToast(message, type = 'info', duration = 3000) {
+    startManualSession(durationMinutes) {
+        const now = new Date();
+        const currentHour = now.getHours();
+
+        const scheduledSlot = this.scheduleManager.currentSchedule[currentHour];
+        const isScheduledPending = scheduledSlot && scheduledSlot.status === 'pending';
+
+        const sessionInfo = {
+            hour: currentHour,
+            startTime: this.statsEngine.formatTime12h(currentHour, now.getMinutes()),
+            isExtra: !isScheduledPending
+        };
+
+        this.timerPlayer.start(durationMinutes, sessionInfo);
+    }
+
+    checkLaunchIntent() {
+        try {
+            const url = new URL(window.location.href);
+            const autoStart = url.searchParams.get('autoStart') === 'true';
+            const hour = url.searchParams.get('hour');
+            const minute = url.searchParams.get('minute');
+
+            if (autoStart) {
+                window.history.replaceState({}, document.title, window.location.pathname);
+
+                const targetHour = hour !== null ? Number(hour) : new Date().getHours();
+                const sessionInfo = {
+                    hour: targetHour,
+                    startTime: this.statsEngine.formatTime12h(targetHour, minute !== null ? Number(minute) : 0),
+                    isExtra: false
+                };
+
+                const dur = Number(this.config.duration || 2);
+                setTimeout(() => {
+                    this.timerPlayer.start(dur, sessionInfo);
+                }, 300);
+                return;
+            }
+
+            const pendingRaw = localStorage.getItem(NAAM_CONFIG.STORAGE_KEYS.PENDING_LAUNCH);
+            if (pendingRaw) {
+                localStorage.removeItem(NAAM_CONFIG.STORAGE_KEYS.PENDING_LAUNCH);
+                const intent = JSON.parse(pendingRaw);
+                const age = Date.now() - Number(intent.timestamp || 0);
+
+                if (age < 10 * 60 * 1000 && intent.autoStart) {
+                    const targetHour = intent.hour ? Number(intent.hour) : new Date().getHours();
+                    const sessionInfo = {
+                        hour: targetHour,
+                        startTime: this.statsEngine.formatTime12h(targetHour, intent.minute ? Number(intent.minute) : 0),
+                        isExtra: false
+                    };
+                    const dur = Number(this.config.duration || 2);
+                    setTimeout(() => {
+                        this.timerPlayer.start(dur, sessionInfo);
+                    }, 300);
+                }
+            }
+        } catch (e) {
+            console.warn('[NaamAbhyas] Error processing launch intent:', e);
+        }
+    }
+
+    executeAutoStart(detail) {
+        const targetHour = detail?.hour !== undefined ? Number(detail.hour) : new Date().getHours();
+        const sessionInfo = {
+            hour: targetHour,
+            startTime: this.statsEngine.formatTime12h(targetHour, detail?.minute !== undefined ? Number(detail.minute) : 0),
+            isExtra: false
+        };
+        const dur = Number(this.config.duration || 2);
+        this.timerPlayer.start(dur, sessionInfo);
+    }
+
+    syncNativeNotifications() {
+        try {
+            if (window.CapacitorNotifications?.rescheduleAll) {
+                window.CapacitorNotifications.rescheduleAll();
+            }
+        } catch (e) {}
+    }
+
+    startHeaderClock() {
+        const timeEl = document.getElementById('currentTime');
+        const update = () => {
+            if (timeEl) {
+                const now = new Date();
+                timeEl.textContent = this.statsEngine.formatTime12h(now.getHours(), now.getMinutes());
+            }
+        };
+        update();
+        this.clockInterval = setInterval(update, 1000);
+    }
+
+    startCountdownTicker() {
+        const update = () => {
+            const next = this.scheduleManager.getNextSession();
+            const timeEl = document.getElementById('nextSessionTime');
+            const subEl = document.getElementById('nextSessionSubtitle');
+            const cdValEl = document.getElementById('countdownValue');
+
+            if (!next) {
+                // Fallback — should rarely hit now that getNextSession always returns something
+                if (timeEl) timeEl.textContent = 'All Done! ✨';
+                if (subEl) subEl.textContent = 'Today\'s practice completed';
+                if (cdValEl) cdValEl.textContent = 'Rest & peace';
+                return;
+            }
+
+            // Tomorrow's Amritvela sentinel: count down to next morning
+            if (next._isTomorrow) {
+                const activeHoursCount = this.getActiveHoursCount();
+                const todayStats = this.statsEngine.getTodayStats(activeHoursCount);
+                const completedToday = todayStats.completed || 0;
+
+                // If we actually completed everything, show congratulations
+                if (completedToday > 0 && completedToday >= (todayStats.totalExpected || 1)) {
+                    if (timeEl) timeEl.textContent = 'All Done! ✨';
+                    if (subEl) subEl.textContent = 'Today\'s practice completed';
+                    if (cdValEl) cdValEl.textContent = 'Rest & peace';
+                    return;
+                }
+
+                // Otherwise count down to tomorrow's Amritvela
+                if (timeEl) timeEl.textContent = next.startTime;
+                const now = new Date();
+                const targetMs = next._targetMs || (() => {
+                    const t = new Date(now);
+                    t.setDate(t.getDate() + 1);
+                    t.setHours(next.hour, 0, 0, 0);
+                    return t.getTime();
+                })();
+                const diff = targetMs - now.getTime();
+                if (diff > 0) {
+                    const hours = Math.floor(diff / (1000 * 60 * 60));
+                    const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                    const secs = Math.floor((diff % (1000 * 60)) / 1000);
+                    let cdText = '';
+                    if (hours > 0) cdText += `${hours}h `;
+                    cdText += `${mins}m ${secs}s`;
+                    if (cdValEl) cdValEl.textContent = cdText;
+                }
+                if (subEl) subEl.textContent = 'Next: Amritvela tomorrow';
+                return;
+            }
+
+            if (timeEl) timeEl.textContent = next.startTime;
+
+            const now = new Date();
+            const target = new Date(now);
+            target.setHours(next.hour, next.startMinute || 0, 0, 0);
+
+            const diff = target.getTime() - now.getTime();
+            if (diff > 0) {
+                const hours = Math.floor(diff / (1000 * 60 * 60));
+                const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const secs = Math.floor((diff % (1000 * 60)) / 1000);
+
+                let cdText = '';
+                if (hours > 0) cdText += `${hours}h `;
+                cdText += `${mins}m ${secs}s`;
+
+                if (cdValEl) cdValEl.textContent = cdText;
+                if (subEl) subEl.textContent = `Coming up next`;
+            } else {
+                if (cdValEl) cdValEl.textContent = 'Starting now!';
+                if (subEl) subEl.textContent = 'Time for Naam Simran';
+            }
+        };
+
+        update();
+        this.countdownInterval = setInterval(update, 1000);
+    }
+
+    updateUI() {
+        const activeHoursCount = this.getActiveHoursCount();
+        const todayStats = this.statsEngine.getTodayStats(activeHoursCount);
+        const weeklyStats = this.statsEngine.getWeeklyStats(activeHoursCount);
+
+        const headerStreakEl = document.getElementById('headerStreakCount');
+        if (headerStreakEl) headerStreakEl.textContent = todayStats.currentStreak;
+
+        this.updateToggleStatus();
+
+        const compCountEl = document.getElementById('completedCount');
+        const totCountEl = document.getElementById('totalCount');
+        if (compCountEl) compCountEl.textContent = todayStats.completed;
+        if (totCountEl) totCountEl.textContent = todayStats.totalExpected;
+
+        this.renderProgressDots(todayStats);
+
+        const rateValEl = document.getElementById('completionRateValue');
+        const ringFillEl = document.getElementById('completionRingFill');
+        if (rateValEl) rateValEl.textContent = todayStats.completionRate;
+        if (ringFillEl) {
+            const circumference = 2 * Math.PI * 40; // 251.3
+            const offset = circumference * (1 - (todayStats.completionRate / 100));
+            ringFillEl.style.strokeDashoffset = offset;
+        }
+
+        const streakEl = document.getElementById('currentStreak');
+        const todayDoneEl = document.getElementById('todayCompleted');
+        const totalTimeEl = document.getElementById('totalTime');
+        const longestStreakEl = document.getElementById('longestStreak');
+
+        if (streakEl) streakEl.textContent = todayStats.currentStreak;
+        if (todayDoneEl) todayDoneEl.textContent = todayStats.completed;
+        if (totalTimeEl) {
+            const totalSecs = this.statsEngine.history.statistics.totalTimeSeconds || 0;
+            const totalMins = Math.round(totalSecs / 60);
+            if (totalMins >= 60) {
+                const h = Math.floor(totalMins / 60);
+                const m = totalMins % 60;
+                totalTimeEl.textContent = `${h}h ${m}m`;
+            } else {
+                totalTimeEl.textContent = `${totalMins}m`;
+            }
+        }
+        if (longestStreakEl) longestStreakEl.textContent = todayStats.longestStreak;
+
+        const barValEl = document.getElementById('todayProgressValue');
+        const barFillEl = document.getElementById('todayProgressFill');
+        if (barValEl) barValEl.textContent = `${todayStats.completed}/${todayStats.totalExpected}`;
+        if (barFillEl) barFillEl.style.width = `${Math.min(100, todayStats.completionRate)}%`;
+
+        const weeklyMinEl = document.getElementById('weeklyMinutes');
+        const perfDaysEl = document.getElementById('perfectDaysCount');
+        const perfBadgeEl = document.getElementById('perfectDayIndicator');
+
+        if (weeklyMinEl) weeklyMinEl.textContent = weeklyStats.weeklyMinutes;
+        if (perfDaysEl) perfDaysEl.textContent = weeklyStats.perfectDays;
+        if (perfBadgeEl) {
+            perfBadgeEl.classList.toggle('hidden', !todayStats.isPerfectDay);
+        }
+
+        this.renderTimeline();
+        this.renderAchievements();
+    }
+
+    updateToggleStatus() {
+        const toggle = document.getElementById('naamAbhyasToggle');
+        const statusText = document.getElementById('toggleStatusText');
+        if (toggle) toggle.checked = !!this.config.enabled;
+        if (statusText) {
+            statusText.textContent = this.config.enabled ? 'Hourly reminders active' : 'Currently disabled';
+        }
+    }
+
+    renderProgressDots(todayStats) {
+        const dotsContainer = document.getElementById('progressDots');
+        if (!dotsContainer) return;
+
+        const schedule = this.scheduleManager.currentSchedule;
+        const hours = Object.keys(schedule).map(Number).sort((a, b) => a - b);
+        const currentHour = new Date().getHours();
+
+        let html = '';
+        hours.forEach(h => {
+            const item = schedule[h];
+            let cls = 'progress-dot';
+            if (item.status === 'completed') cls += ' completed';
+            else if (h === currentHour) cls += ' current';
+            html += `<span class="${cls}" title="${item.startTime}"></span>`;
+        });
+
+        dotsContainer.innerHTML = html;
+    }
+
+    renderTimeline() {
+        const container = document.getElementById('scheduleTimeline');
+        if (!container) return;
+
+        if (!this.config.enabled) {
+            container.innerHTML = `
+                <div class="schedule-empty">
+                    <p>Enable Naam Abhyas above to activate your daily sacred schedule.</p>
+                </div>`;
+            return;
+        }
+
+        const schedule = this.scheduleManager.currentSchedule;
+        const hours = Object.keys(schedule).map(Number).sort((a, b) => a - b);
+        const currentHour = new Date().getHours();
+
+        let html = '';
+        hours.forEach(h => {
+            const item = schedule[h];
+            const isCurrent = (h === currentHour);
+            const isCompleted = (item.status === 'completed');
+            const isSkipped = (item.status === 'skipped');
+
+            let itemClass = 'timeline-item';
+            if (isCompleted) itemClass += ' completed';
+            if (isCurrent) itemClass += ' current';
+
+            let dotClass = 'timeline-dot';
+            if (isCompleted) dotClass += ' completed';
+            else if (isCurrent) dotClass += ' current';
+
+            let statusLabel = 'Scheduled';
+            if (isCompleted) statusLabel = '✓ Done';
+            else if (isSkipped) statusLabel = 'Skipped';
+            else if (isCurrent) statusLabel = 'Active Now';
+
+            html += `
+                <div class="${itemClass}">
+                    <span class="${dotClass}"></span>
+                    <span class="timeline-time">${item.startTime}</span>
+                    <span class="timeline-label">Waheguru Simran (${item.durationMinutes}m)</span>
+                    <span class="timeline-status">${statusLabel}</span>
+                </div>`;
+        });
+
+        container.innerHTML = html;
+    }
+
+    renderAchievements() {
+        const unlockedIds = new Set(this.statsEngine.history.achievements.map(a => a.id));
+        const previewBadges = document.querySelectorAll('.achievement-badge');
+        previewBadges.forEach(badge => {
+            const id = badge.getAttribute('data-id');
+            if (unlockedIds.has(id)) {
+                badge.classList.remove('locked');
+                badge.classList.add('unlocked');
+            } else {
+                badge.classList.add('locked');
+                badge.classList.remove('unlocked');
+            }
+        });
+
+        const countEl = document.getElementById('achievementsUnlocked');
+        if (countEl) {
+            countEl.textContent = `${unlockedIds.size} unlocked`;
+        }
+    }
+
+    initWisdom() {
+        this.cycleWisdom(0);
+    }
+
+    cycleWisdom(index = null) {
+        const quotes = NAAM_CONFIG.WISDOM_QUOTES;
+        const selected = index !== null ? quotes[index] : quotes[Math.floor(Math.random() * quotes.length)];
+
+        const qEl = document.getElementById('wisdomQuote');
+        const tEl = document.getElementById('wisdomTranslation');
+        const sEl = document.getElementById('wisdomSource');
+
+        if (qEl) qEl.textContent = `"${selected.gurmukhi}"`;
+        if (tEl) tEl.textContent = selected.translation;
+        if (sEl) sEl.textContent = `— ${selected.source}`;
+    }
+
+    populateSettingsForm() {
+        const startSelect = document.getElementById('activeHoursStart');
+        const endSelect = document.getElementById('activeHoursEnd');
+        const customInput = document.getElementById('durationCustomInput');
+        const autoStartToggle = document.getElementById('autoStartTimer');
+
+        if (startSelect) startSelect.value = String(this.config.activeHours?.start || 5);
+        if (endSelect) endSelect.value = String(this.config.activeHours?.end || 22);
+        if (customInput) customInput.value = String(this.config.duration || 2);
+        if (autoStartToggle) autoStartToggle.checked = !!this.config.autoStartTimer;
+    }
+
+    saveSettingsForm() {
+        const startSelect = document.getElementById('activeHoursStart');
+        const endSelect = document.getElementById('activeHoursEnd');
+        const customInput = document.getElementById('durationCustomInput');
+        const autoStartToggle = document.getElementById('autoStartTimer');
+
+        if (startSelect) this.config.activeHours.start = Number(startSelect.value);
+        if (endSelect) this.config.activeHours.end = Number(endSelect.value);
+        if (customInput) this.config.duration = Number(customInput.value);
+        if (autoStartToggle) this.config.autoStartTimer = autoStartToggle.checked;
+
+        this.saveConfig();
+        this.scheduleManager.generateDailySchedule();
+        this.syncNativeNotifications();
+        this.updateUI();
+    }
+
+    renderFullStatsContent() {
+        const contentEl = document.getElementById('statsPanelContent');
+        if (!contentEl) return;
+
+        const activeHours = this.getActiveHoursCount();
+        const today = this.statsEngine.getTodayStats(activeHours);
+        const stats = this.statsEngine.history.statistics;
+        const achievements = this.statsEngine.history.achievements;
+
+        contentEl.innerHTML = `
+            <div style="display:flex; flex-direction:column; gap:16px;">
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                    <div class="stat-cell">
+                        <span class="stat-number">${today.currentStreak}</span>
+                        <span class="stat-name">Current Streak</span>
+                    </div>
+                    <div class="stat-cell">
+                        <span class="stat-number">${today.longestStreak}</span>
+                        <span class="stat-name">Longest Streak</span>
+                    </div>
+                    <div class="stat-cell">
+                        <span class="stat-number">${stats.completedSessions || 0}</span>
+                        <span class="stat-name">Total Completed</span>
+                    </div>
+                    <div class="stat-cell">
+                        <span class="stat-number">${Math.round((stats.totalTimeSeconds || 0) / 60)}m</span>
+                        <span class="stat-name">Total Practice</span>
+                    </div>
+                </div>
+
+                <h3 style="font-size:1rem; font-weight:700; margin-top:8px; color:var(--sp-text-primary);">All Achievements</h3>
+                <div style="display:flex; flex-direction:column; gap:8px;">
+                    ${NAAM_CONFIG.ACHIEVEMENTS.map(ach => {
+                        const isUnlocked = achievements.some(a => a.id === ach.id);
+                        return `
+                            <div style="display:flex; align-items:center; gap:12px; padding:10px 14px; background:var(--sp-surface-inner); border-radius:var(--sp-radius-inner); opacity:${isUnlocked ? '1' : '0.5'}; border:1px solid var(--sp-border-inner);">
+                                <span style="font-size:1.5rem;">${ach.icon}</span>
+                                <div style="flex:1;">
+                                    <div style="font-size:0.875rem; font-weight:700; color:var(--sp-text-primary);">${ach.name} ${isUnlocked ? '✓' : ''}</div>
+                                    <div style="font-size:0.75rem; color:var(--sp-text-tertiary);">${ach.description}</div>
+                                </div>
+                            </div>`;
+                    }).join('')}
+                </div>
+            </div>`;
+    }
+
+    hideLoadingScreen() {
+        const loader = document.getElementById('appLoading');
+        if (loader) {
+            loader.style.opacity = '0';
+            loader.style.pointerEvents = 'none';
+            setTimeout(() => {
+                if (typeof loader.remove === 'function') loader.remove();
+                else loader.style.display = 'none';
+            }, 400);
+        }
+    }
+
+    showToast(message, type = 'info') {
         const container = document.getElementById('toastContainer');
         if (!container) return;
 
-        const icons = {
-            success: '✓',
-            error: '✗',
-            warning: '⚠',
-            info: 'ℹ',
-            nimrata: '🌸'
-        };
-
         const toast = document.createElement('div');
-        toast.className = `toast ${type}`;
-        toast.innerHTML = `
-            <span class="toast-icon">${icons[type] || icons.info}</span>
-            <span class="toast-message">${message}</span>
+        toast.style.cssText = `
+            background: rgba(15, 15, 20, 0.92);
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(212, 148, 58, 0.4);
+            color: #FAF8F5;
+            padding: 12px 20px;
+            border-radius: 99px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+            animation: sp-fadeIn 0.3s ease-out;
+            pointer-events: auto;
+            text-align: center;
         `;
-
+        toast.textContent = message;
         container.appendChild(toast);
 
-        // Remove after 3 seconds
         setTimeout(() => {
-            toast.classList.add('hiding');
-            setTimeout(() => toast.remove(), 300);
-        }, 3000);
+            toast.style.opacity = '0';
+            toast.style.transition = 'opacity 0.3s';
+            setTimeout(() => {
+                if (typeof toast.remove === 'function') toast.remove();
+                else toast.style.display = 'none';
+            }, 300);
+        }, 3200);
     }
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════
-   INITIALIZATION
+   8. BOOTSTRAPPER
 ═══════════════════════════════════════════════════════════════════════════════ */
 
-// Global instance
-window.naamAbhyas = null;
+let naamAbhyasInstance = null;
 
-// Initialize on DOM ready
-function initNaamAbhyas() {
-    if (window.naamAbhyas && typeof window.naamAbhyas.init === 'function') {
-        window.naamAbhyas.init();
-    } else {
-        window.naamAbhyas = new NaamAbhyas();
-        window.naamAbhyas.init();
+function bootNaamAbhyas() {
+    try {
+        if (!naamAbhyasInstance) {
+            naamAbhyasInstance = new NaamAbhyas();
+            window.naamAbhyas = naamAbhyasInstance;
+            window.naamAbhyasApp = naamAbhyasInstance;
+            naamAbhyasInstance.init();
+            console.log('[NaamAbhyas] 🚀 Initialized and active');
+        }
+    } catch (err) {
+        console.error('[NaamAbhyas] Boot error:', err);
+    } finally {
+        const loader = document.getElementById('appLoading');
+        if (loader) {
+            loader.style.opacity = '0';
+            loader.style.pointerEvents = 'none';
+            setTimeout(() => {
+                if (typeof loader.remove === 'function') loader.remove();
+                else loader.style.display = 'none';
+            }, 300);
+        }
     }
 }
 
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initNaamAbhyas);
+    document.addEventListener('DOMContentLoaded', bootNaamAbhyas, { once: true });
 } else {
-    initNaamAbhyas();
+    bootNaamAbhyas();
 }
-
-// Export for module usage
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = NaamAbhyas;
-}
-
-/**
- * ═══ HELPER METHODS FOR PREMIUM OVERHAUL ═══
- */
-
-NaamAbhyas.prototype._updateActivePreset = function (mins) {
-    document.querySelectorAll('.preset-btn').forEach(btn => {
-        btn.classList.toggle('active', parseInt(btn.dataset.min) === mins);
-    });
-};
-
-NaamAbhyas.prototype.showCompletionModal = function (stats) {
-    const modal = document.getElementById('completionModal');
-    if (!modal) return;
-
-    // Rotating high-spirit blessings
-    const blessings = [
-        "Millions of sins erased. You are purified.",
-        "The mind is stilled. The soul is awake.",
-        "You walked with the Guru for these moments.",
-        "A peaceful heart is a sacred temple.",
-        "Simran is the only true wealth. You are rich today.",
-        "ਧੰਨੁ ਧੰਨੁ ਤੂ ਮੇਰੇ ਸਤਿਗੁਰਾ... Blessed are you, O True Guru."
-    ];
-    const randomBlessing = blessings[Math.floor(Math.random() * blessings.length)];
-
-    const blessingEl = document.getElementById('completionBlessing');
-    if (blessingEl) blessingEl.textContent = randomBlessing;
-
-    // Update stats
-    if (stats) {
-        if (document.getElementById('compDuration')) document.getElementById('compDuration').textContent = `${stats.duration}m`;
-        if (document.getElementById('compStreak')) document.getElementById('compStreak').textContent = stats.streak;
-        if (document.getElementById('compToday')) document.getElementById('compToday').textContent = `${stats.today}/${stats.goal}`;
-    }
-
-    modal.classList.add('active');
-    this.playIosChime('completion');
-};
-
-NaamAbhyas.prototype.playIosChime = function (type) {
-    if (!this.config.notifications.soundEnabled) return;
-
-    try {
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-
-        if (type === 'completion') {
-            // Harmonic high-pitch bell
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(880, audioCtx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(440, audioCtx.currentTime + 0.5);
-            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.8);
-            osc.start();
-            osc.stop(audioCtx.currentTime + 0.8);
-        } else {
-            // Standard iOS-like "tnnn"
-            osc.type = 'triangle';
-            osc.frequency.setValueAtTime(660, audioCtx.currentTime);
-            gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
-            osc.start();
-            osc.stop(audioCtx.currentTime + 0.4);
-        }
-    } catch (e) { console.warn('Audio API chime failed', e); }
-};
-
-NaamAbhyas.prototype._syncToNitemTracker = function (sessionData) {
-    try {
-        const today = this.getTodayString();
-
-        // ── 1. Save to nitnem_tracker_data (DashboardAnalytics format) ──
-        const trackerData = JSON.parse(localStorage.getItem('nitnem_tracker_data') || '{}');
-        if (!trackerData[today]) trackerData[today] = { naam_abhyas: 0, sessions: [] };
-        trackerData[today].naam_abhyas = (trackerData[today].naam_abhyas || 0) + 1;
-        trackerData[today].sessions.push({
-            time: new Date().toLocaleTimeString(),
-            duration: sessionData.duration,
-            isScheduled: sessionData.isScheduled
-        });
-        localStorage.setItem('nitnem_tracker_data', JSON.stringify(trackerData));
-
-        // ── 2. Persist to canonical naamAbhyas_sessions key ──
-        // global-alarm-system.js and other readers use this key.
-        const existingSessions = JSON.parse(localStorage.getItem('naamAbhyas_sessions') || '[]');
-        existingSessions.push({
-            date: today,
-            timestamp: new Date().toISOString(),
-            duration: sessionData.duration || 0,
-            count: sessionData.count || 0,
-            isScheduled: !!sessionData.isScheduled
-        });
-        // Keep last 365 sessions only
-        if (existingSessions.length > 365) existingSessions.splice(0, existingSessions.length - 365);
-        localStorage.setItem('naamAbhyas_sessions', JSON.stringify(existingSessions));
-
-        // ── 3. Update AnhadStats streak (if available) ──
-        if (window.AnhadStats && typeof window.AnhadStats.addNitnemCompleted === 'function') {
-            window.AnhadStats.addNitnemCompleted(1);
-        }
-
-        // ── 4. Broadcast to other tabs + global alarm system ──
-        window.dispatchEvent(new CustomEvent('naamAbhyasSessionComplete', { detail: sessionData }));
-        window.dispatchEvent(new CustomEvent('naamAbhyasComplete', { detail: sessionData }));
-
-        console.log('[NaamAbhyas] ✅ Session saved and synced:', {
-            date: today, duration: sessionData.duration
-        });
-    } catch (e) { console.error('[NaamAbhyas] Nitnem sync failed', e); }
-};
-
-/* ═══════════════════════════════════════════════════════════════════════════════
-   NAAM ALARM INTEGRATION PATCH
-   Disables ALL competing notification senders so naam-alarm.js is the
-   single source of truth. Applied after NaamAbhyas instance is ready.
-═══════════════════════════════════════════════════════════════════════════════ */
-(function patchNaamAbhyas() {
-    'use strict';
-
-    function applyPatches(app) {
-        window.naamAbhyasApp = app;
-
-        /* Override scheduleUpcomingNotifications — only writes schedule, no browser notifs */
-        app.scheduleUpcomingNotifications = function () {
-            try {
-                localStorage.setItem('naam_alarm_schedule', JSON.stringify(this.currentSchedule));
-                localStorage.setItem('naam_abhyas_schedule', JSON.stringify(this.currentSchedule));
-                window.dispatchEvent(new Event('naamScheduleUpdated'));
-                console.log('[NaamAbhyas] Schedule written for NaamAlarm');
-            } catch (e) {}
-        };
-
-        /* Kill all other notification dispatch paths */
-        app.scheduleServiceWorkerNotification   = function () {};
-        app.scheduleViaSW                       = function () { return Promise.resolve(); };
-        app.saveAlarmToIndexedDB                = function () { return Promise.resolve(); };
-        app.saveAlarmsToIndexedDB               = function () { return Promise.resolve(); };
-        app.registerPeriodicBackgroundSync      = function () { return Promise.resolve(); };
-        app.scheduleRandomSpiritualNotifications = function () {};
-
-        if (app.notificationEngine) {
-            app.notificationEngine.scheduleSessionNotifications   = function () {};
-            app.notificationEngine.scheduleCapacitorHourlyBatch   = function () {};
-        }
-
-        /* Disable RitualEngine popup — NaamAlarm owns that now */
-        if (app.ritualEngine && app.ritualEngine.triggerScheduledSession) {
-            app.ritualEngine.triggerScheduledSession = function () {
-                console.log('[RitualEngine] Blocked — NaamAlarm handles sessions');
-            };
-        }
-
-        /* Re-write schedule on enable/generate */
-        const _origGenerate = app.generateDailySchedule.bind(app);
-        app.generateDailySchedule = function () {
-            _origGenerate();
-            try {
-                localStorage.setItem('naam_alarm_schedule', JSON.stringify(this.currentSchedule));
-                window.dispatchEvent(new Event('naamScheduleUpdated'));
-            } catch {}
-        };
-
-        /* Refresh UI after NaamAlarm records a completion */
-        window.addEventListener('naamSessionCompleted', () => {
-            try {
-                app.history = app.loadHistory();
-                if (typeof app.updateUI === 'function') app.updateUI();
-                if (typeof app.renderScheduleTimeline === 'function') app.renderScheduleTimeline();
-            } catch (e) {}
-        });
-
-        console.log('[NaamAbhyas] NaamAlarm integration patch applied');
-    }
-
-    /* Poll for the app instance */
-    let attempts = 0;
-    const poll = setInterval(() => {
-        attempts++;
-        const app = window.naamAbhyas || window.naamAbhyasInstance;
-        if (app) { clearInterval(poll); applyPatches(app); return; }
-        if (attempts > 40) clearInterval(poll);
-    }, 500);
-
-    document.addEventListener('DOMContentLoaded', () => {
-        setTimeout(() => {
-            const app = window.naamAbhyas || window.naamAbhyasInstance || window.naamAbhyasApp;
-            if (app && !window.naamAbhyasApp) applyPatches(app);
-        }, 1500);
-    }, { once: true });
-})();

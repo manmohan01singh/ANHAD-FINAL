@@ -86,7 +86,7 @@
   // navigateTo(), so a bailout can never wedge navigation permanently.
   let navInFlight = null;
 
-  // ── PAGE CSS OWNERSHIP ──────────────────────────────────────────────────
+  // -- PAGE CSS OWNERSHIP --------------------------------------------------
   // Every page-owned <style>/<link> carries data-spa-page="<pathname>" plus a
   // data-spa-media record of the media value it should have when active.
   //
@@ -323,8 +323,12 @@
 
   function isShellPage(url) {
     try {
-      const pathname = new URL(url, window.location.origin).pathname;
+      const pathname = new URL(url, window.location.origin).pathname.toLowerCase();
       const cleanPath = pathname.replace(/\/index\.html$/, '/').replace(/\/$/, '');
+
+      if (isHomeUrl(url)) return true;
+      if (cleanPath.includes('/insights') || cleanPath.includes('insights')) return true;
+      if (cleanPath.includes('/favorites') || cleanPath.includes('favorites')) return true;
 
       return cleanPath.endsWith('/frontend') ||
              cleanPath.endsWith('/frontend/index.html') ||
@@ -332,11 +336,7 @@
              cleanPath.endsWith('/index.html') ||
              cleanPath.endsWith('/index') ||
              cleanPath.endsWith('/') || 
-             cleanPath === '' ||
-             cleanPath.endsWith('/Insights/insights.html') ||
-             cleanPath.endsWith('/Insights/insights') ||
-             cleanPath.endsWith('/Favorites/favorites.html') ||
-             cleanPath.endsWith('/Favorites/favorites');
+             cleanPath === '';
     } catch (e) {
       return false;
     }
@@ -425,17 +425,12 @@
 
     if (normalized === currentActiveUrl && !options.force) return;
 
-    // currentActiveUrl is only assigned at the very END of applyNewContent, and
-    // two awaits sit in between (syncHeadAssets, executePageScripts — the latter
-    // network-bound). For that whole window the dedupe check above still sees
-    // the OLD url, so a second tap started a concurrent performSwap: two runs
-    // interleaved `currentApp.innerHTML = ...`, both called pushState, and the
-    // second one's script-cleanup removed <script> nodes the first was still
-    // awaiting, leaving those promises to settle only via onerror.
-    if (navInFlight && !options.force) {
-      console.warn('[SmoothNav] Navigation already in flight, ignoring:', normalized);
-      return;
-    }
+    // If an identical destination is already in flight, ignore (duplicate tap).
+    // BUT if the user tapped a DIFFERENT tab, cancel the old flight and start fresh
+    // — this is the core fix for "takes 3 taps to navigate": previously any in-flight
+    // nav blocked ALL subsequent taps until the swap finished, so rapid tab switches
+    // would silently drop the 2nd and 3rd taps.
+    if (navInFlight && navInFlight === normalized && !options.force) return;
     navInFlight = normalized;
 
     // Run page cleanup before leaving
@@ -463,7 +458,8 @@
       } catch(e) {}
     }
 
-    if (isShellPage(absoluteUrl)) {
+    const hasCurrentApp = !!document.getElementById(MAIN_TARGET_ID);
+    if (hasCurrentApp && isShellPage(absoluteUrl)) {
       // performSwap clears navInFlight in its own finally block.
       performSwap(absoluteUrl, options);
     } else {
@@ -555,7 +551,7 @@
        return;
     }
 
-    // ── ARRIVAL EPOCH ────────────────────────────────────────────────────
+    // -- ARRIVAL EPOCH ----------------------------------------------------
     // A monotonic counter identifying THIS navigation. Page modules repopulate
     // themselves from two independent triggers that both fire for a single
     // arrival — runPageInit() below, and the anhad_page_changed event at the
@@ -658,7 +654,7 @@
     document.body.style.minHeight = '';
     document.body.style.color = '';
 
-    // ── CSS LIFECYCLE: install → swap → deactivate ────────────────────────
+    // -- CSS LIFECYCLE: install → swap → deactivate ------------------------
     // Ordering is the whole point here. The outgoing page's CSS stays fully
     // active until AFTER its DOM has been replaced, so it is never rendered
     // unstyled. Nothing is removed at any stage — see the ownership helpers
@@ -797,6 +793,14 @@
     
     // Dispatch standard page changed event
     window.dispatchEvent(new CustomEvent('anhad_page_changed', { detail: { url } }));
+
+    // Refresh mini-player so it reliably reappears when coming back from full-screen pages
+    // (e.g. Gurbani Radio → Home/Favorites/Insights) without requiring a play-button tap
+    setTimeout(() => {
+      if (typeof window.AnhadUpdateOverlayUI === 'function') {
+        window.AnhadUpdateOverlayUI();
+      }
+    }, 80);
   }
 
   /**
@@ -1029,9 +1033,15 @@
     }
 
     if (loadPromises.length > 0) {
+      // On first-ever visit to a page the stylesheet is not in the HTTP cache and
+      // must download from the network — 150ms was too short on a real Android
+      // device over Wi-Fi, causing content to render unstyled for one frame (the
+      // "HTML loads then CSS loads" flash the user reported). 800ms is the outer
+      // bound; the race resolves immediately once ALL sheets have loaded, so fast
+      // connections are unaffected.
       await Promise.race([
         Promise.all(loadPromises),
-        new Promise(resolve => setTimeout(resolve, 150))
+        new Promise(resolve => setTimeout(resolve, 800))
       ]);
     }
   }
@@ -1466,6 +1476,15 @@
           prefetchPage(absolute);
         } catch (e) {}
       });
+
+      // Pre-warm Insights' stylesheet into the browser HTTP cache so the first
+      // SPA navigation to Insights does not suffer the HTML-before-CSS flash.
+      // This is a simple background fetch — the browser caches the bytes under
+      // the same key syncHeadAssets() later requests via a <link> tag.
+      try {
+        const insightsCssUrl = new URL('Insights/insights.css', window.ANHAD_ROOT || '/').href;
+        fetch(insightsCssUrl, { priority: 'low' }).catch(() => {});
+      } catch (e) {}
     }, 100);
   }
 

@@ -428,7 +428,7 @@ class RandomShabad {
         const saved = this.load('anhad_shabad_config');
         if (saved) this.config = { ...this.config, ...saved };
 
-        // ── Sync with global app theme (anhad_theme / anhad_dark_mode) ──
+        // -- Sync with global app theme (anhad_theme / anhad_dark_mode) --
         const globalTheme = localStorage.getItem('anhad_theme');
         if (globalTheme) {
             this.config.theme = globalTheme; // 'light' or 'dark'

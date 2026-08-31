@@ -260,16 +260,37 @@
       return 'night';
     },
 
+    _tukIndex: -1,  // -1 means first call picks randomly
+
     getTuk() {
       const slot = this.getTimeSlot();
       const tuks = this._tuks[slot];
-      const randomIndex = Math.floor(Math.random() * tuks.length);
-      return tuks[randomIndex];
+      // Advance index on each call (cycling) instead of always random
+      // so users see a different pankti every time they navigate to Home.
+      this._tukIndex = (this._tukIndex + 1) % tuks.length;
+      return tuks[this._tukIndex];
+    },
+
+    // Write the current tuk to the DOM pankti text elements.
+    // Called directly from reviveHomepageVisuals() and also from
+    // PortraitSlider.update() when the active Guru has no Guru-specific gurbani.
+    renderTuk() {
+      const tuk = this.getTuk();
+      const gurEl = document.getElementById('greetingGurbani');
+      const transEl = document.getElementById('greetingTranslation');
+      if (gurEl) gurEl.textContent = tuk.gurmukhi;
+      if (transEl) transEl.textContent = tuk.translation;
     },
 
     update() {
       if (typeof window.syncGreetingHeroArtwork === 'function') {
         window.syncGreetingHeroArtwork();
+      }
+      // Render a new pankti if the active Guru has no Guru-specific gurbani
+      const slider = window.GuruSlider || window.PortraitSlider;
+      const currentGuru = slider && slider._gurus && slider._gurus[slider._currentIndex];
+      if (!currentGuru || !currentGuru.gurbani) {
+        this.renderTuk();
       }
     }
   };
@@ -336,18 +357,108 @@
     _isMoving: false,
     _eventsBound: false,
     _gurus: [
-      { id: 'guru-nanak', name: 'Sri Guru Nanak Dev Sahib Ji', img: 'guruimages/gurunanakdevsahebji.jpeg', pos: 'center 20%', colors: ['#ddcdb3', '#c9b89f', '#b8a88e'] },
-      { id: 'guru-angad', name: 'Sri Guru Angad Dev Sahib Ji', img: 'guruimages/guruangaddevsahebji.jpeg', pos: 'center 25%', colors: ['#ab9468', '#e6d8bf', '#624d31'] },
-      { id: 'guru-amar-das', name: 'Sri Guru Amar Das Sahib Ji', img: 'guruimages/guruamardasji.jpeg', pos: 'center 25%', colors: ['#e7be7f', '#e4dccd', '#a37f4f'] },
-      { id: 'guru-ram-das', name: 'Sri Guru Ram Das Sahib Ji', img: 'guruimages/gururamdassahebji.jpeg', pos: 'center 25%', colors: ['#a97634', '#e3bc7b', '#8b5e28'] },
-      { id: 'guru-arjan', name: 'Sri Guru Arjan Dev Sahib Ji', img: 'guruimages/guruarjanddevsahebji.jpeg', gurbani: 'ਅੰਮ੍ਰਿਤ ਵੇਲਾ ਸਚੁ ਨਾਉ ਵਡਿਆਈ ਵੀਚਾਰੁ ॥', translation: 'In the Amrit Vela, chant the True Name, and contemplate His Glorious Greatness.', pos: 'center 25%', colors: ['#edeef0', '#e0c195', '#c9a876'] },
-      { id: 'guru-hargobind', name: 'Sri Guru Hargobind Sahib Ji', img: 'guruimages/guruhargobindsahebji.jpeg', pos: 'center 25%', colors: ['#ecedef', '#c0c0bf', '#916026'] },
-      { id: 'guru-har-rai', name: 'Sri Guru Har Rai Sahib Ji', img: 'guruimages/guruharraisahebji.jpeg', pos: 'center 25%', colors: ['#ac7d3d', '#afab85', '#875515'] },
-      { id: 'guru-harkrishan', name: 'Sri Guru Har Krishan Sahib Ji', img: 'guruimages/guruharkrishansahebji.jpeg', pos: 'center 25%', colors: ['#ece5d5', '#d9d0c0', '#c6bbab'] },
-      { id: 'guru-teg-bahadur', name: 'Sri Guru Tegh Bahadur Sahib Ji', img: 'guruimages/gurutegbahadursahebji.jpeg', pos: 'center 45%', colors: ['#2f3d46', '#4a5a63', '#5d6d76'] },
-      { id: 'guru-gobind', name: 'Sri Guru Gobind Singh Sahib Ji', img: 'guruimages/gurugobindsinghsahebji.jpeg', pos: 'center 25%', colors: ['#b77928', '#e1cdac', '#8e5f1f'] },
-      { id: 'sggs', name: 'Sri Guru Granth Sahib Ji', img: 'guruimages/gurugranthsahebji.jpeg', pos: 'center 25%', colors: ['#a06f2c', '#53371e', '#c89035'] }
+      { 
+        id: 'guru-nanak', 
+        name: 'Sri Guru Nanak Dev Sahib Ji', 
+        img: 'guruimages/gurunanakdevsahebji.jpeg', 
+        gurbani: 'ਗੁਰ ਪਰਸਾਦਿ ਕਰੇ ਜੇ ਅਪਣੀ ਪੂਰੇ ਸਹਜਿ ਸਮਾਇਆ ॥', 
+        translation: 'By His Grace, if the Lord grants His Mercy, one effortlessly merges in the Perfect Lord.', 
+        pos: 'center 20%', 
+        colors: ['#ddcdb3', '#c9b89f', '#b8a88e'] 
+      },
+      { 
+        id: 'guru-angad', 
+        name: 'Sri Guru Angad Dev Sahib Ji', 
+        img: 'guruimages/guruangaddevsahebji.jpeg', 
+        gurbani: 'ਜਿਸੁ ਪਿਆਰੇ ਸਿਉ ਨੇਹੁ ਤਿਸੁ ਆਗੈ ਮਰਿ ਚਲੀਐ ॥', 
+        translation: 'Die before the one whom you love; to live after them is to live a worthless life.', 
+        pos: 'center 25%', 
+        colors: ['#ab9468', '#e6d8bf', '#624d31'] 
+      },
+      { 
+        id: 'guru-amar-das', 
+        name: 'Sri Guru Amar Das Sahib Ji', 
+        img: 'guruimages/guruamardasji.jpeg', 
+        gurbani: 'ਅਨੰਦੁ ਭਇਆ ਮੇਰੀ ਮਾਏ ਸਤਿਗੁਰੂ ਮੈ ਪਾਇਆ ॥', 
+        translation: 'I am in ecstasy, O my mother, for I have found my True Guru.', 
+        pos: 'center 25%', 
+        colors: ['#e7be7f', '#e4dccd', '#a37f4f'] 
+      },
+      { 
+        id: 'guru-ram-das', 
+        name: 'Sri Guru Ram Das Sahib Ji', 
+        img: 'guruimages/gururamdassahebji.jpeg', 
+        gurbani: 'ਗੁਰ ਸਤਿਗੁਰ ਕਾ ਜੋ ਸਿਖੁ ਅਖਾਏ ਸੁ ਭਲਕੇ ਉਠਿ ਹਰਿ ਨਾਮੁ ਧਿਆਵੈ ॥', 
+        translation: 'One who calls himself a Sikh of the Guru shall rise early and meditate on the Name.', 
+        pos: 'center 25%', 
+        colors: ['#a97634', '#e3bc7b', '#8b5e28'] 
+      },
+      { 
+        id: 'guru-arjan', 
+        name: 'Sri Guru Arjan Dev Sahib Ji', 
+        img: 'guruimages/guruarjanddevsahebji.jpeg', 
+        gurbani: 'ਅੰਮ੍ਰਿਤ ਵੇਲਾ ਸਚੁ ਨਾਉ ਵਡਿਆਈ ਵੀਚਾਰੁ ॥', 
+        translation: 'In the Amrit Vela, chant the True Name, and contemplate His Glorious Greatness.', 
+        pos: 'center 25%', 
+        colors: ['#edeef0', '#e0c195', '#c9a876'] 
+      },
+      { 
+        id: 'guru-hargobind', 
+        name: 'Sri Guru Hargobind Sahib Ji', 
+        img: 'guruimages/guruhargobindsahebji.jpeg', 
+        gurbani: 'ਸਚੁ ਧਰਮੁ ਕਮਾਵੈ ਹਰਿ ਭਾਵੈ ਤਿਸੁ ਜਨ ਕਉ ਸਦਾ ਸੁਖੁ ਹੋਈ ॥', 
+        translation: 'One who practices true righteousness is pleasing to the Lord and attains eternal peace.', 
+        pos: 'center 25%', 
+        colors: ['#ecedef', '#c0c0bf', '#916026'] 
+      },
+      { 
+        id: 'guru-har-rai', 
+        name: 'Sri Guru Har Rai Sahib Ji', 
+        img: 'guruimages/guruharraisahebji.jpeg', 
+        gurbani: 'ਜਿਨਾ ਸਾਸਿ ਗਿਰਾਸਿ ਨ ਵਿਸਰੈ ਹਰਿ ਨਾਮਾਂ ਮਨਿ ਮੰਤੁ ॥', 
+        translation: 'Those who do not forget the Lord\'s Name with every breath and morsel are blessed.', 
+        pos: 'center 25%', 
+        colors: ['#ac7d3d', '#afab85', '#875515'] 
+      },
+      { 
+        id: 'guru-harkrishan', 
+        name: 'Sri Guru Har Krishan Sahib Ji', 
+        img: 'guruimages/guruharkrishansahebji.jpeg', 
+        gurbani: 'ਸ੍ਰੀ ਹਰਿਕ੍ਰਿਸਨ ਧਿਆਈਐ ਜਿਸੁ ਡਿਠੈ ਸਭਿ ਦੁਖਿ ਜਾਇ ॥', 
+        translation: 'Meditate on Sri Guru Har Krishan, beholding whom all suffering departs.', 
+        pos: 'center 25%', 
+        colors: ['#ece5d5', '#d9d0c0', '#c6bbab'] 
+      },
+      { 
+        id: 'guru-teg-bahadur', 
+        name: 'Sri Guru Tegh Bahadur Sahib Ji', 
+        img: 'guruimages/gurutegbahadursahebji.jpeg', 
+        gurbani: 'ਗੁਨ ਗੋਬਿੰਦ ਗਾਇ ਲੇਹੁ ਹਰਿ ਸਿਮਰਨੁ ਕਰਿ ਲੀਜੈ ॥', 
+        translation: 'Sing the Praises of the Lord of the Universe; remember Him in your heart.', 
+        pos: 'center 18%', 
+        colors: ['#2f3d46', '#4a5a63', '#5d6d76'] 
+      },
+      { 
+        id: 'guru-gobind', 
+        name: 'Sri Guru Gobind Singh Sahib Ji', 
+        img: 'guruimages/gurugobindsinghsahebji.jpeg', 
+        gurbani: 'ਦੇਹ ਸਿਵਾ ਬਰੁ ਮੋਹਿ ਇਹੈ ਸੁਭ ਕਰਮਨ ਤੇ ਕਬਹੂੰ ਨ ਟਰੋਂ ॥', 
+        translation: 'Grant me this boon, O Lord, that I may never shy away from righteous deeds.', 
+        pos: 'center 25%', 
+        colors: ['#b77928', '#e1cdac', '#8e5f1f'] 
+      },
+      { 
+        id: 'sggs', 
+        name: 'Sri Guru Granth Sahib Ji', 
+        img: 'guruimages/gurugranthsahebji.jpeg', 
+        gurbani: 'ਸਭ ਮਹਿ ਜੋਤਿ ਜੋਤਿ ਹੈ ਸੋਇ ॥ ਤਿਸ ਦੈ ਚਾਨਣਿ ਸਭ ਮਹਿ ਚਾਨਣੁ ਹੋਇ ॥', 
+        translation: 'Amongst all is the Light; You are that Light. By Its Radiance, the Light is in all.', 
+        pos: 'center 25%', 
+        colors: ['#a06f2c', '#53371e', '#c89035'] 
+      }
     ],
+
+    _autoTimer: null,
 
     init() {
       const track = document.getElementById('guruSliderTrack');
@@ -377,13 +488,40 @@
           e.stopPropagation();
           this._currentIndex = i;
           this.update();
+          // Restart auto-advance after manual interaction
+          this.stopAutoSlide();
+          this.startAutoSlide();
         };
       });
 
       this._renderDots();
       this._bindEvents();
       this.update(true);
+      // Start auto-advance: rotate through all 11 Gurus every 5 seconds
+      this.stopAutoSlide(); // clear any existing timer first
+      this.startAutoSlide();
     },
+
+    startAutoSlide() {
+      // Don't run auto-advance if user prefers reduced motion
+      if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      this._autoTimer = setInterval(() => {
+        if (!document.getElementById('guruSliderTrack')) {
+          this.stopAutoSlide();
+          return;
+        }
+        this._currentIndex = (this._currentIndex + 1) % this._gurus.length;
+        this.update();
+      }, 5000);
+    },
+
+    stopAutoSlide() {
+      if (this._autoTimer) {
+        clearInterval(this._autoTimer);
+        this._autoTimer = null;
+      }
+    },
+
 
     _renderDots() {
       const dotsContainer = document.getElementById('guruDots');
@@ -575,42 +713,64 @@
   // ═══════════════════════════════════════════════════════════════════════════
   const DataManager = {
     getTotalBanis() {
-      // Read from My Pothi order (user's custom bani collection)
+      // 1. Check My Pothi order (user's personal pothi collection)
       const pothiOrder = Store.get(KEYS.POTHI_ORDER);
       if (pothiOrder && Array.isArray(pothiOrder) && pothiOrder.length > 0) {
         return pothiOrder.length;
       }
-      
-      // Fallback to Nitnem Tracker if Pothi is empty
+
+      // 2. Check Nitnem Tracker unique banis
       const selected = Store.get(KEYS.NITNEM_SELECTED);
-      if (!selected) return 11;
-      const total = (selected.amritvela?.length || 0) +
-        (selected.rehras?.length || 0) +
-        (selected.sohila?.length || 0);
-      return total || 11;
+      if (selected && typeof selected === 'object') {
+        const uniqueSet = new Set();
+        (selected.amritvela || []).forEach(b => b && (b.id || b.name) && uniqueSet.add(b.id || b.name));
+        (selected.rehras || []).forEach(b => b && (b.id || b.name) && uniqueSet.add(b.id || b.name));
+        (selected.sohila || []).forEach(b => b && (b.id || b.name) && uniqueSet.add(b.id || b.name));
+        if (uniqueSet.size > 0) return uniqueSet.size;
+
+        const total = (selected.amritvela?.length || 0) +
+          (selected.rehras?.length || 0) +
+          (selected.sohila?.length || 0);
+        if (total > 0) return total;
+      }
+      
+      return 10; // Default
     },
 
     getCompletedToday() {
       const today = new Date().toLocaleDateString('en-CA');
-      
-      // Read from My Pothi completion data
+      let trackerCount = 0;
+      let pothiCount = 0;
+
+      // 1. Read from Nitnem Tracker log
+      const log = Store.get(KEYS.NITNEM_LOG);
+      if (log && log[today]) {
+        const todayData = log[today];
+        if (Array.isArray(todayData)) {
+          trackerCount = todayData.length;
+        } else if (typeof todayData === 'object') {
+          if (Array.isArray(todayData.completed)) {
+            trackerCount = todayData.completed.length;
+          } else {
+            trackerCount = (todayData.amritvela?.length || 0) +
+              (todayData.rehras?.length || 0) +
+              (todayData.sohila?.length || 0);
+          }
+        } else if (typeof todayData === 'number') {
+          trackerCount = todayData;
+        }
+      }
+
+      // 2. Read from My Pothi completion data
       const pothiCompleted = Store.get(KEYS.POTHI_COMPLETED);
       if (pothiCompleted && pothiCompleted[today]) {
         const todayCompleted = pothiCompleted[today];
-        return Array.isArray(todayCompleted) ? todayCompleted.length : 0;
+        if (Array.isArray(todayCompleted)) {
+          pothiCount = todayCompleted.length;
+        }
       }
-      
-      // Fallback to Nitnem Tracker log
-      const log = Store.get(KEYS.NITNEM_LOG);
-      if (!log || !log[today]) return 0;
-      const todayData = log[today];
-      if (Array.isArray(todayData)) return todayData.length;
-      if (typeof todayData === 'object') {
-        return (todayData.amritvela?.length || 0) +
-          (todayData.rehras?.length || 0) +
-          (todayData.sohila?.length || 0);
-      }
-      return 0;
+
+      return Math.max(trackerCount, pothiCount);
     },
 
     getStreak() {
@@ -889,6 +1049,7 @@
     updateNitnemCard() {
       const completed = DataManager.getCompletedToday();
       const total = DataManager.getTotalBanis();
+      const isComplete = total > 0 && completed >= total;
       const streakInfo = DataManager.getStreak();
       const streak = streakInfo.count;
       const isSaved = streakInfo.isSaved;
@@ -897,11 +1058,11 @@
       const streakEl = document.getElementById('nitnemStreak');
       const checkEl = document.getElementById('nitnemCheck');
 
-      // Update progress ring
-      this._setRing('nitnemRing', completed / total);
+      // Update progress ring: 100% full ring when complete
+      this._setRing('nitnemRing', isComplete ? 1 : (total > 0 ? completed / total : 0));
 
       if (statusEl) {
-        if (completed >= total) {
+        if (isComplete) {
           statusEl.textContent = '✓ Complete';
           statusEl.className = 'practice-card__status practice-card__status--active';
         } else if (completed > 0) {
@@ -914,7 +1075,7 @@
       }
 
       if (checkEl) {
-        checkEl.classList.toggle('practice-card__check--visible', completed >= total);
+        checkEl.classList.toggle('practice-card__check--visible', isComplete);
       }
 
       // Streak in quick access
@@ -1059,7 +1220,7 @@
 
         // Update eyebrow text
         if (eyebrowEl) {
-          eyebrowEl.textContent = event.isToday ? "✦ TODAY'S HISTORICAL DIWAS" : 'Upcoming Gurpurab';
+          eyebrowEl.textContent = event.isToday ? "✦ TODAY'S HISTORICAL DIWAS" : '✦ UPCOMING GURPURAB';
         }
 
         const badgeValueEl = document.getElementById('eventCountdownBadgeValue');
@@ -1107,6 +1268,26 @@
             if (countEl) countEl.textContent = '🗓️';
             if (labelEl) labelEl.textContent = 'Upcoming';
             if (daysBadge) daysBadge.style.display = 'none';
+          }
+        }
+
+        const badgePillEl = document.getElementById('eventBadgePill');
+        if (badgePillEl) {
+          if (event.isToday) {
+            badgePillEl.textContent = event.eventCategory === 'remembrance' ? 'TODAY 🙏' : 'TODAY ✨';
+            badgePillEl.style.display = 'inline-flex';
+            badgePillEl.classList.remove('event-card__badge-pill--upcoming');
+          } else {
+            const daysNum = (typeof event.daysLeft === 'number' && !isNaN(event.daysLeft)) ? event.daysLeft : null;
+            if (daysNum !== null && daysNum >= 0) {
+              badgePillEl.textContent = `${daysNum} ${daysNum === 1 ? 'day left' : 'days left'}`;
+              badgePillEl.style.display = 'inline-flex';
+              badgePillEl.classList.add('event-card__badge-pill--upcoming');
+            } else {
+              badgePillEl.textContent = 'UPCOMING';
+              badgePillEl.style.display = 'inline-flex';
+              badgePillEl.classList.add('event-card__badge-pill--upcoming');
+            }
           }
         }
 
@@ -1238,7 +1419,7 @@
 
     _updateGuruImage(event) {
 
-      // ── Guru Image Mapping ──
+      // -- Guru Image Mapping --
       // Using guruimages/ folder with .jpeg files as requested
       // PATTERN ORDER MATTERS: Most specific patterns first, generic patterns last
       const guruImageMap = {
@@ -1381,7 +1562,7 @@
 
         console.log('[GuruImage] Updating image to:', src, 'alt:', alt, 'retries left:', retries);
 
-        // ── SMOOTH CROSSFADE: preload in background, then swap ──
+        // -- SMOOTH CROSSFADE: preload in background, then swap --
         // Keep current image fully visible while new one loads
         const wrapper = el.parentElement;
         const preloadImg = new window.Image();
@@ -1535,18 +1716,22 @@
     updateProgressBar() {
       const completed = DataManager.getCompletedToday();
       const total = DataManager.getTotalBanis();
-      const percent = Math.round((completed / total) * 100);
+      const isComplete = total > 0 && completed >= total;
+      const percent = isComplete ? 100 : (total > 0 ? Math.min(100, Math.round((completed / total) * 100)) : 0);
 
       const fillEl = document.getElementById('progressFill');
       const textEl = document.getElementById('progressText');
       const labelEl = document.getElementById('progressLabel');
 
       if (fillEl) {
-        requestAnimationFrame(() => { fillEl.style.width = `${percent}%`; });
+        fillEl.classList.toggle('is-complete', isComplete);
+        requestAnimationFrame(() => { 
+          fillEl.style.setProperty('width', `${percent}%`, 'important');
+        });
       }
-      if (textEl) textEl.textContent = `${completed}/${total} Banis`;
+      if (textEl) textEl.textContent = isComplete ? `${total}/${total} Banis` : `${completed}/${total} Banis`;
       if (labelEl) {
-        if (completed >= total) {
+        if (isComplete) {
           labelEl.textContent = '✓ Complete';
         } else if (completed === 0) {
           labelEl.textContent = '☀️ Start morning Nitnem';
@@ -1832,7 +2017,7 @@
         }
       });
 
-      // ── Realm-scoped from here down ──────────────────────────────────────
+      // -- Realm-scoped from here down --------------------------------------
       // window/document outlive every #app swap, so everything below must bind
       // exactly once per JS realm however many times Home is mounted.
       if (window.__anhadThemeControllerRealmBound) return;
@@ -2663,7 +2848,7 @@
       this.mount();
     },
 
-    // ── REALM-SCOPED. Runs exactly once per JS realm. ───────────────────────
+    // -- REALM-SCOPED. Runs exactly once per JS realm. -----------------------
     initOnce() {
       if (window.__anhadAppInitOnce) return;
       window.__anhadAppInitOnce = true;
@@ -2703,7 +2888,7 @@
       });
     },
 
-    // ── PER-MOUNT. Runs on EVERY entry to Home. Must stay re-runnable. ──────
+    // -- PER-MOUNT. Runs on EVERY entry to Home. Must stay re-runnable. ------
     mount() {
       // Each step is isolated. mount() now runs on EVERY arrival rather than
       // once per session, so a single throw part-way down would otherwise
@@ -2815,7 +3000,7 @@
       window.__anhadHomeMounted = true;
     },
 
-    // ── TEARDOWN. Runs when leaving Home, from both departure paths. ────────
+    // -- TEARDOWN. Runs when leaving Home, from both departure paths. --------
     // Deliberately does NOT clear __anhadAppInitOnce or Scheduler's intervals:
     // those are realm-scoped and must survive so initOnce() stays a no-op.
     unmount() {
@@ -2846,6 +3031,13 @@
       try {
         if (window.AnhadCampaignRenderer && window.AnhadCampaignRenderer.stopRotation) {
           window.AnhadCampaignRenderer.stopRotation();
+        }
+      } catch (e) {}
+
+      // Stop the Guru portrait slider auto-advance to free the timer while off Home.
+      try {
+        if (window.PortraitSlider && window.PortraitSlider.stopAutoSlide) {
+          window.PortraitSlider.stopAutoSlide();
         }
       } catch (e) {}
 
@@ -2946,7 +3138,7 @@
   // ═══════════════════════════════════════════════════════════════════════════
   // BOOT
   // ═══════════════════════════════════════════════════════════════════════════
-  // ── SPA re-entry, registered BEFORE boot() ────────────────────────────────
+  // -- SPA re-entry, registered BEFORE boot() --------------------------------
   // Order is load-bearing. This module is one IIFE, and boot()/App.init() below
   // runs a long synchronous chain with no error handling of its own. Registered
   // after boot(), a single throw anywhere in App.init() aborted the IIFE and

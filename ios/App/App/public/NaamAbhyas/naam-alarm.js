@@ -1,7 +1,7 @@
 /**
  * ═══════════════════════════════════════════════════════════════════════════════
  * NAAM ALARM — Single Source of Truth Notification System
- * ─────────────────────────────────────────────────────────────────────────────
+ * -----------------------------------------------------------------------------
  * ONE system. ONE alarm per hour. NO race conditions.
  *
  * Pipeline:
@@ -70,9 +70,9 @@
             this._loadFired();
         }
 
-        /* ───────────────────────────────────────────────────
+        /* ---------------------------------------------------
            CONFIG helpers
-        ─────────────────────────────────────────────────── */
+        --------------------------------------------------- */
         _cfg() {
             try {
                 return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
@@ -83,9 +83,9 @@
             return !!this._cfg().enabled;
         }
 
-        /* ───────────────────────────────────────────────────
+        /* ---------------------------------------------------
            FIRED-TODAY state (persists across page reloads)
-        ─────────────────────────────────────────────────── */
+        --------------------------------------------------- */
         _loadFired() {
             try {
                 const raw = localStorage.getItem(FIRED_KEY);
@@ -114,9 +114,9 @@
             return !!this._firedToday[key];
         }
 
-        /* ───────────────────────────────────────────────────
+        /* ---------------------------------------------------
            SCHEDULE: load from localStorage (written by naam-abhyas.js)
-        ─────────────────────────────────────────────────── */
+        --------------------------------------------------- */
         _loadSchedule() {
             try {
                 const raw = localStorage.getItem(SCHEDULE_KEY)
@@ -126,9 +126,9 @@
             } catch { return {}; }
         }
 
-        /* ───────────────────────────────────────────────────
+        /* ---------------------------------------------------
            START / STOP
-        ─────────────────────────────────────────────────── */
+        --------------------------------------------------- */
         start() {
             this._stop();
             this._tick();
@@ -140,9 +140,9 @@
             if (this._tickTimer) { clearInterval(this._tickTimer); this._tickTimer = null; }
         }
 
-        /* ───────────────────────────────────────────────────
+        /* ---------------------------------------------------
            TICK — called every 15 seconds
-        ─────────────────────────────────────────────────── */
+        --------------------------------------------------- */
         _tick() {
             if (!this._isEnabled()) return;
             if (this._popupOpen)   return;   // don't interrupt active session
@@ -177,9 +177,9 @@
             }
         }
 
-        /* ───────────────────────────────────────────────────
+        /* ---------------------------------------------------
            FIRE SESSION: notification + popup
-        ─────────────────────────────────────────────────── */
+        --------------------------------------------------- */
         _fireSession(session, hour, min) {
             // 1. Send browser notification (if permitted)
             this._sendNotification(session, hour, min);
@@ -190,9 +190,9 @@
             }
         }
 
-        /* ───────────────────────────────────────────────────
+        /* ---------------------------------------------------
            NOTIFICATION: one simple Web Notification
-        ─────────────────────────────────────────────────── */
+        --------------------------------------------------- */
         _sendNotification(session, hour, min) {
             if (!('Notification' in window)) return;
             if (Notification.permission !== 'granted') {
@@ -232,9 +232,9 @@
             }
         }
 
-        /* ───────────────────────────────────────────────────
+        /* ---------------------------------------------------
            SESSION ALERT POPUP
-        ─────────────────────────────────────────────────── */
+        --------------------------------------------------- */
         _showSessionAlert(session, hour, min) {
             if (this._popupOpen) return;
             this._popupOpen = true;
@@ -268,9 +268,9 @@
             if (modal) modal.classList.remove('active');
         }
 
-        /* ───────────────────────────────────────────────────
+        /* ---------------------------------------------------
            MEDITATION TIMER
-        ─────────────────────────────────────────────────── */
+        --------------------------------------------------- */
         _startMeditation(durationMinutes, silent) {
             this._isSilent    = !!silent;
             this._totalSeconds = Math.round(durationMinutes * 60);
@@ -384,9 +384,9 @@
             }
         }
 
-        /* ───────────────────────────────────────────────────
+        /* ---------------------------------------------------
            COMPLETION MODAL
-        ─────────────────────────────────────────────────── */
+        --------------------------------------------------- */
         _showCompletionModal(partial) {
             const cfg     = this._cfg();
             const dur     = cfg.duration || 2;
@@ -444,9 +444,9 @@
             this._sessionData = null;
         }
 
-        /* ───────────────────────────────────────────────────
+        /* ---------------------------------------------------
            SESSION RECORDING
-        ─────────────────────────────────────────────────── */
+        --------------------------------------------------- */
         _recordCompletion(elapsedSecs) {
             if (!this._sessionData) return;
 
@@ -503,9 +503,9 @@
             }
         }
 
-        /* ───────────────────────────────────────────────────
+        /* ---------------------------------------------------
            SKIP SESSION
-        ─────────────────────────────────────────────────── */
+        --------------------------------------------------- */
         _skipSession() {
             if (!this._sessionData) return;
             const { hour, min } = this._sessionData;
@@ -524,9 +524,9 @@
             this._sessionData = null;
         }
 
-        /* ───────────────────────────────────────────────────
+        /* ---------------------------------------------------
            HELPERS
-        ─────────────────────────────────────────────────── */
+        --------------------------------------------------- */
         _fmt12(hour, min) {
             const ampm = hour >= 12 ? 'PM' : 'AM';
             const h12  = hour % 12 || 12;
@@ -552,9 +552,9 @@
             return this._fmt12(parseInt(h), s.startMinute || 0);
         }
 
-        /* ───────────────────────────────────────────────────
+        /* ---------------------------------------------------
            AUDIO: Minimal Web Audio API chimes
-        ─────────────────────────────────────────────────── */
+        --------------------------------------------------- */
         _playChime(type) {
             try {
                 const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -590,9 +590,9 @@
             } catch {}
         }
 
-        /* ───────────────────────────────────────────────────
+        /* ---------------------------------------------------
            PUBLIC: trigger a manual/forced session
-        ─────────────────────────────────────────────────── */
+        --------------------------------------------------- */
         triggerNow(durationMinutes) {
             const dur = durationMinutes || this._cfg().duration || 2;
             const now = new Date();
@@ -612,7 +612,7 @@
     ═══════════════════════════════════════════════════════════════════ */
     function wireButtons(alarm) {
 
-        // ─── Session Alert buttons ───
+        // --- Session Alert buttons ---
         const alertStart  = document.getElementById('alertStartNowBtn');
         const alertSilent = document.getElementById('alertSilentBtn');
         const alertSkip   = document.getElementById('skipSessionBtn');
@@ -639,7 +639,7 @@
             });
         }
 
-        // ─── Meditation Overlay buttons ───
+        // --- Meditation Overlay buttons ---
         const medPresent = document.getElementById('medPresentBtn');
         const medSilent  = document.getElementById('medSilentBtn');
         const medSkip    = document.getElementById('skipMeditationBtn');
@@ -670,7 +670,7 @@
             });
         }
 
-        // ─── Completion modal ───
+        // --- Completion modal ---
         const continueBtn = document.getElementById('continueBtn');
         if (continueBtn) {
             continueBtn.addEventListener('click', () => {
@@ -682,7 +682,7 @@
             });
         }
 
-        // ─── Quick-Action "Start Now" — bypass alert, go directly to meditation ───
+        // --- Quick-Action "Start Now" — bypass alert, go directly to meditation ---
         const startNowBtn  = document.getElementById('startNowBtn');
         const quickNaamBtn = document.getElementById('quickNaamBtn');
         const deepModeBtn  = document.getElementById('deepModeBtn');
@@ -766,7 +766,7 @@
         console.log('[NaamAlarm] ✅ Boot complete');
     }
 
-    /* ─── Run after DOM ready ─── */
+    /* --- Run after DOM ready --- */
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', boot, { once: true });
     } else {

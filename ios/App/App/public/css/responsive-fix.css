@@ -409,14 +409,14 @@ html[data-theme-mode="auto"][data-time-of-day="night"] .greeting__dark-carousel-
     transition: transform 0.15s ease !important;
 }
 
+[data-theme-mode="auto"][data-time-of-day="night"] .time-orb,
 [data-theme-mode="auto"][data-time-of-day="night"] .time-orb-1,
-[data-theme-mode="auto"][data-time-of-day="night"] .time-orb-header {
-    filter: blur(60px) !important;
-    opacity: 0.35 !important;
-}
-
-[data-theme-mode="auto"][data-time-of-day="night"] * {
-    text-shadow: none !important;
+[data-theme-mode="auto"][data-time-of-day="night"] .time-orb-header,
+[data-time-of-day="night"] .time-orb,
+[data-time-of-day="night"] .time-orb-1,
+[data-time-of-day="night"] .time-orb-header {
+    display: none !important;
+    opacity: 0 !important;
 }
 
 

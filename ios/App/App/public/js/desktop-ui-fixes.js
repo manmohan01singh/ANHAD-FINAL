@@ -170,7 +170,7 @@
       // Event card optimal width constraint
       const eventCard = document.getElementById('eventCard');
       if (eventCard && window.innerWidth >= 1024) {
-        eventCard.style.maxWidth = '860px';
+        eventCard.style.maxWidth = '640px';
         eventCard.style.marginLeft = 'auto';
         eventCard.style.marginRight = 'auto';
       }

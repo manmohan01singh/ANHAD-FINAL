@@ -438,19 +438,33 @@ function _anhadHomepageDataInit() {
   function updateNitnemTracker() {
     let streak = 0, completedToday = 0, totalBanis = 0;
     try {
+      const pothi = localStorage.getItem('anhad_my_pothi');
+      let pothiCount = 0;
+      if (pothi) {
+        try {
+          const p = JSON.parse(pothi);
+          if (Array.isArray(p) && p.length > 0) pothiCount = p.length;
+        } catch (e) { }
+      }
+
       const sb = localStorage.getItem('nitnemTracker_selectedBanis');
       if (sb) {
         const p = JSON.parse(sb);
-        totalBanis = (p.amritvela?.length || 0) + (p.rehras?.length || 0) + (p.sohila?.length || 0);
-      }
-      if (totalBanis === 0) {
-        const pothi = localStorage.getItem('anhad_my_pothi');
-        if (pothi) {
-          const p = JSON.parse(pothi);
-          if (Array.isArray(p) && p.length > 0) totalBanis = p.length;
+        const uniqueSet = new Set();
+        (p.amritvela || []).forEach(b => b && (b.id || b.name) && uniqueSet.add(b.id || b.name));
+        (p.rehras || []).forEach(b => b && (b.id || b.name) && uniqueSet.add(b.id || b.name));
+        (p.sohila || []).forEach(b => b && (b.id || b.name) && uniqueSet.add(b.id || b.name));
+        if (pothiCount > 0) {
+          totalBanis = pothiCount;
+        } else if (uniqueSet.size > 0) {
+          totalBanis = uniqueSet.size;
+        } else {
+          totalBanis = (p.amritvela?.length || 0) + (p.rehras?.length || 0) + (p.sohila?.length || 0);
         }
+      } else if (pothiCount > 0) {
+        totalBanis = pothiCount;
       }
-      if (totalBanis === 0) totalBanis = 11;
+      if (totalBanis === 0) totalBanis = 10;
     } catch (e) { }
     try {
       const today = new Date().toLocaleDateString('en-CA');

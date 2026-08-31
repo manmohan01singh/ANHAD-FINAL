@@ -252,7 +252,7 @@
         if (syncInterval) {
             clearInterval(syncInterval);
             syncInterval = null;
-            console.log('[AlarmSync] ⏸️ Auto-sync stopped');
+            console.log('[AlarmSync] ⏸️️ Auto-sync stopped');
         }
     }
 

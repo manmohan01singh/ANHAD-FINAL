@@ -41,15 +41,40 @@
     
     <!-- NUCLEAR OPTION: Self-contained Dynamic Island with maximum specificity -->
     <style>
+      /* KILL RED BAR AT ROOT LEVEL */
+      html, body {
+        background: #0D0D0F !important;
+        background-image: none !important;
+        background-color: #0D0D0F !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+      
+      html[data-theme="light"], 
+      body:not(.dark-mode) {
+        background: #FAF8F5 !important;
+        background-image: none !important;
+        background-color: #FAF8F5 !important;
+      }
+      
+      /* KILL ANY SAFE AREA BACKGROUND */
+      html::before,
+      html::after,
+      body::before,
+      body::after {
+        content: none !important;
+        display: none !important;
+      }
+      
       /* FORCE HIDE EVERYTHING THAT COULD BE A HEADER */
       nav:not(#dynamicIslandNav),
       header,
       .glass-nav,
       .app-bar,
       .app-header,
-      [class*="nav"],
+      [class*="nav"]:not(#dynamicIslandNav),
       [class*="header"],
-      [class*="bar"] {
+      [class*="bar"]:not(#dynamicIslandNav) {
         display: none !important;
         visibility: hidden !important;
         opacity: 0 !important;
@@ -57,11 +82,10 @@
         overflow: hidden !important;
       }
       
-      /* KILL ALL RED BARS AND PSEUDO ELEMENTS */
-      *::before,
-      *::after {
-        background: transparent !important;
-        border-color: transparent !important;
+      /* KILL ALL PSEUDO ELEMENTS BACKGROUNDS */
+      *:not(#dynamicIslandNav):not(.island-btn):not(.island-title)::before,
+      *:not(#dynamicIslandNav):not(.island-btn):not(.island-title)::after {
+        background-image: none !important;
       }
       
       /* SELF-CONTAINED DYNAMIC ISLAND - MAXIMUM SPECIFICITY */

@@ -139,31 +139,31 @@
     // ═══════════════════════════════════════════════════════════════════════════
 
     function setupEventListeners() {
-        // ─── Search Input ───
+        // --- Search Input ---
         elements.searchInput.addEventListener('input', handleInputChange);
         elements.searchInput.addEventListener('keydown', handleInputKeydown);
 
-        // ─── Clear Button ───
+        // --- Clear Button ---
         elements.clearBtn?.addEventListener('click', clearSearch);
         elements.clearSearchBtn?.addEventListener('click', clearSearch);
 
-        // ─── Keyboard Button ───
+        // --- Keyboard Button ---
         elements.keyboardBtn?.addEventListener('click', openGurmukhiKeyboard);
 
-        // ─── Voice Button ───
+        // --- Voice Button ---
         elements.voiceBtn?.addEventListener('click', toggleVoiceSearch);
 
-        // ─── Mode Buttons ───
+        // --- Mode Buttons ---
         elements.modeBtns.forEach(btn => {
             btn.addEventListener('click', () => setSearchMode(btn.dataset.mode));
         });
 
-        // ─── Retry Button ───
+        // --- Retry Button ---
         elements.retryBtn?.addEventListener('click', () => {
             if (state.currentQuery) performSearch(state.currentQuery, 'retry');
         });
 
-        // ─── Keyboard Popup ───
+        // --- Keyboard Popup ---
         elements.keyboardBackdrop?.addEventListener('click', closeGurmukhiKeyboard);
         elements.keyboardClose?.addEventListener('click', closeGurmukhiKeyboard);
         elements.backspaceKey?.addEventListener('click', handleBackspace);
@@ -179,17 +179,17 @@
             });
         });
 
-        // ─── Voice Language Selector ───
+        // --- Voice Language Selector ---
         elements.langPunjabi?.addEventListener('click', () => setVoiceLanguage('pa-IN'));
         elements.langEnglish?.addEventListener('click', () => setVoiceLanguage('en-US'));
 
-        // ─── Voice Cancel ───
+        // --- Voice Cancel ---
         elements.voiceCancelBtn?.addEventListener('click', stopVoiceRecognition);
 
-        // ─── Theme Toggle ───
+        // --- Theme Toggle ---
         elements.themeToggle?.addEventListener('click', toggleTheme);
 
-        // ─── Global Keyboard Shortcuts ───
+        // --- Global Keyboard Shortcuts ---
         document.addEventListener('keydown', handleGlobalKeydown);
     }
 
