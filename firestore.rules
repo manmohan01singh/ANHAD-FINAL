@@ -1,0 +1,116 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ─── AUTHENTICATION & ROLE HELPERS ───────────────────────────────
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && request.auth.token.admin == true;
+    }
+
+    // ─── PUBLIC PROFILES (Strict Allowlist — No Blacklist) ───────────
+    // Only safe, public display fields. Never leaks email, phone, streaks,
+    // reading progress, tokens, or administrative fields.
+    match /public_profiles/{userId} {
+      function isValidPublicProfile(data) {
+        let allowedFields = ['username', 'displayName', 'avatarUrl', 'createdAt', 'updatedAt'];
+        return data.keys().hasOnly(allowedFields)
+          && data.username is string
+          && data.username.size() >= 3
+          && data.username.size() <= 30
+          && data.username.matches('^[a-zA-Z0-9_]+$')
+          && data.displayName is string
+          && data.displayName.size() >= 1
+          && data.displayName.size() <= 50
+          && (!('avatarUrl' in data) || data.avatarUrl == null || (data.avatarUrl is string && data.avatarUrl.size() <= 500));
+      }
+
+      allow read: if true;
+      allow create: if isOwner(userId) && isValidPublicProfile(request.resource.data);
+      allow update: if isOwner(userId)
+        && isValidPublicProfile(request.resource.data)
+        // Ensure username is immutable once created
+        && request.resource.data.username == resource.data.username;
+      allow delete: if isOwner(userId);
+    }
+
+    // ─── USER DOCUMENTS & ISOLATED SUBCOLLECTIONS ─────────────────────
+    match /users/{userId} {
+      allow read: if isOwner(userId);
+
+      // Safe user settings updates only. Protected fields (admin, role, streak,
+      // presence, moderation) CANNOT be written by client.
+      allow create: if isOwner(userId)
+        && request.resource.data.keys().hasOnly(['displayName', 'preferences', 'notificationSettings', 'uiSettings', 'createdAt'])
+        && !('admin' in request.resource.data)
+        && !('role' in request.resource.data)
+        && !('streak' in request.resource.data);
+
+      allow update: if isOwner(userId)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['displayName', 'preferences', 'notificationSettings', 'uiSettings', 'updatedAt'])
+        && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['admin', 'role', 'streak', 'presence', 'serverVerification', 'moderationState']);
+
+      allow delete: if isOwner(userId);
+
+      // Friends: Synchronized and validated by trusted backend logic only
+      match /friends/{friendId} {
+        allow read: if isOwner(userId);
+        allow write: if false; // Server-authoritative only
+      }
+
+      // Companions: Validated and set by trusted backend logic only
+      match /companions/{companionId} {
+        allow read: if isOwner(userId);
+        allow write: if false; // Server-authoritative only
+      }
+
+      // In-App Notifications: Server-authoritative creation only.
+      // Owner can read and dismiss/delete. No arbitrary client injection.
+      match /notifications/{notifId} {
+        allow read, delete: if isOwner(userId);
+        allow create, update: if false; // Strictly created via server Admin SDK
+      }
+
+      // Private reading progress, pothi, and bookmarks (Owner access only)
+      match /reading_progress/{docId} {
+        allow read, write: if isOwner(userId);
+      }
+      match /nitnem_progress/{docId} {
+        allow read, write: if isOwner(userId);
+      }
+      match /sehaj_paath/{docId} {
+        allow read, write: if isOwner(userId);
+      }
+      match /my_pothi/{docId} {
+        allow read, write: if isOwner(userId);
+      }
+      match /bookmarks/{docId} {
+        allow read, write: if isOwner(userId);
+      }
+    }
+
+    // ─── PUBLIC COMMUNITY PRESENCE (Aggregated read, Admin-only write) ─
+    match /community/{document=**} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // ─── SPIRITUAL CAMPAIGNS (Public read, Admin-only write) ─────────
+    match /campaigns/{campaignId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // ─── DEFAULT DENY ALL OTHER COLLECTIONS ──────────────────────────
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

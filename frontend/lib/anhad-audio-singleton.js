@@ -642,12 +642,12 @@
           connectionState = 'reconnecting';
           emit('statechange', getPublicState());
 
-          // Past a handful of fast attempts, tell the UI once that we're
-          // struggling — not every cycle — while still retrying underneath.
-          if (liveReconnectAttempts === 6) {
+          if (liveReconnectAttempts >= 6) {
             connectionState = 'failed';
             emit('statechange', getPublicState());
-            emit('error', { type: 'stream_failed', message: 'Still unable to reach the stream — will keep retrying automatically.' });
+            if (liveReconnectAttempts === 6) {
+              emit('error', { type: 'stream_failed', message: 'Still unable to reach the stream — will keep retrying automatically.' });
+            }
           }
 
           // Adaptive backoff: 2s -> 4s -> 8s -> 12s -> 15s, then holds at 15s.
@@ -818,7 +818,9 @@
             await Promise.race([playPromise, timeoutPromise]);
             isPlaying = true;
             isLoading = false;
-            connectionState = 'connected';
+            if (!reconnectCycleActive) {
+              connectionState = 'connected';
+            }
             emit('loading', { isLoading: false });
             emit('statechange', getPublicState());
             persistState();

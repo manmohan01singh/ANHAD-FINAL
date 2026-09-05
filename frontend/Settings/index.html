@@ -1,6 +1,12 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
+  <script>
+    if (typeof window !== 'undefined' && window.location && window.location.hostname === '127.0.0.1') {
+      window.location.replace(window.location.href.replace('//127.0.0.1', '//localhost'));
+    }
+  </script>
+
   <script>
     (function() {
       try {
@@ -76,6 +82,9 @@
   <script src="../lib/global-theme.js" defer></script>
   <script src="../lib/desktop-sidebar.js" defer></script>
   <script src="../js/anhad-core.js" defer></script>
+  <script src="../lib/anhad-auth.js" defer></script>
+  <script src="../lib/companion-mode.js" defer></script>
+  <script src="../lib/reading-migration.js" defer></script>
 </head>
 
 <body>
@@ -90,6 +99,64 @@
 
   <main class="settings-page">
     
+    <!-- ACCOUNT & SANGAT PROFILE Section -->
+    <section class="settings-section" id="accountSection">
+      <h2 class="settings-section__title">ACCOUNT & SANGAT IDENTITY</h2>
+      
+      <div class="settings-group">
+        <div class="settings-item" id="accountProfileItem">
+          <div class="settings-item__icon" id="accountAvatarIcon">👤</div>
+          <div class="settings-item__content">
+            <div class="settings-item__label" id="accountDisplayName">Guest Sangat</div>
+            <div class="settings-item__desc" id="accountStatusDesc">Local device storage · Frictionless guest</div>
+          </div>
+          <span class="settings-badge settings-badge-guest" id="accountBadge">Guest Mode</span>
+        </div>
+
+        <div class="settings-item" onclick="window.location.href='../sangat/friends.html'">
+          <div class="settings-item__icon">👥</div>
+          <div class="settings-item__content">
+            <div class="settings-item__label">Sangat & Companions</div>
+            <div class="settings-item__desc">Manage friends, Amrit Vela companions & alerts</div>
+          </div>
+          <div class="settings-item__arrow">›</div>
+        </div>
+
+
+        <div class="settings-btn-row">
+          <button class="settings-btn settings-btn-primary" id="accountAuthBtn" onclick="handleAuthAction()">
+            <span>Sign In / Sign Up</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- COMPANION & READING MIGRATION Section -->
+    <section class="settings-section">
+      <h2 class="settings-section__title">SPIRITUAL PROGRESS & BACKUP</h2>
+      
+      <div class="settings-group">
+
+        <div class="settings-item">
+          <div class="settings-item__icon">💾</div>
+          <div class="settings-item__content">
+            <div class="settings-item__label">Reading Progress Migration</div>
+            <div class="settings-item__desc">Export/import Nitnem, My Pothi & Sehaj Paath across devices</div>
+          </div>
+        </div>
+
+        <div class="settings-btn-row">
+          <button class="settings-btn settings-btn-secondary" id="exportProgressBtn" onclick="handleExportProgress()">
+            <span>📥 Export Backup</span>
+          </button>
+          <button class="settings-btn settings-btn-secondary" id="importProgressBtn" onclick="handleImportProgress()">
+            <span>📤 Import Backup</span>
+          </button>
+          <input type="file" id="importFileInput" accept=".json,application/json" style="display:none;" onchange="handleFileSelected(event)">
+        </div>
+      </div>
+    </section>
+
     <!-- GENERAL Section -->
     <section class="settings-section">
       <h2 class="settings-section__title">GENERAL</h2>
@@ -353,6 +420,81 @@
       'dark': 'Dark'
     };
     document.getElementById('themeValue').textContent = themeNames[currentTheme] || 'Auto';
+
+    // ── Auth state listener ──
+    function updateAuthUI() {
+      if (!window.AnhadAuth) return;
+      const profile = window.AnhadAuth.getProfile();
+      const nameEl = document.getElementById('accountDisplayName');
+      const descEl = document.getElementById('accountStatusDesc');
+      const badgeEl = document.getElementById('accountBadge');
+      const btnEl = document.getElementById('accountAuthBtn');
+
+      const isGuest = !profile || profile.isAnonymous || profile.isGuest;
+
+      if (!isGuest) {
+        nameEl.textContent = profile.displayName || 'Gursikh Sangat';
+        descEl.textContent = (profile.username ? '@' + profile.username + ' · ' : '') + (profile.email || 'Cloud synced');
+        badgeEl.className = 'settings-badge settings-badge-auth';
+        badgeEl.textContent = 'Synced';
+        btnEl.innerHTML = '<span>Sign Out</span>';
+        btnEl.className = 'settings-btn settings-btn-secondary';
+      } else {
+        nameEl.textContent = 'Guest Sangat';
+        descEl.textContent = 'Local device storage · Frictionless guest';
+        badgeEl.className = 'settings-badge settings-badge-guest';
+        badgeEl.textContent = 'Guest Mode';
+        btnEl.innerHTML = '<span>Sign In / Sign Up</span>';
+        btnEl.className = 'settings-btn settings-btn-primary';
+      }
+    }
+
+    async function handleAuthAction() {
+      if (!window.AnhadAuth) return;
+      const profile = window.AnhadAuth.getProfile();
+      const isGuest = !profile || profile.isAnonymous || profile.isGuest;
+      if (!isGuest) {
+        if (confirm('Sign out of your Anhad Sangat account? Your local progress will remain preserved.')) {
+          await window.AnhadAuth.signOut();
+          updateAuthUI();
+        }
+      } else {
+        window.location.href = '../auth/index.html?returnUrl=' + encodeURIComponent(window.location.href);
+      }
+    }
+
+    // ── Reading Migration Handlers ──
+    function handleExportProgress() {
+      if (window.ReadingMigration) {
+        window.ReadingMigration.downloadExportFile();
+      } else {
+        alert('Migration engine loading...');
+      }
+    }
+
+    function handleImportProgress() {
+      document.getElementById('importFileInput').click();
+    }
+
+    async function handleFileSelected(e) {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      if (window.ReadingMigration) {
+        const mode = confirm("Merge with current progress? Click OK to MERGE (recommended), or Cancel to REPLACE completely.") ? 'merge' : 'replace';
+        const result = await window.ReadingMigration.importFromFile(file, { mode });
+        if (result.success) {
+          alert('Successfully imported reading progress! Nitnem and Pothi data restored.');
+          e.target.value = '';
+        } else {
+          alert('Import failed: ' + (result.error || 'Invalid file'));
+        }
+      }
+    }
+
+    window.addEventListener('anhad_auth_state_changed', updateAuthUI);
+    document.addEventListener('DOMContentLoaded', () => {
+      updateAuthUI();
+    });
   </script>
 
     <script src="../lib/overlay-player.js" defer></script>

@@ -1,13 +1,28 @@
 dist-electron/
 node_modules/
+backend/node_modules/
 *.exe
 *.dll
 *.asar
 
-backend/.env.example
+# Environment files - NEVER commit real secrets
+.env
+.env.*
 backend/.env
-backend/node_modules/
-node_modules/
+backend/.env.*
+!.env.example
+!backend/.env.example
+
+# Service account credentials, keys, and certificates - STRICTLY IGNORED
+service-account*.json
+firebase-adminsdk*.json
+*serviceaccount*.json
+*.pem
+*.key
+*.cert
+anhad-key.jks
+*.jks
+*.keystore
 
 # IDEs and editors
 .vscode/
@@ -25,13 +40,6 @@ logs/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-
-# Sensitive files
-anhad-key.jks
-*.jks
-*.keystore
-.env.local
-.env.*.local
 
 # Build and temporary
 dist/

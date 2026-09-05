@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Theme blocker — must be the first thing in <head> -->
+  <script>
+    (function() {
+      try {
+        const theme = localStorage.getItem('anhad_theme') || 'auto';
+        let effectiveTheme = theme;
+        let timeOfDay = localStorage.getItem('anhad_forced_time_of_day');
+        if (theme === 'auto') {
+          if (timeOfDay && ['morning', 'day', 'evening', 'night'].includes(timeOfDay)) {
+            effectiveTheme = (timeOfDay === 'night') ? 'dark' : 'light';
+          } else {
+            const hour = new Date().getHours();
+            effectiveTheme = (hour >= 5 && hour < 20) ? 'light' : 'dark';
+            if (hour >= 5 && hour < 9) timeOfDay = 'morning';
+            else if (hour >= 9 && hour < 16) timeOfDay = 'day';
+            else if (hour >= 16 && hour < 20) timeOfDay = 'evening';
+            else timeOfDay = 'night';
+          }
+        }
+        document.documentElement.setAttribute('data-theme', effectiveTheme);
+        document.documentElement.setAttribute('data-theme-mode', theme);
+        if (theme === 'auto') document.documentElement.setAttribute('data-time-of-day', timeOfDay);
+        document.documentElement.style.colorScheme = effectiveTheme;
+        if (effectiveTheme === 'dark') {
+          document.documentElement.classList.add('dark', 'dark-mode');
+          document.documentElement.style.backgroundColor = '#000000';
+          document.documentElement.style.color = '#F5F5F7';
+        } else {
+          document.documentElement.style.backgroundColor = '#F2F2F7';
+          document.documentElement.style.color = '#1C1C1E';
+        }
+      } catch (e) {}
+    })();
+  </script>
+
+  <style>
+    html, body { margin: 0; padding: 0; }
+    html { background-color: #F2F2F7 !important; color: #1C1C1E !important; }
+    html[data-theme="dark"], html.dark-mode {
+      background-color: #000000 !important; color: #F5F5F7 !important;
+    }
+    body { background-color: inherit !important; color: inherit !important; }
+  </style>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Connect to Sangat | ANHAD</title>
+
+  <link rel="stylesheet" href="../css/theme-variables.css">
+  <link rel="stylesheet" href="../css/trendora-premium.css">
+  <link rel="stylesheet" href="../css/anhad-core.css">
+  <link rel="stylesheet" href="../css/nav-glass.css">
+  <script src="../lib/anhad-svg-sprite.js"></script>
+  <script src="../lib/global-theme.js" defer></script>
+  <script src="../lib/smooth-navigation.js" defer></script>
+  <script src="../lib/firebase-client.js" defer></script>
+  <script src="../lib/anhad-auth.js" defer></script>
+  <script src="../lib/friends-system.js" defer></script>
+
+  <style>
+    /* ═══════════════════════════════════════════════════════════════════════════
+       AUTHENTIC APPLE iOS HIG SANGAT SEARCH & CONNECT DESIGN
+       ═══════════════════════════════════════════════════════════════════════════ */
+    :root {
+      --ios-bg: #F2F2F7;
+      --ios-card-bg: #FFFFFF;
+      --ios-separator: rgba(60, 60, 67, 0.12);
+      --ios-text-primary: #000000;
+      --ios-text-secondary: #8E8E93;
+      --ios-text-tertiary: #C7C7CC;
+      --ios-blue: #007AFF;
+      --ios-green: #34C759;
+      --ios-fill: rgba(120, 120, 128, 0.12);
+    }
+
+    html.dark-mode, html[data-theme="dark"] {
+      --ios-bg: #000000;
+      --ios-card-bg: #1C1C1E;
+      --ios-separator: rgba(255, 255, 255, 0.1);
+      --ios-text-primary: #FFFFFF;
+      --ios-text-secondary: #8E8E93;
+      --ios-text-tertiary: #48484A;
+      --ios-blue: #0A84FF;
+      --ios-green: #30D158;
+      --ios-fill: rgba(120, 120, 128, 0.24);
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
+      background-color: var(--ios-bg);
+      color: var(--ios-text-primary);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      padding-bottom: calc(env(safe-area-inset-bottom, 24px) + 90px);
+      min-height: 100vh;
+      box-sizing: border-box;
+    }
+
+    .search-viewport {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 0 16px;
+    }
+
+    /* ── Apple Header Navigation ── */
+    .ios-nav-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: var(--ios-bg);
+      padding-top: calc(env(safe-area-inset-top, 20px) + 10px);
+      padding-bottom: 12px;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+
+    .ios-nav-top-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .ios-back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: none;
+      border: none;
+      color: var(--ios-blue);
+      font-size: 17px;
+      font-weight: 400;
+      cursor: pointer;
+      padding: 4px 0;
+    }
+    .ios-back-link:active {
+      opacity: 0.6;
+    }
+
+    .ios-page-title {
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--ios-text-primary);
+      margin: 0;
+      text-align: center;
+    }
+
+    .ios-nav-placeholder {
+      width: 48px;
+    }
+
+    /* ── Apple Search Bar ── */
+    .ios-search-bar {
+      display: flex;
+      align-items: center;
+      background: var(--ios-fill);
+      border-radius: 12px;
+      padding: 8px 12px;
+      gap: 8px;
+      transition: background 0.2s ease;
+    }
+
+    .ios-search-bar svg {
+      color: var(--ios-text-secondary);
+      flex-shrink: 0;
+    }
+
+    .ios-search-input {
+      flex: 1;
+      border: none;
+      background: transparent;
+      font-size: 16px;
+      color: var(--ios-text-primary);
+      outline: none;
+      font-family: inherit;
+      padding: 0;
+    }
+    .ios-search-input::placeholder {
+      color: var(--ios-text-secondary);
+    }
+
+    .ios-search-clear {
+      background: rgba(120, 120, 128, 0.3);
+      border: none;
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      color: var(--ios-bg);
+      font-size: 11px;
+      font-weight: bold;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    /* ── Filter Pills ── */
+    .ios-filter-scroll {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 10px 0 6px 0;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+    }
+    .ios-filter-scroll::-webkit-scrollbar { display: none; }
+
+    .ios-filter-pill {
+      border: none;
+      background: var(--ios-card-bg);
+      color: var(--ios-text-secondary);
+      border-radius: 20px;
+      padding: 6px 14px;
+      font-size: 13px;
+      font-weight: 500;
+      white-space: nowrap;
+      cursor: pointer;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+      transition: all 0.2s ease;
+    }
+    .ios-filter-pill.active {
+      background: var(--ios-blue);
+      color: #FFFFFF;
+      font-weight: 600;
+    }
+
+    /* ── Apple Inset Grouped Section ── */
+    .ios-section-header {
+      font-size: 13px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+      color: var(--ios-text-secondary);
+      margin: 16px 4px 8px 8px;
+    }
+
+    .ios-inset-group {
+      background: var(--ios-card-bg);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
+    }
+
+    .ios-user-cell {
+      display: flex;
+      align-items: center;
+      padding: 12px 16px;
+      position: relative;
+      transition: background 0.15s ease;
+    }
+    .ios-user-cell:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      left: 68px;
+      height: 0.5px;
+      background-color: var(--ios-separator);
+    }
+    .ios-user-cell:active {
+      background-color: rgba(120, 120, 128, 0.08);
+    }
+
+    /* Avatar */
+    .ios-avatar-wrapper {
+      position: relative;
+      margin-right: 14px;
+      flex-shrink: 0;
+    }
+
+    .ios-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #FF9500 0%, #FF5E3A 100%);
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: -0.5px;
+    }
+
+    .ios-avatar.blue { background: linear-gradient(135deg, #007AFF 0%, #5856D6 100%); }
+    .ios-avatar.green { background: linear-gradient(135deg, #34C759 0%, #30B0C7 100%); }
+    .ios-avatar.purple { background: linear-gradient(135deg, #AF52DE 0%, #5856D6 100%); }
+    .ios-avatar.gold { background: linear-gradient(135deg, #D4943A 0%, #B8860B 100%); }
+    .ios-avatar.teal { background: linear-gradient(135deg, #30B0C7 0%, #007AFF 100%); }
+
+    .ios-presence-dot {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background-color: var(--ios-green);
+      border: 2px solid var(--ios-card-bg);
+    }
+
+    /* Details */
+    .ios-cell-info {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .ios-cell-name {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--ios-text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .ios-cell-handle {
+      font-size: 13px;
+      color: var(--ios-text-secondary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .ios-cell-status {
+      font-size: 12px;
+      color: var(--ios-text-secondary);
+      margin-top: 2px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* Action Pill Button */
+    .ios-connect-btn {
+      border: none;
+      background: var(--ios-text-primary);
+      color: var(--ios-card-bg);
+      font-size: 14px;
+      font-weight: 600;
+      padding: 7px 16px;
+      border-radius: 18px;
+      cursor: pointer;
+      flex-shrink: 0;
+      margin-left: 10px;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .ios-connect-btn:active {
+      transform: scale(0.94);
+      opacity: 0.85;
+    }
+
+    .ios-connect-btn.requested {
+      background: var(--ios-fill);
+      color: var(--ios-text-secondary);
+      cursor: default;
+      font-weight: 500;
+    }
+    .ios-connect-btn.requested:active {
+      transform: none;
+      opacity: 1;
+    }
+
+    .ios-connect-btn.connected {
+      background: rgba(52, 199, 89, 0.15);
+      color: var(--ios-green);
+      cursor: default;
+    }
+
+    /* Empty State */
+    .ios-empty-state {
+      padding: 44px 16px;
+      text-align: center;
+      color: var(--ios-text-secondary);
+      font-size: 15px;
+    }
+
+    /* Toast */
+    .ios-toast {
+      position: fixed;
+      bottom: calc(env(safe-area-inset-bottom, 24px) + 24px);
+      left: 50%;
+      transform: translateX(-50%) translateY(30px);
+      background: rgba(28, 28, 30, 0.94);
+      color: #FFFFFF;
+      padding: 12px 22px;
+      border-radius: 24px;
+      font-size: 14px;
+      font-weight: 500;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.24);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      z-index: 9999;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .ios-toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div class="search-viewport">
+    <!-- ── Apple Sticky Header ── -->
+    <header class="ios-nav-header">
+      <div class="ios-nav-top-row">
+        <button class="ios-back-link" onclick="goBackHome()" aria-label="Back to Home">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+          <span>Home</span>
+        </button>
+        <h1 class="ios-page-title">Find Sangat</h1>
+        <div class="ios-nav-placeholder"></div>
+      </div>
+
+      <!-- iOS Native Search Bar -->
+      <div class="ios-search-bar">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input type="search" id="sangatInput" class="ios-search-input" placeholder="Search Sangat by name or @username..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+        <button class="ios-search-clear" id="sangatClearBtn" onclick="clearSearch()" aria-label="Clear Search">✕</button>
+      </div>
+
+      <!-- Category Filter Pills -->
+      <div class="ios-filter-scroll">
+        <button class="ios-filter-pill active" data-filter="all" onclick="setFilter('all', this)">All</button>
+        <button class="ios-filter-pill" data-filter="amritvela" onclick="setFilter('amritvela', this)">🌅 Amritvela</button>
+        <button class="ios-filter-pill" data-filter="companion" onclick="setFilter('companion', this)">☬ Chaliya 2026</button>
+        <button class="ios-filter-pill" data-filter="streak" onclick="setFilter('streak', this)">🔥 High Streaks</button>
+      </div>
+    </header>
+
+    <!-- ── Inset Grouped Section ── -->
+    <main>
+      <div class="ios-section-header" id="listSectionTitle">Suggested Sangat</div>
+      <div class="ios-inset-group" id="sangatListContainer">
+        <!-- Rendered dynamically -->
+      </div>
+    </main>
+  </div>
+
+  <div class="ios-toast" id="iosToast" role="status" aria-live="polite"></div>
+
+  <script>
+    (function() {
+      'use strict';
+
+      let currentQuery = '';
+      let toastTimer = null;
+      let cachedSearchResults = [];
+      let friendsSet = new Set();
+      let companionsMap = new Map();
+      let searchDebounce = null;
+
+      function showToast(msg) {
+        const t = document.getElementById('iosToast');
+        if (!t) return;
+        t.textContent = msg;
+        t.classList.add('show');
+        if (toastTimer) clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
+      }
+
+      function getSentRequests() {
+        try {
+          return JSON.parse(localStorage.getItem('anhad_sent_requests') || '[]');
+        } catch(e) { return []; }
+      }
+
+      async function syncFriendCircle() {
+        try {
+          if (window.AnhadFriends) {
+            const list = await window.AnhadFriends.getFriendsList().catch(() => null);
+            if (list && list.friends) {
+              friendsSet = new Set(list.friends.map(f => f.uid));
+            }
+            const comps = await window.AnhadFriends.getCompanions().catch(() => null);
+            if (comps && Array.isArray(comps)) {
+              companionsMap = new Map(comps.map(c => [c.uid, c]));
+            }
+          }
+        } catch (e) {}
+      }
+
+      async function performSearch(q) {
+        const container = document.getElementById('sangatListContainer');
+        const titleEl = document.getElementById('listSectionTitle');
+        if (!container) return;
+
+        await syncFriendCircle();
+
+        if (!q || q.trim().length === 0) {
+          cachedSearchResults = [];
+          if (titleEl) titleEl.textContent = 'Find Sangat';
+          container.innerHTML = `
+            <div class="ios-empty-state" style="padding: 44px 16px;">
+              <div style="font-size: 36px; margin-bottom: 12px;">🔍</div>
+              <div style="font-weight: 600; font-size: 16px; margin-bottom: 6px; color: var(--ios-text-primary);">Search Sangat Community</div>
+              <div style="font-size: 13.5px; color: var(--ios-text-secondary); max-width: 320px; margin: 0 auto; line-height: 1.45;">
+                Search by name or @username to connect with Sangat companions and share your Amrit Vela journey.
+              </div>
+            </div>
+          `;
+          return;
+        }
+
+        container.innerHTML = `
+          <div class="ios-empty-state" style="padding: 32px 16px;">
+            <div style="font-size: 14px; color: var(--ios-text-secondary);">Searching Sangat...</div>
+          </div>
+        `;
+
+        try {
+          let results = [];
+          if (window.AnhadFriends && typeof window.AnhadFriends.searchUsers === 'function') {
+            results = await window.AnhadFriends.searchUsers(q);
+          } else {
+            const resp = await fetch('/api/friends/search?q=' + encodeURIComponent(q));
+            const data = await resp.json().catch(() => ({}));
+            results = data.results || [];
+          }
+
+          cachedSearchResults = results;
+          renderResults(results, q);
+        } catch (err) {
+          console.warn('[SangatSearch] Search error:', err);
+          renderResults([], q);
+        }
+      }
+
+      function renderResults(results, q) {
+        const container = document.getElementById('sangatListContainer');
+        const titleEl = document.getElementById('listSectionTitle');
+        if (!container) return;
+
+        if (titleEl) {
+          titleEl.textContent = `Search Results (${results.length})`;
+        }
+
+        if (!results || results.length === 0) {
+          container.innerHTML = `<div class="ios-empty-state">No Sangat members found matching "${q}". 🙏</div>`;
+          return;
+        }
+
+        const sent = getSentRequests();
+
+        container.innerHTML = results.map(u => {
+          const uid = u.uid;
+          const name = u.displayName || u.username || 'Sangat Member';
+          const handle = u.username ? ('@' + u.username) : '';
+          const initial = name.charAt(0).toUpperCase();
+          const isFriend = friendsSet.has(uid);
+          const companionInfo = companionsMap.get(uid);
+          const isCompanion = Boolean(companionInfo);
+          const isRequested = sent.includes(uid);
+          
+          let alertNotify = companionInfo ? companionInfo.notify : (localStorage.getItem('anhad_notify_' + uid) === 'true');
+
+          let actionHtml = '';
+          if (isFriend || isCompanion) {
+            actionHtml = `
+              <div style="display:flex; flex-direction:column; align-items:flex-end; gap:6px;">
+                <span style="font-size:11px; font-weight:700; color:var(--ios-green); background:rgba(52,199,89,0.12); padding:2px 8px; border-radius:6px;">${isCompanion ? '★ Companion' : 'Friend Circle ✓'}</span>
+                <label style="font-size:11px; display:inline-flex; align-items:center; gap:5px; cursor:pointer; color:var(--ios-text-secondary); user-select:none;">
+                  <span>Amritvela Alert:</span>
+                  <input type="checkbox" ${alertNotify ? 'checked' : ''} onchange="toggleAlertSetting('${uid}', this.checked)">
+                  <strong style="color:${alertNotify ? 'var(--ios-blue)' : 'var(--ios-text-secondary)'}; font-size:10.5px;">${alertNotify ? 'ON' : 'OFF'}</strong>
+                </label>
+              </div>
+            `;
+          } else {
+            actionHtml = `
+              <button class="ios-connect-btn ${isRequested ? 'requested' : ''}" 
+                      id="btn_${uid}" 
+                      onclick="connectUser('${uid}', '${name.replace(/'/g, "\\'")}')"
+                      ${isRequested ? 'disabled' : ''}>
+                ${isRequested ? 'Requested ✓' : 'Connect'}
+              </button>
+            `;
+          }
+
+          return `
+            <div class="ios-user-cell" id="user_${uid}">
+              <div class="ios-avatar-wrapper">
+                <div class="ios-avatar gold">${initial}</div>
+                <div class="ios-presence-dot" title="Active in Sadhsangat"></div>
+              </div>
+              <div class="ios-cell-info">
+                <div class="ios-cell-name">${name}</div>
+                <div class="ios-cell-handle">${handle}${u.streak ? ` • 🔥 ${u.streak}d streak` : ''}</div>
+                <div class="ios-cell-status">Active in Sangat</div>
+              </div>
+              ${actionHtml}
+            </div>
+          `;
+        }).join('');
+      }
+
+      window.toggleAlertSetting = async function(uid, enabled) {
+        localStorage.setItem('anhad_notify_' + uid, enabled ? 'true' : 'false');
+        if (window.AnhadFriends && typeof window.AnhadFriends.setNotification === 'function') {
+          try {
+            await window.AnhadFriends.setNotification(uid, enabled);
+          } catch (e) {
+            console.warn('[SangatSearch] Notification update note:', e.message);
+          }
+        }
+        if (navigator.vibrate) navigator.vibrate(10);
+        showToast(enabled ? 'Amritvela notifications enabled for this companion 🙏' : 'Amritvela notifications muted for this companion');
+        await syncFriendCircle();
+        if (currentQuery) renderResults(cachedSearchResults, currentQuery);
+      };
+
+      window.connectUser = async function(uid, name) {
+        const btn = document.getElementById('btn_' + uid);
+        if (btn) {
+          btn.classList.add('requested');
+          btn.disabled = true;
+          btn.textContent = 'Requested ✓';
+        }
+
+        // Save in sent requests
+        const sent = getSentRequests();
+        if (!sent.includes(uid)) {
+          sent.push(uid);
+          localStorage.setItem('anhad_sent_requests', JSON.stringify(sent));
+        }
+
+        // Add to pending notification requests so it reflects in real-time
+        try {
+          const pending = JSON.parse(localStorage.getItem('anhad_pending_requests') || '[]');
+          const already = pending.some(p => p.uid === uid);
+          if (!already) {
+            pending.unshift({
+              id: 'req_' + uid,
+              name: name,
+              handle: '@' + name.toLowerCase().replace(/\s+/g, '_'),
+              avatar: name.charAt(0).toUpperCase(),
+              desc: 'Connection requested • Tap Confirm to connect as Amritvela Companion',
+              time: 'Just now',
+              uid: uid
+            });
+            localStorage.setItem('anhad_pending_requests', JSON.stringify(pending));
+          }
+        } catch(e) {}
+
+        // Send via friends system backend
+        if (window.AnhadFriends && typeof window.AnhadFriends.sendRequest === 'function') {
+          try { await window.AnhadFriends.sendRequest(uid); } catch(e) {}
+        }
+
+        if (navigator.vibrate) navigator.vibrate(12);
+        showToast(`Connection request sent to ${name}! 🙏`);
+      };
+
+      window.setFilter = function(filter, el) {
+        document.querySelectorAll('.ios-filter-pill').forEach(p => p.classList.remove('active'));
+        if (el) el.classList.add('active');
+        if (filter === 'all') {
+          performSearch(currentQuery);
+        } else {
+          performSearch(filter);
+        }
+      };
+
+      window.clearSearch = function() {
+        const input = document.getElementById('sangatInput');
+        const clearBtn = document.getElementById('sangatClearBtn');
+        if (input) {
+          input.value = '';
+          currentQuery = '';
+          if (clearBtn) clearBtn.style.display = 'none';
+          performSearch('');
+          input.focus();
+        }
+      };
+
+      window.goBackHome = function() {
+        if (window.navigateTo) {
+          window.navigateTo('../index.html');
+        } else {
+          window.location.href = '../index.html';
+        }
+      };
+
+      document.addEventListener('DOMContentLoaded', () => {
+        const input = document.getElementById('sangatInput');
+        const clearBtn = document.getElementById('sangatClearBtn');
+
+        if (input) {
+          input.addEventListener('input', (e) => {
+            currentQuery = e.target.value;
+            if (clearBtn) clearBtn.style.display = currentQuery.length > 0 ? 'flex' : 'none';
+            if (searchDebounce) clearTimeout(searchDebounce);
+            searchDebounce = setTimeout(() => {
+              performSearch(currentQuery);
+            }, 250);
+          });
+        }
+
+        syncFriendCircle();
+        performSearch('');
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ANHAD Global SVG Sprite System
  * Ensures all icons are guaranteed to be present and rendered
  * across all pages, reloads, and SPA transitions.
@@ -131,32 +131,59 @@
   function ensureSprite() {
     let sprite = document.getElementById('anhadSvgSprite');
     if (!sprite) {
-      sprite = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-      sprite.id = 'anhadSvgSprite';
-      sprite.setAttribute('aria-hidden', 'true');
-      sprite.setAttribute('focusable', 'false');
-      sprite.style.cssText = 'position:absolute;width:0;height:0;overflow:hidden;pointer-events:none;';
-      sprite.innerHTML = SPRITE_HTML;
-      if (document.body) {
-        document.body.insertBefore(sprite, document.body.firstChild);
-      } else {
-        document.addEventListener('DOMContentLoaded', function() {
-          if (!document.getElementById('anhadSvgSprite') && document.body) {
+      try {
+        const container = document.createElement('div');
+        container.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" id="anhadSvgSprite" aria-hidden="true" focusable="false" style="position:absolute;width:0;height:0;overflow:hidden;pointer-events:none;">' + SPRITE_HTML + '</svg>';
+        sprite = container.firstElementChild;
+      } catch (e) {
+        sprite = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        sprite.id = 'anhadSvgSprite';
+        sprite.setAttribute('aria-hidden', 'true');
+        sprite.setAttribute('focusable', 'false');
+        sprite.style.cssText = 'position:absolute;width:0;height:0;overflow:hidden;pointer-events:none;';
+        sprite.innerHTML = SPRITE_HTML;
+      }
+
+      function attach() {
+        if (!document.getElementById('anhadSvgSprite') && document.body) {
+          try {
             document.body.insertBefore(sprite, document.body.firstChild);
+          } catch(err) {
+            document.body.appendChild(sprite);
           }
-        });
+        }
+      }
+
+      if (document.body) {
+        attach();
+      } else {
+        document.addEventListener('DOMContentLoaded', attach);
       }
     } else if (!sprite.querySelector('symbol')) {
       sprite.innerHTML = SPRITE_HTML;
     }
+
+    // Force WebKit / iOS Safari SVG symbol resolution
+    try {
+      const uses = document.querySelectorAll('svg use');
+      uses.forEach(u => {
+        const href = u.getAttribute('href') || u.getAttribute('xlink:href');
+        if (href) {
+          if (!u.getAttribute('xlink:href')) u.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', href);
+          if (!u.getAttribute('href')) u.setAttribute('href', href);
+        }
+      });
+    } catch(e) {}
   }
 
-  // Run immediately and on DOM events
+  // Run immediately and on DOM / SPA events
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', ensureSprite);
   } else {
     ensureSprite();
   }
+  window.addEventListener('anhad_page_changed', ensureSprite);
+  window.addEventListener('anhadPageChanging', ensureSprite);
 
   window.AnhadSvgSprite = {
     ensure: ensureSprite,

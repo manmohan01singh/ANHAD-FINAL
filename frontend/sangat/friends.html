@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Sangat & Companions | ANHAD</title>
+  <link rel="stylesheet" href="../css/theme-variables.css">
+  <link rel="stylesheet" href="../css/trendora-premium.css">
+  <link rel="stylesheet" href="../css/anhad-core.css">
+  <link rel="stylesheet" href="../css/nav-glass.css">
+  <link rel="stylesheet" href="../Settings/settings.css">
+  <style>
+    body {
+      background: var(--bg-primary, #FAF8F5);
+      color: var(--text-primary, #1C1C1E);
+      font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+      margin: 0;
+      padding-bottom: 120px;
+    }
+    html.dark-mode body, html[data-theme="dark"] body {
+      background: var(--bg-primary, #0D0D0F);
+      color: var(--text-primary, #F5F5F7);
+    }
+    .sangat-container {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 16px 20px;
+      padding-top: calc(env(safe-area-inset-top, 24px) + 96px);
+    }
+    .sangat-nav-tabs {
+      display: flex;
+      background: rgba(120, 120, 128, 0.12);
+      border-radius: 12px;
+      padding: 3px;
+      margin-bottom: 20px;
+    }
+    .sangat-tab-btn {
+      flex: 1;
+      padding: 8px 12px;
+      border: none;
+      background: transparent;
+      border-radius: 9px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-secondary, #8E8E93);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .sangat-tab-btn.active {
+      background: #FFFFFF;
+      color: #000;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    }
+    html.dark-mode .sangat-tab-btn.active, html[data-theme="dark"] .sangat-tab-btn.active {
+      background: #2C2C2E;
+      color: #FFF;
+    }
+    .amritvela-action-card {
+      background: linear-gradient(135deg, rgba(212,160,58,0.18) 0%, rgba(184,134,11,0.08) 100%);
+      border: 1px solid rgba(212,160,58,0.35);
+      border-radius: 20px;
+      padding: 20px;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+    .amritvela-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--accent, #D4943A);
+      margin-bottom: 6px;
+    }
+    .amritvela-desc {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 16px;
+    }
+    .amritvela-btn {
+      background: linear-gradient(135deg, #D4A03A, #B8860B);
+      color: #000;
+      font-weight: 800;
+      font-size: 15px;
+      padding: 12px 24px;
+      border-radius: 50px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(212,160,58,0.3);
+      transition: transform 0.15s;
+    }
+    .amritvela-btn:active { transform: scale(0.97); }
+    .search-wrap {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .search-input {
+      flex: 1;
+      padding: 12px 16px;
+      border-radius: 14px;
+      border: 1px solid var(--border-color, rgba(0,0,0,0.1));
+      background: rgba(120, 120, 128, 0.08);
+      color: inherit;
+      font-size: 15px;
+      outline: none;
+    }
+    .search-btn {
+      padding: 12px 20px;
+      border-radius: 14px;
+      background: var(--accent, #D4943A);
+      color: #FFF;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .sangat-gathering-banner {
+      display: none;
+      background: rgba(34, 197, 94, 0.15);
+      border: 1px solid rgba(34, 197, 94, 0.35);
+      border-radius: 16px;
+      padding: 14px 18px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #22C55E;
+      align-items: center;
+      gap: 10px;
+    }
+    .user-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      background: var(--bg-secondary, #F2F2F7);
+      border-radius: 16px;
+      margin-bottom: 10px;
+    }
+    html.dark-mode .user-card, html[data-theme="dark"] .user-card {
+      background: #2C2C2E;
+    }
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .user-avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: rgba(212,160,58,0.2);
+      color: var(--accent, #D4943A);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+    }
+    .user-name { font-size: 15px; font-weight: 600; }
+    .user-handle { font-size: 12px; color: var(--text-secondary); }
+    .action-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .btn-sm {
+      padding: 6px 12px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+    }
+    .btn-accept { background: #22C55E; color: #FFF; }
+    .btn-reject { background: rgba(120, 120, 128, 0.2); color: inherit; }
+  </style>
+  <script src="../lib/global-theme.js" defer></script>
+  <script src="../lib/firebase-client.js" defer></script>
+  <script src="../lib/anhad-auth.js" defer></script>
+  <script src="../lib/friends-system.js" defer></script>
+</head>
+<body>
+
+  <nav class="glass-nav">
+    <button class="glass-nav__back" onclick="history.back()">
+      <svg class="back-chevron" viewBox="0 0 9 16"><path d="M8 1L1 8L8 15" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="back-label">Back</span>
+    </button>
+    <span class="glass-nav__title">Sangat & Companions</span>
+    <div class="glass-nav__action"></div>
+  </nav>
+
+  <main class="sangat-container">
+
+    <!-- Sangat is Gathering Banner -->
+    <div class="sangat-gathering-banner" id="gatheringBanner">
+      <span>🌅</span>
+      <span id="gatheringText">Sangat is Gathering right now</span>
+    </div>
+
+    <!-- Amrit Vela Present / Started Action Card -->
+    <div class="amritvela-action-card">
+      <div class="amritvela-title">🌅 Sacred Amrit Vela</div>
+      <div class="amritvela-desc">Notify your chosen companions that you have begun your morning Nitnem & Simran.</div>
+      <button class="amritvela-btn" id="amritVelaStartBtn" onclick="triggerAmritVela()">Mark Present & Start</button>
+      <div id="cooldownNotice" style="font-size: 12px; color: var(--text-secondary); margin-top: 8px; display: none;"></div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="sangat-nav-tabs">
+      <button class="sangat-tab-btn active" id="tabCompanions" onclick="switchTab('companions')">Close Companions</button>
+      <button class="sangat-tab-btn" id="tabFriends" onclick="switchTab('friends')">All Friends</button>
+      <button class="sangat-tab-btn" id="tabSearch" onclick="switchTab('search')">Find Sangat</button>
+    </div>
+
+    <!-- Tab 1: Close Companions -->
+    <div id="viewCompanions">
+      <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 14px;">
+        Close Companions receive and share Amrit Vela start alerts. Configure notification permissions independently below.
+      </p>
+      <div id="companionsList">
+        <p style="text-align: center; color: var(--text-secondary); padding: 20px;">Loading companions...</p>
+      </div>
+    </div>
+
+    <!-- Tab 2: All Friends & Requests -->
+    <div id="viewFriends" style="display: none;">
+      <h3 style="font-size: 14px; text-transform: uppercase; color: var(--text-secondary); margin: 16px 0 8px;">Pending Requests</h3>
+      <div id="requestsList"></div>
+
+      <h3 style="font-size: 14px; text-transform: uppercase; color: var(--text-secondary); margin: 20px 0 8px;">Confirmed Friends</h3>
+      <div id="friendsList"></div>
+    </div>
+
+    <!-- Tab 3: Search Sangat -->
+    <div id="viewSearch" style="display: none;">
+      <div class="search-wrap">
+        <input type="text" class="search-input" id="searchInput" placeholder="Search by username (e.g. harpreet)..." onkeypress="if(event.key==='Enter') doSearch()">
+        <button class="search-btn" onclick="doSearch()">Search</button>
+      </div>
+      <div id="searchResults"></div>
+    </div>
+
+  </main>
+
+  <script>
+    let currentTab = 'companions';
+
+    function switchTab(tab) {
+      currentTab = tab;
+      document.getElementById('tabCompanions').className = 'sangat-tab-btn ' + (tab === 'companions' ? 'active' : '');
+      document.getElementById('tabFriends').className = 'sangat-tab-btn ' + (tab === 'friends' ? 'active' : '');
+      document.getElementById('tabSearch').className = 'sangat-tab-btn ' + (tab === 'search' ? 'active' : '');
+
+      document.getElementById('viewCompanions').style.display = tab === 'companions' ? 'block' : 'none';
+      document.getElementById('viewFriends').style.display = tab === 'friends' ? 'block' : 'none';
+      document.getElementById('viewSearch').style.display = tab === 'search' ? 'block' : 'none';
+
+      if (tab === 'companions') loadCompanions();
+      if (tab === 'friends') loadFriends();
+    }
+
+    async function loadCompanions() {
+      const container = document.getElementById('companionsList');
+      try {
+        const companions = await window.AnhadFriends.getCompanions();
+        if (companions.length === 0) {
+          container.innerHTML = '<div style="text-align:center; color:var(--text-secondary); padding:32px 16px; background:rgba(120,120,128,0.06); border-radius:16px;">' +
+            '<p style="font-size:15px; font-weight:600; margin-bottom:6px;">No Close Companions Designated Yet</p>' +
+            '<p style="font-size:13px; margin-bottom:16px;">Companions are selected friends who share Amrit Vela alerts with you. Browse "All Friends" tab to add your first companion.</p>' +
+            '<button class="btn-sm btn-accept" onclick="switchTab(\'friends\')">View Friends →</button>' +
+          '</div>';
+          return;
+        }
+        container.innerHTML = companions.map(c => `
+          <div class="user-card" style="align-items:flex-start; padding:16px;">
+            <div class="user-info">
+              <div class="user-avatar">${(c.displayName || 'S').charAt(0).toUpperCase()}</div>
+              <div>
+                <div class="user-name" style="display:flex; align-items:center; gap:8px;">
+                  <span>${c.displayName}</span>
+                  <span style="font-size:10px; background:rgba(212,160,58,0.2); color:var(--accent, #D4943A); padding:2px 6px; border-radius:4px; font-weight:700;">COMPANION</span>
+                </div>
+                <div class="user-handle">@${c.username || 'sangat'} • ${c.streak || 0}-day streak</div>
+              </div>
+            </div>
+            <div class="action-controls" style="display:flex; flex-direction:column; align-items:flex-end; gap:8px;">
+              <label style="font-size:12px; display:flex; align-items:center; gap:6px; cursor:pointer; background:rgba(120,120,128,0.1); padding:5px 10px; border-radius:8px;">
+                <span style="color:var(--text-secondary);">Alerts:</span>
+                <input type="checkbox" ${c.notify ? 'checked' : ''} onchange="toggleCompanionNotification('${c.uid}', this.checked)">
+                <strong style="color:${c.notify ? '#22C55E' : 'var(--text-secondary)'};">${c.notify ? 'ON' : 'OFF'}</strong>
+              </label>
+              <button class="btn-sm btn-reject" style="font-size:11px; padding:4px 8px;" onclick="toggleCompanionStatus('${c.uid}', false)">Remove Companion</button>
+            </div>
+          </div>
+        `).join('');
+      } catch (err) {
+        container.innerHTML = '<p style="text-align:center; color:red;">' + err.message + '</p>';
+      }
+    }
+
+    async function loadFriends() {
+      const friendsContainer = document.getElementById('friendsList');
+      const reqContainer = document.getElementById('requestsList');
+      try {
+        const data = await window.AnhadFriends.getFriendsList();
+        
+        // Incoming Requests
+        if (data.incomingRequests && data.incomingRequests.length > 0) {
+          reqContainer.innerHTML = data.incomingRequests.map(r => `
+            <div class="user-card">
+              <div class="user-info">
+                <div class="user-avatar">${(r.from.displayName || 'S').charAt(0).toUpperCase()}</div>
+                <div>
+                  <div class="user-name">${r.from.displayName}</div>
+                  <div class="user-handle">@${r.from.username}</div>
+                </div>
+              </div>
+              <div class="action-controls">
+                <button class="btn-sm btn-accept" onclick="respondRequest('${r.id}', 'accept')">Accept</button>
+                <button class="btn-sm btn-reject" onclick="respondRequest('${r.id}', 'reject')">Decline</button>
+              </div>
+            </div>
+          `).join('');
+        } else {
+          reqContainer.innerHTML = '<p style="color:var(--text-secondary); font-size:13px; margin: 4px 0 16px;">No pending incoming requests.</p>';
+        }
+
+        // Friends list
+        if (data.friends && data.friends.length > 0) {
+          const companions = await window.AnhadFriends.getCompanions();
+          const companionUids = new Set(companions.map(c => c.uid));
+
+          friendsContainer.innerHTML = data.friends.map(f => {
+            const isComp = companionUids.has(f.uid);
+            return `
+              <div class="user-card">
+                <div class="user-info">
+                  <div class="user-avatar">${(f.displayName || 'S').charAt(0).toUpperCase()}</div>
+                  <div>
+                    <div class="user-name">${f.displayName}</div>
+                    <div class="user-handle">@${f.username}</div>
+                  </div>
+                </div>
+                <div class="action-controls">
+                  <button class="btn-sm" style="background:${isComp ? 'var(--accent, #D4943A)' : 'rgba(120,120,128,0.2)'}; color:${isComp ? '#000' : 'inherit'}; font-weight:700;" onclick="toggleCompanionStatus('${f.uid}', ${!isComp})">
+                    ${isComp ? '★ Companion' : '+ Make Companion'}
+                  </button>
+                  <button class="btn-sm btn-reject" title="Remove friend" onclick="removeFriend('${f.uid}')">✕</button>
+                </div>
+              </div>
+            `;
+          }).join('');
+        } else {
+          friendsContainer.innerHTML = '<p style="color:var(--text-secondary); font-size:13px;">No friends added yet. Use search tab to connect with Sangat.</p>';
+        }
+      } catch (err) {
+        friendsContainer.innerHTML = '<p style="color:red;">' + err.message + '</p>';
+      }
+    }
+
+    async function doSearch() {
+      const q = document.getElementById('searchInput').value;
+      const resultsDiv = document.getElementById('searchResults');
+      resultsDiv.innerHTML = '<p style="color:var(--text-secondary);">Searching Sangat...</p>';
+      try {
+        const users = await window.AnhadFriends.searchUsers(q);
+        if (users.length === 0) {
+          resultsDiv.innerHTML = '<p style="color:var(--text-secondary);">No Sangat found matching that name or @username.</p>';
+          return;
+        }
+        resultsDiv.innerHTML = users.map(u => `
+          <div class="user-card">
+            <div class="user-info">
+              <div class="user-avatar">${(u.displayName || 'S').charAt(0).toUpperCase()}</div>
+              <div>
+                <div class="user-name">${u.displayName}</div>
+                <div class="user-handle">@${u.username} • ${u.streak} day streak</div>
+              </div>
+            </div>
+            <div class="action-controls">
+              ${u.isFriend ? '<span style="font-size:12px; color:#22C55E; font-weight:600;">✓ Friends</span>' :
+                (u.hasPending ? '<span style="font-size:12px; color:var(--text-secondary);">Pending...</span>' :
+                `<button class="btn-sm btn-accept" onclick="sendFriendRequest('${u.username}')">+ Connect</button>`)}
+            </div>
+          </div>
+        `).join('');
+      } catch (err) {
+        resultsDiv.innerHTML = '<p style="color:red;">' + err.message + '</p>';
+      }
+    }
+
+    async function sendFriendRequest(target) {
+      try {
+        await window.AnhadFriends.sendRequest(target);
+        alert('Friend request sent to Sangat member! 🙏');
+        doSearch();
+      } catch (err) {
+        alert('Notice: ' + err.message);
+      }
+    }
+
+    async function respondRequest(reqId, action) {
+      try {
+        await window.AnhadFriends.respondRequest(reqId, action);
+        loadFriends();
+      } catch (err) {
+        alert('Notice: ' + err.message);
+      }
+    }
+
+    async function removeFriend(uid) {
+      if (!confirm('Remove this friend? Any companion designation and alert permissions will also be cleared.')) return;
+      try {
+        await window.AnhadFriends.removeFriend(uid);
+        loadFriends();
+      } catch (err) {
+        alert('Notice: ' + err.message);
+      }
+    }
+
+    async function toggleCompanionStatus(friendUid, makeCompanion) {
+      try {
+        await window.AnhadFriends.setCompanion(friendUid, makeCompanion);
+        if (currentTab === 'companions') loadCompanions();
+        else loadFriends();
+      } catch (err) {
+        alert('Notice: ' + err.message);
+      }
+    }
+
+    async function toggleCompanionNotification(friendUid, notify) {
+      try {
+        await window.AnhadFriends.setNotification(friendUid, notify);
+        loadCompanions();
+      } catch (err) {
+        alert('Notice: ' + err.message);
+        loadCompanions();
+      }
+    }
+
+    async function triggerAmritVela() {
+      const btn = document.getElementById('amritVelaStartBtn');
+      const notice = document.getElementById('cooldownNotice');
+      btn.disabled = true;
+      btn.textContent = 'Broadcasting...';
+      try {
+        const res = await window.AnhadFriends.markAmritVelaStarted();
+        alert('🌅 Amrit Vela Started! Notification sent to ' + (res.deliveredToCount || 0) + ' subscribed companion(s). Waheguru ji ka Khalsa, Waheguru ji ki Fateh! 🙏');
+        btn.textContent = 'Amrit Vela Active 🌅';
+        if (notice) {
+          notice.textContent = 'Amrit Vela marked present. Next notification broadcast available tomorrow.';
+          notice.style.display = 'block';
+        }
+      } catch (err) {
+        alert(err.message || 'Cooldown active for Amrit Vela notification.');
+        btn.textContent = 'Mark Present & Start';
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+        async function checkGathering() {
+      try {
+        const gathering = await window.AnhadFriends.checkSangatGathering();
+        const banner = document.getElementById('gatheringBanner');
+        const text = document.getElementById('gatheringText');
+        if (gathering.isGathering) {
+          banner.style.display = 'flex';
+          text.textContent = gathering.message;
+        } else {
+          banner.style.display = 'none';
+        }
+      } catch (e) {}
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadCompanions();
+      checkGathering();
+      setInterval(checkGathering, 30000);
+    });
+  </script>
+</body>
+</html>

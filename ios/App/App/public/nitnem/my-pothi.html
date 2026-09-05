@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pa" dir="ltr">
 
 <head>
@@ -74,6 +74,7 @@
     <script src="../lib/page-lifecycle.js"></script>
     <script src="../lib/smooth-navigation.js"></script>
     <script src="../lib/state-preservation.js"></script>
+    <script src="../lib/reading-migration.js"></script>
 
 
     <style>
@@ -738,7 +739,10 @@
                 Back
             </button>
             <span class="header-title">ਮੇਰੀ ਪੋਥੀ</span>
-            <button class="edit-btn" id="editBtn" title="Edit My Pothi">✍️</button>
+            <div style="display:flex;align-items:center;margin-left:auto;gap:8px;">
+                <button class="edit-btn" id="migrationBtn" title="Export / Import Reading Progress">📦</button>
+                <button class="edit-btn" id="editBtn" title="Edit My Pothi">✍️ </button>
+            </div>
         </header>
 
         <!-- READING MODE -->
@@ -1875,8 +1879,104 @@
             } catch (e) {
                 console.warn('Pre-cache init error:', e);
             }
-        }, 1000); // 1s delay after page load — never blocks rendering
+        }, 1000);
+
+        // Migration Modal Handlers
+        const migrationBtn = document.getElementById('migrationBtn');
+        const migrationModal = document.getElementById('migrationModal');
+        const closeMigrationModal = document.getElementById('closeMigrationModal');
+        const doExportBtn = document.getElementById('doExportBtn');
+        const doImportBtn = document.getElementById('doImportBtn');
+        const importFileInput = document.getElementById('importFileInput');
+        const importFeedback = document.getElementById('importFeedback');
+
+        if (migrationBtn && migrationModal) {
+            migrationBtn.addEventListener('click', () => {
+                migrationModal.style.display = 'flex';
+                if (importFeedback) importFeedback.style.display = 'none';
+            });
+
+            closeMigrationModal.addEventListener('click', () => {
+                migrationModal.style.display = 'none';
+            });
+
+            migrationModal.addEventListener('click', (e) => {
+                if (e.target === migrationModal) migrationModal.style.display = 'none';
+            });
+
+            doExportBtn.addEventListener('click', () => {
+                if (window.AnhadMigration) {
+                    window.AnhadMigration.exportReadingProgress();
+                    showToast('Reading Progress Exported Successfully!');
+                }
+            });
+
+            doImportBtn.addEventListener('click', () => {
+                importFileInput.click();
+            });
+
+            importFileInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    try {
+                        const result = window.AnhadMigration.validateImport(event.target.result);
+                        if (!result.valid) {
+                            importFeedback.style.display = 'block';
+                            importFeedback.style.color = 'var(--ios-red, #FF3B30)';
+                            importFeedback.textContent = '❌ Invalid file: ' + result.error;
+                            return;
+                        }
+
+                        const s = result.summary;
+                        const confirmMsg = 'Found valid backup!\\n• Pothi Banis: ' + s.pothiBanis + '\\n• Sehaj Paath Ang: ' + s.sehajPaathAng + '\\n• Active Streak: ' + s.streakDays + ' days\\n\\nDo you want to MERGE with your existing progress?';
+                        if (confirm(confirmMsg)) {
+                            window.AnhadMigration.importReadingProgress(result.data, 'merge');
+                            showToast('Reading progress merged successfully!');
+                            migrationModal.style.display = 'none';
+                            setTimeout(() => window.location.reload(), 600);
+                        }
+                    } catch (err) {
+                        importFeedback.style.display = 'block';
+                        importFeedback.style.color = 'var(--ios-red, #FF3B30)';
+                        importFeedback.textContent = '❌ Import failed: ' + err.message;
+                    }
+                };
+                reader.readAsText(file);
+            });
+        }
     </script>
+
+    <!-- Migration Modal -->
+    <div id="migrationModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.65);backdrop-filter:blur(8px);z-index:9999;align-items:center;justify-content:center;padding:20px;">
+      <div style="background:var(--bg-secondary, #1C1C1E);border:1px solid var(--border-color, rgba(255,255,255,0.12));border-radius:24px;max-width:440px;width:100%;padding:24px;box-shadow:0 20px 50px rgba(0,0,0,0.5);color:var(--text-primary,#fff);">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+          <h3 style="font-size:1.15rem;font-weight:700;margin:0;">📦 Reading Migration</h3>
+          <button id="closeMigrationModal" style="background:none;border:none;color:var(--text-secondary,#888);font-size:22px;cursor:pointer;line-height:1;">✕</button>
+        </div>
+        <p style="font-size:0.85rem;color:var(--text-secondary,#888);line-height:1.45;margin-bottom:18px;">
+          Migrate years of Nitnem, My Pothi, Sehaj Paath, and Shabad progress safely across devices.
+        </p>
+
+        <!-- Export -->
+        <div style="background:rgba(212,175,55,0.08);border:1px solid rgba(212,175,55,0.25);border-radius:16px;padding:14px;margin-bottom:14px;">
+          <div style="font-weight:600;font-size:0.95rem;margin-bottom:4px;color:var(--sacred-gold, #D4AF37);">Export to File</div>
+          <div style="font-size:0.8rem;color:var(--text-secondary,#888);margin-bottom:10px;">Download portable JSON file with all reading states.</div>
+          <button id="doExportBtn" style="width:100%;padding:10px;border-radius:12px;background:linear-gradient(135deg,#D4AF37,#FF8C00);border:none;font-weight:700;color:#000;cursor:pointer;font-size:0.9rem;">⬇️ Export Reading Progress</button>
+        </div>
+
+        <!-- Import -->
+        <div style="background:rgba(0,122,255,0.08);border:1px solid rgba(0,122,255,0.25);border-radius:16px;padding:14px;">
+          <div style="font-weight:600;font-size:0.95rem;margin-bottom:4px;color:var(--ios-blue, #007AFF);">Import from File</div>
+          <div style="font-size:0.8rem;color:var(--text-secondary,#888);margin-bottom:10px;">Restore from an Anhad backup file on this device.</div>
+          <input type="file" id="importFileInput" accept=".json" style="display:none;">
+          <button id="doImportBtn" style="width:100%;padding:10px;border-radius:12px;background:var(--ios-blue,#007AFF);border:none;font-weight:700;color:#fff;cursor:pointer;font-size:0.9rem;">⬆️ Select Backup File to Import</button>
+          <div id="importFeedback" style="font-size:0.8rem;margin-top:8px;display:none;"></div>
+        </div>
+      </div>
+    </div>
     <!-- Global Engine -->
     <script src="../lib/capacitor-notifications-global.js"></script>
     <script src="../lib/anhad-widget-bridge.js"></script>

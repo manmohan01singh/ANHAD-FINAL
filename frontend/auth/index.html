@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>
+    if (typeof window !== 'undefined' && window.location && window.location.hostname === '127.0.0.1') {
+      window.location.replace(window.location.href.replace('//127.0.0.1', '//localhost'));
+    }
+  </script>
+  <!-- Theme blocker -->
+  <script>
+    (function() {
+      try {
+        const theme = localStorage.getItem('anhad_theme') || 'auto';
+        let effectiveTheme = theme;
+        let timeOfDay = localStorage.getItem('anhad_forced_time_of_day');
+        if (theme === 'auto') {
+          if (timeOfDay && ['morning', 'day', 'evening', 'night'].includes(timeOfDay)) {
+            effectiveTheme = (timeOfDay === 'night') ? 'dark' : 'light';
+          } else {
+            const hour = new Date().getHours();
+            effectiveTheme = (hour >= 5 && hour < 20) ? 'light' : 'dark';
+            if (hour >= 5 && hour < 9) timeOfDay = 'morning';
+            else if (hour >= 9 && hour < 16) timeOfDay = 'day';
+            else if (hour >= 16 && hour < 20) timeOfDay = 'evening';
+            else timeOfDay = 'night';
+          }
+        }
+        document.documentElement.setAttribute('data-theme', effectiveTheme);
+        document.documentElement.setAttribute('data-theme-mode', theme);
+        if (theme === 'auto') document.documentElement.setAttribute('data-time-of-day', timeOfDay);
+        document.documentElement.style.colorScheme = effectiveTheme;
+        if (effectiveTheme === 'dark') {
+          document.documentElement.classList.add('dark', 'dark-mode');
+          document.documentElement.style.backgroundColor = '#0D0D0F';
+          document.documentElement.style.color = '#F5F5F7';
+        } else {
+          document.documentElement.style.backgroundColor = '#FAF8F5';
+          document.documentElement.style.color = '#1C1C1E';
+        }
+      } catch (e) {}
+    })();
+  </script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Sign In & Connect | ANHAD</title>
+
+  <link rel="stylesheet" href="../css/theme-variables.css">
+  <link rel="stylesheet" href="./auth.css">
+
+  <!-- Firebase & ANHAD Auth Libraries -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="../lib/firebase-client.js"></script>
+  <script src="../lib/anhad-auth.js"></script>
+</head>
+<body class="auth-body">
+
+  <nav class="auth-nav">
+    <button class="btn-back" onclick="handleGoBack()" aria-label="Go Back">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="15 18 9 12 15 6"></polyline>
+      </svg>
+    </button>
+  </nav>
+
+  <main class="auth-container">
+    <div class="auth-header">
+      <img src="../assets/app-logo-96.avif" alt="ANHAD Logo" class="auth-logo">
+      <h1 class="auth-title">Welcome to ANHAD</h1>
+      <p class="auth-subtitle">Sync your Nitnem, Chaliya journey, and Amrit Vela Sangat across all devices.</p>
+    </div>
+
+    <div class="auth-card">
+      <div id="authAlert" class="auth-alert"></div>
+
+      <!-- Tab Switcher -->
+      <div class="auth-tabs" role="tablist">
+        <button class="auth-tab active" id="tabSignIn" onclick="switchAuthTab('signin')" role="tab" aria-selected="true">Sign In</button>
+        <button class="auth-tab" id="tabSignUp" onclick="switchAuthTab('signup')" role="tab" aria-selected="false">Create Account</button>
+      </div>
+
+      <!-- Google Sign In -->
+      <button class="btn-google" id="googleSignInBtn" onclick="handleGoogleSignIn()">
+        <svg class="google-icon" viewBox="0 0 24 24">
+          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+          <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+        </svg>
+        <span>Continue with Google</span>
+      </button>
+      <div style="text-align: center; margin-top: 8px; font-size: 11px; color: var(--auth-muted-light);">
+        Popup blocked or blank? <a href="#" onclick="handleGoogleRedirect(event)" style="color: var(--auth-gold); font-weight: 600; text-decoration: underline;">Sign In with Redirect (Full Page) →</a>
+      </div>
+
+      <div class="auth-divider">
+        <span>or with email</span>
+      </div>
+
+      <!-- Sign In Form -->
+      <form id="signInForm" onsubmit="handleEmailSignIn(event)">
+        <div class="form-group">
+          <label class="form-label" for="signinEmail">Email address</label>
+          <input class="form-input" id="signinEmail" type="email" autocomplete="email" placeholder="gursikh@example.com" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="signinPassword">Password</label>
+          <input class="form-input" id="signinPassword" type="password" autocomplete="current-password" placeholder="••••••••" required>
+        </div>
+
+        <button type="submit" class="btn-primary" id="signinSubmitBtn">
+          <span>Sign In</span>
+        </button>
+      </form>
+
+      <!-- Sign Up Form (hidden by default) -->
+      <form id="signUpForm" onsubmit="handleEmailSignUp(event)" style="display: none;">
+        <div class="form-group">
+          <label class="form-label" for="signupName">Full Name</label>
+          <input class="form-input" id="signupName" type="text" autocomplete="name" placeholder="Harpreet Kaur" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="signupEmail">Email address</label>
+          <input class="form-input" id="signupEmail" type="email" autocomplete="email" placeholder="gursikh@example.com" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="signupPassword">Password</label>
+          <input class="form-input" id="signupPassword" type="password" autocomplete="new-password" placeholder="At least 6 characters" minlength="6" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="signupPasswordConfirm">Confirm Password</label>
+          <input class="form-input" id="signupPasswordConfirm" type="password" autocomplete="new-password" placeholder="Re-enter password" minlength="6" required>
+        </div>
+
+        <button type="submit" class="btn-primary" id="signupSubmitBtn">
+          <span>Create Account</span>
+        </button>
+      </form>
+
+      <!-- Dev Options & Firebase Setup Helper -->
+      <div id="devOptionsCard" style="display: none; margin-top: 18px; padding: 14px 16px; border-radius: 14px; background: rgba(212, 160, 58, 0.1); border: 1px solid rgba(212, 160, 58, 0.35);">
+        <div style="font-size: 13px; font-weight: 700; color: var(--auth-gold); margin-bottom: 5px;">🔑 Firebase Setup & Local Testing</div>
+        <p style="font-size: 12px; color: var(--auth-muted-light); margin: 0 0 12px; line-height: 1.45;">
+          A valid Web API key for Firebase project <code>anhad-4bf78</code> is required for live Google Sign-In. You can provide your Web API key, or sign in with a local Sangat dev account to test all features immediately.
+        </p>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <button type="button" class="btn-primary" style="font-size: 13px; padding: 10px 14px; margin-top: 0;" onclick="handleEnterApiKey()">
+            🔑 Paste Firebase Web API Key
+          </button>
+          <button type="button" class="btn-primary" id="devLoginBtn" style="font-size: 13px; padding: 10px 14px; margin-top: 0; background: rgba(120, 120, 128, 0.2); color: inherit; box-shadow: none;" onclick="handleDevSignIn()">
+            🛠️ Continue with Local Sangat Login (Dev Mode)
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Guest Mode Option -->
+    <div class="guest-option-wrap">
+      <div class="guest-card">
+        <p class="guest-card-text">
+          Want to listen without an account? Frictionless guest mode keeps your progress safe right on this device.
+        </p>
+      </div>
+      <button class="btn-guest" onclick="handleContinueAsGuest()">
+        Continue as Guest →
+      </button>
+    </div>
+  </main>
+
+  <script>
+    let activeTab = 'signin';
+
+    function switchAuthTab(tab) {
+      activeTab = tab;
+      clearAlert();
+      const tabSignIn = document.getElementById('tabSignIn');
+      const tabSignUp = document.getElementById('tabSignUp');
+      const signInForm = document.getElementById('signInForm');
+      const signUpForm = document.getElementById('signUpForm');
+
+      if (tab === 'signin') {
+        tabSignIn.classList.add('active');
+        tabSignIn.setAttribute('aria-selected', 'true');
+        tabSignUp.classList.remove('active');
+        tabSignUp.setAttribute('aria-selected', 'false');
+        signInForm.style.display = 'block';
+        signUpForm.style.display = 'none';
+      } else {
+        tabSignUp.classList.add('active');
+        tabSignUp.setAttribute('aria-selected', 'true');
+        tabSignIn.classList.remove('active');
+        tabSignIn.setAttribute('aria-selected', 'false');
+        signInForm.style.display = 'none';
+        signUpForm.style.display = 'block';
+      }
+    }
+
+    function showAlert(msg, isError = true, asHtml = false) {
+      const alertEl = document.getElementById('authAlert');
+      if (!alertEl) return;
+      if (asHtml) {
+        alertEl.innerHTML = msg;
+      } else {
+        alertEl.textContent = msg;
+      }
+      alertEl.className = 'auth-alert ' + (isError ? 'error' : 'success');
+      alertEl.style.display = 'block';
+    }
+
+    function clearAlert() {
+      const alertEl = document.getElementById('authAlert');
+      if (alertEl) alertEl.style.display = 'none';
+    }
+
+    function getReturnUrl() {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        return params.get('returnUrl') || '../index.html';
+      } catch(e) {
+        return '../index.html';
+      }
+    }
+
+    function proceedAfterAuth() {
+      if (window.AnhadAuth && window.AnhadAuth.isProfileComplete()) {
+        window.location.replace(getReturnUrl());
+      } else {
+        window.location.replace('./onboarding.html?returnUrl=' + encodeURIComponent(getReturnUrl()));
+      }
+    }
+
+    function handleEnterApiKey() {
+      const current = localStorage.getItem('anhad_firebase_api_key') || '';
+      const key = prompt("Enter your Firebase Web API Key (from Firebase Console -> Project Settings -> General -> Web App, starts with AIzaSy...):", current);
+      if (key && key.trim()) {
+        const clean = key.trim();
+        if (window.AnhadFirebase && typeof window.AnhadFirebase.setApiKey === 'function') {
+          window.AnhadFirebase.setApiKey(clean);
+        } else {
+          localStorage.setItem('anhad_firebase_api_key', clean);
+        }
+        showAlert("Firebase Web API Key saved! Connecting...", false);
+        setTimeout(handleGoogleSignIn, 500);
+      }
+    }
+
+    async function handleDevSignIn() {
+      clearAlert();
+      const btn = document.getElementById('devLoginBtn');
+      if (btn) btn.disabled = true;
+      if (window.AnhadAuth && typeof window.AnhadAuth.signInWithDevAccount === 'function') {
+        const res = await window.AnhadAuth.signInWithDevAccount('Gursikh Sangat', 'sevadar@anhad.local');
+        if (res.ok) {
+          proceedAfterAuth();
+        }
+      }
+    }
+
+    async function handleGoogleRedirect(e) {
+      if (e && e.preventDefault) e.preventDefault();
+      clearAlert();
+      const btn = document.getElementById('googleSignInBtn');
+      if (btn) {
+        btn.innerHTML = '<span class="spinner"></span> <span>Redirecting to Google...</span>';
+        btn.disabled = true;
+      }
+      showAlert('Redirecting securely to Google Accounts...', false);
+      if (window.AnhadAuth && typeof window.AnhadAuth.signInWithGoogleRedirect === 'function') {
+        const res = await window.AnhadAuth.signInWithGoogleRedirect();
+        if (!res.ok && res.error) {
+          showAlert(res.error);
+          if (btn) {
+            btn.innerHTML = '<span>Continue with Google</span>';
+            btn.disabled = false;
+          }
+        }
+      }
+    }
+
+    async function handleGoogleSignIn() {
+      clearAlert();
+      const btn = document.getElementById('googleSignInBtn');
+      const origHtml = btn.innerHTML;
+      btn.innerHTML = '<span class="spinner"></span> <span>Connecting...</span>';
+      btn.disabled = true;
+
+      try {
+        const res = await window.AnhadAuth.signInWithGoogle();
+        if (res.ok) {
+          if (res.pendingRedirect) return;
+          proceedAfterAuth();
+        } else {
+          btn.innerHTML = origHtml;
+          btn.disabled = false;
+          if (res.isInvalidApiKey || (res.code && res.code.includes('api-key-not-valid')) || (res.error && res.error.includes('api-key-not-valid'))) {
+            showAlert('Firebase Web API key is not yet configured for project anhad-4bf78.');
+            const devCard = document.getElementById('devOptionsCard');
+            if (devCard) devCard.style.display = 'block';
+          } else if (res.canUseRedirect || res.code === 'auth/popup-closed-by-user' || res.code === 'auth/popup-blocked') {
+            showAlert('Popup was closed or blocked.<br><button type="button" class="btn-primary" style="margin-top:8px; font-size:12px; padding:8px 12px; width:100%;" onclick="handleGoogleRedirect(event)">👉 Continue with Full-Page Google Sign-In</button>', true, true);
+          } else {
+            showAlert(res.error || 'Google Sign-In was cancelled or failed.');
+          }
+        }
+      } catch (err) {
+        showAlert(err.message || 'Unable to sign in with Google.');
+        btn.innerHTML = origHtml;
+        btn.disabled = false;
+      }
+    }
+
+    async function handleEmailSignIn(e) {
+      e.preventDefault();
+      clearAlert();
+      const email = document.getElementById('signinEmail').value.trim();
+      const password = document.getElementById('signinPassword').value;
+      const btn = document.getElementById('signinSubmitBtn');
+
+      if (!email || !password) {
+        showAlert('Please enter both email and password.');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span> <span>Signing In...</span>';
+
+      try {
+        const res = await window.AnhadAuth.signInWithEmail(email, password);
+        if (res.ok) {
+          proceedAfterAuth();
+        } else {
+          showAlert(res.error || 'Invalid email or password.');
+          btn.disabled = false;
+          btn.innerHTML = '<span>Sign In</span>';
+        }
+      } catch (err) {
+        showAlert(err.message || 'Error signing in.');
+        btn.disabled = false;
+        btn.innerHTML = '<span>Sign In</span>';
+      }
+    }
+
+    async function handleEmailSignUp(e) {
+      e.preventDefault();
+      clearAlert();
+      const name = document.getElementById('signupName').value.trim();
+      const email = document.getElementById('signupEmail').value.trim();
+      const password = document.getElementById('signupPassword').value;
+      const confirmPassword = document.getElementById('signupPasswordConfirm').value;
+      const btn = document.getElementById('signupSubmitBtn');
+
+      if (!name) {
+        showAlert('Please enter your full name.');
+        return;
+      }
+      if (password !== confirmPassword) {
+        showAlert('Passwords do not match. Please verify.');
+        return;
+      }
+      if (password.length < 6) {
+        showAlert('Password must be at least 6 characters.');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span> <span>Creating Account...</span>';
+
+      try {
+        const res = await window.AnhadAuth.signUpWithEmail(email, password, name);
+        if (res.ok) {
+          // Account created, route to onboarding to pick Sangat username handle
+          window.location.replace('./onboarding.html?returnUrl=' + encodeURIComponent(getReturnUrl()));
+        } else {
+          showAlert(res.error || 'Account creation failed. Please try again.');
+          btn.disabled = false;
+          btn.innerHTML = '<span>Create Account</span>';
+        }
+      } catch (err) {
+        showAlert(err.message || 'Unable to create account.');
+        btn.disabled = false;
+        btn.innerHTML = '<span>Create Account</span>';
+      }
+    }
+
+    function handleContinueAsGuest() {
+      // Ensure profile remains guest mode
+      window.location.replace(getReturnUrl());
+    }
+
+    // If on localhost / 127.0.0.1, check for server-provided key or offer dev options
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        const res = await fetch('/api/config/firebase-web').then(r => r.json()).catch(() => null);
+        if (res && res.apiKey && window.AnhadFirebase && typeof window.AnhadFirebase.setApiKey === 'function') {
+          window.AnhadFirebase.setApiKey(res.apiKey);
+        }
+      } catch(e) {}
+
+      const host = window.location.hostname;
+      const isLocal = host === 'localhost' || host === '127.0.0.1';
+      const hasKey = Boolean(localStorage.getItem('anhad_firebase_api_key'));
+      if (isLocal && !hasKey) {
+        const devCard = document.getElementById('devOptionsCard');
+        if (devCard) devCard.style.display = 'block';
+      }
+    });
+
+    function handleGoBack() {
+      if (window.history.length > 1) {
+        window.history.back();
+      } else {
+        window.location.replace('../index.html');
+      }
+    }
+  </script>
+</body>
+</html>

@@ -905,4 +905,67 @@ html.theme-changing *::after {
   pointer-events: auto !important;
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   GLOBAL COMMUNITY PRESENCE TICKER
+   ═══════════════════════════════════════════════════════════════ */
+.community-live-strip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 10px auto 16px;
+  padding: 6px 16px;
+  border-radius: 100px;
+  background: rgba(0, 0, 0, 0.04);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border-color, rgba(0,0,0,0.06));
+  max-width: fit-content;
+  user-select: none;
+}
+
+[data-theme="dark"] .community-live-strip,
+html.dark-mode .community-live-strip {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.community-live-text {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-secondary, #78716C);
+}
+
+.ticker-pulse {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #34C759;
+  box-shadow: 0 0 8px rgba(52, 199, 89, 0.6);
+  animation: tickerPulse 2s ease-in-out infinite;
+}
+
+@keyframes tickerPulse {
+  0%, 100% { transform: scale(1); opacity: 0.9; }
+  50% { transform: scale(1.3); opacity: 0.5; }
+}
+
+.ticker-count {
+  font-weight: 700;
+  color: var(--text-primary, #1C1C1E);
+}
+
+[data-theme="dark"] .ticker-count,
+html.dark-mode .ticker-count {
+  color: #FFFFFF;
+}
+
+.ticker-sub {
+  color: var(--gold-warm, #A67524);
+  font-weight: 600;
+}
+
+
 

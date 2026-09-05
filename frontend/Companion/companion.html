@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="color-scheme" content="light dark">
+  <title>Companion | ANHAD</title>
+  
+  <link rel="stylesheet" href="../css/mobile-lock.css">
+  <link rel="stylesheet" href="../css/anhad-core.css">
+  <link rel="stylesheet" href="../css/nav-glass.css">
+  <link rel="stylesheet" href="../css/theme-variables.css">
+  <link rel="stylesheet" href="../css/global-mini-player.css">
+  <link rel="stylesheet" href="../css/desktop-responsive.css">
+  <link rel="stylesheet" href="companion.css">
+
+  <script src="../lib/global-theme.js"></script>
+  <script src="../lib/desktop-sidebar.js" defer></script>
+  <script src="../lib/smooth-navigation.js"></script>
+  <script src="../lib/companion-mode.js"></script>
+</head>
+<body>
+  <div id="app" class="companion-page">
+    <header class="companion-header">
+      <button class="back-btn ios-haptic" onclick="if(window.navigateTo){window.navigateTo('../index.html');}else{history.back();}" aria-label="Go Back">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+        <span>Back</span>
+      </button>
+      <h1 class="companion-header__title">Companion Journey</h1>
+      <div style="width: 44px;"></div>
+    </header>
+
+    <main class="companion-container">
+      <!-- Sacred Hero Artwork Preview -->
+      <div class="companion-hero-card">
+        <div class="companion-hero-card__image-wrap">
+          <img src="../assets/companion/chaliya-2026.webp" alt="Chaliya 2026 — Sri Guru Nanak Dev Ji" class="companion-hero-card__img" id="companionPreviewImg">
+          <div class="companion-hero-card__badge">CHALIYA 2026</div>
+        </div>
+        
+        <div class="companion-hero-card__details">
+          <h2 class="companion-hero-card__heading">Chaliya Sahib 2026</h2>
+          <p class="companion-hero-card__sub">Sacred 40-Day Divine Devotional Journey</p>
+        </div>
+      </div>
+
+      <!-- Mode Toggle Switch Card -->
+      <div class="companion-toggle-card">
+        <div class="companion-toggle-card__info">
+          <div class="companion-toggle-card__title">Home Screen Companion Mode</div>
+          <div class="companion-toggle-card__desc">When enabled, the Home screen features Sri Guru Nanak Dev Ji & Chaliya 2026 artwork.</div>
+        </div>
+        <label class="companion-switch" aria-label="Toggle Companion Mode">
+          <input type="checkbox" id="companionToggle">
+          <span class="companion-slider"></span>
+        </label>
+      </div>
+
+      <!-- Devotional Guidance -->
+      <div class="companion-guide-card">
+        <h3 class="companion-guide-card__title">
+          <span>☬</span> About Chaliya
+        </h3>
+        <p class="companion-guide-card__body">
+          Chaliya is a sacred spiritual discipline of dedicated Naam Simran, Nitnem, and daily reflection. Let this journey elevate your consciousness and bring inner peace.
+        </p>
+
+        <div class="companion-milestone-grid">
+          <div class="companion-milestone-item">
+            <div class="companion-milestone-num">40</div>
+            <div class="companion-milestone-label">Days Focus</div>
+          </div>
+          <div class="companion-milestone-item">
+            <div class="companion-milestone-num">8</div>
+            <div class="companion-milestone-label">Daily Banis</div>
+          </div>
+          <div class="companion-milestone-item">
+            <div class="companion-milestone-num">24/7</div>
+            <div class="companion-milestone-label">Simran Stream</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="companion-actions">
+        <button class="companion-primary-btn ios-haptic" id="companionHomeBtn" onclick="if(window.navigateTo){window.navigateTo('../index.html');}else{window.location.href='../index.html';}">
+          Return to Home Screen
+        </button>
+      </div>
+    </main>
+  </div>
+
+  <script src="companion.js"></script>
+</body>
+</html>

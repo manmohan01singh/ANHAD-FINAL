@@ -635,7 +635,7 @@
           document.body.appendChild(clonedNode);
         }
       } else if (!newNode && currentNode) {
-        if (selector !== '#mainNav' && selector !== '.tab-bar') {
+        if (selector !== '#mainNav' && selector !== '#main-nav' && selector !== '.tab-bar' && selector !== '.anhad-bottom-nav' && selector !== '#anhadSvgSprite') {
           currentNode.remove();
         }
       }
@@ -731,6 +731,19 @@
     //    page renders under the same container it would on a hard refresh.
     syncElementAttributes(currentApp, newApp);
     currentApp.innerHTML = newApp.innerHTML;
+
+    // Instant Home Artwork Sync — immediately restore hero banner and theme before scripts execute
+    if (isHomeUrl(url)) {
+      if (typeof window.syncGreetingHeroArtwork === 'function') {
+        try { window.syncGreetingHeroArtwork(); } catch(e) {}
+      }
+      if (window.AnhadSky) {
+        try {
+          window.AnhadSky.applyTimeOfDay();
+          window.AnhadSky.updateHeroCardImages();
+        } catch(e) {}
+      }
+    }
 
     // 4. Only now retire the outgoing page's CSS.
     deactivateForeignPageCss(newPageKey);

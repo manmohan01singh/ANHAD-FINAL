@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Theme blocker — must be the first thing in <head> -->
+  <script>
+    (function() {
+      try {
+        const theme = localStorage.getItem('anhad_theme') || 'auto';
+        let effectiveTheme = theme;
+        let timeOfDay = localStorage.getItem('anhad_forced_time_of_day');
+        if (theme === 'auto') {
+          if (timeOfDay && ['morning', 'day', 'evening', 'night'].includes(timeOfDay)) {
+            effectiveTheme = (timeOfDay === 'night') ? 'dark' : 'light';
+          } else {
+            const hour = new Date().getHours();
+            effectiveTheme = (hour >= 5 && hour < 20) ? 'light' : 'dark';
+            if (hour >= 5 && hour < 9) timeOfDay = 'morning';
+            else if (hour >= 9 && hour < 16) timeOfDay = 'day';
+            else if (hour >= 16 && hour < 20) timeOfDay = 'evening';
+            else timeOfDay = 'night';
+          }
+        }
+        document.documentElement.setAttribute('data-theme', effectiveTheme);
+        document.documentElement.setAttribute('data-theme-mode', theme);
+        if (theme === 'auto') document.documentElement.setAttribute('data-time-of-day', timeOfDay);
+        document.documentElement.style.colorScheme = effectiveTheme;
+        if (effectiveTheme === 'dark') {
+          document.documentElement.classList.add('dark', 'dark-mode');
+          document.documentElement.style.backgroundColor = '#000000';
+          document.documentElement.style.color = '#F5F5F7';
+        } else {
+          document.documentElement.style.backgroundColor = '#F2F2F7';
+          document.documentElement.style.color = '#1C1C1E';
+        }
+      } catch (e) {}
+    })();
+  </script>
+
+  <style>
+    html, body { margin: 0; padding: 0; }
+    html { background-color: #F2F2F7 !important; color: #1C1C1E !important; }
+    html[data-theme="dark"], html.dark-mode {
+      background-color: #000000 !important; color: #F5F5F7 !important;
+    }
+    body { background-color: inherit !important; color: inherit !important; }
+  </style>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Notifications & Sangat | ANHAD</title>
+
+  <link rel="stylesheet" href="../css/theme-variables.css">
+  <link rel="stylesheet" href="../css/trendora-premium.css">
+  <link rel="stylesheet" href="../css/anhad-core.css">
+  <link rel="stylesheet" href="../css/nav-glass.css">
+  <link rel="stylesheet" href="./notifications.css">
+
+  <script src="../lib/anhad-svg-sprite.js"></script>
+  <script src="../lib/global-theme.js" defer></script>
+  <script src="../lib/smooth-navigation.js" defer></script>
+  <script src="../lib/firebase-client.js" defer></script>
+  <script src="../lib/anhad-auth.js" defer></script>
+  <script src="../lib/friends-system.js" defer></script>
+</head>
+<body>
+  <div id="app">
+    <!-- ── Apple Glass Navigation Bar ── -->
+    <nav class="glass-nav">
+      <button class="glass-nav__back" onclick="if(window.navigateTo){window.navigateTo('../index.html');}else{window.location.href='../index.html';}" aria-label="Go Back">
+        <svg class="back-chevron" viewBox="0 0 9 16"><path d="M8 1L1 8L8 15" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span class="back-label">Back</span>
+      </button>
+      <span class="glass-nav__title">Notifications</span>
+      <div class="glass-nav__action">
+        <button id="clearNotifsBtn" style="background: none; border: none; font-size: 15px; font-weight: 500; color: var(--ios-blue, #007AFF); cursor: pointer; padding: 6px 0;" onclick="clearAllNotifications()">
+          Clear
+        </button>
+      </div>
+    </nav>
+
+    <main class="notif-container">
+      <!-- ── Apple iOS Segmented Control ── -->
+      <div class="ios-segmented-control" role="tablist">
+        <button class="ios-segment-btn active" id="tabActivity" onclick="switchTab('activity')" role="tab" aria-selected="true">
+          <span>Activity</span>
+        </button>
+        <button class="ios-segment-btn" id="tabRequests" onclick="switchTab('requests')" role="tab" aria-selected="false">
+          <span>Requests</span>
+          <span class="ios-badge-capsule" id="requestsTabBadge" style="display: none;">0</span>
+        </button>
+      </div>
+
+      <!-- ── TAB 1: SANGAT ACTIVITY FEED ── -->
+      <div id="viewActivity">
+        <!-- Top banner if there are pending requests -->
+        <div class="ios-requests-banner" id="requestsBanner" style="display: none;" onclick="switchTab('requests')">
+          <div class="ios-requests-banner-left">
+            <span style="font-size: 22px;">👥</span>
+            <div>
+              <div class="ios-requests-banner-title" id="requestsBannerText">Sangat Connection Requests</div>
+              <div class="ios-requests-banner-sub">Tap to view and respond</div>
+            </div>
+          </div>
+          <svg class="ios-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </div>
+
+        <div class="ios-section-header">Sangat Activity</div>
+        <div class="ios-inset-group" id="activityList">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+
+      <!-- ── TAB 2: SANGAT CONNECTION REQUESTS ── -->
+      <div id="viewRequests" style="display: none;">
+        <div class="ios-section-header">Pending Requests</div>
+        <div class="ios-inset-group" id="requestsList">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div class="ios-toast" id="iosToast" role="status" aria-live="polite"></div>
+
+  <script>
+    (function() {
+      'use strict';
+
+      let currentTab = 'activity';
+      let toastTimer = null;
+
+      function showToast(msg) {
+        const t = document.getElementById('iosToast');
+        if (!t) return;
+        t.textContent = msg;
+        t.classList.add('show');
+        if (toastTimer) clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
+      }
+
+      function getStoredRequests() {
+        try {
+          const raw = localStorage.getItem('anhad_pending_requests');
+          if (raw) {
+            const list = JSON.parse(raw);
+            const filtered = list.filter(r => !r.id || !r.id.startsWith('req_seed_'));
+            if (filtered.length !== list.length) {
+              localStorage.setItem('anhad_pending_requests', JSON.stringify(filtered));
+            }
+            return filtered;
+          }
+        } catch(e) {}
+        return [];
+      }
+
+      function getStoredActivity() {
+        try {
+          const raw = localStorage.getItem('anhad_activity_notifications');
+          if (raw) {
+            const list = JSON.parse(raw);
+            const filtered = list.filter(a => !a.id || !['act_1', 'act_2', 'act_3', 'act_4'].includes(a.id));
+            if (filtered.length !== list.length) {
+              localStorage.setItem('anhad_activity_notifications', JSON.stringify(filtered));
+            }
+            return filtered;
+          }
+        } catch(e) {}
+        return [];
+      }
+
+      function updateBadges() {
+        const requests = getStoredRequests();
+        const count = requests.length;
+
+        const tabBadge = document.getElementById('requestsTabBadge');
+        const banner = document.getElementById('requestsBanner');
+        const bannerText = document.getElementById('requestsBannerText');
+
+        if (tabBadge) {
+          tabBadge.textContent = count;
+          tabBadge.style.display = count > 0 ? 'inline-block' : 'none';
+        }
+
+        if (banner) {
+          banner.style.display = count > 0 ? 'flex' : 'none';
+          if (bannerText) {
+            bannerText.textContent = `${count} Sangat Connection Request${count > 1 ? 's' : ''}`;
+          }
+        }
+      }
+
+      function renderRequests() {
+        const container = document.getElementById('requestsList');
+        if (!container) return;
+
+        const requests = getStoredRequests();
+        updateBadges();
+
+        if (requests.length === 0) {
+          container.innerHTML = '<div class="ios-empty-state">No pending Sangat connection requests. 🙏<br><span style="font-size:13px; color:var(--ios-text-tertiary);">Search and connect with companions from the Home screen.</span></div>';
+          return;
+        }
+
+        container.innerHTML = requests.map(r => `
+          <div class="ios-request-cell" id="req_cell_${r.id}">
+            <div class="ios-cell-avatar ${r.uid === 'user_amrit' ? 'amrit' : ''}">
+              ${r.avatar || r.name.charAt(0)}
+            </div>
+            <div class="ios-cell-main">
+              <div class="ios-cell-title">${r.name}</div>
+              <div class="ios-cell-sub">${r.desc || 'Wants to connect in Sangat'}</div>
+              <div class="ios-cell-time">${r.handle || ''} • ${r.time}</div>
+            </div>
+            <div class="ios-cell-actions" id="actions_${r.id}">
+              <button class="ios-btn-confirm" onclick="confirmRequest('${r.id}', '${r.name.replace(/'/g, "\\'")}')">Confirm</button>
+              <button class="ios-btn-delete" onclick="declineRequest('${r.id}')">Delete</button>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      function renderActivity() {
+        const container = document.getElementById('activityList');
+        if (!container) return;
+
+        const activity = getStoredActivity();
+        if (activity.length === 0) {
+          container.innerHTML = '<div class="ios-empty-state">No recent activity. Alerts from companions will appear here.</div>';
+          return;
+        }
+
+        container.innerHTML = activity.map(a => {
+          const isAmritvela = a.type === 'amritvela_started';
+          const iconEmoji = isAmritvela ? '🌅' : (a.type === 'nitnem_completed' ? '📖' : (a.type === 'streak_achieved' ? '🔥' : '☬'));
+
+          return `
+            <div class="ios-activity-cell">
+              <div class="ios-activity-icon ${isAmritvela ? 'amritvela' : ''}">
+                ${iconEmoji}
+              </div>
+              <div class="ios-activity-body">
+                <div class="ios-activity-msg">
+                  <strong>${a.name}</strong> ${a.message}
+                </div>
+                ${a.sub ? `<div class="ios-activity-sub">${a.sub}</div>` : ''}
+                <div class="ios-activity-meta">
+                  <span class="ios-activity-time">${a.time}</span>
+                  ${a.ctaLink ? `<a href="${a.ctaLink}" class="ios-activity-cta">${a.ctaText || 'View'}</a>` : ''}
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      window.switchTab = function(tab) {
+        currentTab = tab;
+        const tabAct = document.getElementById('tabActivity');
+        const tabReq = document.getElementById('tabRequests');
+        const viewAct = document.getElementById('viewActivity');
+        const viewReq = document.getElementById('viewRequests');
+
+        if (tab === 'activity') {
+          tabAct.classList.add('active');
+          tabReq.classList.remove('active');
+          viewAct.style.display = 'block';
+          viewReq.style.display = 'none';
+          renderActivity();
+        } else {
+          tabReq.classList.add('active');
+          tabAct.classList.remove('active');
+          viewReq.style.display = 'block';
+          viewAct.style.display = 'none';
+          renderRequests();
+        }
+      };
+
+      window.confirmRequest = function(id, name) {
+        const actionsEl = document.getElementById('actions_' + id);
+        if (actionsEl) {
+          actionsEl.innerHTML = '<span class="ios-btn-status">Connected ✓</span>';
+        }
+
+        // Update stored requests
+        let requests = getStoredRequests();
+        requests = requests.filter(r => r.id !== id);
+        localStorage.setItem('anhad_pending_requests', JSON.stringify(requests));
+        updateBadges();
+
+        // Add to activity timeline
+        let activity = getStoredActivity();
+        activity.unshift({
+          id: 'act_conn_' + Date.now(),
+          type: 'companion_journey',
+          name: name,
+          message: 'is now connected as your Amritvela Companion 🙏',
+          sub: 'You can now share spiritual journeys and Nitnem reminders together',
+          time: 'Just now'
+        });
+        localStorage.setItem('anhad_activity_notifications', JSON.stringify(activity));
+
+        if (navigator.vibrate) navigator.vibrate(10);
+        showToast(`Connected with ${name}! 🙏`);
+      };
+
+      window.declineRequest = function(id) {
+        const row = document.getElementById('req_cell_' + id);
+        if (row) {
+          row.style.opacity = '0';
+          row.style.transform = 'translateX(20px)';
+          setTimeout(() => row.remove(), 200);
+        }
+
+        let requests = getStoredRequests();
+        requests = requests.filter(r => r.id !== id);
+        localStorage.setItem('anhad_pending_requests', JSON.stringify(requests));
+        updateBadges();
+      };
+
+      window.clearAllNotifications = function() {
+        localStorage.setItem('anhad_activity_notifications', JSON.stringify([]));
+        renderActivity();
+        showToast('Activity cleared');
+      };
+
+      document.addEventListener('DOMContentLoaded', () => {
+        updateBadges();
+        renderActivity();
+        renderRequests();
+      });
+    })();
+  </script>
+</body>
+</html>
