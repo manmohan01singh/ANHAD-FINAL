@@ -644,7 +644,15 @@ app.patch('/api/config/admin/campaigns/:id/active', requireAdminToken, async (re
     const config = JSON.parse(JSON.stringify(await getLiveCampaignConfig()));
     const target = (config.campaigns || []).find(c => c.id === req.params.id);
     if (!target) return res.status(404).json({ error: 'Campaign not found' });
-    target.active = !!(req.body && req.body.active);
+    if (req.body && req.body.active !== undefined) {
+      target.active = !!req.body.active;
+    }
+    if (req.body && req.body.image) {
+      if (!target.content) target.content = {};
+      if (!target.content.announce) target.content.announce = {};
+      target.content.announce.image = req.body.image;
+      target.content.customImage = req.body.image;
+    }
     const saved = await configStore.write(config);
     res.json({ success: true, id: target.id, active: target.active, config: saved });
   } catch (e) {
@@ -653,8 +661,6 @@ app.patch('/api/config/admin/campaigns/:id/active', requireAdminToken, async (re
   }
 });
 
-// ═══════════════════════════════════════════════════════════════════
-// 🔴 LIVE RADIO API — The Core Sync Endpoints (MUST be before static files)
 // ═══════════════════════════════════════════════════════════════════
 
 /**

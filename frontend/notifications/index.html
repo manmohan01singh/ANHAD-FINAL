@@ -106,17 +106,7 @@
           </svg>
         </div>
 
-        <!-- Amrit Vela Attendance Action Card -->
-        <div class="ios-amritvela-card" id="amritvelaCard">
-          <div class="ios-amritvela-card-left">
-            <span class="ios-amritvela-icon">🌅</span>
-            <div>
-              <div class="ios-amritvela-title">Amrit Vela Attendance</div>
-              <div class="ios-amritvela-sub" id="amritvelaCardSub">Notify your Sangat companions that you've started Nitnem</div>
-            </div>
-          </div>
-          <button class="ios-btn-amritvela-mark" id="btnMarkAmritvela" onclick="markAmritVelaStarted()">Mark Present</button>
-        </div>
+
 
         <div class="ios-section-header">Sangat Activity</div>
         <div class="ios-inset-group" id="activityList">
@@ -355,57 +345,12 @@
           tabReq.classList.add('active');
           tabAct.classList.remove('active');
           viewReq.style.display = 'block';
-          viewReq.style.display = 'none';
+          viewAct.style.display = 'none';
           renderRequests();
           fetchLiveRequests();
         }
       };
 
-      window.markAmritVelaStarted = async function() {
-        const btn = document.getElementById('btnMarkAmritvela');
-        const sub = document.getElementById('amritvelaCardSub');
-        if (btn) {
-          btn.disabled = true;
-          btn.textContent = 'Broadcasting...';
-        }
-        try {
-          let res = null;
-          if (window.AnhadFriends && typeof window.AnhadFriends.markAmritVelaStarted === 'function') {
-            res = await window.AnhadFriends.markAmritVelaStarted();
-          }
-          if (btn) {
-            btn.textContent = 'Present ✓';
-            btn.style.background = 'var(--ios-green)';
-            btn.style.color = '#FFFFFF';
-          }
-          const count = res && res.deliveredToCount !== undefined ? res.deliveredToCount : 0;
-          if (sub) {
-            sub.textContent = `Attendance recorded! Sent to ${count} companion(s) 🌅`;
-          }
-
-          let activity = getStoredActivity();
-          activity.unshift({
-            id: 'act_av_' + Date.now(),
-            type: 'amritvela_started',
-            name: 'You',
-            message: 'marked Amrit Vela attendance and notified companions 🌅',
-            sub: 'Waheguru ji ka Khalsa, Waheguru ji ki Fateh! 🙏',
-            time: 'Just now'
-          });
-          localStorage.setItem('anhad_activity_notifications', JSON.stringify(activity));
-          renderActivity();
-
-          if (navigator.vibrate) navigator.vibrate(15);
-          showToast(`Amrit Vela attendance marked! (${count} companions notified) 🌅`);
-        } catch (e) {
-          console.warn('[Notifications] Amrit Vela start note:', e);
-          if (btn) {
-            btn.disabled = false;
-            btn.textContent = 'Mark Present';
-          }
-          showToast(e.message || 'Unable to broadcast Amrit Vela at this time');
-        }
-      };
 
       window.confirmRequest = async function(id, name) {
         const actionsEl = document.getElementById('actions_' + id);

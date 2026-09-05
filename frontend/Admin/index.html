@@ -172,6 +172,18 @@
           <img id="companionAdminPreviewImg" src="../assets/companion/chaliya-2026.webp" alt="Chaliya 2026 Preview">
         </div>
 
+        <div style="margin: 10px 0 16px; display: flex; flex-direction: column; gap: 8px;">
+          <div style="display: flex; gap: 8px; align-items: center;">
+            <input type="file" id="companionFileInput" accept="image/*" style="display: none;">
+            <button type="button" class="admin-btn" id="uploadArtworkBtn" onclick="document.getElementById('companionFileInput').click()">📁 Choose Custom Artwork Image</button>
+            <button type="button" class="admin-btn admin-btn--danger" id="resetCompanionArtworkBtn" style="padding: 8px 12px; font-size: 13px;">↺ Reset to Default</button>
+          </div>
+          <div style="display: flex; gap: 8px; align-items: center;">
+            <input class="admin-input" id="companionImgUrlInput" type="text" placeholder="Or paste image URL (https://... or assets/...)" style="font-size: 13px;">
+            <button type="button" class="admin-btn" id="applyUrlBtn" style="white-space: nowrap; font-size: 13px;">Apply URL</button>
+          </div>
+        </div>
+
         <!-- Duration Controls (Days & Hours) -->
         <label class="admin-label">Companion Duration Scheduling</label>
         <p class="admin-hint">Set how long the companion campaign will actively display on the Home Screen.</p>

@@ -257,6 +257,7 @@
     }
     window.addEventListener('anhad_page_changed', syncHeroImage);
     window.addEventListener('anhad_companion_changed', syncHeroImage);
+    window.addEventListener('anhadCampaignUpdated', syncHeroImage);
     window.addEventListener('storage', (e) => {
       if (e.key === STORAGE_KEY || e.key === STORAGE_CUSTOM_IMG || e.key === STORAGE_EXPIRY) {
         syncHeroImage();

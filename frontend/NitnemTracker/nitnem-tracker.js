@@ -3914,8 +3914,23 @@ const AmritvelaManager = {
 
             // Refresh date strip if open
             DateHistoryView.refreshDateDots();
+
+            // ── Companion Notification Broadcast ──────────────────────────────
+            // Only fires if user has toggled "Notify companions" ON in settings
+            const shouldNotify = localStorage.getItem('anhad_amritvela_notify_companions') !== 'false';
+            if (shouldNotify && window.AnhadFriends && typeof window.AnhadFriends.markAmritVelaStarted === 'function') {
+                window.AnhadFriends.markAmritVelaStarted()
+                    .then(res => {
+                        const count = (res && res.deliveredToCount) || 0;
+                        if (count > 0) {
+                            Toast.show(`🌅 Amrit Vela alert sent to ${count} companion(s)!`, 'success');
+                        }
+                    })
+                    .catch(err => console.warn('[AmritvelaManager] Companion notify note:', err));
+            }
         }, 0);
     },
+
 
     /**
      * Play time-based animation on present button
@@ -5464,6 +5479,7 @@ const SettingsManager = {
             hapticToggle: document.getElementById('hapticToggle'),
             soundToggle: document.getElementById('soundToggle'),
             autoWakeToggle: document.getElementById('autoWakeToggle'),
+            amritvelaNotifyCompanionsToggle: document.getElementById('amritvelaNotifyCompanionsToggle'),
             beadsPerMalaSelect: document.getElementById('beadsPerMalaSelect'),
             vibrationPatternSelect: document.getElementById('vibrationPatternSelect'),
             exportDataBtn: document.getElementById('exportDataBtn'),
@@ -5500,6 +5516,16 @@ const SettingsManager = {
 
         this.elements.autoWakeToggle?.addEventListener('change', (e) => {
             this.updateSetting('autoWakeDetect', e.target.checked);
+        });
+
+        this.elements.amritvelaNotifyCompanionsToggle?.addEventListener('change', (e) => {
+            // Store 'false' when off, remove key (default = on) when on
+            if (e.target.checked) {
+                localStorage.removeItem('anhad_amritvela_notify_companions');
+            } else {
+                localStorage.setItem('anhad_amritvela_notify_companions', 'false');
+            }
+            HapticManager.selection();
         });
 
         // Selects
@@ -5539,6 +5565,11 @@ const SettingsManager = {
         if (this.elements.autoWakeToggle) {
             this.elements.autoWakeToggle.checked = this.settings.autoWakeDetect;
         }
+        if (this.elements.amritvelaNotifyCompanionsToggle) {
+            // Default: on. Only off if explicitly set to 'false'
+            this.elements.amritvelaNotifyCompanionsToggle.checked =
+                localStorage.getItem('anhad_amritvela_notify_companions') !== 'false';
+        }
         if (this.elements.beadsPerMalaSelect) {
             this.elements.beadsPerMalaSelect.value = this.settings.beadsPerMala;
         }
@@ -5546,6 +5577,7 @@ const SettingsManager = {
             this.elements.vibrationPatternSelect.value = this.settings.vibrationPattern;
         }
     },
+
 
     /**
      * Update a setting

@@ -439,8 +439,44 @@
       updateScheduleDisplay();
     };
 
-    // Default to dedicated Chaliya 2026 artwork
-    if (previewImg) previewImg.src = defaultArtwork;
+    // Wire custom artwork file upload
+    if (fileInput) {
+      fileInput.addEventListener('change', (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          currentUploadedArtwork = evt.target.result;
+          if (previewImg) previewImg.src = currentUploadedArtwork;
+          if (urlInput) urlInput.value = '';
+          setStatus('companionStatus', 'Custom artwork selected! Click "Save & Apply Companion" to publish.', 'ok');
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    // Wire image URL apply
+    const applyUrlBtn = $('applyUrlBtn');
+    if (applyUrlBtn && urlInput) {
+      applyUrlBtn.addEventListener('click', () => {
+        const url = urlInput.value.trim();
+        if (!url) return;
+        currentUploadedArtwork = url;
+        if (previewImg) previewImg.src = url;
+        setStatus('companionStatus', 'Image URL applied! Click "Save & Apply Companion" to publish.', 'ok');
+      });
+    }
+
+    // Wire reset button
+    if (resetBtn) {
+      resetBtn.addEventListener('click', () => {
+        currentUploadedArtwork = null;
+        if (previewImg) previewImg.src = defaultArtwork;
+        if (urlInput) urlInput.value = '';
+        if (fileInput) fileInput.value = '';
+        setStatus('companionStatus', 'Reset to default artwork. Click "Save & Apply Companion" to publish.', 'ok');
+      });
+    }
 
     enableToggle.addEventListener('click', () => {
       enableToggle.classList.toggle('active');
@@ -450,7 +486,7 @@
     });
 
     if (saveBtn) {
-      saveBtn.addEventListener('click', () => {
+      saveBtn.addEventListener('click', async () => {
         const d = parseInt(daysInput.value, 10) || 0;
         const h = parseInt(hoursInput.value, 10) || 0;
         const isEnabled = enableToggle.classList.contains('active');
@@ -458,13 +494,18 @@
         if (window.CompanionMode) {
           window.CompanionMode.saveCompanionConfig({
             enabled: isEnabled,
+            customImage: currentUploadedArtwork,
             days: d,
             hours: h
           });
         }
         // Always guarantee direct localStorage persistence
         localStorage.setItem('anhad_companion_mode', isEnabled ? 'true' : 'false');
-        localStorage.removeItem('anhad_companion_custom_image');
+        if (currentUploadedArtwork) {
+          localStorage.setItem('anhad_companion_custom_image', currentUploadedArtwork);
+        } else {
+          localStorage.removeItem('anhad_companion_custom_image');
+        }
         localStorage.setItem('anhad_companion_duration_days', d.toString());
         localStorage.setItem('anhad_companion_duration_hours', h.toString());
         const durationMs = (d * 24 * 3600 * 1000) + (h * 3600 * 1000);
@@ -486,17 +527,25 @@
           }
         } catch (e) {}
 
-        // Synchronize with campaign card if present
-        if (config && config.campaigns) {
-          const chaliya = config.campaigns.find(c => c.id === 'chaliya-amritvela-2026' || c.id === 'chaliya-2026');
-          if (chaliya) {
-            chaliya.active = isEnabled;
+        // Persist to server backend so campaign turns ON/OFF and syncs across all devices!
+        try {
+          const syncRes = await api('/api/config/admin/campaigns/chaliya-amritvela-2026/active', {
+            method: 'PATCH',
+            body: JSON.stringify({
+              active: isEnabled,
+              image: currentUploadedArtwork || undefined
+            })
+          });
+          if (syncRes && syncRes.config) {
+            config = syncRes.config;
             renderList();
           }
+        } catch (err) {
+          console.warn('[Admin] Server campaign sync note:', err);
         }
 
-        setStatus('companionStatus', 'Companion saved! Home Screen hero artwork updated.', 'ok');
-        toast('Companion updated successfully! 🙏');
+        setStatus('companionStatus', 'Companion saved and synced to all devices! Home Screen hero artwork updated.', 'ok');
+        toast('Companion updated successfully on all devices! 🙏');
       });
     }
   }

@@ -224,6 +224,24 @@
         const data = await resp.json();
 
         if (data && Array.isArray(data.campaigns)) {
+          // Sync with Companion Mode across all devices
+          const chaliya = data.campaigns.find(c => c.id === 'chaliya-amritvela-2026' || c.id === 'chaliya-2026');
+          if (chaliya) {
+            const isAct = !!chaliya.active;
+            const remoteImg = (chaliya.content && chaliya.content.announce && chaliya.content.announce.image) ||
+                              (chaliya.content && chaliya.content.customImage);
+            if (remoteImg && (remoteImg.startsWith('http') || remoteImg.startsWith('data:') || remoteImg.startsWith('assets/'))) {
+              try { localStorage.setItem('anhad_companion_custom_image', remoteImg); } catch(e) {}
+            }
+            if (window.CompanionMode && typeof window.CompanionMode.setEnabled === 'function') {
+              if (window.CompanionMode.isEnabled() !== isAct) {
+                window.CompanionMode.setEnabled(isAct);
+              }
+            } else {
+              try { localStorage.setItem('anhad_companion_mode', isAct ? 'true' : 'false'); } catch(e) {}
+            }
+          }
+
           // Only notify when something actually changed — otherwise a 15s poll
           // would re-render the campaign UI four times a minute forever.
           const payload = JSON.stringify(data);

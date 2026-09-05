@@ -58,17 +58,93 @@ html[data-theme="dark"] body.auth-body {
   to { opacity: 1; transform: translateY(0); }
 }
 
+/* ── Ambient Background ────────────────────────────────────── */
+.auth-bg {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.auth-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.35;
+  animation: authOrbFloat 20s ease-in-out infinite;
+}
+
+.auth-orb-1 {
+  width: 360px; height: 360px;
+  background: radial-gradient(circle, #D4A03A, #FF8C00);
+  top: -120px; right: -80px;
+  animation-delay: 0s;
+}
+
+.auth-orb-2 {
+  width: 280px; height: 280px;
+  background: radial-gradient(circle, #AF52DE, #5856D6);
+  bottom: 10%; left: -100px;
+  animation-delay: -7s;
+  animation-direction: reverse;
+}
+
+.auth-orb-3 {
+  width: 200px; height: 200px;
+  background: radial-gradient(circle, #34C759, #007AFF);
+  bottom: 30%; right: 20%;
+  animation-delay: -14s;
+  opacity: 0.2;
+}
+
+html.dark-mode .auth-orb,
+html[data-theme="dark"] .auth-orb {
+  opacity: 0.25;
+}
+
+@keyframes authOrbFloat {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -20px) scale(1.08); }
+  66% { transform: translate(-20px, 30px) scale(0.95); }
+}
+
+body.auth-body {
+  position: relative;
+  z-index: 1;
+}
+
+.auth-container {
+  position: relative;
+  z-index: 2;
+}
+
+/* ── Logo ────────────────────────────────────────────────── */
+.auth-logo-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
 .auth-header {
   text-align: center;
   margin-bottom: 22px;
 }
 
 .auth-logo {
-  width: 64px;
-  height: 64px;
-  border-radius: 18px;
-  margin-bottom: 12px;
-  box-shadow: 0 8px 24px var(--auth-gold-glow);
+  width: 80px;
+  height: 80px;
+  border-radius: 22px;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.12),
+    0 8px 28px var(--auth-gold-glow),
+    0 0 60px rgba(212, 160, 58, 0.18);
+  transition: transform 0.2s ease;
+}
+
+.auth-logo:active {
+  transform: scale(0.96);
 }
 
 .auth-title {

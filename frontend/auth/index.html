@@ -56,6 +56,13 @@
 </head>
 <body class="auth-body">
 
+  <!-- Ambient Background -->
+  <div class="auth-bg" aria-hidden="true">
+    <div class="auth-orb auth-orb-1"></div>
+    <div class="auth-orb auth-orb-2"></div>
+    <div class="auth-orb auth-orb-3"></div>
+  </div>
+
   <nav class="auth-nav">
     <button class="btn-back" onclick="handleGoBack()" aria-label="Go Back">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -66,7 +73,9 @@
 
   <main class="auth-container">
     <div class="auth-header">
-      <img src="../assets/app-logo-96.avif" alt="ANHAD Logo" class="auth-logo">
+      <div class="auth-logo-wrap">
+        <img src="../assets/app-logo-96.avif" alt="ANHAD Logo" class="auth-logo">
+      </div>
       <h1 class="auth-title">Welcome to ANHAD</h1>
       <p class="auth-subtitle">Sync your Nitnem, Chaliya journey, and Amrit Vela Sangat across all devices.</p>
     </div>
