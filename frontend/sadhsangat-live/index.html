@@ -2126,6 +2126,9 @@
       pointer-events: auto;
     }
 
+    /* ═══════════════════════════════════════════════════════════════
+       NATIVE iOS YOUTUBE PLAYER SHEET (Obsidian Midnight Dark Theme)
+       ═══════════════════════════════════════════════════════════════ */
     .player-sheet {
       position: fixed;
       bottom: 0;
@@ -2135,36 +2138,36 @@
       max-width: 720px;
       height: 94dvh;
       max-height: 94dvh;
-      background: var(--bg-primary);
+      background: #0F0F0F !important; /* Pure iOS YouTube Obsidian Dark */
+      color: #FFFFFF !important;
       z-index: 2500;
       display: flex;
       flex-direction: column;
       transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
       overflow: hidden;
-      border-radius: 26px 26px 0 0;
-      border-top: 1px solid rgba(212, 148, 58, 0.25);
-      box-shadow: 0 -16px 50px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
+      border-radius: 20px 20px 0 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+      box-shadow: 0 -16px 50px rgba(0, 0, 0, 0.8);
       will-change: transform;
       backface-visibility: hidden;
     }
     .player-sheet.open {
       transform: translateX(-50%) translateY(0) translateZ(0);
-      box-shadow: 0 -20px 60px rgba(0,0,0,0.5), 0 -2px 14px rgba(212, 148, 58, 0.2);
     }
 
-    /* Drag Handle Header — clean iOS navigation */
+    /* Minimalist iOS Header with Minimize Down Chevron */
     .player-sheet-header {
-      height: 48px;
+      height: 44px;
       padding: 0 16px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       cursor: grab;
       flex-shrink: 0;
-      background: transparent;
+      background: #0F0F0F;
       position: relative;
       z-index: 10;
-      border-bottom: 0.5px solid rgba(255, 255, 255, 0.06);
+      border-bottom: 0.5px solid rgba(255, 255, 255, 0.08);
     }
     .player-sheet-header:active {
       cursor: grabbing;
@@ -2174,102 +2177,84 @@
       left: 50%;
       top: 8px;
       transform: translateX(-50%);
-      width: 38px;
+      width: 36px;
       height: 4.5px;
       background: rgba(255, 255, 255, 0.3);
       border-radius: 100px;
     }
     .player-back-btn {
-      color: var(--text-primary);
+      color: #FFFFFF;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 34px;
-      height: 34px;
+      width: 32px;
+      height: 32px;
       border-radius: 50%;
-      background: rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.1);
       border: none;
       transition: transform 0.15s ease, background 0.15s ease;
     }
     .player-back-btn:active {
       transform: scale(0.9);
-      background: var(--gold-accent);
-      color: #000;
+      background: rgba(255, 255, 255, 0.25);
     }
     .player-header-title {
       display: flex;
       align-items: center;
       gap: 6px;
-      font-size: 11.5px;
-      font-weight: 800;
-      color: var(--gold-accent);
-      letter-spacing: 0.7px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #AAAAAA;
+      letter-spacing: 0.8px;
       text-transform: uppercase;
     }
     .ios-live-indicator {
       display: inline-flex;
       align-items: center;
       gap: 4px;
-      background: #EF4444;
-      color: #FFF;
-      font-size: 9.5px;
-      font-weight: 900;
-      padding: 2px 7px;
-      border-radius: 4px;
+      background: #CC0000;
+      color: #FFFFFF;
+      font-size: 9px;
+      font-weight: 800;
+      padding: 2px 6px;
+      border-radius: 3px;
       letter-spacing: 0.5px;
     }
     .ios-live-dot {
       width: 5px;
       height: 5px;
       border-radius: 50%;
-      background: #FFF;
+      background: #FFFFFF;
       animation: health-pulse 1.2s infinite;
     }
 
-    /* Ambient Glow Layer — authentic iOS YouTube ambient diffusion */
+    /* Ambient Lighting Glow — Subtle YouTube Diffuse Glow */
     .ambient-glow-layer {
       display: block !important;
       position: absolute;
-      top: 15px;
+      top: 10px;
       left: 50%;
       transform: translateX(-50%);
       width: 100%;
-      height: 280px;
-      background: radial-gradient(ellipse at center, var(--ambient-color, rgba(212, 160, 58, 0.22)) 0%, var(--ambient-color-secondary, rgba(212, 160, 58, 0.06)) 50%, transparent 80%);
-      filter: blur(40px);
-      opacity: 0.75;
+      height: 260px;
+      background: radial-gradient(ellipse at center, var(--ambient-color, rgba(255, 255, 255, 0.15)) 0%, transparent 70%);
+      filter: blur(48px);
+      opacity: 0.45;
       pointer-events: none;
       z-index: 1;
       transition: opacity 0.4s ease;
     }
 
-    /* Video Viewport — clean 16:9 box */
+    /* Video Viewport — 16:9 Pitch Black Edge */
     .player-video-viewport {
       width: 100%;
       aspect-ratio: 16/9;
-      background: #000;
+      background: #000000;
       position: relative;
       overflow: hidden;
       flex-shrink: 0;
-      z-index: 10;
-      border-bottom: 0.5px solid var(--border-color);
-      box-shadow: 0 8px 40px rgba(0,0,0,0.35), 0 0 0 1px rgba(212,160,58,0.18);
-      border-radius: 4px;
-    }
-    .player-video-viewport::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      border-radius: 4px;
-      background: linear-gradient(135deg, rgba(212,160,58,0.06) 0%, transparent 40%, transparent 60%, rgba(212,160,58,0.03) 100%);
-      pointer-events: none;
-      z-index: 2;
-    }
-    /* PERF: Removed rotating conic-gradient animation — was creating a GPU
-       compositing layer that forced repaint on every animation frame */
-    .player-video-viewport::after {
-      display: none !important;
+      z-index: 5;
     }
     #ytPlayerContainer {
       width: 100%;
@@ -2329,9 +2314,8 @@
       100% { opacity: 0; }
     }
     .doubletap-seek-icon {
-      font-size: 22px;
       color: #FFF;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
     }
     .doubletap-seek-text {
       font-size: 11px;
@@ -2344,7 +2328,7 @@
     #playerBufferingOverlay {
       position: absolute;
       inset: 0;
-      background: rgba(0, 0, 0, 0.4);
+      background: rgba(0, 0, 0, 0.5);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -2357,38 +2341,34 @@
       opacity: 1;
     }
     .player-spinner {
-      width: 52px;
-      height: 52px;
-      border: 4px solid rgba(255, 255, 255, 0.1);
-      border-top-color: var(--gold-accent);
-      border-right-color: var(--gold-warm);
+      width: 44px;
+      height: 44px;
+      border: 3px solid rgba(255, 255, 255, 0.15);
+      border-top-color: #FFFFFF;
       border-radius: 50%;
       animation: spin 0.7s linear infinite;
-      box-shadow: 0 0 30px rgba(212,160,58,0.15);
     }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-    /* Audio-only Disc Spinning HUD — premium */
+    /* Audio-only background mode */
     .audio-only-overlay {
       display: none;
       position: absolute;
       inset: 0;
-      background: radial-gradient(circle at 50% 40%, rgba(212,160,58,0.12) 0%, transparent 60%);
+      background: #121212;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 24px;
-      z-index: 5;
+      gap: 20px;
+      z-index: 6;
     }
     .audio-disc-spin {
-      width: 100px;
-      height: 100px;
+      width: 90px;
+      height: 90px;
       border-radius: 50%;
-      background: var(--gold-gradient);
-      border: 4px solid rgba(255,255,255,0.15);
-      box-shadow: 0 0 50px rgba(212,160,58,0.25), inset 0 0 30px rgba(0,0,0,0.15);
-      background-size: cover;
-      background-position: center;
+      background: linear-gradient(135deg, #222, #444);
+      border: 3px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 0 40px rgba(0,0,0,0.6);
       animation: spin 8s linear infinite;
       animation-play-state: paused;
       position: relative;
@@ -2398,78 +2378,58 @@
       position: absolute;
       inset: 50%;
       transform: translate(-50%, -50%);
-      width: 22px;
-      height: 22px;
-      background: var(--bg-primary);
+      width: 20px;
+      height: 20px;
+      background: #111;
       border-radius: 50%;
-      border: 3px solid rgba(212,160,58,0.3);
-      box-shadow: 0 0 12px rgba(212,160,58,0.15);
+      border: 2px solid rgba(255, 255, 255, 0.4);
     }
     .audio-disc-spin.playing {
       animation-play-state: running;
     }
-    /* Equalizer bars for audio mode */
     .audio-equalizer {
       display: flex;
       align-items: center;
-      gap: 4px;
-      height: 28px;
+      gap: 3px;
+      height: 24px;
     }
     .audio-equalizer-bar {
-      width: 4px;
-      border-radius: 4px;
-      background: var(--gold-gradient);
+      width: 3.5px;
+      border-radius: 3px;
+      background: #FFFFFF;
       animation: equalizer-wave 1.2s ease-in-out infinite alternate;
-      opacity: 0.7;
+      opacity: 0.8;
     }
-    .audio-equalizer-bar:nth-child(1) { height: 12px; animation-delay: 0s; }
-    .audio-equalizer-bar:nth-child(2) { height: 22px; animation-delay: 0.15s; }
-    .audio-equalizer-bar:nth-child(3) { height: 16px; animation-delay: 0.3s; }
-    .audio-equalizer-bar:nth-child(4) { height: 26px; animation-delay: 0.45s; }
-    .audio-equalizer-bar:nth-child(5) { height: 18px; animation-delay: 0.6s; }
-    @keyframes equalizer-wave {
-      0% { transform: scaleY(0.5); opacity: 0.4; }
-      100% { transform: scaleY(1.2); opacity: 1; }
-    }
+    .audio-equalizer-bar:nth-child(1) { height: 10px; animation-delay: 0s; }
+    .audio-equalizer-bar:nth-child(2) { height: 20px; animation-delay: 0.15s; }
+    .audio-equalizer-bar:nth-child(3) { height: 14px; animation-delay: 0.3s; }
+    .audio-equalizer-bar:nth-child(4) { height: 22px; animation-delay: 0.45s; }
+    .audio-equalizer-bar:nth-child(5) { height: 16px; animation-delay: 0.6s; }
 
-    /* Scroll Area Watch Details */
+    /* Scrollable Details Section (iOS YouTube Native Layout) */
     .player-scroll-content {
       flex: 1;
       overflow-y: auto;
-      padding: 0px 16px calc(24px + var(--safe-bottom));
-      background: transparent;
+      padding: 0 16px calc(24px + var(--safe-bottom));
+      background: #0F0F0F !important;
       z-index: 9;
       position: relative;
-      /* PERF: mask-image on scrolling container forces GPU repaint every scroll frame — removed */
       -webkit-overflow-scrolling: touch;
     }
-    .player-scroll-content::before {
-      content: '';
-      position: sticky;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 0;
-      min-height: 0;
-      display: block;
-      pointer-events: none;
-      z-index: -1;
-    }
 
-    /* Red Scrubber/Range — gold premium */
+    /* Red Scrubber Timeline — Exact YouTube iOS */
     .player-timeline-block {
       display: flex;
       flex-direction: column;
-      gap: 4px;
-      margin: 4px 0 10px;
+      gap: 2px;
+      margin: 8px 0 4px;
     }
     .player-timeline-row {
       position: relative;
       display: flex;
       align-items: center;
-      height: 20px;
+      height: 18px;
     }
-    
     input[type="range"].yt-scrubber {
       outline: none;
       -webkit-appearance: none;
@@ -2477,259 +2437,120 @@
       background: transparent;
       cursor: pointer;
       z-index: 2;
+      margin: 0;
     }
     input[type="range"].yt-scrubber::-webkit-slider-runnable-track {
       width: 100%;
-      height: 4px;
-      background: linear-gradient(90deg, var(--gold-accent) 0%, var(--gold-accent) var(--progress, 0%), var(--border-color) var(--progress, 0%), var(--border-color) 100%);
+      height: 3px;
+      background: linear-gradient(90deg, #FF0000 0%, #FF0000 var(--progress, 0%), rgba(255, 255, 255, 0.2) var(--progress, 0%), rgba(255, 255, 255, 0.2) 100%);
       border-radius: 2px;
-      transition: height 0.15s var(--ease-out);
+      transition: height 0.15s ease;
     }
     input[type="range"].yt-scrubber:active::-webkit-slider-runnable-track {
-      height: 6px;
+      height: 5px;
     }
     input[type="range"].yt-scrubber::-webkit-slider-thumb {
       -webkit-appearance: none;
-      width: 16px;
-      height: 16px;
+      width: 12px;
+      height: 12px;
       border-radius: 50%;
-      background: var(--gold-gradient);
-      margin-top: -6px;
-      box-shadow: 0 0 12px rgba(212,160,58,0.5), 0 1px 4px rgba(0,0,0,0.3);
-      transition: transform 0.2s var(--ease-out), box-shadow 0.2s var(--ease-out);
-      border: 2px solid rgba(0,0,0,0.15);
+      background: #FF0000;
+      margin-top: -4.5px;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+      transition: transform 0.15s ease;
+      border: none;
     }
     input[type="range"].yt-scrubber:active::-webkit-slider-thumb {
       transform: scale(1.4);
-      box-shadow: 0 0 20px rgba(212,160,58,0.7), 0 2px 8px rgba(0,0,0,0.3);
     }
-    /* Progress fill bar behind thumb */
-    .player-timeline-row::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 50%;
-      transform: translateY(-50%);
-      height: 4px;
-      border-radius: 2px;
-      background: var(--gold-gradient);
-      width: calc(var(--progress, 0) * 1%);
-      pointer-events: none;
-      z-index: 1;
-      transition: width 0.1s linear;
-    }
-    
     .player-time-labels {
       display: flex;
       justify-content: space-between;
-      font-size: 11.5px;
-      font-weight: 800;
-      color: var(--gold-accent);
-      letter-spacing: 0.5px;
-      padding: 0 2px;
-      font-variant-numeric: tabular-nums;
-      font-family: 'SF Mono', 'Courier New', monospace;
-      text-shadow: 0 0 8px rgba(212,160,58,0.15);
+      font-size: 11px;
+      font-weight: 500;
+      color: #AAAAAA;
+      letter-spacing: 0.3px;
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Mono', monospace;
     }
 
-    
-    /* Stream Health & Edge-to-Edge Experience */
-    .player-live-badge-group {
-      display: inline-flex;
+    /* Video Title & Metadata Row (Clean, No Brown Left Border) */
+    .player-details-row {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin: 8px 0 10px;
+      padding: 0 !important;
+      border: none !important; /* Cleans out any old thick gold left border */
+    }
+    .player-video-title {
+      font-size: 17px !important;
+      font-weight: 700 !important;
+      color: #FFFFFF !important;
+      line-height: 1.35 !important;
+      letter-spacing: -0.3px !important;
+      margin: 0 !important;
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif !important;
+    }
+    .player-meta-badges {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .player-video-views-row {
+      font-size: 12px !important;
+      color: #AAAAAA !important;
+      font-weight: 400 !important;
+      display: flex;
       align-items: center;
       gap: 6px;
     }
-    .stream-health-indicator {
+    .player-live-badge-row {
       display: inline-flex;
       align-items: center;
-      gap: 5px;
-      padding: 3px 8px;
-      border-radius: 50px;
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 0.3px;
-      background: rgba(34, 197, 94, 0.12);
-      border: 0.5px solid rgba(34, 197, 94, 0.3);
-      color: #22C55E;
-      transition: all 0.3s ease;
-    }
-    .stream-health-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: #22C55E;
-      box-shadow: 0 0 6px rgba(34, 197, 94, 0.6);
-      animation: health-pulse 2s ease-in-out infinite;
-    }
-    .stream-health-indicator.buffering {
-      background: rgba(245, 158, 11, 0.12);
-      border-color: rgba(245, 158, 11, 0.3);
-      color: #F59E0B;
-    }
-    .stream-health-indicator.buffering .stream-health-dot {
-      background: #F59E0B;
-      box-shadow: 0 0 6px rgba(245, 158, 11, 0.6);
-      animation: health-pulse 0.8s ease-in-out infinite;
-    }
-    .stream-health-indicator.degraded {
-      background: rgba(239, 68, 68, 0.12);
-      border-color: rgba(239, 68, 68, 0.3);
-      color: #EF4444;
-    }
-    .stream-health-indicator.degraded .stream-health-dot {
-      background: #EF4444;
-      box-shadow: 0 0 6px rgba(239, 68, 68, 0.6);
-      animation: none;
-    }
-    @keyframes health-pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.4; transform: scale(0.85); }
-    }
-    @media (max-width: 768px) {
-      .player-sheet:not(.minimized) {
-        max-width: 100vw !important;
-        width: 100vw !important;
-        height: 100dvh !important;
-        max-height: 100dvh !important;
-        border-radius: 0 !important;
-        border-top: none !important;
-        left: 0 !important;
-        transform: translateY(100%) translateZ(0) !important;
-        padding-bottom: env(safe-area-inset-bottom, 0px) !important;
-      }
-      .player-sheet.open:not(.minimized) {
-        transform: translateY(0) translateZ(0) !important;
-      }
-      .player-sheet:not(.minimized) .player-video-viewport {
-        border-radius: 0 !important;
-        width: 100% !important;
-        box-shadow: none !important;
-      }
-    }
-
-    .player-live-badge-row {
-      display: none;
-      align-items: center;
-      justify-content: space-between;
-      width: 100%;
-      padding-top: 8px;
       gap: 8px;
     }
     .player-static-live-badge {
-      background: var(--gold-gradient);
-      color: #0F0F0F;
-      font-size: 10px;
-      font-weight: 900;
-      padding: 3px 10px;
-      border-radius: 50px;
-      letter-spacing: 0.5px;
+      background: #CC0000;
+      color: #FFFFFF;
+      font-size: 9.5px;
+      font-weight: 800;
+      padding: 2px 6px;
+      border-radius: 3px;
       display: inline-flex;
       align-items: center;
-      gap: 5px;
-      box-shadow: 0 2px 12px rgba(212,160,58,0.35);
-    }
-    .player-static-live-badge.offline {
-      background: var(--text-tertiary);
-      color: var(--text-primary);
-      box-shadow: none;
+      gap: 4px;
     }
     .player-live-dot {
-      width: 5px;
-      height: 5px;
+      width: 4px;
+      height: 4px;
       border-radius: 50%;
-      background: #0F0F0F;
-      animation: live-dot-pulse 1s ease-in-out infinite;
-    }
-    .player-static-live-badge.offline .player-live-dot {
-      animation: none;
-      background: var(--text-primary);
-    }
-    @keyframes live-dot-pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.3; transform: scale(0.8); }
+      background: #FFFFFF;
+      animation: health-pulse 1s infinite;
     }
     .player-go-live-btn {
       display: none;
       align-items: center;
-      gap: 6px;
-      padding: 6px 14px;
+      gap: 4px;
+      padding: 4px 10px;
       border-radius: 100px;
-      background: var(--bg-glass);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 0.5px solid var(--separator);
-      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: #FFFFFF;
       font-size: 11px;
       font-weight: 700;
       cursor: pointer;
-      transition: all 0.2s var(--ease-out);
-      margin-left: auto;
-      box-shadow: var(--shadow-xs);
-    }
-    .player-go-live-btn:active {
-      background: var(--gold-accent);
-      color: #000;
-      transform: scale(0.92);
-      border-color: var(--gold-accent);
     }
 
-    .player-details-row {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      margin-top: 8px;
-      margin-bottom: 10px;
-      padding-left: 14px;
-      border-left: 3.5px solid var(--gold-accent);
-      border-radius: 0 0 0 4px;
-      position: relative;
-    }
-    .player-details-row::after {
-      content: '';
-      position: absolute;
-      left: -3.5px;
-      bottom: 0;
-      width: 3.5px;
-      height: 50%;
-      background: linear-gradient(to bottom, var(--gold-accent), transparent);
-      border-radius: 0 0 0 4px;
-    }
-    .player-video-title {
-      font-size: 18px;
-      font-weight: 800;
-      color: var(--text-primary);
-      line-height: 1.35;
-      font-family: var(--font-gurbani);
-      letter-spacing: -0.3px;
-    }
-    .player-video-views-row {
-      font-size: 12px;
-      color: var(--gold-accent);
-      font-weight: 700;
-      letter-spacing: 0.3px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .player-video-views-row::before {
-      content: '';
-      width: 5px;
-      height: 5px;
-      border-radius: 50%;
-      background: var(--gold-accent);
-      display: inline-block;
-      box-shadow: 0 0 6px rgba(212,160,58,0.4);
-    }
-
-    /* Channel Subscription Row — premium glass */
+    /* Channel Subscription Row — YouTube iOS Native */
     .player-channel-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 12px;
-      border-bottom: 0.5px solid var(--separator);
       padding: 8px 0 12px;
-      margin-bottom: 10px;
+      border-bottom: 0.5px solid rgba(255, 255, 255, 0.08) !important;
+      margin-bottom: 8px;
     }
     .player-channel-left {
       display: flex;
@@ -2739,68 +2560,75 @@
       min-width: 0;
     }
     .player-channel-avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      object-fit: cover;
-      flex-shrink: 0;
-      background: var(--bg-tertiary);
-      border: 1.5px solid var(--gold-accent);
-      box-shadow: 0 2px 8px rgba(212,160,58,0.15);
+      width: 38px !important;
+      height: 38px !important;
+      border-radius: 50% !important;
+      object-fit: cover !important;
+      flex-shrink: 0 !important;
+      background: #272727 !important;
+      border: none !important;
     }
     .player-channel-meta {
       flex: 1;
       min-width: 0;
     }
+    .player-channel-name-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
     .player-channel-name {
-      font-size: 14.5px;
-      font-weight: 700;
-      color: var(--text-primary);
+      font-size: 14.5px !important;
+      font-weight: 700 !important;
+      color: #FFFFFF !important;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
+    .player-verified-badge {
+      color: #AAAAAA;
+      display: inline-flex;
+      align-items: center;
+    }
     .player-channel-subs {
-      font-size: 11px;
-      color: var(--text-secondary);
+      font-size: 11.5px !important;
+      color: #AAAAAA !important;
       margin-top: 1px;
-      font-weight: 500;
+      font-weight: 400 !important;
     }
     
+    /* YouTube iOS Subscribe Button */
     .player-sub-btn {
-      padding: 8px 20px;
+      height: 36px;
+      padding: 0 16px;
       font-size: 13px;
       font-weight: 700;
-      border-radius: 100px;
+      border-radius: 18px;
       border: none;
       cursor: pointer;
-      transition: all 0.2s var(--ease-out);
+      transition: transform 0.15s ease, background 0.15s ease;
+      flex-shrink: 0;
     }
     .player-sub-btn.not-monitored {
-      background: var(--gold-gradient);
-      color: #0F0F0F;
-      box-shadow: 0 2px 12px rgba(212,160,58,0.3);
+      background: #FFFFFF !important;
+      color: #0F0F0F !important;
     }
     .player-sub-btn.monitored {
-      background: var(--bg-glass);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      color: var(--text-primary);
-      border: 0.5px solid var(--separator);
+      background: rgba(255, 255, 255, 0.12) !important;
+      color: #F1F1F1 !important;
+      border: 0.5px solid rgba(255, 255, 255, 0.15);
     }
     .player-sub-btn:active {
-      transform: scale(0.92);
+      transform: scale(0.94);
     }
 
-    /* Action pills row — 3 items now (Like / More / Options), so this centers
-       them instead of the horizontal-scroll treatment the previous 6-pill
-       row needed. */
+    /* Action Pills Carousel — Horizontally scrollable directly below channel */
     .player-actions-row {
-      display: flex;
+      display: flex !important;
       align-items: center;
       gap: 8px;
       overflow-x: auto;
-      padding: 10px 0 14px;
+      padding: 6px 0 14px;
       scrollbar-width: none;
       -webkit-overflow-scrolling: touch;
     }
@@ -2811,14 +2639,14 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      height: 38px;
-      padding: 0 16px;
-      border-radius: 100px;
-      background: rgba(255, 255, 255, 0.08);
-      border: 0.5px solid rgba(255, 255, 255, 0.1);
+      height: 36px;
+      padding: 0 14px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.1) !important;
+      border: none !important;
       font-size: 13px;
       font-weight: 600;
-      color: var(--text-primary);
+      color: #F1F1F1 !important;
       white-space: nowrap;
       flex-shrink: 0;
       cursor: pointer;
@@ -2826,59 +2654,26 @@
     }
     .player-pill-btn:active {
       transform: scale(0.96);
-      background: rgba(255, 255, 255, 0.16);
+      background: rgba(255, 255, 255, 0.22) !important;
     }
     .player-pill-btn.highlight-vichar {
-      background: linear-gradient(135deg, rgba(212, 160, 58, 0.2) 0%, rgba(255, 184, 48, 0.12) 100%);
-      border-color: rgba(212, 160, 58, 0.4);
-      color: var(--gold-accent);
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(212, 160, 58, 0.25) 100%) !important;
+      color: #FFD272 !important;
+      border: 0.5px solid rgba(212, 160, 58, 0.3) !important;
     }
 
-    /* Transport center controls */
-    .player-main-playback-controls {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 24px;
-      padding: 6px 0 12px;
-    }
-    .player-transport-btn {
-      background: transparent;
-      border: none;
-      color: var(--text-primary);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: transform 0.15s ease;
-    }
-    .player-transport-btn:active {
-      transform: scale(0.9);
-    }
-    .player-play-center-btn {
-      width: 52px;
-      height: 52px;
-      border-radius: 50%;
-      background: var(--gold-gradient);
-      color: #0F0F0F;
-      box-shadow: 0 4px 18px rgba(212, 160, 58, 0.4);
-    }
-    .player-play-center-btn:active {
-      transform: scale(0.92);
-    }
-
-    /* Comments preview card — YouTube iOS style */
+    /* Comments Preview Card — YouTube iOS rounded card */
     .player-comments-preview {
-      background: rgba(255, 255, 255, 0.06);
-      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.08) !important;
+      border-radius: 12px;
       padding: 12px 14px;
-      margin: 8px 0 14px;
+      margin: 6px 0 16px;
       cursor: pointer;
       transition: background 0.15s;
-      border: 0.5px solid rgba(255, 255, 255, 0.08);
+      border: none !important;
     }
     .player-comments-preview:active {
-      background: rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.14) !important;
     }
     .player-comments-title {
       display: flex;
@@ -2886,13 +2681,16 @@
       justify-content: space-between;
       font-size: 13px;
       font-weight: 700;
-      color: var(--text-primary);
-      margin-bottom: 8px;
+      color: #FFFFFF;
+      margin-bottom: 6px;
     }
     .player-comments-badge {
       font-size: 11px;
       font-weight: 600;
-      color: var(--gold-accent);
+      color: #AAAAAA;
+      background: rgba(255, 255, 255, 0.08);
+      padding: 2px 8px;
+      border-radius: 10px;
     }
     .player-comment-row {
       display: flex;
@@ -2900,12 +2698,12 @@
       gap: 10px;
     }
     .player-comment-avatar {
-      width: 28px;
-      height: 28px;
+      width: 26px;
+      height: 26px;
       border-radius: 50%;
-      background: var(--gold-gradient);
-      color: #0F0F0F;
-      font-size: 13px;
+      background: #333333;
+      color: #FFFFFF;
+      font-size: 12px;
       font-weight: 800;
       display: flex;
       align-items: center;
@@ -2914,206 +2712,105 @@
     }
     .player-comment-text {
       font-size: 12.5px;
-      color: var(--text-secondary);
-      line-height: 1.4;
+      color: #CCCCCC;
+      line-height: 1.35;
       display: -webkit-box;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
       overflow: hidden;
     }
 
-    /* Rows inside the "More Actions" sheet */
-    .player-more-action-row {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      width: 100%;
-      background: none;
-      border: none;
-      border-bottom: 0.5px solid var(--separator);
-      padding: 14px 2px;
-      color: var(--text-primary);
-      font-size: 14.5px;
-      font-weight: 600;
-      font-family: inherit;
-      text-align: left;
-      cursor: pointer;
-    }
-    .player-more-action-row:last-child {
-      border-bottom: none;
-    }
-    .player-more-action-row svg {
-      width: 20px;
-      height: 20px;
-      flex-shrink: 0;
-    }
-    .player-more-action-row:active {
-      background: var(--card-active);
-    }
-
-    .player-actions-row {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 12px;
-      padding: 4px 16px 12px;
-    }
-
-    .player-pill-btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      background: var(--bg-secondary);
-      border: 1px solid var(--border-color);
-      padding: 10px 20px;
-      border-radius: 100px;
-      color: var(--text-primary);
-      font-size: 13.5px;
-      font-weight: 700;
-      cursor: pointer;
-      flex: 1;
-      max-width: 130px;
-      transition: transform 0.15s ease, background 0.15s ease;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    }
-    .player-pill-btn .btn-emoji {
-      font-size: 16px;
-      line-height: 1;
-    }
-    .player-pill-btn:active {
-      background: var(--gold-accent);
-      color: #000;
-      transform: scale(0.94);
-    }
-
-    /* Central control block — premium iOS audio/video controls */
-    .player-playback-controls {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 36px;
-      margin: 16px 0 14px;
-    }
-    .player-control-icon-btn {
-      background: var(--bg-secondary);
-      border: 1px solid var(--border-color);
-      color: var(--text-primary);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: transform 0.15s ease, background 0.15s ease;
-      border-radius: 50%;
-      width: 52px;
-      height: 52px;
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
-    }
-    .player-control-icon-btn:active {
-      transform: scale(0.88);
-      background: var(--gold-accent);
-      color: #000;
-    }
-    .player-control-icon-btn svg {
-      width: 24px;
-      height: 24px;
-    }
+    /* Up Next / Recommendations Cards */
     
-    .player-control-icon-btn.play-pause {
-      background: linear-gradient(135deg, #FFD666 0%, #D4943A 100%);
-      color: #000000;
-      width: 78px;
-      height: 78px;
-      border-radius: 50%;
-      border: none;
-      box-shadow: 0 8px 32px rgba(212, 148, 58, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.6);
-      transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.15s ease;
+    .player-sheet .section-title-block::before {
+      display: none !important;
     }
-    .player-control-icon-btn.play-pause:active {
-      transform: scale(0.90);
-      box-shadow: 0 4px 16px rgba(212, 148, 58, 0.3);
+    .player-sheet .section-main-title {
+      color: #FFFFFF !important;
+      font-size: 16px !important;
+      font-weight: 700 !important;
     }
-    .player-control-icon-btn.play-pause svg {
-      width: 32px;
-      height: 32px;
+    .player-sheet .section-subtitle {
+      color: #AAAAAA !important;
+      font-size: 11.5px !important;
     }
 
-    /* Comments block — iOS cushion clay card */
-    .player-comments-preview {
-      background: var(--bg-secondary);
-      border: 1px solid var(--border-color);
-      border-radius: 20px;
-      padding: 14px 16px;
-      cursor: pointer;
-      margin: 12px 0 18px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
-      transition: transform 0.15s ease;
+    .player-up-next-section {
+      margin-top: 4px;
     }
-    .player-comments-preview:active {
-      transform: scale(0.98);
+
+    /* Settings Overlay — iOS Sheet */
+    .player-settings-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      z-index: 50;
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
     }
-      cursor: pointer;
-      margin: 10px 0 20px;
-      transition: transform 0.2s var(--ease-out), box-shadow 0.2s var(--ease-out);
-      box-shadow: var(--shadow-sm);
+    .player-settings-overlay.visible {
+      display: flex;
     }
-    .player-comments-preview:active {
-      transform: scale(0.985);
-      box-shadow: var(--shadow-xs);
+    .player-settings-card {
+      width: 100%;
+      max-width: 600px;
+      background: #181818 !important;
+      border-radius: 20px 20px 0 0;
+      padding: 20px 20px calc(24px + var(--safe-bottom));
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      border-top: 0.5px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.8);
     }
-    .player-comments-title {
-      font-size: 13px;
+    .player-settings-title {
+      font-size: 16px;
       font-weight: 700;
-      color: var(--text-primary);
-      margin-bottom: 12px;
+      color: #FFFFFF;
+    }
+    .player-settings-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 0.5px solid rgba(255, 255, 255, 0.06);
     }
-    .player-comment-row {
-      display: flex;
-      gap: 10px;
-      align-items: flex-start;
-      margin-bottom: 10px;
+    .player-settings-label {
+      font-size: 14px;
+      font-weight: 500;
+      color: #E5E5E7;
     }
-    .player-comment-row:last-child { margin-bottom: 0; }
-    .player-comment-avatar {
-      width: 26px;
-      height: 26px;
-      border-radius: 50%;
-      background: var(--gold-gradient);
-      box-shadow: 0 2px 6px rgba(212,160,58,0.2);
-      flex-shrink: 0;
-    }
-    .player-comment-text {
-      font-size: 12.5px;
-      color: var(--text-primary);
-      line-height: 1.45;
-      flex: 1;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
+    .player-settings-control {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: #FFFFFF;
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-size: 13px;
+      outline: none;
     }
 
     /* ═══════════════════════════════════════════════════════════════
-       MINIMIZED SHEET — Centered Floating iOS PiP Dock Card
+       MINIMIZED SHEET — Perfect Centered iOS PiP Dock Card
        ═══════════════════════════════════════════════════════════════ */
     .player-sheet.minimized {
       position: fixed !important;
       left: 50% !important;
       right: auto !important;
       transform: translateX(-50%) translateY(0) !important;
-      bottom: calc(var(--bottom-nav-height, 64px) + 20px + var(--safe-bottom, 0px)) !important;
+      bottom: calc(var(--bottom-nav-height, 64px) + 16px + var(--safe-bottom, 0px)) !important;
       width: calc(100% - 24px) !important;
-      max-width: 580px !important;
-      height: 64px !important;
-      border-radius: 18px !important;
+      max-width: 540px !important;
+      height: 60px !important;
+      border-radius: 16px !important;
       border: 0.5px solid rgba(255, 255, 255, 0.12) !important;
-      background: var(--bg-glass-strong) !important;
-      backdrop-filter: blur(40px) saturate(220%) !important;
-      -webkit-backdrop-filter: blur(40px) saturate(220%) !important;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(212, 160, 58, 0.25) !important;
+      background: rgba(24, 24, 24, 0.95) !important;
+      backdrop-filter: blur(30px) saturate(180%) !important;
+      -webkit-backdrop-filter: blur(30px) saturate(180%) !important;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7) !important;
       cursor: pointer;
       overflow: hidden;
       z-index: 2000 !important;
@@ -3124,29 +2821,15 @@
     }
     
     @keyframes miniPlayerSlideUp {
-      from {
-        transform: translateX(-50%) translateY(120%);
-        opacity: 0;
-      }
-      to {
-        transform: translateX(-50%) translateY(0);
-        opacity: 1;
-      }
+      from { transform: translateX(-50%) translateY(120%); opacity: 0; }
+      to { transform: translateX(-50%) translateY(0); opacity: 1; }
     }
-    
     .player-sheet.minimized.closing {
       animation: miniPlayerSlideDown 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
     }
-    
     @keyframes miniPlayerSlideDown {
-      from {
-        transform: translateX(-50%) translateY(0);
-        opacity: 1;
-      }
-      to {
-        transform: translateX(-50%) translateY(120%);
-        opacity: 0;
-      }
+      from { transform: translateX(-50%) translateY(0); opacity: 1; }
+      to { transform: translateX(-50%) translateY(120%); opacity: 0; }
     }
 
     .player-sheet.minimized .player-sheet-header,
@@ -3158,27 +2841,23 @@
     }
 
     .player-sheet.minimized .player-video-viewport {
-      width: 88px !important;
-      height: 50px !important;
+      width: 80px !important;
+      height: 45px !important;
       position: absolute !important;
       left: 8px !important;
-      top: 7px !important;
-      border-radius: 12px !important;
+      top: 7.5px !important;
+      border-radius: 10px !important;
       overflow: hidden !important;
       z-index: 12 !important;
-      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.35) !important;
-      transition: transform 0.2s ease;
-    }
-    .player-sheet.minimized .player-video-viewport:active {
-      transform: scale(0.97);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5) !important;
     }
 
     .player-mini-controls {
       display: none;
       align-items: center;
       width: 100%;
-      height: 64px;
-      padding: 0 14px 0 106px;
+      height: 60px;
+      padding: 0 12px 0 98px;
       position: relative;
     }
     .player-sheet.minimized .player-mini-controls {
@@ -3191,22 +2870,21 @@
       padding-right: 10px;
     }
     .player-mini-title {
-      font-size: 13.5px;
+      font-size: 13px;
       font-weight: 700;
-      color: var(--text-primary);
+      color: #FFFFFF;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      font-family: var(--font-gurbani);
     }
     .player-mini-channel {
-      font-size: 11.5px;
-      color: var(--text-secondary);
+      font-size: 11px;
+      color: #AAAAAA;
       margin-top: 2px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      font-weight: 500;
+      font-weight: 400;
     }
     
     .player-mini-btn-group {
@@ -3216,12 +2894,12 @@
       flex-shrink: 0;
     }
     .player-mini-btn, .player-mini-close-btn {
-      width: 38px;
-      height: 38px;
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
-      background: rgba(255, 255, 255, 0.08);
-      border: 0.5px solid rgba(255, 255, 255, 0.1);
-      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: #FFFFFF;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -3230,16 +2908,15 @@
     }
     .player-mini-btn:active, .player-mini-close-btn:active {
       transform: scale(0.9);
-      background: var(--gold-accent);
-      color: #000;
+      background: rgba(255, 255, 255, 0.25);
     }
     .player-mini-progress-bar {
       position: absolute;
       bottom: 0;
       left: 0;
       right: 0;
-      height: 2.5px;
-      background: linear-gradient(90deg, var(--gold-accent), #FFB830);
+      height: 2px;
+      background: #FF0000;
       width: 100%;
       pointer-events: none;
     }
@@ -4912,27 +4589,7 @@
     }
     .nav-spring-dot { display: none !important; }
 
-    /* PLAYER SHEET */
-    .player-sheet { border-radius: 28px 28px 0 0 !important; border-top: 0.5px solid rgba(212,160,58,0.15) !important; }
-    .player-sheet-header { height: 48px !important; }
-    .player-drag-handle { width: 44px !important; height: 5px !important; opacity: 0.9 !important; box-shadow: 0 0 10px rgba(212,160,58,0.4) !important; }
-    .player-header-title { font-size: 11px !important; letter-spacing: 0.8px !important; font-weight: 900 !important; }
-    .player-back-btn { border-radius: 100px !important; padding: 7px 16px !important; font-size: 13.5px !important; font-weight: 700 !important; }
-    .player-video-viewport { box-shadow: 0 12px 48px rgba(0,0,0,0.4), 0 0 0 1.5px rgba(212,160,58,0.25) !important; }
-    .player-video-title { font-size: 19px !important; font-weight: 800 !important; line-height: 1.35 !important; letter-spacing: -0.4px !important; }
-    .player-channel-avatar { width: 44px !important; height: 44px !important; border: 2px solid rgba(212,160,58,0.3) !important; box-shadow: 0 2px 10px rgba(212,160,58,0.15) !important; }
-    .player-channel-name { font-size: 15px !important; font-weight: 700 !important; }
-    .player-sub-btn.not-monitored { padding: 9px 22px !important; font-size: 13.5px !important; box-shadow: 0 3px 16px rgba(212,160,58,0.35) !important; }
-    .player-control-icon-btn.play-pause {
-      width: 80px !important; height: 80px !important;
-      box-shadow: 0 6px 36px rgba(212,160,58,0.5), 0 0 0 4px rgba(212,160,58,0.1), inset 0 1px 0 rgba(255,255,255,0.3) !important;
-    }
-    .player-control-icon-btn { width: 52px !important; height: 52px !important; }
-    input[type="range"].yt-scrubber::-webkit-slider-runnable-track { height: 5px !important; }
-    input[type="range"].yt-scrubber::-webkit-slider-thumb { width: 18px !important; height: 18px !important; box-shadow: 0 0 14px rgba(212,160,58,0.6), 0 2px 6px rgba(0,0,0,0.3) !important; }
-    .player-pill-btn { padding: 10px 18px !important; font-size: 13px !important; font-weight: 600 !important; border-radius: 100px !important; }
-    .player-playback-controls { gap: 36px !important; margin: 16px 0 12px !important; }
-    .player-details-row { border-left: 4px solid var(--gold-accent) !important; padding-left: 14px !important; margin-top: 10px !important; }
+    /* Player sheet overrides removed — unified in primary iOS YouTube stylesheet */
 
     /* PLAYER SETTINGS OVERLAY — same premium clay/gold material as the rest of the sheet */
     .player-settings-card {
@@ -5364,41 +5021,7 @@
       font-weight: 700;
     }
 
-    /* Player Sheet Isolation */
-    .player-sheet {
-      isolation: isolate;
-      position: fixed;
-      bottom: 0;
-      left: 50%;
-      transform: translateX(-50%) translateY(100%);
-      width: 100%;
-      max-width: 720px;
-      height: 94dvh;
-      max-height: 94dvh;
-      background: var(--sangat-surface);
-      z-index: 2500;
-      display: flex;
-      flex-direction: column;
-      transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
-      overflow: hidden;
-      border-radius: 28px 28px 0 0;
-      border-top: 1px solid var(--border-color);
-      box-shadow: 0 -12px 48px rgba(0, 0, 0, 0.35);
-    }
-    .player-sheet.open {
-      transform: translateX(-50%) translateY(0);
-    }
-
-    .player-video-viewport {
-      width: 100%;
-      aspect-ratio: 16/9;
-      background: #000;
-      position: relative;
-      overflow: hidden;
-      flex-shrink: 0;
-      z-index: 10;
-      border-bottom: 1px solid var(--border-color);
-    }
+    /* Player sheet isolation removed — unified in primary iOS YouTube stylesheet */
 
     /* Reduced Motion */
     @media (prefers-reduced-motion: reduce) {
@@ -5473,7 +5096,16 @@
           </span>
           Sadhsangat Live
         </a>
-        <a class="drawer-item" href="../nitnem/indexbani.html">
+        <a class="drawer-item" href="../Hukamnama/daily-hukamnama.html">
+          <span class="drawer-item-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+            </svg>
+          </span>
+          Hukamnama Sahib
+        </a>
+        <a class="drawer-item" href="../nitnem/index.html">
           <span class="drawer-item-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
@@ -5485,13 +5117,32 @@
         <a class="drawer-item" href="../SehajPaath/sehaj-paath.html">
           <span class="drawer-item-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+              <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
             </svg>
           </span>
           Sehaj Paath Sahib
         </a>
-        <a class="drawer-item" href="../Calendar/Gurupurab-Calendar.html">
+        <a class="drawer-item" href="../GurbaniKhoj/gurbani-khoj.html">
+          <span class="drawer-item-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"/>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+          </span>
+          Gurbani Khoj
+        </a>
+        <a class="drawer-item" href="../Companion/companion.html">
+          <span class="drawer-item-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+          </span>
+          Sangat Companion
+        </a>
+        <a class="drawer-item" href="../Calendar/GurpurabCalendar-ios.html">
           <span class="drawer-item-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
@@ -5500,7 +5151,7 @@
               <line x1="3" y1="10" x2="21" y2="10"/>
             </svg>
           </span>
-          Gurupurab Calendar
+          Gurpurab Calendar
         </a>
         <a class="drawer-item" href="../Settings/index.html">
           <span class="drawer-item-icon">
@@ -5651,7 +5302,7 @@
           placeholder="Search channels..."
           autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false"
         >
-        <button class="search-clear-btn" id="clearSearchFieldBtn">✍️•</button>
+        <button class="search-clear-btn" id="clearSearchFieldBtn">✕</button>
       </div>
       
       <button class="search-preset-pill" id="searchBtn" style="padding:8px 18px; border:none; background:var(--gold-gradient); color:#000; font-weight:700;">Find</button>
@@ -5753,14 +5404,18 @@
   <div class="player-sheet-backdrop" id="playerBackdrop"></div>
   <div class="player-sheet" id="playerSheet">
     
-    <!-- Drag handle header -->
+    <!-- Drag handle header (Native iOS YouTube style) -->
     <div class="player-sheet-header" id="playerDragHeader">
-      <button class="player-back-btn" id="playerCloseBtn" aria-label="Minimize or Back">
-        <span style="font-size:13px; font-weight:900;">❮</span>
-        <span>Back</span>
+      <button class="player-back-btn" id="playerCloseBtn" aria-label="Minimize" title="Minimize player">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
       </button>
       <div class="player-drag-handle"></div>
-      <div class="player-header-title"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2" fill="currentColor"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"/></svg> SADHSANGAT LIVE</div>
+      <div class="player-header-title">
+        <span class="ios-live-indicator"><span class="ios-live-dot"></span>LIVE</span>
+        <span>SADHSANGAT</span>
+      </div>
     </div>
 
     <!-- Ambient Mode Lighting glow -->
@@ -5778,13 +5433,25 @@
       </div>
       <div id="ytPlayerContainer"></div>
       
-      <!-- HUD tap seeks -->
+      <!-- HUD tap seeks with sleek SVGs -->
       <div class="doubletap-seek-overlay left" id="doubleTapOverlayLeft">
-        <span class="doubletap-seek-icon">âª</span>
+        <span class="doubletap-seek-icon">
+          <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+            <polyline points="3 3 3 8 8 8"/>
+            <text x="12" y="16" font-size="7" font-weight="900" fill="currentColor" stroke="none" text-anchor="middle">10</text>
+          </svg>
+        </span>
         <span class="doubletap-seek-text">10 SECONDS</span>
       </div>
       <div class="doubletap-seek-overlay right" id="doubleTapOverlayRight">
-        <span class="doubletap-seek-icon">â©</span>
+        <span class="doubletap-seek-icon">
+          <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12a9 9 0 1 1-9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
+            <polyline points="21 3 21 8 16 8"/>
+            <text x="12" y="16" font-size="7" font-weight="900" fill="currentColor" stroke="none" text-anchor="middle">10</text>
+          </svg>
+        </span>
         <span class="doubletap-seek-text">10 SECONDS</span>
       </div>
 
@@ -5803,51 +5470,52 @@
           <div class="audio-equalizer-bar"></div>
           <div class="audio-equalizer-bar"></div>
         </div>
-        <div style="font-weight:700; font-size:14px; color:var(--gold-accent); display:flex; align-items:center; gap:6px;">
+        <div style="font-weight:700; font-size:14px; color:#FFFFFF; display:flex; align-items:center; gap:6px;">
           <span>🎧</span> Background Audio Active
         </div>
       </div>
     </div>
 
-    <!-- Minimized mini player controls -->
+    <!-- Minimized mini player controls (Centered Floating Dock) -->
     <div class="player-mini-controls" id="playerMiniControls">
       <div class="player-mini-info">
         <div class="player-mini-title" id="playerMiniTitle">Loading Amritvela Kirtan...</div>
         <div class="player-mini-channel" id="playerMiniChannel">Sadhsangat Live</div>
       </div>
       <div class="player-mini-btn-group">
-        <button class="player-mini-btn" id="playerMiniPlayPauseBtn">
-          <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+        <button class="player-mini-btn" id="playerMiniPlayPauseBtn" aria-label="Play or Pause">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
             <polygon points="5 3 19 12 5 21 5 3"/>
           </svg>
         </button>
-        <button class="player-mini-close-btn" id="playerMiniCloseBtn" title="Close">
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <button class="player-mini-close-btn" id="playerMiniCloseBtn" title="Close" aria-label="Close Mini Player">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
           </svg>
         </button>
       </div>
+      <div class="player-mini-progress-bar" id="playerMiniProgressBar"></div>
     </div>
 
-    <!-- Scrollable watch details page -->
+    <!-- Scrollable watch details page (Native iOS YouTube Layout) -->
     <div class="player-scroll-content" id="playerScrollContent">
       
-      <!-- Video title/views -->
+      <!-- Video Title & Metadata (Clean, No Left Border) -->
       <div class="player-details-row">
         <h3 class="player-video-title" id="playerDetailTitle">Loading divine stream title...</h3>
-        <div class="player-video-views-row" id="playerVideoViewsRow">Streaming Live</div>
-      </div>
-
-      <!-- YouTube Channel Subscribe Row -->
-      <div class="player-channel-row">
-        <div class="player-channel-left">
-          <img decoding="async" class="player-channel-avatar" id="playerChannelAvatar" src="" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'38\' height=\'38\' viewBox=\'0 0 38 38\'><rect width=\'100%\' height=\'100%\' fill=\'%23D4A03A\'/></svg>'">
-          <div class="player-channel-meta">
-            <div class="player-channel-name" id="playerDetailChannel">Channel Name</div>
-            <div class="player-channel-subs" id="playerChannelSubs">Monitored Gurbani Channel</div>
+        <div class="player-meta-badges">
+          <div class="player-video-views-row" id="playerVideoViewsRow">Streaming Live</div>
+          <div class="player-live-badge-row" id="playerLiveBadgeRow">
+            <div class="player-static-live-badge" id="playerStaticLiveBadge">
+              <span class="player-live-dot"></span> LIVE
+            </div>
+            <span class="player-live-viewer-count" id="playerLiveViewerCount" style="font-size:12px; font-weight:700; color:#AAAAAA;"></span>
+            <button class="player-go-live-btn" id="playerGoLiveBtn">
+              <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><circle cx="12" cy="12" r="6"/></svg>
+              <span>LIVE</span>
+            </button>
           </div>
         </div>
-        <button class="player-sub-btn not-monitored" id="playerSubscribeBtn">Subscribe</button>
       </div>
 
       <!-- Scrubber Timeline -->
@@ -5857,59 +5525,30 @@
         </div>
         <div class="player-time-labels">
           <span id="playerCurrentTime">00:00</span>
-          <span id="playerDuration">00:00</span>
+          <span id="playerDuration">LIVE</span>
         </div>
-        
-        <!-- Live status bar overlay -->
-        <div class="player-live-badge-row" id="playerLiveBadgeRow">
-          <div class="player-live-badge-group">
-            <span class="player-static-live-badge" id="playerStaticLiveBadge">
-              <span class="player-live-dot"></span>LIVE
-            </span>
-            <span class="stream-health-indicator" id="streamHealthIndicator" title="Stream Connection: Optimal">
-              <span class="stream-health-dot"></span>
-              <span class="stream-health-label">HD 1080p</span>
-            </span>
+      </div>
+
+      <!-- YouTube Channel Subscribe Row -->
+      <div class="player-channel-row">
+        <div class="player-channel-left">
+          <img decoding="async" class="player-channel-avatar" id="playerChannelAvatar" src="" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'38\' height=\'38\' viewBox=\'0 0 38 38\'><rect width=\'100%\' height=\'100%\' fill=\'%23333333\'/></svg>'">
+          <div class="player-channel-meta">
+            <div class="player-channel-name-wrapper">
+              <span class="player-channel-name" id="playerDetailChannel">Channel Name</span>
+              <span class="player-verified-badge" title="Verified Channel">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="#AAAAAA">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                </svg>
+              </span>
+            </div>
+            <div class="player-channel-subs" id="playerChannelSubs">Monitored Gurbani Channel</div>
           </div>
-          <span id="playerLiveViewerCount" style="font-size:12px; color:var(--text-secondary); font-weight:700;">Streaming Real-time</span>
-          <button class="player-go-live-btn" id="playerGoLiveBtn" title="Jump directly to live broadcast">
-            ↩ Jump to Live <span id="playerLiveOffsetLabel" style="background:rgba(255,0,0,0.08); color:var(--yt-red); padding:1px 6px; border-radius:100px; margin-left:4px;">Live</span>
-          </button>
         </div>
+        <button class="player-sub-btn not-monitored" id="playerSubscribeBtn">Subscribe</button>
       </div>
 
-      <!-- Playback Controls -->
-      <div class="player-playback-controls">
-        <button class="player-control-icon-btn" id="playerSkipBackBtn" title="10s Back">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><polyline points="3 3 3 8 8 8"/>
-          </svg>
-        </button>
-        
-        <button class="player-control-icon-btn play-pause" id="playerPlayPauseBtn">
-          <!-- Play SVG -->
-          <svg id="playIconSvg" viewBox="0 0 24 24" width="28" height="28" fill="currentColor">
-            <polygon points="6 3 20 12 6 21 6 3"/>
-          </svg>
-          <!-- Pause SVG -->
-          <svg id="pauseIconSvg" viewBox="0 0 24 24" width="28" height="28" fill="currentColor" style="display:none;">
-            <rect x="5" y="4" width="4" height="16"/><rect x="15" y="4" width="4" height="16"/>
-          </svg>
-        </button>
-        
-        <button class="player-control-icon-btn" id="playerSkipForwardBtn" title="10s Forward">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 12a9 9 0 1 1-9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><polyline points="16 8 21 8 21 3"/>
-          </svg>
-        </button>
-      </div>
-
-      <!-- Pills buttons row — reduced from 6 to 3 visible actions per explicit
-           request: Like stays as the one primary, always-visible action;
-           Dislike/Share/YouTube/Learn Vichar collapse into the "More" sheet
-           below (same buttons, same ids, same handlers — just relocated, so
-           none of the existing click-handler JS needed to change); Settings
-           stays separate since it already owns its own dedicated panel. -->
+      <!-- Horizontally scrollable iOS YouTube Action Pills Carousel -->
       <div class="player-actions-row">
         <button class="player-pill-btn" id="playerLikeBtn">
           <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -5917,44 +5556,64 @@
           </svg>
           <span id="playerLikeText">Like</span>
         </button>
-        <button class="player-pill-btn" id="playerVicharDirectBtn" title="Deep Shabad Vichar">
+        <button class="player-pill-btn highlight-vichar" id="playerVicharDirectBtn" title="Deep Shabad Vichar">
           <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
           </svg>
-          <span>Deep Vichar</span>
+          <span>Sangat AI ✨</span>
         </button>
-        <button class="player-pill-btn" id="playerMoreActionsBtn">
+        <button class="player-pill-btn" id="playerShareBtn" title="Share Broadcast">
           <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
           </svg>
           <span>Share</span>
         </button>
-        <button class="player-pill-btn" id="playerSettingsPillBtn">
+        <button class="player-pill-btn" id="playerAudioToggleBtn" title="Background Audio Mode">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/>
+          </svg>
+          <span>Audio Only</span>
+        </button>
+        <button class="player-pill-btn" id="playerPiPBtn" title="Picture in Picture">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="14" rx="2"></rect>
+            <path d="M7 17v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4"></path>
+          </svg>
+          <span>PiP</span>
+        </button>
+        <button class="player-pill-btn" id="playerSettingsPillBtn" title="Playback Settings">
           <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
           </svg>
           <span>Options</span>
         </button>
+        <button class="player-pill-btn" id="playerMoreActionsBtn" title="More Actions">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+            <circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/>
+          </svg>
+          <span>More</span>
+        </button>
+      </div>
+
+      <!-- Hidden transport buttons preserved for JS click bindings -->
+      <div style="display:none;">
+        <button id="playerSkipBackBtn"></button>
+        <button id="playerPlayPauseBtn"></button>
+        <button id="playerSkipForwardBtn"></button>
       </div>
 
       <!-- More Actions sheet — Dislike/Share/YouTube/Learn Vichar -->
       <div class="player-settings-overlay" id="playerMoreActionsOverlay">
         <div class="player-settings-card">
-          <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-color); padding-bottom:10px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:10px;">
             <span class="player-settings-title">More Options</span>
-            <button class="hdr-btn" id="closePlayerMoreActionsBtn" style="font-weight:700;">✕</button>
+            <button class="hdr-btn" id="closePlayerMoreActionsBtn" style="font-weight:700; width:32px; height:32px; display:flex; align-items:center; justify-content:center; border-radius:50%; background:rgba(255,255,255,0.1); color:#FFF; border:none;">✕</button>
           </div>
           <button class="player-more-action-row" id="playerLearnVicharBtn" title="Deep Sangat AI Vichar">
             <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:10px;">
               <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
             </svg>
             <span>Deep Sangat Vichar (AI)</span>
-          </button>
-          <button class="player-more-action-row" id="playerShareBtn">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:10px;">
-              <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
-            </svg>
-            <span>Share Broadcast</span>
           </button>
           <button class="player-more-action-row" id="playerWatchOnYtBtn">
             <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:10px;">
@@ -5972,24 +5631,24 @@
         </div>
       </div>
 
-      <!-- Comments preview -->
+      <!-- YouTube-style Comments Preview Card -->
       <div class="player-comments-preview" id="playerCommentsBlock">
         <div class="player-comments-title">
-          <span>Comments</span>
-          <span style="font-size:12px; font-weight:500; color:var(--text-secondary);">View all</span>
+          <span>Comments & Reflections</span>
+          <span class="player-comments-badge">Sangat Vichar 🌸</span>
         </div>
         <div class="player-comment-row">
-          <div class="player-comment-avatar"></div>
-          <div class="player-comment-text" id="playerMockCommentText">🙏 Waheguru Ji. Listen to the absolute divine Amritvela kirtan stream in real-time. Share the link with friends and family.</div>
+          <div class="player-comment-avatar">ੴ</div>
+          <div class="player-comment-text" id="playerMockCommentText">🙏 Waheguru Ji. Listen to the absolute divine Amritvela kirtan stream in real-time. Tap to open Sangat Vichar.</div>
         </div>
       </div>
 
       <!-- Up Next list -->
-      <div>
-        <div class="section-header-row" style="padding:16px 0 10px;">
+      <div class="player-up-next-section">
+        <div class="section-header-row" style="padding:10px 0 10px;">
           <div class="section-title-block">
-            <div class="section-main-title" style="font-size:16px;">Up Next</div>
-            <div class="section-subtitle">Continue listening</div>
+            <div class="section-main-title" style="font-size:16px; color:#FFF;">Up Next</div>
+            <div class="section-subtitle" style="color:#AAA;">Sacred Gurbani Broadcasts</div>
           </div>
         </div>
         <div id="playerRelatedList" style="display:flex; flex-direction:column; gap:12px;"></div>
@@ -6000,9 +5659,9 @@
     <!-- Playback Settings menu -->
     <div class="player-settings-overlay" id="playerSettingsOverlay">
       <div class="player-settings-card">
-        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-color); padding-bottom:10px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:10px;">
           <span class="player-settings-title">Playback Settings</span>
-          <button class="hdr-btn" id="closePlayerSettingsBtn" style="font-weight:700; width:32px; height:32px; display:flex; align-items:center; justify-content:center; border-radius:50%;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+          <button class="hdr-btn" id="closePlayerSettingsBtn" style="font-weight:700; width:32px; height:32px; display:flex; align-items:center; justify-content:center; border-radius:50%; background:rgba(255,255,255,0.1); color:#FFF; border:none;">✕</button>
         </div>
         
         <div class="player-settings-row">
@@ -6029,30 +5688,22 @@
         </div>
 
         <div class="player-settings-row">
-          <span class="player-settings-label">Audio Only Mode</span>
-          <button class="player-pill-btn" id="playerAudioToggleBtn" style="margin:0; font-size:13px; padding:8px 18px;">Audio: Off</button>
-        </div>
-
-        <div class="player-settings-row">
           <span class="player-settings-label">View Mode</span>
-          <button class="player-pill-btn" id="playerPiPBtn" style="margin:0; font-size:13px; padding:8px 18px;">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;margin-right:4px;">
-              <rect x="3" y="3" width="18" height="14" rx="2"/>
-              <path d="M7 17v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4"/>
-            </svg>
-            PiP
-          </button>
-          <button class="player-pill-btn" id="playerFullscreenBtn" style="margin:0; font-size:13px; padding:8px 18px;">
-            <svg id="fullscreenIconSvg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
-            Fullscreen
-          </button>
+          <div style="display:flex; gap:8px;">
+            <button class="player-pill-btn" id="playerPiPBtn" style="margin:0; font-size:13px; padding:6px 14px;">
+              PiP
+            </button>
+            <button class="player-pill-btn" id="playerFullscreenBtn" style="margin:0; font-size:13px; padding:6px 14px;">
+              <svg id="fullscreenIconSvg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;margin-right:4px;"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg>
+              Fullscreen
+            </button>
+          </div>
         </div>
       </div>
     </div>
 
   </div>
 
-  
   <!-- ═══════════════════════════════════════════════════════════════
        SANGAT AI COMPANION (Groq openai/gpt-oss-120b) CONVERSATION SHEET
        ═══════════════════════════════════════════════════════════════ -->
@@ -6233,46 +5884,43 @@
     // 4. VISIBILITY CHANGE HANDLING
     document.addEventListener('visibilitychange', () => {
       if (document.hidden) {
-        // Page went to background
-        console.log('Page hidden - checking background playback settings');
-        
-        // Only enable background playback if user has enabled it via button
-        if (bgPlayEnabled && State.currentPlaying && ytPlayer) {
-          console.log('Background play enabled - activating all systems');
+        // App went to background - keep audio playing continuously
+        if (bgPlayEnabled && State.currentPlaying) {
+          console.log('[Sadhsangat] App hidden - keeping audio stream alive in background');
+          if (typeof startBackgroundKeeper === 'function') startBackgroundKeeper();
+          if (typeof startNativeAudioService === 'function') startNativeAudioService();
+          if (typeof syncNativeAudioState === 'function') syncNativeAudioState('PLAY');
           
-          // Enable all background features
-          if (window.enableBackgroundPlayback) {
-            window.enableBackgroundPlayback();
-          }
-          
-          // Keep audio playing
-          try {
-            if (ytPlayer.getPlayerState) {
-              ytPlayer.getPlayerState((state) => {
-                if (state !== YT.PlayerState.PLAYING) {
-                  ytPlayer.playVideo();
-                }
-              });
-            }
-          } catch(e) {
-            console.log('Auto-play error:', e);
+          if (ytPlayer && typeof ytPlayer.playVideo === 'function') {
+            try { ytPlayer.playVideo(); } catch(e) {}
           }
         }
       } else {
-        // Page came to foreground
-        console.log('Page visible - restoring normal playback');
-        
-        // Restore normal playback quality
-        if (bgPlayEnabled && State.currentPlaying && ytPlayer) {
-          try {
-            ytPlayer.setPlaybackQuality('auto');
-          } catch(e) {}
+        // App returned to foreground
+        if (bgPlayEnabled && State.currentPlaying) {
+          if (typeof updateMediaSessionPlaybackState === 'function') {
+            updateMediaSessionPlaybackState();
+          }
         }
-        
-        // Update Media Session
-        updateMediaSessionPlaybackState();
       }
     });
+
+    // Capacitor App State listener for native Android & iOS backgrounding
+    if (window.Capacitor?.Plugins?.App) {
+      try {
+        window.Capacitor.Plugins.App.addListener('appStateChange', (state) => {
+          if (!state.isActive && bgPlayEnabled && State.currentPlaying) {
+            console.log('[Sadhsangat] Native app paused - maintaining background audio service');
+            if (typeof startBackgroundKeeper === 'function') startBackgroundKeeper();
+            if (typeof startNativeAudioService === 'function') startNativeAudioService();
+            if (typeof syncNativeAudioState === 'function') syncNativeAudioState('PLAY');
+            if (ytPlayer && typeof ytPlayer.playVideo === 'function') {
+              try { ytPlayer.playVideo(); } catch(e) {}
+            }
+          }
+        });
+      } catch(e) {}
+    }
 
     // 5. PAGE HIDE/BEFOREUNLOAD HANDLING
     window.addEventListener('pagehide', () => {
@@ -6870,13 +6518,16 @@
     // Filter channels or streams by Gurdwara name from Drawer
     window.filterByGurdwara = function(name) {
       if (typeof closeDrawer === 'function') closeDrawer();
-      const input = $('searchInput');
-      if (input) {
-        input.value = name;
-        input.dispatchEvent(new Event('input', { bubbles: true }));
-      }
-      if (typeof performSearch === 'function') {
-        performSearch(name);
+      const searchOverlay = $('searchOverlay');
+      if (searchOverlay) {
+        searchOverlay.classList.add('visible');
+        const input = $('searchField');
+        if (input) {
+          input.value = name;
+          input.focus();
+          if (typeof renderSearchHelpers === 'function') renderSearchHelpers();
+          if (typeof performSearch === 'function') performSearch();
+        }
       }
     };
 
@@ -8254,7 +7905,7 @@
 
         const del = CE('button');
         del.className = 'history-delete-btn';
-        del.innerHTML = '✍️•';
+        del.innerHTML = '✕';
         del.addEventListener('click', (e) => {
           e.stopPropagation();
           State.searchHistory = State.searchHistory.filter(item => item !== q);
@@ -9423,7 +9074,7 @@
                 <div class="playlist-title">${pl.title}</div>
                 <div class="playlist-meta">${pl.videoCount || '0'} Gurbani Tracks</div>
               </div>
-              <div style="color:var(--gold-accent); font-size:15px; font-weight:700;">â–¶</div>
+              <div style="color:var(--gold-accent); font-size:15px; font-weight:700;">▶️</div>
             `;
             row.addEventListener('click', () => {
               window.open(`https://www.youtube.com/playlist?list=${pl.playlistId}`, '_blank', 'noopener');
@@ -9485,7 +9136,7 @@
         </div>
         <div class="library-presets-grid">
           <button class="library-preset-btn" data-query="PTC Simran">PTC Simran <span>➕</span></button>
-          <button class="library-preset-btn" data-query="Fateh TV">Fateh TV <span>âž•</span></button>
+          <button class="library-preset-btn" data-query="Fateh TV">Fateh TV <span>➕</span></button>
           <button class="library-preset-btn" data-query="PTC Gold">PTC Gold <span>➕</span></button>
           <button class="library-preset-btn" data-query="Kirtan Pardhasa">Kirtan Pardhasa <span>➕</span></button>
         </div>
@@ -9541,7 +9192,7 @@
           if (ch.channelId !== 'UCYn6UEtQ771a_OWSiNBoG8w') { // Core PTC Simran protection
             const delBtn = CE('button');
             delBtn.className = 'manager-delete-btn';
-            delBtn.innerHTML = '✍️•';
+            delBtn.innerHTML = '✕';
             delBtn.addEventListener('click', () => {
               if (confirm(`Stop tracking "${ch.channelName}"?`)) deleteChannel(ch.channelId);
             });
@@ -10097,12 +9748,12 @@
           display: flex;
           gap: 12px;
           align-items: center;
-          padding: 8px;
-          background: var(--bg-secondary);
-          border-radius: 14px;
+          padding: 8px 10px;
+          background: rgba(255, 255, 255, 0.06);
+          border-radius: 12px;
           cursor: pointer;
           transition: transform 0.15s ease, background 0.15s ease;
-          border: 0.5px solid var(--border-color);
+          border: 0.5px solid rgba(255, 255, 255, 0.08);
         `;
 
         const thumb = document.createElement('div');
@@ -10548,7 +10199,7 @@
           miniBtn.innerHTML = `<svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>`;
         }
         $('audioDiscSpin').classList.remove('playing');
-        showToast('â¸ Paused');
+        showToast('⏸️ Paused');
       } else {
         State.isPlaying = true;
         if (ytPlayer && ytPlayer.playVideo) { try { ytPlayer.playVideo(); } catch(e) {} }
@@ -10582,7 +10233,7 @@
       postYtCommand('seekTo', [targetTime, true]);
 
       updateScrubberUI();
-      showToast(sec > 0 ? `â© +${sec}s` : `âª ${Math.abs(sec)}s`);
+      showToast(sec > 0 ? `⏩ +${sec}s` : `⏪ ${Math.abs(sec)}s`);
     }
 
     $('playerProgressBar').addEventListener('input', (e) => {
@@ -10715,7 +10366,7 @@
         window.wakeLock.release().then(() => { window.wakeLock = null; }).catch(() => {});
       }
       window.dispatchEvent(new CustomEvent('sadhsangatPlayerClosed'));
-      showToast('â¹ Playback stopped');
+      showToast('⏹️ Playback stopped');
     }
 
     function minimizePlayer() {
@@ -11123,7 +10774,7 @@
     <div class="comments-drawer-handle"></div>
     <div class="comments-drawer-header">
       <span>Comments</span>
-      <button class="comments-close-btn" id="commentsCloseBtn">✍️•</button>
+      <button class="comments-close-btn" id="commentsCloseBtn">✕</button>
     </div>
     <div class="comments-drawer-body" id="commentsDrawerBody">
       <!-- Loaded dynamically via JS -->

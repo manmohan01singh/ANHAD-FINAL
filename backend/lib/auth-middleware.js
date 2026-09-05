@@ -82,14 +82,21 @@ function registerUser(profile) {
 }
 
 function getUser(uid) {
-  return registeredUsers.get(uid) || null;
+  if (!uid) return null;
+  const direct = registeredUsers.get(uid);
+  if (direct) return direct;
+  const lower = String(uid).trim().toLowerCase();
+  for (const [k, v] of registeredUsers.entries()) {
+    if (k.toLowerCase() === lower) return v;
+  }
+  return null;
 }
 
 function getUserByUsername(username) {
   const target = (username || '').trim().toLowerCase();
   if (!target) return null;
   for (const user of registeredUsers.values()) {
-    if (user.username === target) return user;
+    if ((user.username || '').toLowerCase() === target) return user;
   }
   return null;
 }
@@ -147,18 +154,18 @@ async function requireAuth(req, res, next) {
   }
 
   // Handle mock tokens for test suites and dev environments
-  if (token.startsWith('user_') || token.startsWith('test_user_') || token.startsWith('admin_') || token.startsWith('dev_')) {
+  if (token.startsWith('user_') || token.startsWith('test_user_') || token.startsWith('admin_') || token.startsWith('dev_') || token.startsWith('guest_')) {
     const role = token.includes('admin') ? 'admin' : 'user';
     const uid = token;
     let user = getUser(uid);
     if (!user) {
-      user = registerUser({ uid, username: uid, displayName: uid, role });
+      user = registerUser({ uid, username: uid, displayName: uid.startsWith('guest_') ? 'Guest Sevadar' : uid, role });
     }
     req.user = { uid: user.uid, username: user.username, displayName: user.displayName, role: user.role, admin: role === 'admin' };
     return next();
   }
 
-  // Check if token matches an already registered user's UID directly
+  // Check if token matches an already registered user's UID directly (or raw UID string)
   const existingUser = getUser(token);
   if (existingUser) {
     req.user = {
@@ -167,6 +174,22 @@ async function requireAuth(req, res, next) {
       displayName: existingUser.displayName,
       role: existingUser.role || 'user',
       admin: existingUser.role === 'admin'
+    };
+    return next();
+  }
+
+  // If token is a non-JWT UID string (Firebase UIDs or dev IDs without dot notation)
+  if (!token.includes('.') && token.length >= 3 && token.length <= 128) {
+    let user = getUser(token);
+    if (!user) {
+      user = registerUser({ uid: token, username: 'sangat_' + token.slice(-5).toLowerCase(), displayName: 'Gursikh Sangat', role: 'user' });
+    }
+    req.user = {
+      uid: user.uid,
+      username: user.username,
+      displayName: user.displayName,
+      role: user.role || 'user',
+      admin: user.role === 'admin'
     };
     return next();
   }

@@ -7,6 +7,7 @@
  */
 
 const companionEngine = require('./companion-engine');
+const friendsEngine = require('./friends-engine');
 const { getUser } = require('./auth-middleware');
 
 class CompanionNotificationEngine {
@@ -26,36 +27,43 @@ class CompanionNotificationEngine {
   /**
    * Marks Amrit Vela "Present/Started" and dispatches alerts to subscribed companions
    */
-  markAmritVelaStarted(userUid) {
+  markAmritVelaStarted(userUid, options = {}) {
     if (!userUid) throw { status: 401, message: 'Authentication required' };
     const now = Date.now();
     const user = getUser(userUid) || { uid: userUid, displayName: 'Your companion' };
+    const isDev = process.env.NODE_ENV !== 'production';
+    const force = options && options.force;
 
-    // Anti-spam Cooldown Check
-    const lastTrigger = this.lastTriggerTimestamps.get(userUid) || 0;
-    if (now - lastTrigger < this.COOLDOWN_MS) {
-      const waitMinutes = Math.ceil((this.COOLDOWN_MS - (now - lastTrigger)) / 60000);
-      throw {
-        status: 429,
-        message: `Amrit Vela notification already broadcasted recently. Cooldown active for ${waitMinutes} more minutes.`,
-        cooldownRemainingMinutes: waitMinutes
-      };
-    }
+    if (!force) {
+      // In dev mode, allow rapid repeat testing with 4s cooldown; in production enforce 4 hours
+      const cooldown = isDev ? 4000 : this.COOLDOWN_MS;
+      const lastTrigger = this.lastTriggerTimestamps.get(userUid) || 0;
+      if (now - lastTrigger < cooldown) {
+        const waitMinutes = Math.ceil((cooldown - (now - lastTrigger)) / 60000);
+        throw {
+          status: 429,
+          message: `Amrit Vela notification already broadcasted recently. Cooldown active.`,
+          cooldownRemainingMinutes: waitMinutes
+        };
+      }
 
-    // Daily deduplication check
-    const today = new Date().toISOString().split('T')[0];
-    const dailyHash = `${userUid}:${today}`;
-    if (this.dailyTriggerHashes.has(dailyHash)) {
-      throw {
-        status: 429,
-        message: 'Amrit Vela notification already sent for today. Max 1 notification blast per day.',
-        code: 'DAILY_LIMIT_REACHED'
-      };
+      if (!isDev) {
+        // Daily deduplication check for production
+        const today = new Date().toISOString().split('T')[0];
+        const dailyHash = `${userUid}:${today}`;
+        if (this.dailyTriggerHashes.has(dailyHash)) {
+          throw {
+            status: 429,
+            message: 'Amrit Vela notification already sent for today. Max 1 notification blast per day.',
+            code: 'DAILY_LIMIT_REACHED'
+          };
+        }
+        this.dailyTriggerHashes.add(dailyHash);
+      }
     }
 
     // Record trigger
     this.lastTriggerTimestamps.set(userUid, now);
-    this.dailyTriggerHashes.add(dailyHash);
     this.recentAmritVelaStarts.set(userUid, { timestamp: now, displayName: user.displayName });
 
     // Find subscribed companions who have explicitly enabled notifications

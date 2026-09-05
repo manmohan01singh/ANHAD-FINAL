@@ -75,8 +75,13 @@ class FriendsEngine {
     if (!q || q.length < 2) return [];
 
     const results = [];
+    const curLower = currentUid ? String(currentUid).toLowerCase().trim() : null;
+
     for (const u of registeredUsers.values()) {
-      if (currentUid && (u.uid === currentUid || (u.username && u.username.toLowerCase() === currentUid.toLowerCase()))) {
+      if (curLower && (
+        u.uid.toLowerCase() === curLower || 
+        (u.username && u.username.toLowerCase() === curLower)
+      )) {
         continue; // Skip self
       }
       if (!u.isPublic) continue;
@@ -122,15 +127,16 @@ class FriendsEngine {
 
   sendRequest(fromUid, toIdentifier) {
     if (!fromUid) throw { status: 401, message: 'Authentication required' };
-    const sanitized = sanitizeString(toIdentifier, 50).toLowerCase();
+    const raw = sanitizeString(toIdentifier, 100).trim();
+    const lower = raw.toLowerCase();
 
-    // Find target user by username or UID
-    let target = getUser(sanitized) || getUserByUsername(sanitized);
+    // Find target user by UID or username (both exact case and lowercase)
+    let target = getUser(raw) || getUser(lower) || getUserByUsername(lower) || getUserByUsername(raw);
     if (!target) {
       throw { status: 404, message: 'User not found with specified username or ID' };
     }
 
-    if (target.uid === fromUid) {
+    if (target.uid === fromUid || target.uid.toLowerCase() === fromUid.toLowerCase()) {
       throw { status: 400, message: 'You cannot send a friend request to yourself' };
     }
 

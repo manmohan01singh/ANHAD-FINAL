@@ -594,7 +594,7 @@
             actionHtml = `
               <button class="ios-connect-btn ${isRequested ? 'requested' : ''}" 
                       id="btn_${uid}" 
-                      onclick="connectUser('${uid}', '${name.replace(/'/g, "\\'")}')"
+                      onclick="connectUser('${uid}', '${name.replace(/'/g, "\\'")}', '${(u.username || '').replace(/'/g, "\\'")}')"
                       ${isRequested ? 'disabled' : ''}>
                 ${isRequested ? 'Requested ✓' : 'Connect'}
               </button>
@@ -633,7 +633,7 @@
         if (currentQuery) renderResults(cachedSearchResults, currentQuery);
       };
 
-      window.connectUser = async function(uid, name) {
+      window.connectUser = async function(uid, name, username) {
         const btn = document.getElementById('btn_' + uid);
         if (btn) {
           btn.classList.add('requested');
@@ -654,7 +654,14 @@
             await window.AnhadFriends.sendRequest(uid);
           }
         } catch (e) {
-          console.warn('[SangatSearch] Send request error:', e);
+          console.warn('[SangatSearch] Send request with UID note, trying username fallback:', e);
+          if (username) {
+            try {
+              await window.AnhadFriends.sendRequest(username);
+            } catch (e2) {
+              console.warn('[SangatSearch] Send request with username note:', e2);
+            }
+          }
         }
 
         if (navigator.vibrate) navigator.vibrate(12);

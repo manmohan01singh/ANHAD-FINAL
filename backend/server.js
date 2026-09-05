@@ -958,7 +958,8 @@ app.get('/api/companions/sangat-gathering', requireAuth, (req, res) => {
 
 app.post('/api/amritvela/start', requireAuth, amritVelaTriggerLimiter, (req, res) => {
     try {
-        const result = companionNotifications.markAmritVelaStarted(req.user.uid);
+        const force = req.query.force === 'true' || req.body?.force === true;
+        const result = companionNotifications.markAmritVelaStarted(req.user.uid, { force });
         res.json(result);
     } catch (err) {
         res.status(err.status || 500).json({ error: err.message || 'Failed to record Amrit Vela', ...err });

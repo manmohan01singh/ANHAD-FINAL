@@ -65,20 +65,22 @@ describe('Sangat Cross-Account Multi-User Flow & Devotional Isolation', () => {
   });
 
   describe('2. Cross-Account Friend Request Delivery & Notification Flow', () => {
-    it('sends request from Account 1 to Account 2, delivers to Account 2, and establishes mutual friendship upon acceptance', () => {
+    it('sends request from Account 1 to Account 2 using mixed-case Firebase UID, delivers notification, and establishes mutual friendship with active companion alerts upon acceptance', () => {
       const companionNotifications = require('../../backend/lib/companion-notifications');
 
-      const uid1 = 'user_flow_1_' + Date.now();
-      const uid2 = 'user_flow_2_' + Date.now();
+      const uid1 = 'd4E8fK19aB' + Date.now();
+      const uid2 = 'AIzaSyX8wZ' + Date.now();
 
-      authMiddleware.registerUser({ uid: uid1, username: 'sender_user', displayName: 'Sender Kaur', isPublic: true });
-      authMiddleware.registerUser({ uid: uid2, username: 'receiver_user', displayName: 'Receiver Singh', isPublic: true });
+      authMiddleware.registerUser({ uid: uid1, username: 'sender_kaur', displayName: 'Sender Kaur', isPublic: true });
+      authMiddleware.registerUser({ uid: uid2, username: 'receiver_singh', displayName: 'Receiver Singh', isPublic: true });
 
-      const sendResult = friendsEngine.sendRequest(uid1, 'receiver_user');
+      // Test sending by mixed-case Firebase UID (the user's reported bug)
+      const sendResult = friendsEngine.sendRequest(uid1, uid2);
       expect(sendResult.ok).toBe(true);
       expect(sendResult.request).toBeDefined();
       const reqId = sendResult.request.id;
 
+      // Receiver gets the pending request in list
       const acc2List = friendsEngine.getFriendsList(uid2);
       expect(acc2List.incomingRequests.length).toBeGreaterThan(0);
       const incomingReq = acc2List.incomingRequests.find(r => r.id === reqId);
@@ -86,6 +88,7 @@ describe('Sangat Cross-Account Multi-User Flow & Devotional Isolation', () => {
       expect(incomingReq.fromUid).toBe(uid1);
       expect(incomingReq.fromDisplayName).toBe('Sender Kaur');
 
+      // Receiver accepts the request (as triggered by UI Confirm button)
       const acceptResult = friendsEngine.respondRequest(uid2, reqId, 'accept');
       expect(acceptResult.ok).toBe(true);
       expect(acceptResult.action).toBe('accepted');
@@ -93,10 +96,22 @@ describe('Sangat Cross-Account Multi-User Flow & Devotional Isolation', () => {
       expect(friendsEngine.isFriend(uid1, uid2)).toBe(true);
       expect(friendsEngine.isFriend(uid2, uid1)).toBe(true);
 
-      const list1 = friendsEngine.getFriendsList(uid1);
-      const list2 = friendsEngine.getFriendsList(uid2);
-      expect(list1.friends.some(f => f.uid === uid2)).toBe(true);
-      expect(list2.friends.some(f => f.uid === uid1)).toBe(true);
+      // UI Confirm button designates Amritvela companion & enables notification
+      companionEngine.setCompanion(uid2, uid1, true);
+      companionEngine.setNotification(uid2, uid1, true);
+
+      // Now Account 1 marks Amrit Vela as started!
+      const avBroadcast = companionNotifications.markAmritVelaStarted(uid1, { force: true });
+      expect(avBroadcast.ok).toBe(true);
+      expect(avBroadcast.deliveredToCount).toBe(1);
+
+      // Account 2 MUST receive the Amrit Vela start alert
+      const acc2UpdatedNotifs = companionNotifications.getNotifications(uid2);
+      const amritvelaAlert = acc2UpdatedNotifs.find(n => n.type === 'amritvela_started');
+      expect(amritvelaAlert).toBeDefined();
+      expect(amritvelaAlert.senderUid).toBe(uid1);
+      expect(amritvelaAlert.message).toContain('Sender Kaur');
+      expect(amritvelaAlert.deepLink).toContain('/nitnem/');
     });
   });
 

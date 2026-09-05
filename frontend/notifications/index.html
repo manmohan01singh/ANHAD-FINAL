@@ -106,6 +106,18 @@
           </svg>
         </div>
 
+        <!-- Amrit Vela Attendance Action Card -->
+        <div class="ios-amritvela-card" id="amritvelaCard">
+          <div class="ios-amritvela-card-left">
+            <span class="ios-amritvela-icon">🌅</span>
+            <div>
+              <div class="ios-amritvela-title">Amrit Vela Attendance</div>
+              <div class="ios-amritvela-sub" id="amritvelaCardSub">Notify your Sangat companions that you've started Nitnem</div>
+            </div>
+          </div>
+          <button class="ios-btn-amritvela-mark" id="btnMarkAmritvela" onclick="markAmritVelaStarted()">Mark Present</button>
+        </div>
+
         <div class="ios-section-header">Sangat Activity</div>
         <div class="ios-inset-group" id="activityList">
           <!-- Rendered dynamically -->
@@ -304,7 +316,7 @@
 
         container.innerHTML = activity.map(a => {
           const isAmritvela = a.type === 'amritvela_started';
-          const iconEmoji = isAmritvela ? '🌅' : (a.type === 'nitnem_completed' ? '📖' : (a.type === 'streak_achieved' ? '🔥' : '☬'));
+          const iconEmoji = isAmritvela ? '🌅' : (a.type === 'nitnem_completed' ? '📖' : (a.type === 'streak_achieved' ? '🔥' : (a.type === 'friend_request' ? '👥' : (a.type === 'friend_accepted' ? '🙏' : '☬'))));
 
           return `
             <div class="ios-activity-cell">
@@ -349,16 +361,69 @@
         }
       };
 
+      window.markAmritVelaStarted = async function() {
+        const btn = document.getElementById('btnMarkAmritvela');
+        const sub = document.getElementById('amritvelaCardSub');
+        if (btn) {
+          btn.disabled = true;
+          btn.textContent = 'Broadcasting...';
+        }
+        try {
+          let res = null;
+          if (window.AnhadFriends && typeof window.AnhadFriends.markAmritVelaStarted === 'function') {
+            res = await window.AnhadFriends.markAmritVelaStarted();
+          }
+          if (btn) {
+            btn.textContent = 'Present ✓';
+            btn.style.background = 'var(--ios-green)';
+            btn.style.color = '#FFFFFF';
+          }
+          const count = res && res.deliveredToCount !== undefined ? res.deliveredToCount : 0;
+          if (sub) {
+            sub.textContent = `Attendance recorded! Sent to ${count} companion(s) 🌅`;
+          }
+
+          let activity = getStoredActivity();
+          activity.unshift({
+            id: 'act_av_' + Date.now(),
+            type: 'amritvela_started',
+            name: 'You',
+            message: 'marked Amrit Vela attendance and notified companions 🌅',
+            sub: 'Waheguru ji ka Khalsa, Waheguru ji ki Fateh! 🙏',
+            time: 'Just now'
+          });
+          localStorage.setItem('anhad_activity_notifications', JSON.stringify(activity));
+          renderActivity();
+
+          if (navigator.vibrate) navigator.vibrate(15);
+          showToast(`Amrit Vela attendance marked! (${count} companions notified) 🌅`);
+        } catch (e) {
+          console.warn('[Notifications] Amrit Vela start note:', e);
+          if (btn) {
+            btn.disabled = false;
+            btn.textContent = 'Mark Present';
+          }
+          showToast(e.message || 'Unable to broadcast Amrit Vela at this time');
+        }
+      };
+
       window.confirmRequest = async function(id, name) {
         const actionsEl = document.getElementById('actions_' + id);
         if (actionsEl) {
           actionsEl.innerHTML = '<span class="ios-btn-status">Connected ✓</span>';
         }
 
-        // Call backend friends system to accept request
+        const req = liveRequests.find(r => r.id === id);
+        const targetUid = req ? (req.uid || req.fromUid) : null;
+
+        // Call backend friends system to accept request and configure companion alerts
         try {
           if (window.AnhadFriends && typeof window.AnhadFriends.respondRequest === 'function') {
             await window.AnhadFriends.respondRequest(id, 'accept');
+          }
+          if (targetUid && window.AnhadFriends) {
+            await window.AnhadFriends.setCompanion(targetUid, true).catch(() => {});
+            await window.AnhadFriends.setNotification(targetUid, true).catch(() => {});
           }
         } catch (e) {
           console.warn('[Notifications] Accept request backend note:', e);
@@ -377,13 +442,17 @@
           type: 'companion_journey',
           name: name,
           message: 'is now connected as your Amritvela Companion 🙏',
-          sub: 'You can now share spiritual journeys and Nitnem reminders together',
+          sub: 'You will receive each other’s Amritvela and Nitnem attendance alerts',
           time: 'Just now'
         });
         localStorage.setItem('anhad_activity_notifications', JSON.stringify(activity));
 
         if (navigator.vibrate) navigator.vibrate(10);
         showToast(`Connected with ${name}! 🙏`);
+        
+        setTimeout(() => {
+          fetchLiveActivity();
+        }, 800);
       };
 
       window.declineRequest = async function(id) {
@@ -432,6 +501,14 @@
         updateBadges();
         fetchLiveRequests();
         fetchLiveActivity();
+
+        // Periodic live sync when active
+        setInterval(() => {
+          if (!document.hidden) {
+            fetchLiveRequests();
+            fetchLiveActivity();
+          }
+        }, 6000);
       });
     })();
   </script>
