@@ -21,6 +21,16 @@
   const DEFAULT_ALT = 'Sri Guru Granth Sahib Ji with Sri Guru Gobind Singh Ji and Sri Guru Nanak Dev Ji';
   const COMPANION_ALT = 'Chaliya 2026 — Sri Guru Nanak Dev Ji with Sri Harmandir Sahib Ji';
 
+  function resolveAssetPath(relPath) {
+    if (!relPath || relPath.startsWith('data:') || relPath.startsWith('http://') || relPath.startsWith('https://')) {
+      return relPath;
+    }
+    const clean = relPath.replace(/^\//, '');
+    const pathname = (typeof window !== 'undefined' && window.location && window.location.pathname) || '';
+    const isSub = /\/(Companion|Admin|Settings|sangat|notifications|nitnem|Insights|Favorites)\//i.test(pathname);
+    return isSub ? `../${clean}` : clean;
+  }
+
   function checkExpiration() {
     try {
       const expiryStr = localStorage.getItem(STORAGE_EXPIRY);
@@ -40,10 +50,21 @@
     return localStorage.getItem(STORAGE_KEY) === 'true';
   }
 
+  function broadcastChange(enabled) {
+    try {
+      window.dispatchEvent(new CustomEvent('anhad_companion_changed', { detail: { enabled } }));
+      if (typeof window.BroadcastChannel === 'function') {
+        const bc = new BroadcastChannel('anhad_companion_channel');
+        bc.postMessage({ type: 'companion_changed', enabled });
+        bc.close();
+      }
+    } catch (e) {}
+  }
+
   function setEnabled(enabled) {
     localStorage.setItem(STORAGE_KEY, enabled ? 'true' : 'false');
     syncHeroImage();
-    window.dispatchEvent(new CustomEvent('anhad_companion_changed', { detail: { enabled } }));
+    broadcastChange(enabled);
   }
 
   function toggle() {
@@ -152,23 +173,28 @@
   function syncHeroImage() {
     const heroImg = document.getElementById('greetingHeroArtwork');
     const heroSource = document.getElementById('greetingHeroSource');
-    if (!heroImg) return;
+    const banner = document.getElementById('greetingHeroBanner');
 
     checkExpiration();
     const enabled = isEnabled();
-    const banner = document.getElementById('greetingHeroBanner');
+
     if (enabled) {
-      document.body.classList.add('companion-mode-active');
-      if (banner) banner.classList.add('companion-mode-active');
-      heroImg.classList.add('companion-mode-active');
+      if (document.body) document.body.classList.add('companion-mode-active');
+      if (banner) {
+        banner.classList.add('companion-mode-active');
+        banner.style.setProperty('display', 'flex', 'important');
+      }
+      if (heroImg) heroImg.classList.add('companion-mode-active');
     } else {
-      document.body.classList.remove('companion-mode-active');
+      if (document.body) document.body.classList.remove('companion-mode-active');
       if (banner) banner.classList.remove('companion-mode-active');
-      heroImg.classList.remove('companion-mode-active');
+      if (heroImg) heroImg.classList.remove('companion-mode-active');
     }
 
+    if (!heroImg) return;
+
     const customImg = getCustomImage();
-    const targetSrc = enabled ? (customImg || COMPANION_HERO) : DEFAULT_HERO;
+    const targetSrc = enabled ? (customImg || resolveAssetPath(COMPANION_HERO)) : resolveAssetPath(DEFAULT_HERO);
     const targetAlt = enabled ? (localStorage.getItem(STORAGE_TITLE) || COMPANION_ALT) : DEFAULT_ALT;
 
     // Resolve URL if not a data URL
@@ -183,26 +209,35 @@
       }
     }
 
-    if (heroImg.src === absoluteTarget) return;
-
-    // Smooth transition
-    heroImg.style.transition = 'opacity 0.25s ease';
-    heroImg.style.opacity = '0.7';
-
-    if (heroSource) {
+    if (heroSource && heroSource.srcset !== targetSrc) {
       heroSource.srcset = targetSrc;
     }
-    heroImg.src = targetSrc;
-    heroImg.alt = targetAlt;
 
-    heroImg.onload = () => {
-      heroImg.style.opacity = '1';
-    };
+    if (heroImg.src !== absoluteTarget) {
+      heroImg.style.transition = 'opacity 0.25s ease';
+      heroImg.style.opacity = '0.7';
+      heroImg.src = targetSrc;
+      heroImg.alt = targetAlt;
+      try { heroImg.removeAttribute('srcset'); } catch(e) {}
+
+      heroImg.onload = () => {
+        heroImg.style.opacity = '1';
+      };
+    } else {
+      heroImg.alt = targetAlt;
+    }
+
+    // Safely sync with greeting hero artwork controller if present
+    if (typeof window.syncGreetingHeroArtwork === 'function' && !window.__syncingGreeting) {
+      window.__syncingGreeting = true;
+      try { window.syncGreetingHeroArtwork(); } catch (e) {}
+      window.__syncingGreeting = false;
+    }
   }
 
   // Pre-warm companion image in cache
   if (typeof window !== 'undefined' && window.AnhadImageCache) {
-    window.AnhadImageCache.preload(COMPANION_HERO);
+    try { window.AnhadImageCache.preload(COMPANION_HERO); } catch(e) {}
   }
 
   // Auto-sync on page load and SPA navigation
@@ -213,11 +248,23 @@
       syncHeroImage();
     }
     window.addEventListener('anhad_page_changed', syncHeroImage);
+    window.addEventListener('anhad_companion_changed', syncHeroImage);
     window.addEventListener('storage', (e) => {
       if (e.key === STORAGE_KEY || e.key === STORAGE_CUSTOM_IMG || e.key === STORAGE_EXPIRY) {
         syncHeroImage();
       }
     });
+
+    try {
+      if (typeof window.BroadcastChannel === 'function') {
+        const bc = new BroadcastChannel('anhad_companion_channel');
+        bc.onmessage = (msg) => {
+          if (msg.data && msg.data.type === 'companion_changed') {
+            syncHeroImage();
+          }
+        };
+      }
+    } catch(e) {}
 
     // Check expiration every 60s
     setInterval(() => {

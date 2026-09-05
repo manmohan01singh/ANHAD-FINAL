@@ -2,22 +2,28 @@
   'use strict';
 
   function init() {
-    const toggle = document.getElementById('companionToggle');
-    if (!toggle) return;
+    const desc = document.getElementById('companionStatusDesc');
+    const badge = document.getElementById('companionActiveBadge');
+    if (!desc) return;
 
-    if (window.CompanionMode) {
-      toggle.checked = window.CompanionMode.isEnabled();
-    } else {
-      toggle.checked = localStorage.getItem('anhad_companion_mode') === 'true';
-    }
+    const remaining = window.CompanionMode ? window.CompanionMode.getRemainingTime() : null;
+    const isEnabled = window.CompanionMode ? window.CompanionMode.isEnabled() : (localStorage.getItem('anhad_companion_mode') === 'true');
 
-    toggle.addEventListener('change', (e) => {
-      if (window.CompanionMode) {
-        window.CompanionMode.setEnabled(e.target.checked);
-      } else {
-        localStorage.setItem('anhad_companion_mode', e.target.checked ? 'true' : 'false');
+    if (isEnabled && remaining && !remaining.isExpired) {
+      desc.textContent = `Active Sacred Journey: ${remaining.days}d ${remaining.hours}h remaining until completion.`;
+      if (badge) {
+        badge.textContent = `✦ Day ${41 - Math.max(1, remaining.days)} of 40`;
+        badge.style.color = '#22C55E';
+        badge.style.background = 'rgba(34, 197, 94, 0.12)';
       }
-    });
+    } else if (isEnabled) {
+      desc.textContent = 'Active Sacred Journey: Dedicated Naam Simran & Nitnem on Home Screen.';
+    } else {
+      desc.textContent = 'Sacred 40-day spiritual abhyaas and collective Nitnem contemplation.';
+      if (badge) {
+        badge.textContent = '✦ Chaliya 2026';
+      }
+    }
   }
 
   if (document.readyState === 'loading') {

@@ -187,8 +187,8 @@ describe('ANHAD Sangat, Companion Mode, Admin & Header Verification Suite', () =
       const serverJs = fs.readFileSync(path.resolve(__dirname, '../../backend/server.js'), 'utf-8');
       const authMid = fs.readFileSync(path.resolve(__dirname, '../../backend/lib/auth-middleware.js'), 'utf-8');
 
-      expect(serverJs).toMatch(/headerToken\s*===\s*['"]man000singh['"]/);
-      expect(authMid).toMatch(/clean\s*===\s*['"]man000singh['"]/);
+      expect(serverJs).toMatch(/headerToken(\.toLowerCase\(\))?\s*===\s*['"]man000singh['"]/);
+      expect(authMid).toMatch(/clean(\.toLowerCase\(\))?\s*===\s*['"]man000singh['"]/);
     });
 
     it('successfully authorizes requireAdmin middleware when x-admin-token is man000singh', async () => {

@@ -238,10 +238,37 @@
 
   // --- Actions ------------------------------------------------------------
   async function load() {
-    const data = await api('/api/config/admin/campaigns');
-    config = data.config;
-    renderStore(data.store);
-    renderList();
+    try {
+      const data = await api('/api/config/admin/campaigns');
+      config = data.config;
+      renderStore(data.store);
+      renderList();
+    } catch (err) {
+      console.warn('[Admin] Campaign load note:', err.message);
+      if (!config) {
+        const isCompanionActive = localStorage.getItem('anhad_companion_mode') === 'true';
+        config = {
+          version: '1.0.0',
+          campaigns: [
+            {
+              id: 'chaliya-amritvela-2026',
+              title: 'Chaliya Amritvela Trust 2026',
+              subtitle: '40 Days of Divine Naam Simran & Nitnem Practice',
+              active: isCompanionActive,
+              priority: 100,
+              startDate: '2026-01-01T00:00:00.000Z',
+              endDate: '2026-12-31T23:59:59.000Z',
+              content: {
+                badgeText: 'CHALIYA 2026',
+                heroTitle: 'Chaliya Amritvela 2026',
+                heroSubtitle: 'Join thousands in the annual 40-day Amritvela Simran Abhyaas'
+              }
+            }
+          ]
+        };
+      }
+      renderList();
+    }
   }
 
   async function toggleCampaign(id, active, swEl) {
@@ -255,9 +282,28 @@
       renderList();
       toast(active ? 'Campaign published — live within ~15s' : 'Campaign turned off');
     } catch (e) {
-      toast(e.message);
+      // Local fallback for offline/client mode
+      if (config && config.campaigns) {
+        const target = config.campaigns.find(c => c.id === id);
+        if (target) target.active = active;
+      }
       renderList();
+      toast(active ? 'Campaign enabled locally' : 'Campaign disabled locally');
     } finally {
+      // Synchronize with Companion Mode if Chaliya campaign
+      if (id === 'chaliya-amritvela-2026' || id === 'chaliya-2026') {
+        if (window.CompanionMode) {
+          window.CompanionMode.setEnabled(active);
+        } else {
+          localStorage.setItem('anhad_companion_mode', active ? 'true' : 'false');
+        }
+        const enableToggle = $('companionEnableToggle');
+        if (enableToggle) {
+          if (active) enableToggle.classList.add('active');
+          else enableToggle.classList.remove('active');
+          enableToggle.setAttribute('aria-checked', String(active));
+        }
+      }
       swEl.disabled = false;
     }
   }
@@ -430,6 +476,26 @@
         }
 
         updateScheduleDisplay();
+
+        // Broadcast to all open tabs and windows
+        try {
+          window.dispatchEvent(new CustomEvent('anhad_companion_changed', { detail: { enabled: isEnabled } }));
+          if (typeof window.BroadcastChannel === 'function') {
+            const bc = new BroadcastChannel('anhad_companion_channel');
+            bc.postMessage({ type: 'companion_changed', enabled: isEnabled });
+            bc.close();
+          }
+        } catch (e) {}
+
+        // Synchronize with campaign card if present
+        if (config && config.campaigns) {
+          const chaliya = config.campaigns.find(c => c.id === 'chaliya-amritvela-2026' || c.id === 'chaliya-2026');
+          if (chaliya) {
+            chaliya.active = isEnabled;
+            renderList();
+          }
+        }
+
         setStatus('companionStatus', 'Companion saved! Home Screen hero artwork updated.', 'ok');
         toast('Companion updated successfully! 🙏');
       });

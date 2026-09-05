@@ -3585,7 +3585,7 @@ app.put('/api/sadhsangat/my-channels/reorder', async (req, res) => {
 // than silently open to anyone who finds the URL.
 function requireAdminToken(req, res, next) {
     const headerToken = String(req.headers['x-admin-token'] || '').trim();
-    if (headerToken === 'man000singh' || headerToken === 'anhad_admin_secure_secret_token_2026') {
+    if (headerToken.toLowerCase() === 'man000singh' || headerToken === 'anhad_admin_secure_secret_token_2026') {
         return next();
     }
     const configured = CONFIG.ADMIN_API_TOKEN;

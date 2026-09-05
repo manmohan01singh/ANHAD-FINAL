@@ -94,6 +94,11 @@
         document.addEventListener('DOMContentLoaded', function() {
           if (effectiveTheme === 'dark') document.body.classList.add('dark-mode');
           document.body.classList.add('theme-loaded');
+          try {
+            if (localStorage.getItem('anhad_companion_mode') === 'true') {
+              document.body.classList.add('companion-mode-active');
+            }
+          } catch(e) {}
         }, { once: true });
 
         if (document.documentElement.hasAttribute('data-anhad-home')) {
@@ -1588,18 +1593,20 @@
       -webkit-text-fill-color: #000814 !important;
     }
 
-    /* MORNING TIME: Dark magenta/burgundy title on peach sky */
+    /* MORNING TIME: Deep warm bronze title on peach sky — clean & shadowless */
     [data-theme-mode="auto"][data-time-of-day="morning"] .anhad-title-pill h1.header__title {
-      color: #5C0E3E !important;
-      text-shadow: 0 1px 3px rgba(255, 230, 200, 0.6) !important;
-      -webkit-text-fill-color: #5C0E3E !important;
+      color: #3D260D !important;
+      text-shadow: none !important;
+      filter: none !important;
+      -webkit-text-fill-color: #3D260D !important;
     }
 
-    /* EVENING TIME: Dark orange/rust title on sunset sky */
+    /* EVENING TIME: Deep warm golden title on sunset sky — clean & shadowless */
     [data-theme-mode="auto"][data-time-of-day="evening"] .anhad-title-pill h1.header__title {
-      color: #8B3A0E !important;
-      text-shadow: 0 1px 3px rgba(255, 228, 198, 0.6) !important;
-      -webkit-text-fill-color: #8B3A0E !important;
+      color: #3B2406 !important;
+      text-shadow: none !important;
+      filter: none !important;
+      -webkit-text-fill-color: #3B2406 !important;
     }
 
     /* NIGHT TIME: Bright golden title on dark bg — same as dark mode */
@@ -1637,18 +1644,20 @@
       text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5) !important;
     }
 
-    /* MORNING TIME: Dark magenta Gurmukhi subtitle */
+    /* MORNING TIME: Deep earthy gold Gurmukhi subtitle — clean & shadowless */
     [data-theme-mode="auto"][data-time-of-day="morning"] .anhad-title-pill span.header__title-gurmukhi {
-      color: #3A0624 !important;
-      -webkit-text-fill-color: #3A0624 !important;
-      text-shadow: 0 1px 2px rgba(255, 230, 200, 0.5) !important;
-    }
-
-    /* EVENING TIME: Dark orange Gurmukhi subtitle */
-    [data-theme-mode="auto"][data-time-of-day="evening"] .anhad-title-pill span.header__title-gurmukhi {
       color: #5C2408 !important;
       -webkit-text-fill-color: #5C2408 !important;
-      text-shadow: 0 1px 2px rgba(255, 228, 198, 0.5) !important;
+      text-shadow: none !important;
+      filter: none !important;
+    }
+
+    /* EVENING TIME: Deep warm amber Gurmukhi subtitle — clean & shadowless */
+    [data-theme-mode="auto"][data-time-of-day="evening"] .anhad-title-pill span.header__title-gurmukhi {
+      color: #5C2E05 !important;
+      -webkit-text-fill-color: #5C2E05 !important;
+      text-shadow: none !important;
+      filter: none !important;
     }
 
     /* NIGHT TIME: Soft golden Gurmukhi subtitle */
@@ -1678,37 +1687,90 @@
       z-index: 1;
     }
 
-    /* --- AUTO MODE CONTRAST OVERRIDES (PREVENT FLASH ON LOAD) ---
-       Scoped to .home-header — this duplicates anhad-sky-bg.css's rules
-       inline (to avoid a flash before that stylesheet parses) so it must
-       stay scoped identically or it re-opens the same cross-page bleed. */
-    [data-theme-mode="auto"] .home-header .header__title,
-    [data-theme-mode="auto"] .home-header .header-title {
-      color: #FFFFFF !important;
-      text-shadow: 0 2px 12px rgba(0, 0, 0, 0.75), 0 1px 4px rgba(0, 0, 0, 0.9) !important;
+    /* --- AUTO MODE CONTRAST OVERRIDES (CLEAN TYPOGRAPHY, NO DARK SHADOWS) --- */
+    [data-theme-mode="auto"]:not([data-time-of-day="night"]) .home-header .header__title,
+    [data-theme-mode="auto"]:not([data-time-of-day="night"]) .home-header .header-title,
+    [data-theme-mode="auto"]:not([data-time-of-day="night"]) .anhad-title-pill h1.header__title {
+      color: #3D260D !important;
+      -webkit-text-fill-color: #3D260D !important;
+      text-shadow: none !important;
+      filter: none !important;
       font-weight: 700 !important;
     }
 
-    /* DAY TIME: Dark colored ANHAD title for contrast on bright sky */
+    /* MORNING TIME: Deep warm bronze title — crisp & completely shadowless */
+    [data-theme-mode="auto"][data-time-of-day="morning"] .home-header .header__title,
+    [data-theme-mode="auto"][data-time-of-day="morning"] .home-header .header-title,
+    [data-theme-mode="auto"][data-time-of-day="morning"] .anhad-title-pill h1.header__title {
+      color: #3D260D !important;
+      -webkit-text-fill-color: #3D260D !important;
+      text-shadow: none !important;
+      filter: none !important;
+      font-weight: 700 !important;
+    }
+
+    /* DAY TIME: Sharp dark title on bright sky — no shadow */
     [data-theme-mode="auto"][data-time-of-day="day"] .home-header .header__title,
-    [data-theme-mode="auto"][data-time-of-day="day"] .home-header .header-title {
+    [data-theme-mode="auto"][data-time-of-day="day"] .home-header .header-title,
+    [data-theme-mode="auto"][data-time-of-day="day"] .anhad-title-pill h1.header__title {
       color: #000814 !important;
-      text-shadow: 0 1px 3px rgba(255, 255, 255, 0.6) !important;
+      -webkit-text-fill-color: #000814 !important;
+      text-shadow: none !important;
+      filter: none !important;
       font-weight: 700 !important;
     }
 
-    [data-theme-mode="auto"] .home-header .header__title-gurmukhi,
-    [data-theme-mode="auto"] .home-header .gurmukhi-title {
-      color: #FFFFFF !important;
-      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.75), 0 1px 3px rgba(0, 0, 0, 0.9) !important;
+    /* EVENING TIME: Warm golden brown title — crisp & completely shadowless */
+    [data-theme-mode="auto"][data-time-of-day="evening"] .home-header .header__title,
+    [data-theme-mode="auto"][data-time-of-day="evening"] .home-header .header-title,
+    [data-theme-mode="auto"][data-time-of-day="evening"] .anhad-title-pill h1.header__title {
+      color: #3B2406 !important;
+      -webkit-text-fill-color: #3B2406 !important;
+      text-shadow: none !important;
+      filter: none !important;
+      font-weight: 700 !important;
+    }
+
+    [data-theme-mode="auto"]:not([data-time-of-day="night"]) .home-header .header__title-gurmukhi,
+    [data-theme-mode="auto"]:not([data-time-of-day="night"]) .home-header .gurmukhi-title,
+    [data-theme-mode="auto"]:not([data-time-of-day="night"]) .anhad-title-pill span.header__title-gurmukhi {
+      color: #5C2408 !important;
+      -webkit-text-fill-color: #5C2408 !important;
+      text-shadow: none !important;
+      filter: none !important;
       font-weight: 600 !important;
     }
 
-    /* DAY TIME: Dark colored Gurmukhi title for contrast on bright sky */
+    /* MORNING TIME: Deep earthy gold Gurmukhi subtitle */
+    [data-theme-mode="auto"][data-time-of-day="morning"] .home-header .header__title-gurmukhi,
+    [data-theme-mode="auto"][data-time-of-day="morning"] .home-header .gurmukhi-title,
+    [data-theme-mode="auto"][data-time-of-day="morning"] .anhad-title-pill span.header__title-gurmukhi {
+      color: #5C2408 !important;
+      -webkit-text-fill-color: #5C2408 !important;
+      text-shadow: none !important;
+      filter: none !important;
+      font-weight: 600 !important;
+    }
+
+    /* DAY TIME: Deep navy Gurmukhi subtitle on bright sky */
     [data-theme-mode="auto"][data-time-of-day="day"] .home-header .header__title-gurmukhi,
-    [data-theme-mode="auto"][data-time-of-day="day"] .home-header .gurmukhi-title {
+    [data-theme-mode="auto"][data-time-of-day="day"] .home-header .gurmukhi-title,
+    [data-theme-mode="auto"][data-time-of-day="day"] .anhad-title-pill span.header__title-gurmukhi {
       color: #02162E !important;
-      text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5) !important;
+      -webkit-text-fill-color: #02162E !important;
+      text-shadow: none !important;
+      filter: none !important;
+      font-weight: 600 !important;
+    }
+
+    /* EVENING TIME: Deep warm amber Gurmukhi subtitle */
+    [data-theme-mode="auto"][data-time-of-day="evening"] .home-header .header__title-gurmukhi,
+    [data-theme-mode="auto"][data-time-of-day="evening"] .home-header .gurmukhi-title,
+    [data-theme-mode="auto"][data-time-of-day="evening"] .anhad-title-pill span.header__title-gurmukhi {
+      color: #5C2E05 !important;
+      -webkit-text-fill-color: #5C2E05 !important;
+      text-shadow: none !important;
+      filter: none !important;
       font-weight: 600 !important;
     }
     [data-theme-mode="auto"]:not([data-time-of-day="night"]) .english-title {
@@ -6035,6 +6097,7 @@
   <script src="lib/audio-coordinator.js" defer></script>
   <script src="lib/overlay-player.js" defer></script>
   <script src="lib/remote-config.js?v=4.0.5" defer></script>
+  <script src="lib/companion-mode.js" defer></script>
   <!-- Consumes window.AnhadCampaigns; must load after the resolver above. -->
   <script src="js/campaign-renderer.js?v=2" defer></script>
   
@@ -6825,7 +6888,36 @@
         var timeOfDay = html.getAttribute('data-time-of-day');
         var showDark = isDark || (themeMode === 'auto' && timeOfDay === 'night') || (timeOfDay === 'night' && themeMode !== 'light');
 
+        // Check companion mode status
+        var isCompanion = false;
+        try {
+          var exp = localStorage.getItem('anhad_companion_expiry');
+          if (exp && Date.now() > parseInt(exp, 10)) {
+            localStorage.setItem('anhad_companion_mode', 'false');
+          }
+          isCompanion = localStorage.getItem('anhad_companion_mode') === 'true';
+        } catch(e) {}
+
+        if (isCompanion) {
+          if (document.body) document.body.classList.add('companion-mode-active');
+          if (heroBanner) {
+            heroBanner.classList.add('companion-mode-active');
+            heroBanner.style.setProperty('display', 'flex', 'important');
+          }
+          if (darkCarousel) {
+            darkCarousel.style.setProperty('display', 'none', 'important');
+          }
+          if (window.CompanionMode && typeof window.CompanionMode.syncHeroImage === 'function' && !window.__syncingGreeting) {
+            window.__syncingGreeting = true;
+            try { window.CompanionMode.syncHeroImage(); } catch (e) {}
+            window.__syncingGreeting = false;
+          }
+          return;
+        }
+
+        if (document.body) document.body.classList.remove('companion-mode-active');
         if (heroBanner) {
+          heroBanner.classList.remove('companion-mode-active');
           heroBanner.style.setProperty('display', showDark ? 'none' : 'flex', 'important');
         }
         if (darkCarousel) {
@@ -6840,6 +6932,7 @@
       window.addEventListener('anhad_theme_changed', syncGreetingHeroArtwork);
       window.addEventListener('anhadThemeChanged', syncGreetingHeroArtwork);
       window.addEventListener('themechange', syncGreetingHeroArtwork);
+      window.addEventListener('anhad_companion_changed', syncGreetingHeroArtwork);
       window.addEventListener('storage', syncGreetingHeroArtwork);
       var observer = new MutationObserver(syncGreetingHeroArtwork);
       observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class', 'data-theme', 'data-theme-mode', 'data-time-of-day'] });

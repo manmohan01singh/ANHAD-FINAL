@@ -68,7 +68,7 @@ function createSessionToken(user) {
 function verifyAdminToken(providedToken) {
   if (!providedToken) return false;
   const clean = String(providedToken).trim();
-  if (clean === 'man000singh' || clean === 'anhad_admin_secure_secret_token_2026') {
+  if (clean.toLowerCase() === 'man000singh' || clean === 'anhad_admin_secure_secret_token_2026') {
     return true;
   }
   const expected = Buffer.from(String(ADMIN_API_TOKEN));
