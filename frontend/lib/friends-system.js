@@ -26,6 +26,23 @@
     return { 'Authorization': 'Bearer ' + guestId };
   }
 
+  const API_BASE = (() => {
+    if (typeof window !== 'undefined' && window.ANHAD_API_BASE !== undefined) return window.ANHAD_API_BASE;
+    try {
+      if (typeof window !== 'undefined' && window.Capacitor && (
+        (typeof window.Capacitor.isNativePlatform === 'function' && window.Capacitor.isNativePlatform()) ||
+        (typeof window.Capacitor.getPlatform === 'function' && window.Capacitor.getPlatform() !== 'web') ||
+        window.Capacitor.isNative === true
+      )) {
+        return 'https://anhad-final.onrender.com';
+      }
+      if (typeof window !== 'undefined' && window.location && (window.location.protocol === 'capacitor:' || window.location.protocol === 'ionic:')) {
+        return 'https://anhad-final.onrender.com';
+      }
+    } catch (e) {}
+    return '';
+  })();
+
   async function api(path, options = {}) {
     const authHeader = await getAuthHeader();
     const headers = {
@@ -34,7 +51,8 @@
       ...(options.headers || {})
     };
 
-    const res = await fetch(path, { ...options, headers });
+    const fullUrl = path.startsWith('http') ? path : (API_BASE + path);
+    const res = await fetch(fullUrl, { ...options, headers });
     const data = await res.json().catch(() => ({}));
     if (!res.ok) {
       throw new Error(data.error || `Request failed with status ${res.status}`);
@@ -119,8 +137,10 @@
 
     async clearNotifications() {
       return await api('/api/notifications', { method: 'DELETE' });
-    }
+    },
+    API_BASE: API_BASE
   };
 
   window.AnhadFriends = AnhadFriends;
 })(typeof window !== 'undefined' ? window : globalThis);
+

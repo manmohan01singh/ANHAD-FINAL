@@ -527,10 +527,13 @@
           if (window.AnhadFriends && typeof window.AnhadFriends.searchUsers === 'function') {
             results = await window.AnhadFriends.searchUsers(q);
           } else {
-            const resp = await fetch('/api/friends/search?q=' + encodeURIComponent(q));
+            const apiBase = (window.AnhadFriends && window.AnhadFriends.API_BASE) ||
+              (window.Capacitor && (window.Capacitor.isNative || (typeof window.Capacitor.isNativePlatform === 'function' && window.Capacitor.isNativePlatform())) ? 'https://anhad-final.onrender.com' : '');
+            const resp = await fetch(apiBase + '/api/friends/search?q=' + encodeURIComponent(q));
             const data = await resp.json().catch(() => ({}));
             results = data.results || [];
           }
+
 
           // STRICT SELF-FILTER: Never show current user in search results!
           const currentProfile = (window.AnhadAuth && typeof window.AnhadAuth.getProfile === 'function') ? window.AnhadAuth.getProfile() : {};

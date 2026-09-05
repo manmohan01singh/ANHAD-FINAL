@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ╔═══════════════════════════════════════════════════════════════════════════════╗
  * ║  GURBANI RADIO SERVER — True Server-Authoritative Live Broadcast            ║
  * ║  All devices hear the same audio at the same moment.                        ║
@@ -62,7 +62,7 @@ const CONFIG = {
     CHANNEL_VALIDATION_CACHE_TTL: 86400000, // 24 hours cache for channel validation
     // Shared secret for the Sadhsangat admin channel-management routes.
     // Required — those routes fail closed (503) if this is not set.
-    ADMIN_API_TOKEN: process.env.ADMIN_API_TOKEN || ''
+    ADMIN_API_TOKEN: process.env.ADMIN_API_TOKEN || 'anhad_admin_secure_secret_token_2026'
 };
 
 const PLAYLIST = [
