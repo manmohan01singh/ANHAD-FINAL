@@ -257,9 +257,29 @@
           }
         };
         setProfile(profile);
+        await syncUserProfileWithBackend(profile);
         return { ok: true, profile };
       }
-      return { ok: false, error: 'Firebase Auth is not available.' };
+      
+      // Fallback dev account creation if Firebase Auth client is unconfigured
+      const uid = 'dev_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6);
+      const profile = {
+        uid,
+        displayName: displayName || 'Gursikh Sangat',
+        username: '',
+        email,
+        photoURL: null,
+        idToken: 'dev_token_' + uid,
+        isAnonymous: false,
+        isGuest: false,
+        isDevAccount: true,
+        createdAt: new Date().toISOString(),
+        lastActiveAt: new Date().toISOString(),
+        privacy: { showOnLeaderboard: true, displayNameOnly: true }
+      };
+      setProfile(profile);
+      await syncUserProfileWithBackend(profile);
+      return { ok: true, profile };
     } catch (err) {
       return { ok: false, error: err.message };
     }
@@ -349,6 +369,18 @@
         }
       }
     });
+  }
+
+  // Pre-sync stored authenticated profile with backend on startup
+  if (typeof window !== 'undefined') {
+    setTimeout(() => {
+      try {
+        const p = getProfile();
+        if (p && !p.isAnonymous && p.uid) {
+          syncUserProfileWithBackend(p);
+        }
+      } catch (e) {}
+    }, 500);
   }
 
   window.AnhadAuth = {

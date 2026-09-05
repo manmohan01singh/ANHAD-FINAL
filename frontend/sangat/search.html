@@ -532,6 +532,16 @@
             results = data.results || [];
           }
 
+          // STRICT SELF-FILTER: Never show current user in search results!
+          const currentProfile = (window.AnhadAuth && typeof window.AnhadAuth.getProfile === 'function') ? window.AnhadAuth.getProfile() : {};
+          const myUid = currentProfile.uid;
+          const myUsername = (currentProfile.username || '').toLowerCase().trim();
+          results = (results || []).filter(u => {
+            if (myUid && u.uid === myUid) return false;
+            if (myUsername && u.username && u.username.toLowerCase() === myUsername) return false;
+            return true;
+          });
+
           cachedSearchResults = results;
           renderResults(results, q);
         } catch (err) {
@@ -631,34 +641,20 @@
           btn.textContent = 'Requested ✓';
         }
 
-        // Save in sent requests
+        // Save in sent requests on this client
         const sent = getSentRequests();
         if (!sent.includes(uid)) {
           sent.push(uid);
           localStorage.setItem('anhad_sent_requests', JSON.stringify(sent));
         }
 
-        // Add to pending notification requests so it reflects in real-time
-        try {
-          const pending = JSON.parse(localStorage.getItem('anhad_pending_requests') || '[]');
-          const already = pending.some(p => p.uid === uid);
-          if (!already) {
-            pending.unshift({
-              id: 'req_' + uid,
-              name: name,
-              handle: '@' + name.toLowerCase().replace(/\s+/g, '_'),
-              avatar: name.charAt(0).toUpperCase(),
-              desc: 'Connection requested • Tap Confirm to connect as Amritvela Companion',
-              time: 'Just now',
-              uid: uid
-            });
-            localStorage.setItem('anhad_pending_requests', JSON.stringify(pending));
-          }
-        } catch(e) {}
-
         // Send via friends system backend
-        if (window.AnhadFriends && typeof window.AnhadFriends.sendRequest === 'function') {
-          try { await window.AnhadFriends.sendRequest(uid); } catch(e) {}
+        try {
+          if (window.AnhadFriends && typeof window.AnhadFriends.sendRequest === 'function') {
+            await window.AnhadFriends.sendRequest(uid);
+          }
+        } catch (e) {
+          console.warn('[SangatSearch] Send request error:', e);
         }
 
         if (navigator.vibrate) navigator.vibrate(12);

@@ -6,13 +6,47 @@
  * notification preferences. Strict isolation: Friendship != Companion.
  */
 
+const path = require('path');
+const fs = require('fs');
 const friendsEngine = require('./friends-engine');
 const { getUser } = require('./auth-middleware');
+
+const COMPANION_DATA_FILE = path.join(__dirname, '..', 'data', 'companion-data.json');
 
 class CompanionEngine {
   constructor() {
     // Key: `${userUid}:${friendUid}` -> { userUid, friendUid, isCompanion: boolean, notify: boolean, updatedAt }
     this.companionSettings = new Map();
+    this.loadFromDisk();
+  }
+
+  loadFromDisk() {
+    try {
+      if (fs.existsSync(COMPANION_DATA_FILE)) {
+        const raw = fs.readFileSync(COMPANION_DATA_FILE, 'utf8');
+        const list = JSON.parse(raw);
+        if (Array.isArray(list)) {
+          list.forEach(s => {
+            if (s && s.userUid && s.friendUid) {
+              this.companionSettings.set(this.getSettingKey(s.userUid, s.friendUid), s);
+            }
+          });
+        }
+      }
+    } catch (e) {
+      console.warn('[CompanionEngine] companion-data.json load note:', e.message);
+    }
+  }
+
+  saveToDisk() {
+    try {
+      const dir = path.dirname(COMPANION_DATA_FILE);
+      if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+      const list = Array.from(this.companionSettings.values());
+      fs.writeFileSync(COMPANION_DATA_FILE, JSON.stringify(list, null, 2), 'utf8');
+    } catch (e) {
+      console.warn('[CompanionEngine] companion-data.json save note:', e.message);
+    }
   }
 
   getSettingKey(userUid, friendUid) {
@@ -44,6 +78,7 @@ class CompanionEngine {
     existing.updatedAt = new Date().toISOString();
 
     this.companionSettings.set(key, existing);
+    this.saveToDisk();
     return { ok: true, setting: existing };
   }
 
@@ -63,6 +98,7 @@ class CompanionEngine {
     existing.updatedAt = new Date().toISOString();
 
     this.companionSettings.set(key, existing);
+    this.saveToDisk();
     return { ok: true, setting: existing };
   }
 

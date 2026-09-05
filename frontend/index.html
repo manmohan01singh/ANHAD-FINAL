@@ -6899,18 +6899,35 @@
         } catch(e) {}
 
         if (isCompanion) {
-          if (document.body) document.body.classList.add('companion-mode-active');
-          if (heroBanner) {
-            heroBanner.classList.add('companion-mode-active');
-            heroBanner.style.setProperty('display', 'flex', 'important');
-          }
-          if (darkCarousel) {
-            darkCarousel.style.setProperty('display', 'none', 'important');
-          }
-          if (window.CompanionMode && typeof window.CompanionMode.syncHeroImage === 'function' && !window.__syncingGreeting) {
-            window.__syncingGreeting = true;
-            try { window.CompanionMode.syncHeroImage(); } catch (e) {}
-            window.__syncingGreeting = false;
+          if (showDark) {
+            // In dark mode or dynamic night: NEVER show the light companion banner!
+            // Show standard circular Guru portraits carousel!
+            if (document.body) document.body.classList.remove('companion-mode-active');
+            if (heroBanner) {
+              heroBanner.classList.remove('companion-mode-active');
+              heroBanner.style.setProperty('display', 'none', 'important');
+            }
+            if (darkCarousel) {
+              darkCarousel.style.setProperty('display', 'flex', 'important');
+              if (window.PortraitSlider && typeof window.PortraitSlider.init === 'function') {
+                window.PortraitSlider.init();
+              }
+            }
+          } else {
+            // Light mode or dynamic daytime (morning, day, evening): Show companion banner!
+            if (document.body) document.body.classList.add('companion-mode-active');
+            if (heroBanner) {
+              heroBanner.classList.add('companion-mode-active');
+              heroBanner.style.setProperty('display', 'flex', 'important');
+            }
+            if (darkCarousel) {
+              darkCarousel.style.setProperty('display', 'none', 'important');
+            }
+            if (window.CompanionMode && typeof window.CompanionMode.syncHeroImage === 'function' && !window.__syncingGreeting) {
+              window.__syncingGreeting = true;
+              try { window.CompanionMode.syncHeroImage(); } catch (e) {}
+              window.__syncingGreeting = false;
+            }
           }
           return;
         }

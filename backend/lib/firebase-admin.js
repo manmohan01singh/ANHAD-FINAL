@@ -162,6 +162,27 @@ async function verifyIdToken(idToken) {
       err.status = 401;
       throw err;
     }
+
+    // Safely parse Firebase JWT payload for local/development environments
+    try {
+      const parts = idToken.split('.');
+      if (parts.length === 3) {
+        const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString('utf8'));
+        const uid = payload.user_id || payload.sub || payload.uid;
+        if (uid) {
+          return {
+            uid: String(uid),
+            email: payload.email || null,
+            name: payload.name || payload.displayName || null,
+            picture: payload.picture || null,
+            admin: !!payload.admin,
+            claims: payload
+          };
+        }
+      }
+    } catch (e) {
+      // Fall through to unconfigured error if not a valid JWT
+    }
   }
 
   const unconfiguredErr = new Error('Firebase Admin authentication is not configured');

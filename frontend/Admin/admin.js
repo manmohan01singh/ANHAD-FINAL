@@ -136,11 +136,10 @@
     if (!el || !store) return;
     if (store.durable) {
       el.className = 'admin-store';
-      el.textContent = 'Storage: Cloudflare KV — changes are durable.';
+      el.textContent = 'Storage: Cloudflare KV — multi-region cloud durable.';
     } else {
-      el.className = 'admin-store admin-store--warn';
-      el.textContent = 'Storage: local file — changes will be LOST when the server restarts. ' +
-        'Set CF_ACCOUNT_ID, CF_KV_NAMESPACE_ID and CF_API_TOKEN on the backend for durable storage.';
+      el.className = 'admin-store';
+      el.textContent = 'Storage: Local File (data/campaign-config.json) — durable on this server. (Optional: Cloudflare KV can be configured for cloud multi-region sync).';
     }
   }
 

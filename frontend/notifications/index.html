@@ -130,6 +130,7 @@
 
       let currentTab = 'activity';
       let toastTimer = null;
+      let liveRequests = [];
 
       function showToast(msg) {
         const t = document.getElementById('iosToast');
@@ -170,8 +171,78 @@
         return [];
       }
 
+      async function fetchLiveRequests() {
+        try {
+          let incoming = [];
+          if (window.AnhadFriends && typeof window.AnhadFriends.getFriendsList === 'function') {
+            const res = await window.AnhadFriends.getFriendsList().catch(() => null);
+            if (res && Array.isArray(res.incomingRequests)) {
+              incoming = res.incomingRequests.map(r => {
+                const senderName = r.fromDisplayName || (r.from && r.from.displayName) || 'Gursikh Sangat';
+                const senderHandle = r.fromUsername ? ('@' + r.fromUsername) : (r.from && r.from.username ? ('@' + r.from.username) : '');
+                return {
+                  id: r.id,
+                  uid: r.fromUid || (r.from && r.from.uid),
+                  name: senderName,
+                  handle: senderHandle,
+                  avatar: senderName.charAt(0).toUpperCase(),
+                  desc: 'Wants to connect in Sangat • Tap Confirm to connect as Amritvela Companion',
+                  time: r.createdAt ? new Date(r.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Recently'
+                };
+              });
+            }
+          }
+
+          const local = getStoredRequests();
+          // Merge remote incoming requests and local requests
+          const map = new Map();
+          local.forEach(r => map.set(r.id, r));
+          incoming.forEach(r => map.set(r.id, r));
+
+          liveRequests = Array.from(map.values());
+          localStorage.setItem('anhad_pending_requests', JSON.stringify(liveRequests));
+          updateBadges();
+          if (currentTab === 'requests') {
+            renderRequests();
+          }
+        } catch (e) {
+          console.warn('[Notifications] fetchLiveRequests note:', e);
+        }
+      }
+
+      async function fetchLiveActivity() {
+        try {
+          if (window.AnhadFriends && typeof window.AnhadFriends.getNotifications === 'function') {
+            const notifs = await window.AnhadFriends.getNotifications().catch(() => []);
+            if (Array.isArray(notifs) && notifs.length > 0) {
+              const local = getStoredActivity();
+              const map = new Map();
+              local.forEach(a => map.set(a.id, a));
+              notifs.forEach(n => {
+                map.set(n.id, {
+                  id: n.id,
+                  type: n.type || 'companion_journey',
+                  name: n.senderName || 'Sangat',
+                  message: n.message || '',
+                  sub: n.title || '',
+                  time: n.createdAt ? new Date(n.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Recently',
+                  ctaLink: n.deepLink || null
+                });
+              });
+              const merged = Array.from(map.values());
+              localStorage.setItem('anhad_activity_notifications', JSON.stringify(merged));
+              if (currentTab === 'activity') {
+                renderActivity();
+              }
+            }
+          }
+        } catch (e) {
+          console.warn('[Notifications] fetchLiveActivity note:', e);
+        }
+      }
+
       function updateBadges() {
-        const requests = getStoredRequests();
+        const requests = liveRequests.length > 0 ? liveRequests : getStoredRequests();
         const count = requests.length;
 
         const tabBadge = document.getElementById('requestsTabBadge');
@@ -195,7 +266,7 @@
         const container = document.getElementById('requestsList');
         if (!container) return;
 
-        const requests = getStoredRequests();
+        const requests = liveRequests.length > 0 ? liveRequests : getStoredRequests();
         updateBadges();
 
         if (requests.length === 0) {
@@ -205,8 +276,8 @@
 
         container.innerHTML = requests.map(r => `
           <div class="ios-request-cell" id="req_cell_${r.id}">
-            <div class="ios-cell-avatar ${r.uid === 'user_amrit' ? 'amrit' : ''}">
-              ${r.avatar || r.name.charAt(0)}
+            <div class="ios-cell-avatar">
+              ${r.avatar || (r.name ? r.name.charAt(0) : 'S')}
             </div>
             <div class="ios-cell-main">
               <div class="ios-cell-title">${r.name}</div>
@@ -214,7 +285,7 @@
               <div class="ios-cell-time">${r.handle || ''} • ${r.time}</div>
             </div>
             <div class="ios-cell-actions" id="actions_${r.id}">
-              <button class="ios-btn-confirm" onclick="confirmRequest('${r.id}', '${r.name.replace(/'/g, "\\'")}')">Confirm</button>
+              <button class="ios-btn-confirm" onclick="confirmRequest('${r.id}', '${(r.name || 'Sangat').replace(/'/g, "\\'")}')">Confirm</button>
               <button class="ios-btn-delete" onclick="declineRequest('${r.id}')">Delete</button>
             </div>
           </div>
@@ -272,20 +343,30 @@
           tabReq.classList.add('active');
           tabAct.classList.remove('active');
           viewReq.style.display = 'block';
-          viewAct.style.display = 'none';
+          viewReq.style.display = 'none';
           renderRequests();
+          fetchLiveRequests();
         }
       };
 
-      window.confirmRequest = function(id, name) {
+      window.confirmRequest = async function(id, name) {
         const actionsEl = document.getElementById('actions_' + id);
         if (actionsEl) {
           actionsEl.innerHTML = '<span class="ios-btn-status">Connected ✓</span>';
         }
 
+        // Call backend friends system to accept request
+        try {
+          if (window.AnhadFriends && typeof window.AnhadFriends.respondRequest === 'function') {
+            await window.AnhadFriends.respondRequest(id, 'accept');
+          }
+        } catch (e) {
+          console.warn('[Notifications] Accept request backend note:', e);
+        }
+
         // Update stored requests
-        let requests = getStoredRequests();
-        requests = requests.filter(r => r.id !== id);
+        liveRequests = liveRequests.filter(r => r.id !== id);
+        let requests = getStoredRequests().filter(r => r.id !== id);
         localStorage.setItem('anhad_pending_requests', JSON.stringify(requests));
         updateBadges();
 
@@ -305,7 +386,7 @@
         showToast(`Connected with ${name}! 🙏`);
       };
 
-      window.declineRequest = function(id) {
+      window.declineRequest = async function(id) {
         const row = document.getElementById('req_cell_' + id);
         if (row) {
           row.style.opacity = '0';
@@ -313,8 +394,17 @@
           setTimeout(() => row.remove(), 200);
         }
 
-        let requests = getStoredRequests();
-        requests = requests.filter(r => r.id !== id);
+        // Call backend friends system to reject request
+        try {
+          if (window.AnhadFriends && typeof window.AnhadFriends.respondRequest === 'function') {
+            await window.AnhadFriends.respondRequest(id, 'reject');
+          }
+        } catch (e) {
+          console.warn('[Notifications] Reject request backend note:', e);
+        }
+
+        liveRequests = liveRequests.filter(r => r.id !== id);
+        let requests = getStoredRequests().filter(r => r.id !== id);
         localStorage.setItem('anhad_pending_requests', JSON.stringify(requests));
         updateBadges();
       };
@@ -326,9 +416,22 @@
       };
 
       document.addEventListener('DOMContentLoaded', () => {
+        // Open tab requested in URL query
+        try {
+          const params = new URLSearchParams(window.location.search);
+          if (params.get('tab') === 'requests') {
+            switchTab('requests');
+          } else {
+            renderActivity();
+            renderRequests();
+          }
+        } catch(e) {
+          renderActivity();
+          renderRequests();
+        }
         updateBadges();
-        renderActivity();
-        renderRequests();
+        fetchLiveRequests();
+        fetchLiveActivity();
       });
     })();
   </script>

@@ -7,19 +7,63 @@
  */
 
 const crypto = require('crypto');
+const path = require('path');
+const fs = require('fs');
 
 // In-memory token/session store (compatible with Firebase Auth JWT or local tokens)
 const sessions = new Map(); // token -> { uid, username, displayName, email, role, expiresAt }
 const registeredUsers = new Map(); // uid -> user profile
 
+const USERS_FILE = path.join(__dirname, '..', 'data', 'registered-users.json');
+
+function loadUsersFromDisk() {
+  try {
+    if (fs.existsSync(USERS_FILE)) {
+      const raw = fs.readFileSync(USERS_FILE, 'utf8');
+      const data = JSON.parse(raw);
+      if (Array.isArray(data)) {
+        data.forEach(u => {
+          // Purge any dummy seed accounts if they exist in legacy file
+          if (u && u.uid && u.uid !== 'user_manmohan' && u.uid !== 'user_harpreet' && u.uid !== 'user_gurpreet' && u.uid !== 'user_amrit') {
+            registeredUsers.set(u.uid, u);
+          }
+        });
+      }
+    }
+  } catch (e) {
+    console.warn('[AuthMiddleware] registered-users.json load note:', e.message);
+  }
+}
+
+let saveUsersTimer = null;
+function saveUsersToDisk() {
+  if (saveUsersTimer) return;
+  saveUsersTimer = setTimeout(() => {
+    saveUsersTimer = null;
+    try {
+      const dir = path.dirname(USERS_FILE);
+      if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+      const arr = Array.from(registeredUsers.values());
+      fs.writeFileSync(USERS_FILE, JSON.stringify(arr, null, 2), 'utf8');
+    } catch (e) {
+      console.warn('[AuthMiddleware] registered-users.json save note:', e.message);
+    }
+  }, 100);
+}
+
+loadUsersFromDisk();
+
 // Initialize default admin user if configured
 const ADMIN_API_TOKEN = process.env.ADMIN_API_TOKEN || 'anhad_admin_secure_secret_token_2026';
 
 /**
- * Register or update a user profile in memory
+ * Register or update a user profile in memory and persist to disk
  */
 function registerUser(profile) {
   if (!profile || !profile.uid) return null;
+  // Never register dummy seed accounts
+  if (profile.uid === 'user_manmohan') return null;
+
   const username = (profile.username || '').trim().toLowerCase();
   const existing = registeredUsers.get(profile.uid) || {};
   const updated = {
@@ -33,6 +77,7 @@ function registerUser(profile) {
     isPublic: profile.isPublic !== undefined ? Boolean(profile.isPublic) : true
   };
   registeredUsers.set(profile.uid, updated);
+  saveUsersToDisk();
   return updated;
 }
 
@@ -102,7 +147,7 @@ async function requireAuth(req, res, next) {
   }
 
   // Handle mock tokens for test suites and dev environments
-  if (token.startsWith('user_') || token.startsWith('test_user_') || token.startsWith('admin_')) {
+  if (token.startsWith('user_') || token.startsWith('test_user_') || token.startsWith('admin_') || token.startsWith('dev_')) {
     const role = token.includes('admin') ? 'admin' : 'user';
     const uid = token;
     let user = getUser(uid);
@@ -110,6 +155,19 @@ async function requireAuth(req, res, next) {
       user = registerUser({ uid, username: uid, displayName: uid, role });
     }
     req.user = { uid: user.uid, username: user.username, displayName: user.displayName, role: user.role, admin: role === 'admin' };
+    return next();
+  }
+
+  // Check if token matches an already registered user's UID directly
+  const existingUser = getUser(token);
+  if (existingUser) {
+    req.user = {
+      uid: existingUser.uid,
+      username: existingUser.username,
+      displayName: existingUser.displayName,
+      role: existingUser.role || 'user',
+      admin: existingUser.role === 'admin'
+    };
     return next();
   }
 

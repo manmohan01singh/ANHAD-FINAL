@@ -6,7 +6,12 @@
  * and strict privacy isolation. Does NOT grant Companion status automatically.
  */
 
+const crypto = require('crypto');
+const path = require('path');
+const fs = require('fs');
 const { registeredUsers, getUser, getUserByUsername, sanitizeString } = require('./auth-middleware');
+
+const FRIENDS_DATA_FILE = path.join(__dirname, '..', 'data', 'friends-data.json');
 
 class FriendsEngine {
   constructor() {
@@ -15,18 +20,50 @@ class FriendsEngine {
     // requestId -> { id, fromUid, toUid, status: 'pending'|'accepted'|'rejected', createdAt }
     this.friendRequests = new Map();
 
+    this.loadFromDisk();
     this.seedInitialUsers();
   }
 
+  loadFromDisk() {
+    try {
+      if (fs.existsSync(FRIENDS_DATA_FILE)) {
+        const raw = fs.readFileSync(FRIENDS_DATA_FILE, 'utf8');
+        const data = JSON.parse(raw);
+        if (data) {
+          if (Array.isArray(data.friendships)) {
+            data.friendships.forEach(f => {
+              if (f && f.id) this.friendships.set(f.id, f);
+            });
+          }
+          if (Array.isArray(data.friendRequests)) {
+            data.friendRequests.forEach(r => {
+              if (r && r.id) this.friendRequests.set(r.id, r);
+            });
+          }
+        }
+      }
+    } catch (e) {
+      console.warn('[FriendsEngine] friends-data.json load note:', e.message);
+    }
+  }
+
+  saveToDisk() {
+    try {
+      const dir = path.dirname(FRIENDS_DATA_FILE);
+      if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+      const payload = {
+        friendships: Array.from(this.friendships.values()),
+        friendRequests: Array.from(this.friendRequests.values()),
+        savedAt: new Date().toISOString()
+      };
+      fs.writeFileSync(FRIENDS_DATA_FILE, JSON.stringify(payload, null, 2), 'utf8');
+    } catch (e) {
+      console.warn('[FriendsEngine] friends-data.json save note:', e.message);
+    }
+  }
+
   seedInitialUsers() {
-    // Seed initial searchable Sangat for discovery & tests
-    const seed = [
-      { uid: 'user_manmohan', username: 'manmohan', displayName: 'Manmohan Singh', streak: 45, isPublic: true },
-      { uid: 'user_harpreet', username: 'harpreet', displayName: 'Harpreet Kaur', streak: 30, isPublic: true },
-      { uid: 'user_gurpreet', username: 'gurpreet', displayName: 'Gurpreet Singh', streak: 21, isPublic: true },
-      { uid: 'user_amrit', username: 'amritvela_premi', displayName: 'Amrit Sevadar', streak: 60, isPublic: true }
-    ];
-    seed.forEach(u => registeredUsers.set(u.uid, u));
+    // Strictly zero dummy users. Real Sangat accounts only.
   }
 
   /**
@@ -39,7 +76,9 @@ class FriendsEngine {
 
     const results = [];
     for (const u of registeredUsers.values()) {
-      if (u.uid === currentUid) continue; // Skip self
+      if (currentUid && (u.uid === currentUid || (u.username && u.username.toLowerCase() === currentUid.toLowerCase()))) {
+        continue; // Skip self
+      }
       if (!u.isPublic) continue;
 
       if (u.username.toLowerCase().includes(q) || u.displayName.toLowerCase().includes(q)) {
@@ -113,6 +152,8 @@ class FriendsEngine {
     };
 
     this.friendRequests.set(requestId, request);
+    this.saveToDisk();
+
     return { ok: true, request };
   }
 
@@ -141,9 +182,12 @@ class FriendsEngine {
         createdAt: new Date().toISOString()
       };
       this.friendships.set(friendshipId, friendship);
+      this.saveToDisk();
+
       return { ok: true, action: 'accepted', friendship };
     } else if (action === 'reject') {
       req.status = 'rejected';
+      this.saveToDisk();
       return { ok: true, action: 'rejected' };
     } else {
       throw { status: 400, message: 'Invalid action. Must be "accept" or "reject"' };
@@ -163,6 +207,7 @@ class FriendsEngine {
       throw { status: 404, message: 'Friendship not found' };
     }
 
+    this.saveToDisk();
     return { ok: true, removed: true };
   }
 
@@ -195,6 +240,9 @@ class FriendsEngine {
           const sender = getUser(r.fromUid) || { uid: r.fromUid, username: 'sangat', displayName: 'Gursikh Sangat' };
           incoming.push({
             id: r.id,
+            fromUid: sender.uid,
+            fromUsername: sender.username,
+            fromDisplayName: sender.displayName,
             from: { uid: sender.uid, username: sender.username, displayName: sender.displayName },
             createdAt: r.createdAt
           });
@@ -202,6 +250,9 @@ class FriendsEngine {
           const target = getUser(r.toUid) || { uid: r.toUid, username: 'sangat', displayName: 'Gursikh Sangat' };
           outgoing.push({
             id: r.id,
+            toUid: target.uid,
+            toUsername: target.username,
+            toDisplayName: target.displayName,
             to: { uid: target.uid, username: target.username, displayName: target.displayName },
             createdAt: r.createdAt
           });
