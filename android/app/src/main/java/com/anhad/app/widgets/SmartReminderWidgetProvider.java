@@ -6,12 +6,11 @@ import android.widget.RemoteViews;
 
 import com.anhad.app.R;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
- * Smart Reminder Schedule Widget
- * Shows today's reminder timeline
+ * Sangat Notifications & Friend Requests Home Screen Widget
+ * Shows pending friend requests, companion Amritvela attendance alerts, and Sangat activity
  */
 public class SmartReminderWidgetProvider extends BaseWidgetProvider {
 
@@ -21,53 +20,43 @@ public class SmartReminderWidgetProvider extends BaseWidgetProvider {
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.smart_reminder_widget);
 
         // Extract data
-        int totalReminders = getSafeInt(data, "totalReminders", 0);
-        int completedReminders = getSafeInt(data, "completedReminders", 0);
-        String nextReminderTime = getSafeString(data, "nextReminderTime", "");
-        String nextReminderLabel = getSafeString(data, "nextReminderLabel", "No reminders set");
+        int pendingRequests = getSafeInt(data, "pendingRequests", 0);
+        int unreadNotifs = getSafeInt(data, "unreadNotifs", 0);
+        String latestAlert = getSafeString(data, "latestAlert", "");
+        String statusText = getSafeString(data, "statusText", "");
         int streak = getSafeInt(data, "streak", 0);
-        boolean allDone = getSafeBoolean(data, "allDone", false);
-        boolean isDark = getSafeBoolean(data, "isDark", false);
 
-        int textColor = getThemeTextColor(isDark);
-        int secondaryTextColor = getThemeSecondaryTextColor(isDark);
-
-        // Header
-        views.setTextViewText(R.id.reminder_title, "Smart Reminders");
-        views.setTextColor(R.id.reminder_title, textColor);
-
-        // Status
-        if (allDone) {
-            views.setTextViewText(R.id.reminder_status, "All done today! 🙏");
-            views.setTextColor(R.id.reminder_status, 0xFF30D158); // Green
-        } else if (totalReminders > 0) {
-            views.setTextViewText(R.id.reminder_status, completedReminders + " of " + totalReminders + " completed");
-            views.setTextColor(R.id.reminder_status, secondaryTextColor);
+        // Header Badge
+        if (pendingRequests > 0) {
+            views.setTextViewText(R.id.reminder_streak, "👥 " + pendingRequests + " Requests");
+        } else if (unreadNotifs > 0) {
+            views.setTextViewText(R.id.reminder_streak, "🔔 " + unreadNotifs + " New");
+        } else if (streak > 0) {
+            views.setTextViewText(R.id.reminder_streak, "🔥 " + streak + "d Streak");
         } else {
-            views.setTextViewText(R.id.reminder_status, "No reminders set");
-            views.setTextColor(R.id.reminder_status, secondaryTextColor);
+            views.setTextViewText(R.id.reminder_streak, "Sangat Active");
         }
 
-        // Next reminder
-        if (!nextReminderTime.isEmpty() && !allDone) {
-            views.setTextViewText(R.id.reminder_next, "🔔 " + nextReminderTime + " — " + nextReminderLabel);
-            views.setTextColor(R.id.reminder_next, 0xFFFF9500); // Orange highlight
+        // Title & status
+        if (pendingRequests > 0) {
+            views.setTextViewText(R.id.reminder_title, pendingRequests + " Friend Request" + (pendingRequests > 1 ? "s" : "") + " Pending");
+            views.setTextViewText(R.id.reminder_status, latestAlert.isEmpty() ? "Sangat members want to connect with you" : latestAlert);
+            views.setTextViewText(R.id.reminder_next, "Tap to review and accept requests");
+        } else if (!latestAlert.isEmpty()) {
+            views.setTextViewText(R.id.reminder_title, "Sangat Companion Alert");
+            views.setTextViewText(R.id.reminder_status, latestAlert);
+            views.setTextViewText(R.id.reminder_next, "Tap to open Sangat notifications");
         } else {
-            views.setTextViewText(R.id.reminder_next, "");
+            views.setTextViewText(R.id.reminder_title, "Sangat Network Connected");
+            views.setTextViewText(R.id.reminder_status, statusText.isEmpty() ? "All caught up with Sangat activity 🙏" : statusText);
+            views.setTextViewText(R.id.reminder_next, "Tap to find friends & companion Sangat");
         }
 
-        // Streak
-        String streakText = streak > 0 ? "🔥 " + streak + " day streak" : "";
-        views.setTextViewText(R.id.reminder_streak, streakText);
-        views.setTextColor(R.id.reminder_streak, secondaryTextColor);
+        views.setProgressBar(R.id.reminder_progress, 100, 100, false);
 
-        // Progress bar
-        int progress = totalReminders > 0 ? (completedReminders * 100 / totalReminders) : 0;
-        views.setProgressBar(R.id.reminder_progress, 100, progress, false);
-
-        // Click to open Smart Reminders
+        // Click opens Sangat / Friends / Notifications
         views.setOnClickPendingIntent(R.id.reminder_widget_container,
-            createOpenAppIntent(context, "/reminders"));
+            createOpenAppIntent(context, "/notifications"));
 
         appWidgetManager.updateAppWidget(appWidgetId, views);
     }

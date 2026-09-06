@@ -118,6 +118,11 @@ const WidgetBridge = window.WidgetBridge || {
      * Sync all widgets at once
      */
     async syncAllWidgets() {
+        if (window.AnhadWidgets && typeof window.AnhadWidgets.syncAll === 'function') {
+            await window.AnhadWidgets.syncAll();
+            return;
+        }
+
         if (!this.isNative) {
             if (this.debug) console.log('[WidgetBridge] Not on native platform, skipping sync');
             return;

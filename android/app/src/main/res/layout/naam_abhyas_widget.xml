@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- ANHAD — Naam Abhyas Widget (Apple Fitness / Mindfulness iOS Glassmorphism) -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/naam_widget_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@drawable/widget_bg_glass"
     android:padding="16dp"
-    android:background="@drawable/widget_background"
     android:gravity="center">
 
-    <!-- Header: Icon and Title -->
+    <!-- Header: Title + Streak Pill -->
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical">
@@ -18,110 +19,115 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="🙏"
-            android:textSize="24sp" />
+            android:text="☬  NAAM ABHYAS"
+            android:textSize="10sp"
+            android:textStyle="bold"
+            android:textColor="#CCF59E0B"
+            android:letterSpacing="0.1" />
 
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+        <TextView
+            android:id="@+id/naam_streak"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/widget_pill_emerald"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
+            android:text="🔥 0 Days"
+            android:textSize="10sp"
+            android:textStyle="bold"
+            android:textColor="#34D399" />
+    </LinearLayout>
+
+    <!-- Center Ring / Stats Section -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:background="@drawable/widget_card_inner"
+        android:padding="12dp"
+        android:layout_marginTop="10dp"
+        android:gravity="center">
+
+        <!-- Sacred Gurmukhi Word -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Naam Abhyas"
-            android:textSize="16sp"
+            android:text="ਵਾਹਿਗੁਰੂ"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#FCD34D"
+            android:gravity="center" />
+
+        <!-- Progress Percentage / Hours -->
+        <TextView
+            android:id="@+id/naam_progress_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0%"
+            android:textSize="24sp"
             android:textStyle="bold"
             android:textColor="#FFFFFF"
-            android:layout_marginStart="8dp" />
-    </LinearLayout>
+            android:layout_marginTop="2dp" />
 
-    <!-- Streak -->
-    <TextView
-        android:id="@+id/naam_streak"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="🙏 Start today"
-        android:textSize="14sp"
-        android:textColor="#B3FFFFFF"
-        android:layout_marginTop="4dp"
-        android:gravity="center" />
-
-    <!-- Stats Row -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="12dp"
-        android:gravity="center">
-
-        <!-- Completed -->
+        <!-- Hours Breakdown Row -->
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center">
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="4dp">
 
             <TextView
                 android:id="@+id/naam_completed"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="0"
-                android:textSize="24sp"
+                android:textSize="12sp"
                 android:textStyle="bold"
-                android:textColor="#30D158" />
+                android:textColor="#34D399" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Done"
+                android:text=" completed • "
                 android:textSize="11sp"
                 android:textColor="#B3FFFFFF" />
-        </LinearLayout>
-
-        <!-- Progress Circle -->
-        <TextView
-            android:id="@+id/naam_progress_text"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:text="0%"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="#FFFFFF"
-            android:gravity="center"
-            android:background="@drawable/circle_progress_bg" />
-
-        <!-- Remaining -->
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center">
 
             <TextView
                 android:id="@+id/naam_remaining"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="17"
-                android:textSize="24sp"
+                android:textSize="12sp"
                 android:textStyle="bold"
-                android:textColor="#FF9500" />
+                android:textColor="#F59E0B" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Left"
+                android:text=" remaining"
                 android:textSize="11sp"
                 android:textColor="#B3FFFFFF" />
         </LinearLayout>
     </LinearLayout>
 
-    <!-- Next Reminder -->
+    <!-- Next Reminder Subtitle -->
     <TextView
         android:id="@+id/naam_next"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Hourly reminders active"
-        android:textSize="12sp"
-        android:textColor="#B3FFFFFF"
-        android:layout_marginTop="8dp"
-        android:gravity="center" />
+        android:textSize="10sp"
+        android:textColor="#80FFFFFF"
+        android:gravity="center"
+        android:layout_marginTop="8dp" />
 
 </LinearLayout>

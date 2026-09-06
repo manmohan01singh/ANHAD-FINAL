@@ -349,6 +349,12 @@
           el.style.visibility = 'visible';
         }
       });
+      if (typeof window.syncGreetingHeroArtwork === 'function') {
+        try { window.syncGreetingHeroArtwork(); } catch(e) {}
+      }
+      if (window.CompanionMode && typeof window.CompanionMode.syncHeroImage === 'function') {
+        try { window.CompanionMode.syncHeroImage(); } catch(e) {}
+      }
     } catch(e) {}
   }
   window.restoreHeroCardImages = restoreHeroCardImages;

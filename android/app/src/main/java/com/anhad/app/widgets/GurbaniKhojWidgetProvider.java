@@ -10,8 +10,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
- * Gurbani Khoj Search Widget
- * Search bar with recent searches that opens app to search page
+ * Gurbani Khoj Search Home Screen Widget (iOS Spotlight Style)
+ * Quick search capsule for instant Gurbani exploration
  */
 public class GurbaniKhojWidgetProvider extends BaseWidgetProvider {
 
@@ -20,23 +20,24 @@ public class GurbaniKhojWidgetProvider extends BaseWidgetProvider {
         JSONObject data = getWidgetData(context, "khoj");
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.gurbani_khoj_widget);
 
-        boolean isDark = getSafeBoolean(data, "isDark", false);
         String recentSearch = getSafeString(data, "recentSearch", "");
         JSONArray recentSearches = getSafeArray(data, "recentSearches");
 
-        // Search bar text - show recent search if available
-        String searchText = recentSearch.isEmpty() ? "ਗੁਰਬਾਣੀ ਖੋਜੋ..." : recentSearch;
-        views.setTextViewText(R.id.khoj_search_text, searchText);
-        views.setTextColor(R.id.khoj_search_text, getThemeSecondaryTextColor(isDark));
+        // Search text
+        if (!recentSearch.isEmpty()) {
+            views.setTextViewText(R.id.khoj_search_text, "ਖੋਜ: " + recentSearch);
+        } else {
+            views.setTextViewText(R.id.khoj_search_text, "ਗੁਰਬਾਣੀ ਖੋਜੋ • Search Gurbani...");
+        }
 
-        // Show recent searches count if available
+        // Recent count or search badge
         if (recentSearches != null && recentSearches.length() > 0) {
             views.setTextViewText(R.id.khoj_recent_count, recentSearches.length() + " recent");
         } else {
-            views.setTextViewText(R.id.khoj_recent_count, "");
+            views.setTextViewText(R.id.khoj_recent_count, "☬ Khoj");
         }
 
-        // Click opens search page
+        // Click opens Gurbani Khoj
         views.setOnClickPendingIntent(R.id.khoj_widget_container,
             createOpenAppIntent(context, "/gurbani-khoj"));
 

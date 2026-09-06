@@ -726,7 +726,7 @@ a:active {
   -webkit-text-fill-color: initial !important;
   background-clip: initial !important;
   text-fill-color: initial !important;
-  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5), 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+  text-shadow: none !important;
   /* Dual shadow for contrast */
   filter: none !important;
   display: inline-block !important;

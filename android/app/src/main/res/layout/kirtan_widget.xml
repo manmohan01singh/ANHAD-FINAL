@@ -1,39 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- ANHAD — Darbar Sahib Live Kirtan Widget (Spotify-style horizontal layout) -->
+<!-- ANHAD — Live Kirtan Widget (Apple Music / Spotify iOS Glassmorphism) -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/kirtan_widget_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal"
+    android:background="@drawable/widget_bg_glass"
     android:padding="14dp"
-    android:background="@drawable/widget_bg_kirtan"
     android:gravity="center_vertical">
 
-    <!-- Cover Art Section -->
+    <!-- Cover Art Frame with Live Badge & Equalizer -->
     <FrameLayout
-        android:layout_width="88dp"
-        android:layout_height="88dp"
+        android:layout_width="84dp"
+        android:layout_height="84dp"
         android:layout_marginEnd="14dp">
 
-        <!-- Album Art -->
+        <!-- Album Cover -->
         <ImageView
             android:id="@+id/kirtan_cover"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
-            android:src="@mipmap/ic_launcher"
-            android:background="@drawable/circle_accent_bg"
-            android:contentDescription="Darbar Sahib" />
+            android:src="@drawable/artwork_darbar"
+            android:background="@drawable/widget_card_inner"
+            android:contentDescription="Sri Harmandir Sahib Ji" />
 
-        <!-- LIVE Badge (top-right corner) -->
+        <!-- Glowing LIVE Badge (top-right) -->
         <TextView
             android:id="@+id/kirtan_live_badge"
             android:layout_width="wrap_content"
             android:layout_height="18dp"
             android:layout_gravity="top|end"
-            android:layout_marginTop="2dp"
-            android:layout_marginEnd="2dp"
-            android:background="@drawable/live_badge_bg"
+            android:layout_marginTop="3dp"
+            android:layout_marginEnd="3dp"
+            android:background="@drawable/widget_badge_live"
             android:paddingStart="6dp"
             android:paddingEnd="6dp"
             android:text="● LIVE"
@@ -43,24 +43,25 @@
             android:gravity="center"
             android:visibility="gone" />
 
-        <!-- Equalizer Bars (bottom-center, shown when playing) -->
+        <!-- Equalizer Bars (bottom-center) -->
         <LinearLayout
             android:id="@+id/kirtan_equalizer"
             android:layout_width="wrap_content"
-            android:layout_height="18dp"
+            android:layout_height="16dp"
             android:layout_gravity="bottom|center_horizontal"
             android:layout_marginBottom="6dp"
             android:orientation="horizontal"
+            android:gravity="bottom"
             android:visibility="gone">
-            <View android:layout_width="3dp" android:layout_height="6dp" android:background="#E8A838" android:layout_marginEnd="2dp"/>
-            <View android:layout_width="3dp" android:layout_height="14dp" android:background="#F5D47A" android:layout_marginEnd="2dp"/>
-            <View android:layout_width="3dp" android:layout_height="10dp" android:background="#E8A838" android:layout_marginEnd="2dp"/>
-            <View android:layout_width="3dp" android:layout_height="16dp" android:background="#F5D47A" android:layout_marginEnd="2dp"/>
-            <View android:layout_width="3dp" android:layout_height="8dp" android:background="#E8A838"/>
+            <View android:layout_width="3dp" android:layout_height="6dp" android:background="#F59E0B" android:layout_marginEnd="2dp"/>
+            <View android:layout_width="3dp" android:layout_height="14dp" android:background="#FCD34D" android:layout_marginEnd="2dp"/>
+            <View android:layout_width="3dp" android:layout_height="10dp" android:background="#F59E0B" android:layout_marginEnd="2dp"/>
+            <View android:layout_width="3dp" android:layout_height="16dp" android:background="#FCD34D" android:layout_marginEnd="2dp"/>
+            <View android:layout_width="3dp" android:layout_height="8dp" android:background="#F59E0B"/>
         </LinearLayout>
     </FrameLayout>
 
-    <!-- Track Info + Controls (right side) -->
+    <!-- Info & Controls (Right Section) -->
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -68,40 +69,37 @@
         android:orientation="vertical"
         android:gravity="start">
 
-        <!-- App Badge -->
+        <!-- Category Tag -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="☬  ANHAD"
+            android:text="☬  LIVE GURBANI KIRTAN"
             android:textSize="9sp"
-            android:textColor="#80E8A838"
-            android:letterSpacing="0.15"
-            android:layout_marginBottom="4dp" />
+            android:textStyle="bold"
+            android:textColor="#CCF59E0B"
+            android:letterSpacing="0.1"
+            android:layout_marginBottom="3dp" />
 
-        <!-- Track Name -->
+        <!-- Track Title -->
         <TextView
             android:id="@+id/kirtan_track"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Darbar Sahib Live"
-            android:textSize="16sp"
+            android:textSize="15sp"
             android:textStyle="bold"
             android:textColor="#FFFFFF"
             android:maxLines="1"
-            android:ellipsize="marquee"
-            android:marqueeRepeatLimit="marquee_forever"
-            android:singleLine="true"
-            android:focusable="true"
-            android:focusableInTouchMode="true" />
+            android:ellipsize="end" />
 
-        <!-- Station Name -->
+        <!-- Station / Subtitle -->
         <TextView
             android:id="@+id/kirtan_station"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Sri Harmandir Sahib Ji"
             android:textSize="12sp"
-            android:textColor="#99FFFFFF"
+            android:textColor="#B3FFFFFF"
             android:layout_marginTop="2dp"
             android:maxLines="1"
             android:ellipsize="end" />
@@ -112,35 +110,36 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:layout_marginTop="10dp">
+            android:layout_marginTop="8dp">
 
-            <!-- Play/Pause Button -->
+            <!-- Play / Pause Button -->
             <FrameLayout
                 android:id="@+id/kirtan_play_button"
-                android:layout_width="38dp"
-                android:layout_height="38dp"
-                android:background="@drawable/play_button_bg">
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:background="@drawable/widget_action_button_bg">
 
                 <TextView
                     android:id="@+id/kirtan_play_icon"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:text="▶"
-                    android:textSize="15sp"
-                    android:textColor="#0a0a0a"
-                    android:gravity="center"
-                    android:fontFamily="sans-serif-medium" />
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="#0B0C12"
+                    android:gravity="center" />
             </FrameLayout>
 
-            <!-- Duration / Status Text -->
+            <!-- Status text -->
             <TextView
                 android:id="@+id/kirtan_status"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="Tap to play"
-                android:textSize="10sp"
-                android:textColor="#66FFFFFF"
-                android:layout_marginStart="12dp" />
+                android:layout_weight="1"
+                android:text="Tap to listen"
+                android:textSize="11sp"
+                android:textColor="#99FFFFFF"
+                android:layout_marginStart="10dp" />
         </LinearLayout>
     </LinearLayout>
 

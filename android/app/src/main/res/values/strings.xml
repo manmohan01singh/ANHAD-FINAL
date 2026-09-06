@@ -13,5 +13,7 @@
     <string name="amritvela_widget_description">24/7 Amritvela Kirtan player</string>
     <string name="hukamnama_widget_description">Today\'s Hukamnama Sahib in Gurmukhi</string>
     <string name="gurbani_khoj_widget_description">Quick Gurbani search from home screen</string>
-    <string name="smart_reminder_widget_description">Today\'s reminder schedule and progress</string>
+    <string name="smart_reminder_widget_description">Sangat notifications and friend requests</string>
+    <string name="saadh_sangat_widget_description">Saadh Sangat live broadcasts and listener status</string>
+    <string name="shabad_vichar_widget_description">Daily Shabad of contemplation in Gurmukhi and English</string>
 </resources>

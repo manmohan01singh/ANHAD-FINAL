@@ -509,6 +509,19 @@
         const pct = Math.max(0, Math.min(100, (cur / dur) * 100));
         emit('timeupdate', { currentTime: cur, duration: dur, progress: pct });
 
+        // Dispatch live offset for virtual-live DVR indicators
+        if (currentStream && STREAMS[currentStream]?.type === 'playlist') {
+          try {
+            window.dispatchEvent(new CustomEvent('anhadLiveOffset', {
+              detail: {
+                offsetSeconds: Math.round(manualOffset || 0),
+                isAtLive: (manualOffset || 0) <= 5,
+                stream: currentStream
+              }
+            }));
+          } catch(e) {}
+        }
+
         // Update MediaSession lockscreen position state for playlist streams
         if ('mediaSession' in navigator && typeof navigator.mediaSession.setPositionState === 'function' && currentStream && STREAMS[currentStream]?.type === 'playlist') {
           if (Number.isFinite(dur) && dur > 0 && Number.isFinite(cur) && cur >= 0 && cur <= dur) {
@@ -1044,12 +1057,14 @@
 
   // --- API CONTROL GATEWAYS ---
   function play(streamName) {
-    if (streamName) {
+    if (streamName && streamName !== currentStream) {
       playStream(streamName);
+    } else if (isPlaying) {
+      return; // Already playing this stream
     } else if (currentStream) {
       resume();
     } else {
-      playStream('darbar'); // default
+      playStream(streamName || 'darbar'); // default
     }
   }
 
@@ -1080,6 +1095,7 @@
 
   function pauseFromNative() {
     if (!isPlaying) return;
+    wantsPlayback = false;
     PlaybackQueueController.pause();
     pauseAnchor = {
       timestamp: Date.now(),
@@ -1097,12 +1113,7 @@
 
   function resumeFromNative() {
     if (isPlaying) return;
-    if (pauseAnchor) {
-      const elapsedPause = Math.floor((Date.now() - pauseAnchor.timestamp) / 1000);
-      manualOffset = pauseAnchor.offset + elapsedPause;
-      pauseAnchor = null;
-    }
-    playStream(currentStream || 'darbar');
+    resume();
   }
 
   function stopFromNative() {
@@ -1119,32 +1130,47 @@
 
   function resume() {
     if (isPlaying) return;
+    wantsPlayback = true;
 
     // If there is a pause anchor, add elapsed pause duration to manualOffset
     if (pauseAnchor) {
       const elapsedPause = Math.floor((Date.now() - pauseAnchor.timestamp) / 1000);
-      manualOffset = pauseAnchor.offset + elapsedPause;
+      manualOffset = (pauseAnchor.offset || 0) + elapsedPause;
       pauseAnchor = null;
     }
+    persistState();
 
-    playStream(currentStream || 'darbar');
+    const audio = PlaybackQueueController.audio;
+    const isAudioValid = audio && audio.src && audio.src !== window.location.href && !audio.error;
+
+    if (isAudioValid && currentStream) {
+      // Direct resume in place without tearing down buffer or restarting network fetch
+      PlaybackQueueController.enqueue(() => {
+        return audio.play().then(() => {
+          isPlaying = true;
+          isLoading = false;
+          connectionState = 'connected';
+          emit('loading', { isLoading: false });
+          emit('statechange', getPublicState());
+          persistState();
+          updateNativeMediaState();
+          if ('mediaSession' in navigator) {
+            navigator.mediaSession.playbackState = 'playing';
+          }
+          console.log('[AnhadAudio] ✅ Resumed in-place successfully');
+        }).catch((err) => {
+          console.warn('[AnhadAudio] ⚠️ In-place play rejected, falling back to fresh playStream:', err);
+          playStream(currentStream);
+        });
+      });
+    } else {
+      playStream(currentStream || 'darbar');
+    }
   }
 
   // Play/Pause button logic (resumes exactly in place)
   function resumeInPlace() {
-    if (isPlaying) return;
-    
-    // Direct resume without shifting offset
-    if (pauseAnchor) {
-      pauseAnchor = null;
-    }
-    
-    const audio = PlaybackQueueController.audio;
-    if (audio && audio.src && audio.src !== window.location.href) {
-      PlaybackQueueController.enqueue(() => audio.play());
-    } else {
-      playStream(currentStream || 'darbar');
-    }
+    resume();
   }
 
   function toggle() {
@@ -1658,6 +1684,9 @@
     if (!el || el.error || el.readyState === 0 /* HAVE_NOTHING */) return;
     if (!navigator.onLine) return;
     if (document.hidden) return;
+    // CRITICAL: Only correct drift if user is at live edge (manualOffset <= 5).
+    // If paused or scrubbed behind live (DVR mode), NEVER jump tracks or resync!
+    if ((manualOffset || 0) > 5) return;
 
     const expected = getExpectedBroadcastPosition();
     if (!expected) return;

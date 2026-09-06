@@ -9,8 +9,8 @@ import com.anhad.app.R;
 import org.json.JSONObject;
 
 /**
- * Amritvela Kirtan Home Screen Widget (24/7 Divine Kirtan)
- * Shows currently playing track with moon theme styling
+ * Amritvela Kirtan Home Screen Widget (Midnight Celestial Dawn Style)
+ * Shows 24/7 Amritvela Kirtan stream, crescent moon badge, and attendance streak
  */
 public class AmritvelaWidgetProvider extends BaseWidgetProvider {
 
@@ -19,38 +19,38 @@ public class AmritvelaWidgetProvider extends BaseWidgetProvider {
         JSONObject data = getWidgetData(context, "amritvela");
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.amritvela_widget);
 
-        // Extract data with safe defaults
+        // Extract data
         String trackName = getSafeString(data, "trackName", "Amritvela Kirtan");
         String stationName = getSafeString(data, "stationName", "24/7 Divine Kirtan");
         boolean isPlaying = getSafeBoolean(data, "isPlaying", false);
-        String trackCounter = getSafeString(data, "trackCounter", "Track 1 of 40");
+        int streak = getSafeInt(data, "streak", 0);
+        String trackCounter = getSafeString(data, "trackCounter", "");
 
         // Track info
         views.setTextViewText(R.id.amritvela_track, trackName);
-
-        // Station info
         views.setTextViewText(R.id.amritvela_station, stationName);
 
-        // Moon badge + equalizer visibility
+        // Equalizer visibility & play icon
         if (isPlaying) {
-            views.setViewVisibility(R.id.amritvela_badge, 0); // Visible
-            views.setViewVisibility(R.id.amritvela_equalizer, 0); // Visible
+            views.setViewVisibility(R.id.amritvela_equalizer, android.view.View.VISIBLE);
+            views.setTextViewText(R.id.amritvela_play_icon, "⏸");
         } else {
-            views.setViewVisibility(R.id.amritvela_badge, 8); // Gone
-            views.setViewVisibility(R.id.amritvela_equalizer, 8); // Gone
+            views.setViewVisibility(R.id.amritvela_equalizer, android.view.View.GONE);
+            views.setTextViewText(R.id.amritvela_play_icon, "▶");
         }
 
-        // Play button icon
-        views.setTextViewText(R.id.amritvela_play_icon, isPlaying ? "⏸" : "▶");
+        // Attendance streak / track counter
+        if (streak > 0) {
+            views.setTextViewText(R.id.amritvela_track_counter, "🔥 " + streak + "d Amritvela Streak");
+        } else if (!trackCounter.isEmpty()) {
+            views.setTextViewText(R.id.amritvela_track_counter, trackCounter);
+        } else {
+            views.setTextViewText(R.id.amritvela_track_counter, "Amritvela 24/7 • Tap to listen");
+        }
 
-        // Track counter
-        views.setTextViewText(R.id.amritvela_track_counter, trackCounter);
-
-        // Click on entire widget opens the Amritvela page
+        // Click opens Amritvela audio
         views.setOnClickPendingIntent(R.id.amritvela_widget_container,
             createOpenAppIntent(context, "/amritvela"));
-
-        // Click on play button also opens the Amritvela page
         views.setOnClickPendingIntent(R.id.amritvela_play_button,
             createOpenAppIntent(context, "/amritvela"));
 

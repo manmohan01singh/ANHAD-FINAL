@@ -94,6 +94,11 @@
         document.addEventListener('DOMContentLoaded', function() {
           if (effectiveTheme === 'dark') document.body.classList.add('dark-mode');
           document.body.classList.add('theme-loaded');
+          try {
+            if (localStorage.getItem('anhad_companion_mode') === 'true') {
+              document.body.classList.add('companion-mode-active');
+            }
+          } catch(e) {}
         }, { once: true });
 
         if (document.documentElement.hasAttribute('data-anhad-home')) {
@@ -491,12 +496,12 @@
       }
     }
     .greeting__hero-artwork {
-      width: 135% !important;
+      width: 140% !important;
       max-width: 1400px !important;
       height: auto !important;
       aspect-ratio: 1906 / 825 !important;
       object-fit: contain !important;
-      object-position: 60% center !important;
+      object-position: center !important;
       display: block !important;
       margin: 0 auto !important;
       image-rendering: -webkit-optimize-contrast !important;
@@ -1588,18 +1593,20 @@
       -webkit-text-fill-color: #000814 !important;
     }
 
-    /* MORNING TIME: Dark magenta/burgundy title on peach sky */
+    /* MORNING TIME: Deep warm bronze title on peach sky — clean & shadowless */
     [data-theme-mode="auto"][data-time-of-day="morning"] .anhad-title-pill h1.header__title {
-      color: #5C0E3E !important;
-      text-shadow: 0 1px 3px rgba(255, 230, 200, 0.6) !important;
-      -webkit-text-fill-color: #5C0E3E !important;
+      color: #3D260D !important;
+      text-shadow: none !important;
+      filter: none !important;
+      -webkit-text-fill-color: #3D260D !important;
     }
 
-    /* EVENING TIME: Dark orange/rust title on sunset sky */
+    /* EVENING TIME: Deep warm golden title on sunset sky — clean & shadowless */
     [data-theme-mode="auto"][data-time-of-day="evening"] .anhad-title-pill h1.header__title {
-      color: #8B3A0E !important;
-      text-shadow: 0 1px 3px rgba(255, 228, 198, 0.6) !important;
-      -webkit-text-fill-color: #8B3A0E !important;
+      color: #3B2406 !important;
+      text-shadow: none !important;
+      filter: none !important;
+      -webkit-text-fill-color: #3B2406 !important;
     }
 
     /* NIGHT TIME: Bright golden title on dark bg — same as dark mode */
@@ -1637,18 +1644,20 @@
       text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5) !important;
     }
 
-    /* MORNING TIME: Dark magenta Gurmukhi subtitle */
+    /* MORNING TIME: Deep earthy gold Gurmukhi subtitle — clean & shadowless */
     [data-theme-mode="auto"][data-time-of-day="morning"] .anhad-title-pill span.header__title-gurmukhi {
-      color: #3A0624 !important;
-      -webkit-text-fill-color: #3A0624 !important;
-      text-shadow: 0 1px 2px rgba(255, 230, 200, 0.5) !important;
-    }
-
-    /* EVENING TIME: Dark orange Gurmukhi subtitle */
-    [data-theme-mode="auto"][data-time-of-day="evening"] .anhad-title-pill span.header__title-gurmukhi {
       color: #5C2408 !important;
       -webkit-text-fill-color: #5C2408 !important;
-      text-shadow: 0 1px 2px rgba(255, 228, 198, 0.5) !important;
+      text-shadow: none !important;
+      filter: none !important;
+    }
+
+    /* EVENING TIME: Deep warm amber Gurmukhi subtitle — clean & shadowless */
+    [data-theme-mode="auto"][data-time-of-day="evening"] .anhad-title-pill span.header__title-gurmukhi {
+      color: #5C2E05 !important;
+      -webkit-text-fill-color: #5C2E05 !important;
+      text-shadow: none !important;
+      filter: none !important;
     }
 
     /* NIGHT TIME: Soft golden Gurmukhi subtitle */
@@ -1678,37 +1687,90 @@
       z-index: 1;
     }
 
-    /* --- AUTO MODE CONTRAST OVERRIDES (PREVENT FLASH ON LOAD) ---
-       Scoped to .home-header — this duplicates anhad-sky-bg.css's rules
-       inline (to avoid a flash before that stylesheet parses) so it must
-       stay scoped identically or it re-opens the same cross-page bleed. */
-    [data-theme-mode="auto"] .home-header .header__title,
-    [data-theme-mode="auto"] .home-header .header-title {
-      color: #FFFFFF !important;
-      text-shadow: 0 2px 12px rgba(0, 0, 0, 0.75), 0 1px 4px rgba(0, 0, 0, 0.9) !important;
+    /* --- AUTO MODE CONTRAST OVERRIDES (CLEAN TYPOGRAPHY, NO DARK SHADOWS) --- */
+    [data-theme-mode="auto"]:not([data-time-of-day="night"]) .home-header .header__title,
+    [data-theme-mode="auto"]:not([data-time-of-day="night"]) .home-header .header-title,
+    [data-theme-mode="auto"]:not([data-time-of-day="night"]) .anhad-title-pill h1.header__title {
+      color: #3D260D !important;
+      -webkit-text-fill-color: #3D260D !important;
+      text-shadow: none !important;
+      filter: none !important;
       font-weight: 700 !important;
     }
 
-    /* DAY TIME: Dark colored ANHAD title for contrast on bright sky */
+    /* MORNING TIME: Deep warm bronze title — crisp & completely shadowless */
+    [data-theme-mode="auto"][data-time-of-day="morning"] .home-header .header__title,
+    [data-theme-mode="auto"][data-time-of-day="morning"] .home-header .header-title,
+    [data-theme-mode="auto"][data-time-of-day="morning"] .anhad-title-pill h1.header__title {
+      color: #3D260D !important;
+      -webkit-text-fill-color: #3D260D !important;
+      text-shadow: none !important;
+      filter: none !important;
+      font-weight: 700 !important;
+    }
+
+    /* DAY TIME: Sharp dark title on bright sky — no shadow */
     [data-theme-mode="auto"][data-time-of-day="day"] .home-header .header__title,
-    [data-theme-mode="auto"][data-time-of-day="day"] .home-header .header-title {
+    [data-theme-mode="auto"][data-time-of-day="day"] .home-header .header-title,
+    [data-theme-mode="auto"][data-time-of-day="day"] .anhad-title-pill h1.header__title {
       color: #000814 !important;
-      text-shadow: 0 1px 3px rgba(255, 255, 255, 0.6) !important;
+      -webkit-text-fill-color: #000814 !important;
+      text-shadow: none !important;
+      filter: none !important;
       font-weight: 700 !important;
     }
 
-    [data-theme-mode="auto"] .home-header .header__title-gurmukhi,
-    [data-theme-mode="auto"] .home-header .gurmukhi-title {
-      color: #FFFFFF !important;
-      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.75), 0 1px 3px rgba(0, 0, 0, 0.9) !important;
+    /* EVENING TIME: Warm golden brown title — crisp & completely shadowless */
+    [data-theme-mode="auto"][data-time-of-day="evening"] .home-header .header__title,
+    [data-theme-mode="auto"][data-time-of-day="evening"] .home-header .header-title,
+    [data-theme-mode="auto"][data-time-of-day="evening"] .anhad-title-pill h1.header__title {
+      color: #3B2406 !important;
+      -webkit-text-fill-color: #3B2406 !important;
+      text-shadow: none !important;
+      filter: none !important;
+      font-weight: 700 !important;
+    }
+
+    [data-theme-mode="auto"]:not([data-time-of-day="night"]) .home-header .header__title-gurmukhi,
+    [data-theme-mode="auto"]:not([data-time-of-day="night"]) .home-header .gurmukhi-title,
+    [data-theme-mode="auto"]:not([data-time-of-day="night"]) .anhad-title-pill span.header__title-gurmukhi {
+      color: #5C2408 !important;
+      -webkit-text-fill-color: #5C2408 !important;
+      text-shadow: none !important;
+      filter: none !important;
       font-weight: 600 !important;
     }
 
-    /* DAY TIME: Dark colored Gurmukhi title for contrast on bright sky */
+    /* MORNING TIME: Deep earthy gold Gurmukhi subtitle */
+    [data-theme-mode="auto"][data-time-of-day="morning"] .home-header .header__title-gurmukhi,
+    [data-theme-mode="auto"][data-time-of-day="morning"] .home-header .gurmukhi-title,
+    [data-theme-mode="auto"][data-time-of-day="morning"] .anhad-title-pill span.header__title-gurmukhi {
+      color: #5C2408 !important;
+      -webkit-text-fill-color: #5C2408 !important;
+      text-shadow: none !important;
+      filter: none !important;
+      font-weight: 600 !important;
+    }
+
+    /* DAY TIME: Deep navy Gurmukhi subtitle on bright sky */
     [data-theme-mode="auto"][data-time-of-day="day"] .home-header .header__title-gurmukhi,
-    [data-theme-mode="auto"][data-time-of-day="day"] .home-header .gurmukhi-title {
+    [data-theme-mode="auto"][data-time-of-day="day"] .home-header .gurmukhi-title,
+    [data-theme-mode="auto"][data-time-of-day="day"] .anhad-title-pill span.header__title-gurmukhi {
       color: #02162E !important;
-      text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5) !important;
+      -webkit-text-fill-color: #02162E !important;
+      text-shadow: none !important;
+      filter: none !important;
+      font-weight: 600 !important;
+    }
+
+    /* EVENING TIME: Deep warm amber Gurmukhi subtitle */
+    [data-theme-mode="auto"][data-time-of-day="evening"] .home-header .header__title-gurmukhi,
+    [data-theme-mode="auto"][data-time-of-day="evening"] .home-header .gurmukhi-title,
+    [data-theme-mode="auto"][data-time-of-day="evening"] .anhad-title-pill span.header__title-gurmukhi {
+      color: #5C2E05 !important;
+      -webkit-text-fill-color: #5C2E05 !important;
+      text-shadow: none !important;
+      filter: none !important;
       font-weight: 600 !important;
     }
     [data-theme-mode="auto"]:not([data-time-of-day="night"]) .english-title {
@@ -4400,6 +4462,33 @@
       image-rendering: high-quality !important;
     }
 
+    /* ════════════════════════════════════════════════════════════════
+       COMPANION MODE ACTIVE ONLY:
+       Optical right-centering & deep 4-sided feathering merging completely into white page
+       ════════════════════════════════════════════════════════════════ */
+    body.companion-mode-active .greeting__hero-banner,
+    .greeting__hero-banner.companion-mode-active {
+      overflow: visible !important;
+    }
+    body.companion-mode-active .greeting__hero-artwork,
+    .greeting__hero-artwork.companion-mode-active {
+      width: 138% !important;
+      object-position: 53.5% center !important;
+      transform: scale(1.02) translateX(8px) !important;
+      /* Multi-directional deep feathered mask: edges fade completely into white background */
+      -webkit-mask-image: 
+        radial-gradient(ellipse 90% 84% at 52% 50%, #000 48%, rgba(0,0,0,0.85) 66%, rgba(0,0,0,0.35) 82%, transparent 96%),
+        linear-gradient(to right, transparent 0%, rgba(0,0,0,0.5) 6%, #000 15%, #000 85%, rgba(0,0,0,0.5) 94%, transparent 100%),
+        linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.5) 5%, #000 14%, #000 82%, rgba(0,0,0,0.35) 91%, transparent 100%) !important;
+      -webkit-mask-composite: source-in;
+      mask-image: 
+        radial-gradient(ellipse 90% 84% at 52% 50%, #000 48%, rgba(0,0,0,0.85) 66%, rgba(0,0,0,0.35) 82%, transparent 96%),
+        linear-gradient(to right, transparent 0%, rgba(0,0,0,0.5) 6%, #000 15%, #000 85%, rgba(0,0,0,0.5) 94%, transparent 100%),
+        linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.5) 5%, #000 14%, #000 82%, rgba(0,0,0,0.35) 91%, transparent 100%) !important;
+      mask-composite: intersect;
+      filter: drop-shadow(0 4px 14px rgba(0, 0, 0, 0.03)) !important;
+    }
+
     /* Beautiful clean gap before the Nitnem progress banner */
     html body .progress-inline,
     html body #nitnemTrackerCard,
@@ -5420,12 +5509,13 @@
       
       <div class="header__left">
         <!-- Settings Button -->
-        <button class="header__btn ios-haptic" id="settingsBtn" aria-label="Settings" title="Settings" onclick="window.location.href='Settings/index.html'" style="display: flex; align-items: center; justify-content: center; border: none; background: inherit; cursor: pointer;">
+        <button class="header__btn ios-haptic" id="settingsBtn" aria-label="Settings" title="Settings" onclick="if(window.navigateTo){window.navigateTo('Settings/index.html');}else{window.location.href='Settings/index.html';}" style="display: flex; align-items: center; justify-content: center; border: none; background: inherit; cursor: pointer;">
           <svg width="20" height="20" aria-hidden="true"><use href="#icon-settings"/></svg>
         </button>
-        <button class="header__btn ios-haptic" id="tourGuideBtn" aria-label="Guide" title="App Guide"
-           onclick="event.stopPropagation(); window.location.href='guide/index.html';">
-          <svg width="20" height="20" aria-hidden="true"><use href="#icon-compass"/></svg>
+        <!-- Theme Toggle Button (swapped to Left) -->
+        <button class="header__btn ios-haptic" id="themeToggleBtn" aria-label="Toggle Theme" title="Toggle Theme"
+           onclick="if(window.AnhadTheme){window.AnhadTheme.toggle();}else if(window.toggleTheme){window.toggleTheme();}" style="display: flex; align-items: center; justify-content: center; border: none; background: inherit; cursor: pointer;">
+          <svg width="20" height="20" id="themeIcon" aria-hidden="true"><use href="#icon-moon-theme"/></svg>
         </button>
       </div>
       <div class="header__center">
@@ -5435,12 +5525,17 @@
         </div>
       </div>
       <div class="header__right">
-        <button class="header__btn ios-haptic" id="themeToggleBtn" aria-label="Toggle Theme"
-           onclick="if(window.AnhadTheme){window.AnhadTheme.toggle();}else if(window.toggleTheme){window.toggleTheme();}">
-          <svg width="20" height="20" id="themeIcon" aria-hidden="true"><use href="#icon-moon-theme"/></svg>
+        <!-- Connect to Sangat Search Button (swapped to Right) -->
+        <button class="header__btn ios-haptic" id="sangatSearchBtn" aria-label="Connect to Sangat" title="Search & Connect Sangat"
+           onclick="if(window.navigateTo){window.navigateTo('sangat/search.html');}else{window.location.href='sangat/search.html';}" style="display: flex; align-items: center; justify-content: center; border: none; background: inherit; cursor: pointer;">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
         </button>
-        <button class="header__btn ios-haptic" id="notifBtn" aria-label="Notifications"
-           onclick="if(window.navigateTo){window.navigateTo('reminders/smart-reminders-v7.html');}else{window.location.href='reminders/smart-reminders-v7.html';}">
+        <!-- Notifications Button (opens iOS-style notifications page) -->
+        <button class="header__btn ios-haptic" id="notifBtn" aria-label="Notifications" title="Notifications & Sangat Activity"
+           onclick="if(window.navigateTo){window.navigateTo('notifications/index.html');}else{window.location.href='notifications/index.html';}">
           <svg width="20" height="20" aria-hidden="true"><use href="#icon-bell-notif"/></svg>
           <span class="header__badge" id="notifBadge" style="display:none" aria-live="polite">0</span>
         </button>
@@ -5573,8 +5668,10 @@
           <div class="hero-card__image-wrapper">
             <picture id="heroCard1Picture">
               <img decoding="async" class="hero-card__image" id="heroCard1Img"
+                src="assets/HERO CARD IMAGES/morning-darbar-sahib.webp"
                 alt="Sri Harmandir Sahib — Golden Temple" width="430" height="242" loading="eager" fetchpriority="high"
-                onerror="this.style.display='none';this.parentNode.style.background='linear-gradient(150deg,#D4943A,#C4842A)'">
+                style="display:block; opacity:1;"
+                onerror="if(!this.src.includes('morning-darbar-sahib.webp')){this.src='assets/HERO CARD IMAGES/morning-darbar-sahib.webp';}else{this.parentNode.style.background='linear-gradient(150deg,#D4943A,#C4842A)';}">
               <script>
                 (function() {
                   var slot = localStorage.getItem('anhad_forced_time_of_day');
@@ -5586,6 +5683,8 @@
                   var target = (theme === 'dark') ? 'night' : (theme === 'light' ? 'day' : slot);
                   var img = document.getElementById('heroCard1Img');
                   if (img) {
+                    img.style.display = 'block';
+                    img.style.opacity = '1';
                     img.src = 'assets/HERO CARD IMAGES/' + target + '-darbar-sahib.webp';
                     img.setAttribute('data-img-morning', 'assets/HERO CARD IMAGES/morning-darbar-sahib.webp');
                     img.setAttribute('data-img-day', 'assets/HERO CARD IMAGES/day-darbar-sahib.webp');
@@ -5616,8 +5715,10 @@
           <div class="hero-card__image-wrapper">
             <picture id="heroCard2Picture">
               <img decoding="async" class="hero-card__image" id="heroCard2Img"
+                src="assets/HERO CARD IMAGES/morning-amritvela-kirtan.webp"
                 alt="Amritvela — Sacred Dawn at Darbar Sahib" width="430" height="242" loading="lazy" fetchpriority="low"
-                onerror="this.style.display='none';this.parentNode.style.background='linear-gradient(150deg,#8B6914,#C49032)'">
+                style="display:block; opacity:1;"
+                onerror="if(!this.src.includes('morning-amritvela-kirtan.webp')){this.src='assets/HERO CARD IMAGES/morning-amritvela-kirtan.webp';}else{this.parentNode.style.background='linear-gradient(150deg,#8B6914,#C49032)';}">
               <script>
                 (function() {
                   var slot = localStorage.getItem('anhad_forced_time_of_day');
@@ -5629,6 +5730,8 @@
                   var target = (theme === 'dark') ? 'night' : (theme === 'light' ? 'day' : slot);
                   var img = document.getElementById('heroCard2Img');
                   if (img) {
+                    img.style.display = 'block';
+                    img.style.opacity = '1';
                     img.src = 'assets/HERO CARD IMAGES/' + target + '-amritvela-kirtan.webp';
                     img.setAttribute('data-img-morning', 'assets/HERO CARD IMAGES/morning-amritvela-kirtan.webp');
                     img.setAttribute('data-img-day', 'assets/HERO CARD IMAGES/day-amritvela-kirtan.webp');
@@ -5659,8 +5762,10 @@
           <div class="hero-card__image-wrapper">
             <picture id="heroCard3Picture">
               <img decoding="async" class="hero-card__image" id="heroCard3Img"
+                src="assets/HERO CARD IMAGES/morning-waheguru-simran.webp"
                 alt="Waheguru Simran — Divine Meditation" width="430" height="242" loading="lazy" fetchpriority="low"
-                onerror="this.style.display='none';this.parentNode.style.background='linear-gradient(150deg,#8B6914,#C49032)'">
+                style="display:block; opacity:1;"
+                onerror="if(!this.src.includes('morning-waheguru-simran.webp')){this.src='assets/HERO CARD IMAGES/morning-waheguru-simran.webp';}else{this.parentNode.style.background='linear-gradient(150deg,#8B6914,#C49032)';}">
               <script>
                 (function() {
                   var slot = localStorage.getItem('anhad_forced_time_of_day');
@@ -5672,6 +5777,8 @@
                   var target = (theme === 'dark') ? 'night' : (theme === 'light' ? 'day' : slot);
                   var img = document.getElementById('heroCard3Img');
                   if (img) {
+                    img.style.display = 'block';
+                    img.style.opacity = '1';
                     img.src = 'assets/HERO CARD IMAGES/' + target + '-waheguru-simran.webp';
                     img.setAttribute('data-img-morning', 'assets/HERO CARD IMAGES/morning-waheguru-simran.webp');
                     img.setAttribute('data-img-day', 'assets/HERO CARD IMAGES/day-waheguru-simran.webp');
@@ -5681,6 +5788,7 @@
                 })();
               </script>
             </picture>
+
             <div class="hero-card__badge hero-card__badge--curated" aria-label="Non-stop Simran stream">
               <span class="hero-card__badge-dot" aria-hidden="true" style="background:#FFB347"></span>
               <span class="hero-card__badge-text">24/7 SIMRAN</span>
@@ -6002,6 +6110,7 @@
   <script src="lib/audio-coordinator.js" defer></script>
   <script src="lib/overlay-player.js" defer></script>
   <script src="lib/remote-config.js?v=4.0.5" defer></script>
+  <script src="lib/companion-mode.js" defer></script>
   <!-- Consumes window.AnhadCampaigns; must load after the resolver above. -->
   <script src="js/campaign-renderer.js?v=2" defer></script>
   
@@ -6792,7 +6901,53 @@
         var timeOfDay = html.getAttribute('data-time-of-day');
         var showDark = isDark || (themeMode === 'auto' && timeOfDay === 'night') || (timeOfDay === 'night' && themeMode !== 'light');
 
+        // Check companion mode status
+        var isCompanion = false;
+        try {
+          var exp = localStorage.getItem('anhad_companion_expiry');
+          if (exp && Date.now() > parseInt(exp, 10)) {
+            localStorage.setItem('anhad_companion_mode', 'false');
+          }
+          isCompanion = localStorage.getItem('anhad_companion_mode') === 'true';
+        } catch(e) {}
+
+        if (isCompanion) {
+          if (showDark) {
+            // In dark mode or dynamic night: NEVER show the light companion banner!
+            // Show standard circular Guru portraits carousel!
+            if (document.body) document.body.classList.remove('companion-mode-active');
+            if (heroBanner) {
+              heroBanner.classList.remove('companion-mode-active');
+              heroBanner.style.setProperty('display', 'none', 'important');
+            }
+            if (darkCarousel) {
+              darkCarousel.style.setProperty('display', 'flex', 'important');
+              if (window.PortraitSlider && typeof window.PortraitSlider.init === 'function') {
+                window.PortraitSlider.init();
+              }
+            }
+          } else {
+            // Light mode or dynamic daytime (morning, day, evening): Show companion banner!
+            if (document.body) document.body.classList.add('companion-mode-active');
+            if (heroBanner) {
+              heroBanner.classList.add('companion-mode-active');
+              heroBanner.style.setProperty('display', 'flex', 'important');
+            }
+            if (darkCarousel) {
+              darkCarousel.style.setProperty('display', 'none', 'important');
+            }
+            if (window.CompanionMode && typeof window.CompanionMode.syncHeroImage === 'function' && !window.__syncingGreeting) {
+              window.__syncingGreeting = true;
+              try { window.CompanionMode.syncHeroImage(); } catch (e) {}
+              window.__syncingGreeting = false;
+            }
+          }
+          return;
+        }
+
+        if (document.body) document.body.classList.remove('companion-mode-active');
         if (heroBanner) {
+          heroBanner.classList.remove('companion-mode-active');
           heroBanner.style.setProperty('display', showDark ? 'none' : 'flex', 'important');
         }
         if (darkCarousel) {
@@ -6807,6 +6962,7 @@
       window.addEventListener('anhad_theme_changed', syncGreetingHeroArtwork);
       window.addEventListener('anhadThemeChanged', syncGreetingHeroArtwork);
       window.addEventListener('themechange', syncGreetingHeroArtwork);
+      window.addEventListener('anhad_companion_changed', syncGreetingHeroArtwork);
       window.addEventListener('storage', syncGreetingHeroArtwork);
       var observer = new MutationObserver(syncGreetingHeroArtwork);
       observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class', 'data-theme', 'data-theme-mode', 'data-time-of-day'] });

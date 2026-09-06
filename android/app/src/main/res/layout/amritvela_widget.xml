@@ -1,64 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- ANHAD — Amritvela Kirtan Widget (Spotify-style horizontal, night theme) -->
+<!-- ANHAD — Amritvela Kirtan Widget (Midnight Celestial Dawn iOS Glassmorphism) -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/amritvela_widget_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal"
+    android:background="@drawable/widget_bg_celestial"
     android:padding="14dp"
-    android:background="@drawable/widget_bg_amritvela"
     android:gravity="center_vertical">
 
-    <!-- Cover Art Section -->
+    <!-- Cover Art Frame with Moon Badge & Equalizer -->
     <FrameLayout
-        android:layout_width="88dp"
-        android:layout_height="88dp"
+        android:layout_width="84dp"
+        android:layout_height="84dp"
         android:layout_marginEnd="14dp">
 
-        <!-- Album Art -->
+        <!-- Album Cover -->
         <ImageView
             android:id="@+id/amritvela_cover"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
-            android:src="@mipmap/ic_launcher"
-            android:background="@drawable/amritvela_circle_bg"
+            android:src="@drawable/artwork_amritvela"
+            android:background="@drawable/widget_card_inner"
             android:contentDescription="Amritvela Kirtan" />
 
-        <!-- Moon Badge (top-right corner) -->
+        <!-- Celestial Moon Badge (top-right) -->
         <TextView
             android:id="@+id/amritvela_badge"
             android:layout_width="wrap_content"
             android:layout_height="18dp"
             android:layout_gravity="top|end"
-            android:layout_marginTop="2dp"
-            android:layout_marginEnd="2dp"
-            android:background="@drawable/amritvela_badge_bg"
-            android:paddingStart="6dp"
-            android:paddingEnd="6dp"
+            android:layout_marginTop="3dp"
+            android:layout_marginEnd="3dp"
+            android:background="@drawable/widget_pill_glass"
+            android:paddingStart="5dp"
+            android:paddingEnd="5dp"
             android:text="🌙"
             android:textSize="10sp"
             android:textColor="#FFFFFF"
             android:gravity="center" />
 
-        <!-- Equalizer Bars (bottom-center, shown when playing) -->
+        <!-- Equalizer Bars (bottom-center) -->
         <LinearLayout
             android:id="@+id/amritvela_equalizer"
             android:layout_width="wrap_content"
-            android:layout_height="18dp"
+            android:layout_height="16dp"
             android:layout_gravity="bottom|center_horizontal"
             android:layout_marginBottom="6dp"
             android:orientation="horizontal"
+            android:gravity="bottom"
             android:visibility="gone">
-            <View android:layout_width="3dp" android:layout_height="6dp" android:background="#FF6B35" android:layout_marginEnd="2dp"/>
-            <View android:layout_width="3dp" android:layout_height="14dp" android:background="#FFA564" android:layout_marginEnd="2dp"/>
-            <View android:layout_width="3dp" android:layout_height="10dp" android:background="#FF6B35" android:layout_marginEnd="2dp"/>
-            <View android:layout_width="3dp" android:layout_height="16dp" android:background="#FFA564" android:layout_marginEnd="2dp"/>
-            <View android:layout_width="3dp" android:layout_height="8dp" android:background="#FF6B35"/>
+            <View android:layout_width="3dp" android:layout_height="6dp" android:background="#818CF8" android:layout_marginEnd="2dp"/>
+            <View android:layout_width="3dp" android:layout_height="14dp" android:background="#A5B4FC" android:layout_marginEnd="2dp"/>
+            <View android:layout_width="3dp" android:layout_height="10dp" android:background="#818CF8" android:layout_marginEnd="2dp"/>
+            <View android:layout_width="3dp" android:layout_height="16dp" android:background="#A5B4FC" android:layout_marginEnd="2dp"/>
+            <View android:layout_width="3dp" android:layout_height="8dp" android:background="#818CF8"/>
         </LinearLayout>
     </FrameLayout>
 
-    <!-- Track Info + Controls (right side) -->
+    <!-- Info & Controls (Right Section) -->
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -66,40 +67,37 @@
         android:orientation="vertical"
         android:gravity="start">
 
-        <!-- App Badge -->
+        <!-- Category Tag -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="🌅  AMRITVELA"
+            android:text="🌅  AMRITVELA KIRTAN"
             android:textSize="9sp"
-            android:textColor="#80FF6B35"
-            android:letterSpacing="0.15"
-            android:layout_marginBottom="4dp" />
+            android:textStyle="bold"
+            android:textColor="#B3818CF8"
+            android:letterSpacing="0.1"
+            android:layout_marginBottom="3dp" />
 
-        <!-- Track Name -->
+        <!-- Track Title -->
         <TextView
             android:id="@+id/amritvela_track"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Amritvela Kirtan"
-            android:textSize="16sp"
+            android:textSize="15sp"
             android:textStyle="bold"
             android:textColor="#FFFFFF"
             android:maxLines="1"
-            android:ellipsize="marquee"
-            android:marqueeRepeatLimit="marquee_forever"
-            android:singleLine="true"
-            android:focusable="true"
-            android:focusableInTouchMode="true" />
+            android:ellipsize="end" />
 
-        <!-- Station Name -->
+        <!-- Station / Subtitle -->
         <TextView
             android:id="@+id/amritvela_station"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="24/7 Divine Kirtan"
             android:textSize="12sp"
-            android:textColor="#99FFFFFF"
+            android:textColor="#B3FFFFFF"
             android:layout_marginTop="2dp"
             android:maxLines="1"
             android:ellipsize="end" />
@@ -110,35 +108,38 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:layout_marginTop="10dp">
+            android:layout_marginTop="8dp">
 
-            <!-- Play/Pause Button -->
+            <!-- Play / Pause Button -->
             <FrameLayout
                 android:id="@+id/amritvela_play_button"
-                android:layout_width="38dp"
-                android:layout_height="38dp"
-                android:background="@drawable/amritvela_play_button_bg">
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:background="@drawable/widget_action_button_bg">
 
                 <TextView
                     android:id="@+id/amritvela_play_icon"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:text="▶"
-                    android:textSize="15sp"
-                    android:textColor="#0a0a0a"
-                    android:gravity="center"
-                    android:fontFamily="sans-serif-medium" />
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="#0B0C12"
+                    android:gravity="center" />
             </FrameLayout>
 
-            <!-- Track Counter -->
+            <!-- Streak / Counter text -->
             <TextView
                 android:id="@+id/amritvela_track_counter"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="Track 1 of 40"
-                android:textSize="10sp"
-                android:textColor="#66FFFFFF"
-                android:layout_marginStart="12dp" />
+                android:layout_weight="1"
+                android:text="Amritvela 24/7"
+                android:textSize="11sp"
+                android:textColor="#A5B4FC"
+                android:layout_marginStart="10dp"
+                android:maxLines="1"
+                android:ellipsize="end" />
         </LinearLayout>
     </LinearLayout>
 

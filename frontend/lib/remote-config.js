@@ -88,7 +88,7 @@
             line: '',
             sub: '',
             pill: '',
-            image: 'assets/Darbar-sahib-AMRITVELA.webp'
+            image: 'assets/companion/chaliya-2026.webp'
           },
           themeTokens: {
             accentGlow: 'rgba(212, 175, 55, 0.3)',
@@ -236,9 +236,14 @@
             if (window.CompanionMode && typeof window.CompanionMode.setEnabled === 'function') {
               if (window.CompanionMode.isEnabled() !== isAct) {
                 window.CompanionMode.setEnabled(isAct);
+              } else {
+                window.CompanionMode.syncHeroImage();
               }
             } else {
               try { localStorage.setItem('anhad_companion_mode', isAct ? 'true' : 'false'); } catch(e) {}
+            }
+            if (typeof window.syncGreetingHeroArtwork === 'function') {
+              try { window.syncGreetingHeroArtwork(); } catch(e) {}
             }
           }
 

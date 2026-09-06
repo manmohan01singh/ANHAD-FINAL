@@ -9,8 +9,8 @@ import com.anhad.app.R;
 import org.json.JSONObject;
 
 /**
- * Naam Abhyas Home Screen Widget
- * Shows hourly reminder progress with circular progress indicator
+ * Naam Abhyas Home Screen Widget (Apple Fitness / Mindfulness Style)
+ * Shows hourly reminder progress, streak, and next reminder
  */
 public class NaamAbhyasWidgetProvider extends BaseWidgetProvider {
 
@@ -23,46 +23,27 @@ public class NaamAbhyasWidgetProvider extends BaseWidgetProvider {
         int streak = getSafeInt(data, "streak", 0);
         int completedHours = getSafeInt(data, "completedHours", 0);
         int totalHours = getSafeInt(data, "totalHours", 17);
-        int remainingHours = getSafeInt(data, "remainingHours", totalHours - completedHours);
-        boolean enabled = getSafeBoolean(data, "enabled", false);
-        boolean isDark = getSafeBoolean(data, "isDark", false);
+        int remainingHours = getSafeInt(data, "remainingHours", Math.max(0, totalHours - completedHours));
+        boolean enabled = getSafeBoolean(data, "enabled", true);
         String nextReminder = getSafeString(data, "nextReminder", "");
 
-        // Theme colors
-        int textColor = getThemeTextColor(isDark);
-        int secondaryTextColor = getThemeSecondaryTextColor(isDark);
-
-        // Streak display
-        String streakText = streak > 0 ? "🔥 " + streak + " day streak" : "🙏 Start today";
+        // Streak badge
+        String streakText = streak > 0 ? "🔥 " + streak + "d Streak" : "☬ Simran";
         views.setTextViewText(R.id.naam_streak, streakText);
-        views.setTextColor(R.id.naam_streak, textColor);
 
-        if (enabled) {
-            // Progress stats
-            views.setTextViewText(R.id.naam_completed, String.valueOf(completedHours));
-            views.setTextViewText(R.id.naam_remaining, String.valueOf(remainingHours));
-            views.setTextColor(R.id.naam_completed, 0xFF30D158); // Green
-            views.setTextColor(R.id.naam_remaining, 0xFFFF9500); // Orange
+        // Progress stats
+        int percentage = totalHours > 0 ? (completedHours * 100 / totalHours) : 0;
+        views.setTextViewText(R.id.naam_progress_text, percentage + "%");
+        views.setTextViewText(R.id.naam_completed, String.valueOf(completedHours));
+        views.setTextViewText(R.id.naam_remaining, String.valueOf(remainingHours));
 
-            // Progress text
-            int percentage = totalHours > 0 ? (completedHours * 100 / totalHours) : 0;
-            views.setTextViewText(R.id.naam_progress_text, percentage + "%");
-            views.setTextColor(R.id.naam_progress_text, textColor);
-
-            // Next reminder
-            if (!nextReminder.isEmpty()) {
-                views.setTextViewText(R.id.naam_next, "Next: " + nextReminder);
-                views.setTextColor(R.id.naam_next, secondaryTextColor);
-            } else {
-                views.setTextViewText(R.id.naam_next, "Hourly reminders active");
-            }
+        // Next reminder
+        if (enabled && !nextReminder.isEmpty()) {
+            views.setTextViewText(R.id.naam_next, "🔔 Next: " + nextReminder + " • Tap to open");
+        } else if (enabled) {
+            views.setTextViewText(R.id.naam_next, "Hourly reminders active • Tap to open");
         } else {
-            // Widget not enabled state
-            views.setTextViewText(R.id.naam_completed, "-");
-            views.setTextViewText(R.id.naam_remaining, "-");
-            views.setTextViewText(R.id.naam_progress_text, "OFF");
-            views.setTextViewText(R.id.naam_next, "Tap to enable reminders");
-            views.setTextColor(R.id.naam_next, 0xFFFF3B30); // Red
+            views.setTextViewText(R.id.naam_next, "Tap to start Waheguru Simran");
         }
 
         // Click to open Naam Abhyas

@@ -69,15 +69,16 @@
   const VIRTUAL_LIVE_EPOCH_START = 1704067200; // 2024-01-01 00:00:00 UTC
   
   const AMRITVELA_KNOWN_DURATIONS = {
-    2: 5191, 5: 5638, 10: 5591, 12: 5633, 13: 6537, 14: 5640,
-    18: 6038, 21: 6026, 23: 4899, 25: 5771, 29: 5136, 30: 5755,
-    31: 5181, 32: 5747, 33: 6628, 34: 5990, 35: 4796, 37: 5717
+    0: 4243, 1: 5216, 2: 5191, 3: 5649, 4: 5254, 5: 5638, 6: 5680, 7: 5354, 8: 5317, 9: 5570,
+    10: 5591, 11: 3732, 12: 5633, 13: 6537, 14: 5640, 15: 6285, 16: 5680, 17: 6106, 18: 6038, 19: 5747,
+    20: 5932, 21: 6026, 22: 5975, 23: 4899, 24: 5213, 25: 5771, 26: 5823, 27: 5480, 28: 5968, 29: 5136,
+    30: 5755, 31: 5181, 32: 5747, 33: 6628, 34: 5990, 35: 4796, 36: 6172, 37: 5717, 38: 5027, 39: 5511
   };
   const SIMRAN_KNOWN_DURATIONS = {
-    0: 2747, 1: 2676, 5: 2379, 9: 2250, 10: 2287, 11: 2116,
-    12: 2250, 13: 2080, 14: 2062, 15: 2455, 17: 2024, 21: 1951,
-    23: 1959, 24: 1994, 25: 2262, 26: 2136, 27: 2477, 28: 1895,
-    31: 5371, 32: 2019, 34: 2282, 37: 3167
+    0: 2747, 1: 2676, 2: 2683, 3: 2686, 4: 2194, 5: 2379, 6: 2125, 7: 2049, 8: 2766, 9: 2250,
+    10: 2287, 11: 2116, 12: 2250, 13: 2080, 14: 2062, 15: 2455, 16: 2047, 17: 2024, 18: 2286, 19: 2124,
+    20: 1891, 21: 1951, 22: 1919, 23: 1959, 24: 1994, 25: 2262, 26: 2136, 27: 2477, 28: 1895, 29: 1834,
+    30: 2003, 31: 5371, 32: 2019, 33: 2011, 34: 2282, 35: 2416, 36: 2222, 37: 3167
   };
 
   // Asset base resolution
@@ -508,6 +509,19 @@
         const pct = Math.max(0, Math.min(100, (cur / dur) * 100));
         emit('timeupdate', { currentTime: cur, duration: dur, progress: pct });
 
+        // Dispatch live offset for virtual-live DVR indicators
+        if (currentStream && STREAMS[currentStream]?.type === 'playlist') {
+          try {
+            window.dispatchEvent(new CustomEvent('anhadLiveOffset', {
+              detail: {
+                offsetSeconds: Math.round(manualOffset || 0),
+                isAtLive: (manualOffset || 0) <= 5,
+                stream: currentStream
+              }
+            }));
+          } catch(e) {}
+        }
+
         // Update MediaSession lockscreen position state for playlist streams
         if ('mediaSession' in navigator && typeof navigator.mediaSession.setPositionState === 'function' && currentStream && STREAMS[currentStream]?.type === 'playlist') {
           if (Number.isFinite(dur) && dur > 0 && Number.isFinite(cur) && cur >= 0 && cur <= dur) {
@@ -642,12 +656,12 @@
           connectionState = 'reconnecting';
           emit('statechange', getPublicState());
 
-          // Past a handful of fast attempts, tell the UI once that we're
-          // struggling — not every cycle — while still retrying underneath.
-          if (liveReconnectAttempts === 6) {
+          if (liveReconnectAttempts >= 6) {
             connectionState = 'failed';
             emit('statechange', getPublicState());
-            emit('error', { type: 'stream_failed', message: 'Still unable to reach the stream — will keep retrying automatically.' });
+            if (liveReconnectAttempts === 6) {
+              emit('error', { type: 'stream_failed', message: 'Still unable to reach the stream — will keep retrying automatically.' });
+            }
           }
 
           // Adaptive backoff: 2s -> 4s -> 8s -> 12s -> 15s, then holds at 15s.
@@ -767,19 +781,21 @@
         this.audio.removeAttribute('crossorigin');
       }
 
-      // Pre-set seek time on loadedmetadata so audio starts directly at the correct offset without a 1-second splash from 0
+      // Pre-set seek time on canplay so audio starts directly at the correct offset without hanging on WebM/MP3
       if (Number.isFinite(initialSeekTime) && initialSeekTime > 0) {
         const applyInitialSeek = () => {
           try {
             const dur = this.audio.duration || 3600;
             const safeSeek = Math.max(0, Math.min(initialSeekTime, dur - 2));
-            this.audio.currentTime = safeSeek;
+            if (Math.abs(this.audio.currentTime - safeSeek) > 1) {
+              this.audio.currentTime = safeSeek;
+            }
           } catch(e) {}
         };
-        if (this.audio.readyState >= 1) {
+        if (this.audio.readyState >= 2) {
           applyInitialSeek();
         } else {
-          this.audio.addEventListener('loadedmetadata', applyInitialSeek, { once: true });
+          this.audio.addEventListener('canplay', applyInitialSeek, { once: true });
         }
       }
 
@@ -818,7 +834,9 @@
             await Promise.race([playPromise, timeoutPromise]);
             isPlaying = true;
             isLoading = false;
-            connectionState = 'connected';
+            if (!reconnectCycleActive) {
+              connectionState = 'connected';
+            }
             emit('loading', { isLoading: false });
             emit('statechange', getPublicState());
             persistState();
@@ -850,11 +868,7 @@
               setTimeout(() => {
                 if (!isPlaying && wantsPlayback && currentStream) {
                   console.log('[PlaybackQueueController] ⏭️ Executing auto-recovery after timeout...');
-                  if (STREAMS[currentStream]?.type === 'playlist') {
-                    handleTrackEnded();
-                  } else {
-                    playStream(currentStream);
-                  }
+                  playStream(currentStream);
                 }
               }, 2000);
             }
@@ -1043,12 +1057,14 @@
 
   // --- API CONTROL GATEWAYS ---
   function play(streamName) {
-    if (streamName) {
+    if (streamName && streamName !== currentStream) {
       playStream(streamName);
+    } else if (isPlaying) {
+      return; // Already playing this stream
     } else if (currentStream) {
       resume();
     } else {
-      playStream('darbar'); // default
+      playStream(streamName || 'darbar'); // default
     }
   }
 
@@ -1079,6 +1095,7 @@
 
   function pauseFromNative() {
     if (!isPlaying) return;
+    wantsPlayback = false;
     PlaybackQueueController.pause();
     pauseAnchor = {
       timestamp: Date.now(),
@@ -1096,12 +1113,7 @@
 
   function resumeFromNative() {
     if (isPlaying) return;
-    if (pauseAnchor) {
-      const elapsedPause = Math.floor((Date.now() - pauseAnchor.timestamp) / 1000);
-      manualOffset = pauseAnchor.offset + elapsedPause;
-      pauseAnchor = null;
-    }
-    playStream(currentStream || 'darbar');
+    resume();
   }
 
   function stopFromNative() {
@@ -1118,32 +1130,47 @@
 
   function resume() {
     if (isPlaying) return;
+    wantsPlayback = true;
 
     // If there is a pause anchor, add elapsed pause duration to manualOffset
     if (pauseAnchor) {
       const elapsedPause = Math.floor((Date.now() - pauseAnchor.timestamp) / 1000);
-      manualOffset = pauseAnchor.offset + elapsedPause;
+      manualOffset = (pauseAnchor.offset || 0) + elapsedPause;
       pauseAnchor = null;
     }
+    persistState();
 
-    playStream(currentStream || 'darbar');
+    const audio = PlaybackQueueController.audio;
+    const isAudioValid = audio && audio.src && audio.src !== window.location.href && !audio.error;
+
+    if (isAudioValid && currentStream) {
+      // Direct resume in place without tearing down buffer or restarting network fetch
+      PlaybackQueueController.enqueue(() => {
+        return audio.play().then(() => {
+          isPlaying = true;
+          isLoading = false;
+          connectionState = 'connected';
+          emit('loading', { isLoading: false });
+          emit('statechange', getPublicState());
+          persistState();
+          updateNativeMediaState();
+          if ('mediaSession' in navigator) {
+            navigator.mediaSession.playbackState = 'playing';
+          }
+          console.log('[AnhadAudio] ✅ Resumed in-place successfully');
+        }).catch((err) => {
+          console.warn('[AnhadAudio] ⚠️ In-place play rejected, falling back to fresh playStream:', err);
+          playStream(currentStream);
+        });
+      });
+    } else {
+      playStream(currentStream || 'darbar');
+    }
   }
 
   // Play/Pause button logic (resumes exactly in place)
   function resumeInPlace() {
-    if (isPlaying) return;
-    
-    // Direct resume without shifting offset
-    if (pauseAnchor) {
-      pauseAnchor = null;
-    }
-    
-    const audio = PlaybackQueueController.audio;
-    if (audio && audio.src && audio.src !== window.location.href) {
-      PlaybackQueueController.enqueue(() => audio.play());
-    } else {
-      playStream(currentStream || 'darbar');
-    }
+    resume();
   }
 
   function toggle() {
@@ -1657,6 +1684,9 @@
     if (!el || el.error || el.readyState === 0 /* HAVE_NOTHING */) return;
     if (!navigator.onLine) return;
     if (document.hidden) return;
+    // CRITICAL: Only correct drift if user is at live edge (manualOffset <= 5).
+    // If paused or scrubbed behind live (DVR mode), NEVER jump tracks or resync!
+    if ((manualOffset || 0) > 5) return;
 
     const expected = getExpectedBroadcastPosition();
     if (!expected) return;

@@ -107,7 +107,7 @@ public class AudioServicePlugin extends Plugin {
             intent.setAction(AudioForegroundService.ACTION_SYNC_PLAY);
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && !"PAUSE".equals(action)) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             getContext().startForegroundService(intent);
         } else {
             getContext().startService(intent);

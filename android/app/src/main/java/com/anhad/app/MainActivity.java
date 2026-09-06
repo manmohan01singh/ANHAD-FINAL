@@ -146,7 +146,12 @@ public class MainActivity extends BridgeActivity {
             case "/gurbani-khoj":
                 return "GurbaniKhoj/gurbani-khoj.html";
             case "/reminders":
-                return "reminders/smart-reminders-v7.html";
+            case "/notifications":
+                return "sangat/friends.html";
+            case "/sadhsangat":
+                return "sadhsangat-live/index.html";
+            case "/shabad-vichar":
+                return "ShabadVichar/shabad-vichar.html";
             // Legacy routes for backward compatibility
             case "/kirtan":
                 return "GurbaniRadio/gurbani-radio.html";

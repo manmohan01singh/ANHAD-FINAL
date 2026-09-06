@@ -110,8 +110,7 @@ public class AudioForegroundService extends Service {
         if (ACTION_PAUSE.equals(action)) {
             isPlaying = false;
             updateMediaSessionState();
-            updateNotification();
-            detachForeground();
+            startForeground(NOTIFICATION_ID, buildNotification());
             broadcastCommand("PAUSE");
             return START_STICKY;
         }
@@ -145,8 +144,7 @@ public class AudioForegroundService extends Service {
         if (ACTION_SYNC_PAUSE.equals(action)) {
             isPlaying = false;
             updateMediaSessionState();
-            updateNotification();
-            detachForeground();
+            startForeground(NOTIFICATION_ID, buildNotification());
             return START_STICKY;
         }
 
@@ -205,8 +203,7 @@ public class AudioForegroundService extends Service {
             public void onPause() {
                 isPlaying = false;
                 updateMediaSessionState();
-                updateNotification();
-                detachForeground();
+                startForeground(NOTIFICATION_ID, buildNotification());
                 broadcastCommand("PAUSE");
             }
 
@@ -294,32 +291,51 @@ public class AudioForegroundService extends Service {
         // Previous Action
         Intent prevIntent = new Intent(this, AudioForegroundService.class);
         prevIntent.setAction(ACTION_PREV);
-        PendingIntent pendingPrev = PendingIntent.getService(this, 104, prevIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+        PendingIntent pendingPrev;
 
         // Play action
         Intent playIntent = new Intent(this, AudioForegroundService.class);
         playIntent.setAction(ACTION_PLAY);
-        PendingIntent pendingPlay = PendingIntent.getService(this, 101, playIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+        PendingIntent pendingPlay;
 
         // Pause action
         Intent pauseIntent = new Intent(this, AudioForegroundService.class);
         pauseIntent.setAction(ACTION_PAUSE);
-        PendingIntent pendingPause = PendingIntent.getService(this, 102, pauseIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+        PendingIntent pendingPause;
 
         // Next Action
         Intent nextIntent = new Intent(this, AudioForegroundService.class);
         nextIntent.setAction(ACTION_NEXT);
-        PendingIntent pendingNext = PendingIntent.getService(this, 105, nextIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+        PendingIntent pendingNext;
 
         // Stop action
         Intent stopIntent = new Intent(this, AudioForegroundService.class);
         stopIntent.setAction(ACTION_STOP);
-        PendingIntent pendingStop = PendingIntent.getService(this, 103, stopIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+        PendingIntent pendingStop;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            pendingPrev = PendingIntent.getForegroundService(this, 104, prevIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+            pendingPlay = PendingIntent.getForegroundService(this, 101, playIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+            pendingPause = PendingIntent.getForegroundService(this, 102, pauseIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+            pendingNext = PendingIntent.getForegroundService(this, 105, nextIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+            pendingStop = PendingIntent.getForegroundService(this, 103, stopIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+        } else {
+            pendingPrev = PendingIntent.getService(this, 104, prevIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+            pendingPlay = PendingIntent.getService(this, 101, playIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+            pendingPause = PendingIntent.getService(this, 102, pauseIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+            pendingNext = PendingIntent.getService(this, 105, nextIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+            pendingStop = PendingIntent.getService(this, 103, stopIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+        }
 
         Bitmap albumArt = getAlbumArt();
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)

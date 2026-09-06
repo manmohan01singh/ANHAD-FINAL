@@ -8,9 +8,13 @@ import com.anhad.app.R;
 
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 /**
- * Hukamnama Home Screen Widget
- * Shows today's Hukamnama preview in Gurmukhi
+ * Daily Hukamnama Sahib Home Screen Widget
+ * Shows today's sacred Hukamnama from Sachkhand Sri Harmandir Sahib with Ang badge
  */
 public class HukamnamaWidgetProvider extends BaseWidgetProvider {
 
@@ -20,37 +24,33 @@ public class HukamnamaWidgetProvider extends BaseWidgetProvider {
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.hukamnama_widget);
 
         // Extract data
-        String preview = getSafeString(data, "preview", "Tap to read today's Hukamnama");
-        String ang = getSafeString(data, "ang", "");
+        String preview = getSafeString(data, "preview", "ਸੋਰਠਿ ਮਹਲਾ ੫ ॥ ਗਏ ਕਲੇਸ ਰੋਗ ਸਭਿ ਨਾਸੇ ਪ੍ਰਭਿ ਅਪੁਨੈ ਕਿਰਪਾ ਧਾਰੀ ॥");
+        String ang = getSafeString(data, "ang", "੬੮੪");
         String date = getSafeString(data, "date", "");
-        boolean isDark = getSafeBoolean(data, "isDark", false);
-
-        // Theme
-        int textColor = getThemeTextColor(isDark);
-        int secondaryTextColor = getThemeSecondaryTextColor(isDark);
+        String author = getSafeString(data, "author", "");
 
         // Header
-        views.setTextViewText(R.id.hukamnama_title, "ਅੱਜ ਦਾ ਹੁਕਮਨਾਮਾ");
-        views.setTextColor(R.id.hukamnama_title, textColor);
+        views.setTextViewText(R.id.hukamnama_title, "ਅੱਜ ਦਾ ਮੁੱਖਵਾਕ");
 
-        // Date
-        if (!date.isEmpty()) {
-            views.setTextViewText(R.id.hukamnama_date, date);
-        }
-        views.setTextColor(R.id.hukamnama_date, secondaryTextColor);
-
-        // Preview text
-        String displayPreview = preview.length() > 80 ? preview.substring(0, 77) + "..." : preview;
-        views.setTextViewText(R.id.hukamnama_preview, "☬ " + displayPreview);
-        views.setTextColor(R.id.hukamnama_preview, textColor);
-
-        // Ang number
+        // Ang badge
         if (!ang.isEmpty()) {
             views.setTextViewText(R.id.hukamnama_ang, "ਅੰਗ " + ang);
-            views.setTextColor(R.id.hukamnama_ang, 0xFFFF9500);
+        } else {
+            views.setTextViewText(R.id.hukamnama_ang, "ਸੱਚਖੰਡ");
         }
 
-        // Click to open Hukamnama
+        // Date / Source
+        if (!date.isEmpty()) {
+            views.setTextViewText(R.id.hukamnama_date, date);
+        } else {
+            SimpleDateFormat sdf = new SimpleDateFormat("EEEE, d MMMM • ਸ੍ਰੀ ਦਰਬਾਰ ਸਾਹਿਬ", Locale.getDefault());
+            views.setTextViewText(R.id.hukamnama_date, sdf.format(new Date()));
+        }
+
+        // Preview Mukhwak text
+        views.setTextViewText(R.id.hukamnama_preview, preview);
+
+        // Click opens Daily Hukamnama page
         views.setOnClickPendingIntent(R.id.hukamnama_widget_container,
             createOpenAppIntent(context, "/hukamnama"));
 

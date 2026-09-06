@@ -13,8 +13,8 @@ import java.util.Date;
 import java.util.Locale;
 
 /**
- * Calendar & Hukamnama Home Screen Widget
- * Shows next Gurpurab countdown and daily Hukamnama
+ * Gurpurab Sikh Calendar Home Screen Widget
+ * Shows upcoming Gurpurab countdown, event title, and Nanakshahi date
  */
 public class CalendarWidgetProvider extends BaseWidgetProvider {
 
@@ -24,57 +24,43 @@ public class CalendarWidgetProvider extends BaseWidgetProvider {
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.calendar_widget);
 
         // Extract data
-        String nextEventName = getSafeString(data, "nextEventName", "No upcoming events");
+        String nextEventName = getSafeString(data, "nextEventName", "Parkash Sri Guru Nanak Dev Ji");
         int daysUntil = getSafeInt(data, "daysUntil", 0);
-        String hukamnamaPreview = getSafeString(data, "hukamnamaPreview", "");
         String nanakshahiDate = getSafeString(data, "nanakshahiDate", "");
-        boolean isDark = getSafeBoolean(data, "isDark", false);
+        String eventDate = getSafeString(data, "eventDate", "");
 
-        // Theme colors
-        int textColor = getThemeTextColor(isDark);
-        int secondaryTextColor = getThemeSecondaryTextColor(isDark);
-
-        // Header with date
+        // Header date
         if (!nanakshahiDate.isEmpty()) {
             views.setTextViewText(R.id.calendar_date, nanakshahiDate);
         } else {
-            SimpleDateFormat sdf = new SimpleDateFormat("EEEE, MMM d", Locale.getDefault());
+            SimpleDateFormat sdf = new SimpleDateFormat("EEEE, d MMMM", Locale.getDefault());
             views.setTextViewText(R.id.calendar_date, sdf.format(new Date()));
         }
-        views.setTextColor(R.id.calendar_date, secondaryTextColor);
 
-        // Next Gurpurab countdown
+        // Countdown display
         if (daysUntil > 0) {
             views.setTextViewText(R.id.calendar_countdown, String.valueOf(daysUntil));
-            views.setTextViewText(R.id.calendar_countdown_label, daysUntil == 1 ? "day" : "days");
-            views.setTextViewText(R.id.calendar_event_name, "until " + nextEventName);
+            views.setTextViewText(R.id.calendar_countdown_label, daysUntil == 1 ? "DAY" : "DAYS");
+            views.setTextViewText(R.id.calendar_hukamnama, "In " + daysUntil + (daysUntil == 1 ? " day" : " days") + " • Tap to open calendar");
         } else if (daysUntil == 0) {
             views.setTextViewText(R.id.calendar_countdown, "☬");
-            views.setTextViewText(R.id.calendar_countdown_label, "Today!");
-            views.setTextViewText(R.id.calendar_event_name, nextEventName);
+            views.setTextViewText(R.id.calendar_countdown_label, "TODAY!");
+            views.setTextViewText(R.id.calendar_hukamnama, "Today's Sacred Celebration! Tap to view");
         } else {
-            views.setTextViewText(R.id.calendar_countdown, "-");
-            views.setTextViewText(R.id.calendar_countdown_label, "");
-            views.setTextViewText(R.id.calendar_event_name, nextEventName);
-        }
-        views.setTextColor(R.id.calendar_countdown, 0xFFFF9500); // Orange
-        views.setTextColor(R.id.calendar_countdown_label, secondaryTextColor);
-        views.setTextColor(R.id.calendar_event_name, textColor);
-
-        // Hukamnama preview
-        if (!hukamnamaPreview.isEmpty()) {
-            // Truncate if too long
-            String preview = hukamnamaPreview.length() > 60
-                ? hukamnamaPreview.substring(0, 57) + "..."
-                : hukamnamaPreview;
-            views.setTextViewText(R.id.calendar_hukamnama, "☬ " + preview);
-            views.setTextColor(R.id.calendar_hukamnama, secondaryTextColor);
-        } else {
-            views.setTextViewText(R.id.calendar_hukamnama, "Tap to read today's Hukamnama");
-            views.setTextColor(R.id.calendar_hukamnama, secondaryTextColor);
+            views.setTextViewText(R.id.calendar_countdown, "☬");
+            views.setTextViewText(R.id.calendar_countdown_label, "SOON");
+            views.setTextViewText(R.id.calendar_hukamnama, "Upcoming Historic Sikh Events");
         }
 
-        // Click to open Calendar
+        // Event name & date
+        views.setTextViewText(R.id.calendar_event_name, nextEventName);
+        if (!eventDate.isEmpty()) {
+            views.setTextViewText(R.id.calendar_event_date, eventDate);
+        } else {
+            views.setTextViewText(R.id.calendar_event_date, "Historic Sikh Celebration");
+        }
+
+        // Click opens Gurpurab Calendar
         views.setOnClickPendingIntent(R.id.calendar_widget_container,
             createOpenAppIntent(context, "/calendar"));
 

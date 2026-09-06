@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- ANHAD — Daily Hukamnama Sahib Widget (Sacred Royal Gold & Glass Design) -->
+<!-- ANHAD — Shabad Vichar Widget (Apple Books iOS Contemplation Glassmorphism) -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/hukamnama_widget_container"
+    android:id="@+id/shabad_widget_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@drawable/widget_bg_parchment_dark"
+    android:background="@drawable/widget_bg_glass"
     android:padding="16dp">
 
-    <!-- Header: Sacred Khanda + Title + Ang Badge -->
+    <!-- Header: Title + Ang/Author Badge -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -18,25 +18,19 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="☬"
-            android:textSize="14sp"
-            android:textColor="#F59E0B"
-            android:layout_marginEnd="6dp" />
-
-        <TextView
-            android:id="@+id/hukamnama_title"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="ਅੱਜ ਦਾ ਮੁੱਖਵਾਕ"
-            android:textSize="12sp"
+            android:text="📖  ਸ਼ਬਦ ਵਿਚਾਰ • SHABAD VICHAR"
+            android:textSize="10sp"
             android:textStyle="bold"
-            android:textColor="#FCD34D"
-            android:letterSpacing="0.05" />
+            android:textColor="#CCF59E0B"
+            android:letterSpacing="0.08" />
 
-        <!-- Ang Badge Pill -->
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
         <TextView
-            android:id="@+id/hukamnama_ang"
+            android:id="@+id/shabad_author_ang"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/widget_pill_gold"
@@ -44,23 +38,13 @@
             android:paddingEnd="8dp"
             android:paddingTop="2dp"
             android:paddingBottom="2dp"
-            android:text="ਅੰਗ ੬੮੪"
-            android:textSize="10sp"
+            android:text="Ang 12"
+            android:textSize="9sp"
             android:textStyle="bold"
             android:textColor="#F59E0B" />
     </LinearLayout>
 
-    <!-- Source / Date Subtitle -->
-    <TextView
-        android:id="@+id/hukamnama_date"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="ਸੱਚਖੰਡ ਸ੍ਰੀ ਹਰਿਮੰਦਰ ਸਾਹਿਬ"
-        android:textSize="10sp"
-        android:textColor="#80FFFFFF"
-        android:layout_marginTop="3dp" />
-
-    <!-- Sacred Mukhwak Card -->
+    <!-- Contemplation Verse Card -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -68,20 +52,32 @@
         android:orientation="vertical"
         android:background="@drawable/widget_card_inner"
         android:padding="12dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="10dp"
         android:gravity="center_vertical">
 
         <!-- Gurmukhi Verse -->
         <TextView
-            android:id="@+id/hukamnama_preview"
+            android:id="@+id/shabad_gurmukhi"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="ਸੋਰਠਿ ਮਹਲਾ ੫ ॥ ਗਏ ਕਲੇਸ ਰੋਗ ਸਭਿ ਨਾਸੇ ਪ੍ਰਭਿ ਅਪੁਨੈ ਕਿਰਪਾ ਧਾਰੀ ॥"
+            android:text="ਗੁਰ ਪਰਸਾਦੀ ਵਿਦਿਆ ਵੀਚਾਰੈ ਪਰਉਪਕਾਰੀ ਹੋਵੈ ॥"
             android:textSize="13sp"
             android:textStyle="bold"
             android:textColor="#FFFDF5"
-            android:lineSpacingExtra="3dp"
-            android:maxLines="3"
+            android:lineSpacingExtra="2dp"
+            android:maxLines="2"
+            android:ellipsize="end" />
+
+        <!-- English Translation / Meaning -->
+        <TextView
+            android:id="@+id/shabad_translation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="By Guru's Grace one contemplates spiritual wisdom, and becomes a benefactor to all."
+            android:textSize="11sp"
+            android:textColor="#CCFFFFFF"
+            android:layout_marginTop="4dp"
+            android:maxLines="2"
             android:ellipsize="end" />
     </LinearLayout>
 
@@ -91,20 +87,21 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:layout_marginTop="6dp">
+        android:layout_marginTop="8dp">
 
         <TextView
+            android:id="@+id/shabad_subtitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Daily Hukamnama Sahib"
+            android:text="Daily Divine Contemplation"
             android:textSize="9sp"
             android:textColor="#80FFFFFF" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Read Full &amp; Audio →"
+            android:text="Contemplate →"
             android:textSize="10sp"
             android:textStyle="bold"
             android:textColor="#F59E0B" />

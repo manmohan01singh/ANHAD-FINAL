@@ -9,8 +9,8 @@ import com.anhad.app.R;
 import org.json.JSONObject;
 
 /**
- * Live Kirtan Home Screen Widget (Spotify-style redesign)
- * Shows currently playing track info with cover photo in horizontal layout
+ * Live Kirtan Home Screen Widget (Apple Music / Spotify iOS Glassmorphism)
+ * Shows currently playing track, live badge, and audio controls
  */
 public class KirtanWidgetProvider extends BaseWidgetProvider {
 
@@ -25,35 +25,30 @@ public class KirtanWidgetProvider extends BaseWidgetProvider {
         boolean isPlaying = getSafeBoolean(data, "isPlaying", false);
         String duration = getSafeString(data, "duration", "");
 
-        // Track info
+        // Track & station text
         views.setTextViewText(R.id.kirtan_track, trackName);
-
-        // Station info
         String stationText = stationName;
         if (!duration.isEmpty()) {
             stationText += " • " + duration;
         }
         views.setTextViewText(R.id.kirtan_station, stationText);
 
-        // Live badge + equalizer visibility
+        // Live badge, equalizer, and play/pause icon
         if (isPlaying) {
-            views.setViewVisibility(R.id.kirtan_live_badge, 0); // Visible
-            views.setViewVisibility(R.id.kirtan_equalizer, 0); // Visible
-            views.setTextViewText(R.id.kirtan_status, "● Now Playing");
+            views.setViewVisibility(R.id.kirtan_live_badge, android.view.View.VISIBLE);
+            views.setViewVisibility(R.id.kirtan_equalizer, android.view.View.VISIBLE);
+            views.setTextViewText(R.id.kirtan_play_icon, "⏸");
+            views.setTextViewText(R.id.kirtan_status, "● Playing Live");
         } else {
-            views.setViewVisibility(R.id.kirtan_live_badge, 8); // Gone
-            views.setViewVisibility(R.id.kirtan_equalizer, 8); // Gone
-            views.setTextViewText(R.id.kirtan_status, "Tap to play");
+            views.setViewVisibility(R.id.kirtan_live_badge, android.view.View.GONE);
+            views.setViewVisibility(R.id.kirtan_equalizer, android.view.View.GONE);
+            views.setTextViewText(R.id.kirtan_play_icon, "▶");
+            views.setTextViewText(R.id.kirtan_status, "Tap to listen live");
         }
 
-        // Play button icon
-        views.setTextViewText(R.id.kirtan_play_icon, isPlaying ? "⏸" : "▶");
-
-        // Click on entire widget opens the Radio page
+        // Click on entire widget or play button opens Live Kirtan
         views.setOnClickPendingIntent(R.id.kirtan_widget_container,
             createOpenAppIntent(context, "/live-kirtan"));
-
-        // Click on play button also opens the Radio page (native widget can't control WebView audio directly)
         views.setOnClickPendingIntent(R.id.kirtan_play_button,
             createOpenAppIntent(context, "/live-kirtan"));
 

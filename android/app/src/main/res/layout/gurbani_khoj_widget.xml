@@ -1,48 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- ANHAD — Gurbani Khoj Search Widget (iOS Spotlight Style) -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/khoj_widget_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal"
-    android:padding="12dp"
-    android:background="@drawable/widget_background"
+    android:background="@drawable/widget_bg_glass"
+    android:paddingStart="14dp"
+    android:paddingEnd="14dp"
+    android:paddingTop="10dp"
+    android:paddingBottom="10dp"
     android:gravity="center_vertical">
 
-    <!-- Search icon -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="🔍"
-        android:textSize="18sp"
-        android:layout_marginEnd="8dp" />
+    <!-- Search Capsule Inner -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:background="@drawable/widget_search_bar_bg"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:gravity="center_vertical">
 
-    <!-- Search text -->
-    <TextView
-        android:id="@+id/khoj_search_text"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:text="ਗੁਰਬਾਣੀ ਖੋਜੋ..."
-        android:textSize="15sp"
-        android:textColor="#B3FFFFFF"
-        android:maxLines="1"
-        android:ellipsize="end" />
+        <!-- Search Icon -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="🔍"
+            android:textSize="14sp"
+            android:layout_marginEnd="8dp" />
 
-    <!-- Recent searches count -->
-    <TextView
-        android:id="@+id/khoj_recent_count"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text=""
-        android:textSize="10sp"
-        android:textColor="#66FFFFFF"
-        android:layout_marginEnd="8dp" />
+        <!-- Search Text -->
+        <TextView
+            android:id="@+id/khoj_search_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="ਗੁਰਬਾਣੀ ਖੋਜੋ • Search Gurbani..."
+            android:textSize="13sp"
+            android:textColor="#CCFFFFFF"
+            android:singleLine="true"
+            android:ellipsize="end" />
 
-    <!-- Mic icon -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="🎙"
-        android:textSize="16sp" />
+        <!-- Recent searches count or voice indicator -->
+        <TextView
+            android:id="@+id/khoj_recent_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="☬ Khoj"
+            android:textSize="10sp"
+            android:textStyle="bold"
+            android:textColor="#F59E0B"
+            android:layout_marginStart="6dp" />
+    </LinearLayout>
 
 </LinearLayout>

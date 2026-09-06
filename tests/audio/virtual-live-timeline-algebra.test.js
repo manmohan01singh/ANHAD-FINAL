@@ -93,11 +93,13 @@ describe('anhad-audio-singleton: Virtual Live pause/resume timeline algebra', ()
     await pauseAndFlush();
     vi.advanceTimersByTime(30_000);
     window.AnhadAudio.resume();
+    await vi.advanceTimersByTimeAsync(0);
     expect(window.AnhadAudio.getLiveOffset()).toBe(30);
 
     await pauseAndFlush();
     vi.advanceTimersByTime(15_000);
     window.AnhadAudio.resume();
+    await vi.advanceTimersByTimeAsync(0);
     expect(window.AnhadAudio.getLiveOffset()).toBe(45); // 30 + 15
   });
 

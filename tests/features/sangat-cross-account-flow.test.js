@@ -125,19 +125,18 @@ describe('Sangat Cross-Account Multi-User Flow & Devotional Isolation', () => {
     });
   });
 
-  describe('4. Companion Mode Scoping: Night / Dark Mode Preservation', () => {
-    it('preserves circular portraits carousel during dark mode / night and prevents companion banner takeover', () => {
+  describe('4. Companion Mode Scoping: Active Companion Banner Visibility', () => {
+    it('ensures companion banner displays with companion-mode-active when companion is enabled', () => {
       const indexHtml = fs.readFileSync(path.join(rootDir, 'frontend', 'index.html'), 'utf-8');
 
-      expect(indexHtml).toMatch(/if\s*\(isCompanion\)\s*\{[\s\S]*?if\s*\(showDark\)\s*\{[\s\S]*?heroBanner\.style\.setProperty\(['"]display['"],\s*['"]none['"],\s*['"]important['"]\)/);
-      expect(indexHtml).toMatch(/darkCarousel\.style\.setProperty\(['"]display['"],\s*['"]flex['"],\s*['"]important['"]\)/);
+      expect(indexHtml).toMatch(/if\s*\(isCompanion\)\s*\{[\s\S]*?heroBanner\.style\.setProperty\(['"]display['"],\s*['"]flex['"],\s*['"]important['"]\)/);
+      expect(indexHtml).toMatch(/darkCarousel\.style\.setProperty\(['"]display['"],\s*['"]none['"],\s*['"]important['"]\)/);
     });
 
-    it('ensures companion-mode.js checks showDark before setting hero banner display', () => {
+    it('ensures companion-mode.js activates companion banner and hides dark carousel when enabled', () => {
       const compJs = fs.readFileSync(path.join(rootDir, 'frontend', 'lib', 'companion-mode.js'), 'utf-8');
 
-      expect(compJs).toContain('showDark');
-      expect(compJs).toMatch(/if\s*\(enabled\s*&&\s*!showDark\)/);
+      expect(compJs).toMatch(/if\s*\(enabled\)\s*\{[\s\S]*?banner\.style\.setProperty\(['"]display['"],\s*['"]flex['"],\s*['"]important['"]\)/);
     });
   });
 

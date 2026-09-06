@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- ANHAD — Sangat Notifications & Friend Requests Widget (iOS Glassmorphism) -->
+<!-- ANHAD — Saadh Sangat Live Widget (iOS Broadcast Glassmorphism) -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/reminder_widget_container"
+    android:id="@+id/sadhsangat_widget_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@drawable/widget_bg_glass"
     android:padding="16dp">
 
-    <!-- Header: Title + Notification Badge -->
+    <!-- Header: Title + LIVE Badge -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -18,7 +18,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="🔔  SANGAT ACTIVITY"
+            android:text="📡  SAADH SANGAT LIVE"
             android:textSize="10sp"
             android:textStyle="bold"
             android:textColor="#CCF59E0B"
@@ -29,22 +29,22 @@
             android:layout_height="1dp"
             android:layout_weight="1" />
 
+        <!-- Glowing LIVE Pill -->
         <TextView
-            android:id="@+id/reminder_streak"
+            android:id="@+id/sadhsangat_live_badge"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/widget_pill_gold"
+            android:layout_height="20dp"
+            android:background="@drawable/widget_badge_live"
             android:paddingStart="8dp"
             android:paddingEnd="8dp"
-            android:paddingTop="2dp"
-            android:paddingBottom="2dp"
-            android:text="Sangat Active"
-            android:textSize="10sp"
+            android:text="● LIVE"
+            android:textSize="9sp"
             android:textStyle="bold"
-            android:textColor="#F59E0B" />
+            android:textColor="#FFFFFF"
+            android:gravity="center" />
     </LinearLayout>
 
-    <!-- Main Activity Card -->
+    <!-- Main Broadcast Card -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -56,10 +56,10 @@
         android:gravity="center_vertical">
 
         <TextView
-            android:id="@+id/reminder_title"
+            android:id="@+id/sadhsangat_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Sangat Notifications"
+            android:text="Saadh Sangat Live Broadcast"
             android:textSize="14sp"
             android:textStyle="bold"
             android:textColor="#FFFFFF"
@@ -67,29 +67,34 @@
             android:ellipsize="end" />
 
         <TextView
-            android:id="@+id/reminder_status"
+            android:id="@+id/sadhsangat_subtitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Friend requests &amp; companion updates"
+            android:text="Live Gurbani Kirtan Samagam"
             android:textSize="12sp"
-            android:textColor="#CCFFFFFF"
-            android:layout_marginTop="3dp"
-            android:maxLines="1"
-            android:ellipsize="end" />
-
-        <TextView
-            android:id="@+id/reminder_next"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Tap to view friend requests &amp; connect"
-            android:textSize="10sp"
-            android:textColor="#80FFFFFF"
+            android:textColor="#B3FFFFFF"
             android:layout_marginTop="2dp"
             android:maxLines="1"
             android:ellipsize="end" />
+
+        <!-- Listeners Count Pill -->
+        <TextView
+            android:id="@+id/sadhsangat_listeners"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/widget_pill_glass"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
+            android:text="👥 1,240 Sangat Listening"
+            android:textSize="10sp"
+            android:textStyle="bold"
+            android:textColor="#FCD34D"
+            android:layout_marginTop="6dp" />
     </LinearLayout>
 
-    <!-- Bottom Progress & Link -->
+    <!-- Bottom Controls & Action Row -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -97,24 +102,40 @@
         android:gravity="center_vertical"
         android:layout_marginTop="8dp">
 
-        <ProgressBar
-            android:id="@+id/reminder_progress"
-            style="?android:attr/progressBarStyleHorizontal"
+        <FrameLayout
+            android:id="@+id/sadhsangat_play_button"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:background="@drawable/widget_action_button_bg">
+
+            <TextView
+                android:id="@+id/sadhsangat_play_icon"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="▶"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:textColor="#0B0C12"
+                android:gravity="center" />
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/sadhsangat_status"
             android:layout_width="0dp"
-            android:layout_height="4dp"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:progressDrawable="@drawable/widget_progress_gold"
-            android:max="100"
-            android:progress="100"
-            android:layout_marginEnd="12dp" />
+            android:text="Tap to listen live"
+            android:textSize="11sp"
+            android:textColor="#99FFFFFF"
+            android:layout_marginStart="8dp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Open Sangat →"
+            android:text="Join Live →"
             android:textSize="10sp"
             android:textStyle="bold"
-            android:textColor="#B3FFFFFF" />
+            android:textColor="#F59E0B" />
     </LinearLayout>
 
 </LinearLayout>

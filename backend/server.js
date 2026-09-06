@@ -527,7 +527,7 @@ const DEFAULT_CAMPAIGNS = {
           line: 'ਅੰਮ੍ਰਿਤ ਵੇਲਾ ਸਚੁ ਨਾਉ',
           sub: '40 days of Amritvela Simran — Coming Soon',
           pill: 'AMRITVELA LIVE SAMAGAMS',
-          image: 'assets/Darbar-sahib-AMRITVELA.webp'
+          image: 'assets/companion/chaliya-2026.webp'
         },
         heroTitle: 'Chaliya Amritvela 2026',
         heroSubtitle: 'Join thousands in the annual 40-day Amritvela Simran Abhyaas',

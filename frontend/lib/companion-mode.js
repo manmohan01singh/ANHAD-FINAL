@@ -178,19 +178,16 @@
     checkExpiration();
     const enabled = isEnabled();
 
-    const html = document.documentElement;
-    const themeMode = html.getAttribute('data-theme-mode');
-    const isDark = html.classList.contains('dark-mode') ||
-                   html.getAttribute('data-theme') === 'dark' ||
-                   themeMode === 'dark';
-    const timeOfDay = html.getAttribute('data-time-of-day');
-    const showDark = isDark || (themeMode === 'auto' && timeOfDay === 'night') || (timeOfDay === 'night' && themeMode !== 'light');
-
-    if (enabled && !showDark) {
+    if (enabled) {
       if (document.body) document.body.classList.add('companion-mode-active');
       if (banner) {
         banner.classList.add('companion-mode-active');
         banner.style.setProperty('display', 'flex', 'important');
+      }
+      const darkCarousel = document.getElementById('greetingDarkCarousel');
+      if (darkCarousel) {
+        darkCarousel.classList.remove('companion-mode-active');
+        darkCarousel.style.setProperty('display', 'none', 'important');
       }
       if (heroImg) heroImg.classList.add('companion-mode-active');
     } else {
