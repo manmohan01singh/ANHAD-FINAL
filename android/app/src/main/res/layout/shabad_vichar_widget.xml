@@ -21,10 +21,9 @@
             android:text="📖  ਸ਼ਬਦ ਵਿਚਾਰ • SHABAD VICHAR"
             android:textSize="10sp"
             android:textStyle="bold"
-            android:textColor="#CCF59E0B"
-            android:letterSpacing="0.08" />
+            android:textColor="#CCF59E0B" />
 
-        <View
+        <FrameLayout
             android:layout_width="0dp"
             android:layout_height="1dp"
             android:layout_weight="1" />
@@ -64,7 +63,6 @@
             android:textSize="13sp"
             android:textStyle="bold"
             android:textColor="#FFFDF5"
-            android:lineSpacingExtra="2dp"
             android:maxLines="2"
             android:ellipsize="end" />
 

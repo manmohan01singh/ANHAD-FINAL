@@ -129,6 +129,153 @@
   <div id="app">
   <main class="insights-app page-enter" id="mainContent" style="padding-bottom: 100px;">
     
+    <!-- ════════════════════════════════════════════════════════════════════
+         1. KHALSA SACRED LIBRARY HERO (ਪਵਿੱਤਰ ਗੁਰਮਤਿ ਲਾਇਬ੍ਰੇਰੀ)
+    ════════════════════════════════════════════════════════════════════ -->
+    <section class="khalsa-library-hero" aria-label="Khalsa Sacred Library">
+      <div class="library-hero-card">
+        <div class="library-hero-image-wrap">
+          <img src="../assets/sacred-library-hero.jpg" alt="Sacred Khalsa Gurbani Library & Manuscript Repository" class="library-hero-img" loading="eager" fetchpriority="high">
+          <div class="library-hero-overlay"></div>
+        </div>
+        <div class="library-hero-content">
+          <div class="library-khanda-emblem">ੴ</div>
+          <span class="library-badge-pill">ਗੁਰਮਤਿ ਗਿਆਨ ਭੰਡਾਰ • KHALSA SANCTUM</span>
+          <h2 class="library-hero-title">The Sacred Gurbani Library</h2>
+          <p class="library-hero-desc">Explore centuries of divine wisdom, illuminated Pothi Sahibs, 31 sacred Raags, and inspiring Gursikhi heritage.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════════════════
+         2. SPIRITUAL JOURNEY & SACRED LISTENING SANCTUM (ਆਤਮਿਕ ਯਾਤਰਾ ਅਤੇ ਕੀਰਤਨ ਸਰਵਣ)
+    ════════════════════════════════════════════════════════════════════ -->
+    <section class="journey-sanctum-section" aria-label="Spiritual Journey and Listening Hours">
+      <div class="sanctum-card">
+        <div class="sanctum-header">
+          <div class="sanctum-title-wrap">
+            <span class="sanctum-icon">🎧</span>
+            <div>
+              <h2 class="sanctum-title">ਆਤਮਿਕ ਯਾਤਰਾ • Spiritual Journey</h2>
+              <span class="sanctum-subtitle">Real-Time Divine Listening & Simran Hours</span>
+            </div>
+          </div>
+          <div class="spiritual-rank-badge" id="spiritualRankBadge">
+            <i class="fas fa-crown"></i> <span id="rankBadgeText">ਅਭਿਆਸੀ ਸਿੱਖ • Shabad Seeker</span>
+          </div>
+        </div>
+
+        <!-- Live Audio Aura (shown when listening in-app) -->
+        <div class="live-listening-aura" id="liveListeningAura" style="display:none;">
+          <div class="aura-soundwave">
+            <span></span><span></span><span></span><span></span><span></span>
+          </div>
+          <span class="aura-text">Currently Listening Live • <span id="liveSessionTime">0m</span></span>
+        </div>
+
+        <!-- Main Listening Hours Display -->
+        <div class="listening-hero-box">
+          <div class="listening-dial">
+            <div class="listening-dial-glow"></div>
+            <span class="listening-hours-big" id="totalListeningHoursDisplay">0h 00m</span>
+            <span class="listening-hours-label">Total Divine Listening Time</span>
+          </div>
+        </div>
+
+        <!-- Metrics Grid -->
+        <div class="sanctum-metrics-grid">
+          <div class="metric-card">
+            <div class="metric-icon">🌅</div>
+            <div class="metric-val" id="todayListening">0 min</div>
+            <div class="metric-label">Today's Simran</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-icon">📅</div>
+            <div class="metric-val" id="weeklyListening">0h</div>
+            <div class="metric-label">This Week</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-icon">📖</div>
+            <div class="metric-val" id="weeklyAngs">0 Angs</div>
+            <div class="metric-label">Angs Read</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-icon">🔥</div>
+            <div class="metric-val" id="currentStreak">1 Day</div>
+            <div class="metric-label">Active Streak</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════════════════
+         3. ILLUMINATED POTHI MANUSCRIPT SHELVES (ਪਵਿੱਤਰ ਗ੍ਰੰਥ ਅਤੇ ਬਾਣੀ ਸੰਗ੍ਰਹਿ)
+    ════════════════════════════════════════════════════════════════════ -->
+    <section class="pothi-shelves-section" aria-label="Illuminated Pothi Manuscript Shelves">
+      <div class="section-header-row" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <h2 class="section-title" style="margin:0;">📜 Illuminated Pothi Sahib Shelves</h2>
+        <span class="library-section-tag">ਪੁਰਾਤਨ ਸੰਗ੍ਰਹਿ</span>
+      </div>
+
+      <div class="pothi-grid">
+        <!-- 1. Sri Guru Granth Sahib Ji -->
+        <div class="pothi-manuscript-card" onclick="window.navigateTo ? window.navigateTo('../SehajPaath/reader.html?ang=1') : window.location.href='../SehajPaath/reader.html?ang=1'">
+          <div class="pothi-card-glow"></div>
+          <div class="pothi-img-wrap">
+            <img src="../assets/sggs-transparent.webp" alt="Sri Guru Granth Sahib Ji" class="pothi-img" onerror="this.src='../assets/app-logo.webp'">
+          </div>
+          <div class="pothi-content">
+            <span class="pothi-ang-badge">੧੪੩੦ ਅੰਗ • ੩੧ ਰਾਗ</span>
+            <h3 class="pothi-title">ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ</h3>
+            <p class="pothi-sub">Sri Guru Granth Sahib Ji • The Eternal Living Shabad Guru</p>
+            <span class="pothi-action">Open Sehaj Paath Reader ➔</span>
+          </div>
+        </div>
+
+        <!-- 2. Sri Dasam Granth Ji -->
+        <div class="pothi-manuscript-card" onclick="openModal('themes')">
+          <div class="pothi-card-glow"></div>
+          <div class="pothi-img-wrap">
+            <img src="../assets/dasam-granth-transparent.webp" alt="Sri Dasam Granth Ji" class="pothi-img" onerror="this.src='../assets/app-logo.webp'">
+          </div>
+          <div class="pothi-content">
+            <span class="pothi-ang-badge">੧੪੨੮ ਧਿਆਇ • ਬੀਰ ਰਸ</span>
+            <h3 class="pothi-title">ਸ੍ਰੀ ਦਸਮ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ</h3>
+            <p class="pothi-sub">Sri Dasam Granth Ji • Compositions of Sri Guru Gobind Singh Ji</p>
+            <span class="pothi-action">Explore Spiritual Themes ➔</span>
+          </div>
+        </div>
+
+        <!-- 3. Sri Sarbloh Granth Ji -->
+        <div class="pothi-manuscript-card" onclick="openModal('history')">
+          <div class="pothi-card-glow"></div>
+          <div class="pothi-img-wrap">
+            <img src="../assets/sarbloh-granth-transparent.webp" alt="Sri Sarbloh Granth Ji" class="pothi-img" onerror="this.src='../assets/app-logo.webp'">
+          </div>
+          <div class="pothi-content">
+            <span class="pothi-ang-badge">ਖ਼ਾਲਸਾ ਮਹਿਮਾ • ਸਿਦਕ</span>
+            <h3 class="pothi-title">ਸ੍ਰੀ ਸਰਬਲੋਹ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ</h3>
+            <p class="pothi-sub">Sri Sarbloh Granth Ji • Divine Hymns & Khalsa Praise</p>
+            <span class="pothi-action">Explore Sikh Heritage ➔</span>
+          </div>
+        </div>
+
+        <!-- 4. Vaaran Bhai Gurdas Ji -->
+        <div class="pothi-manuscript-card" onclick="openModal('sakhis')">
+          <div class="pothi-card-glow"></div>
+          <div class="pothi-img-wrap">
+            <img src="../assets/ikonkar_guru-gobind-singh.webp" alt="Vaaran Bhai Gurdas Ji" class="pothi-img" onerror="this.src='../assets/app-logo.webp'">
+          </div>
+          <div class="pothi-content">
+            <span class="pothi-ang-badge">ਕੁੰਜੀ ਗੁਰਬਾਣੀ ਦੀ • ੪੦ ਵਾਰਾਂ</span>
+            <h3 class="pothi-title">ਵਾਰਾਂ ਭਾਈ ਗੁਰਦਾਸ ਜੀ</h3>
+            <p class="pothi-sub">Vaaran Bhai Gurdas Ji • The Expository Key to Gurbani</p>
+            <span class="pothi-action">Explore Divine Sakhis ➔</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- --- TODAY'S INSPIRATION --- -->
     <section class="inspiration-section" id="inspirationCard">
       <div class="cloud-layer"></div>
@@ -322,27 +469,6 @@
           <button class="shabad-play-btn" aria-label="Open Shabad">
             <i class="fas fa-book-open"></i>
           </button>
-        </div>
-      </div>
-    </section>
-
-    <!-- --- YOUR JOURNEY STATS --- -->
-    <section class="quick-stats-section glass-card">
-      <h2 class="section-title" style="margin-bottom: 16px;">📈 Your Spiritual Journey</h2>
-      <div class="quick-stats">
-        <div class="quick-stat">
-          <span class="quick-stat__value" id="weeklyListening">0h</span>
-          <span class="quick-stat__label">Listening Time</span>
-        </div>
-        <div class="quick-stat__divider"></div>
-        <div class="quick-stat">
-          <span class="quick-stat__value" id="weeklyAngs">0</span>
-          <span class="quick-stat__label">Angs Read</span>
-        </div>
-        <div class="quick-stat__divider"></div>
-        <div class="quick-stat">
-          <span class="quick-stat__value" id="currentStreak">1 🔥</span>
-          <span class="quick-stat__label">Active Streak</span>
         </div>
       </div>
     </section>

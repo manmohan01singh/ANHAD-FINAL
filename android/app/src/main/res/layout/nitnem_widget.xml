@@ -21,10 +21,9 @@
             android:text="☬  NITNEM TRACKER"
             android:textSize="10sp"
             android:textStyle="bold"
-            android:textColor="#CCF59E0B"
-            android:letterSpacing="0.12" />
+            android:textColor="#CCF59E0B" />
 
-        <View
+        <FrameLayout
             android:layout_width="0dp"
             android:layout_height="1dp"
             android:layout_weight="1" />
@@ -76,9 +75,9 @@
     <!-- Progress Bar -->
     <ProgressBar
         android:id="@+id/nitnem_progress"
-        style="?android:attr/progressBarStyleHorizontal"
+        style="@android:style/Widget.ProgressBar.Horizontal"
         android:layout_width="match_parent"
-        android:layout_height="7dp"
+        android:layout_height="8dp"
         android:layout_marginTop="8dp"
         android:progressDrawable="@drawable/widget_progress_gold"
         android:max="100"
@@ -103,8 +102,7 @@
             android:text="⏳ Pending Banis:"
             android:textSize="10sp"
             android:textStyle="bold"
-            android:textColor="#B3FFFFFF"
-            android:letterSpacing="0.05" />
+            android:textColor="#B3FFFFFF" />
 
         <TextView
             android:id="@+id/nitnem_pending_banis"
@@ -134,8 +132,7 @@
             android:layout_weight="1"
             android:text="○ ○ ○ ○ ○"
             android:textSize="11sp"
-            android:textColor="#80F59E0B"
-            android:letterSpacing="0.1" />
+            android:textColor="#80F59E0B" />
 
         <TextView
             android:layout_width="wrap_content"

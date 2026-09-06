@@ -130,6 +130,14 @@
     }
 
     init() {
+      // Clean up any stale/wrong custom companion image
+      try {
+        const storedCustom = localStorage.getItem('anhad_companion_custom_image');
+        if (storedCustom && (storedCustom.includes('Darbar-sahib') || storedCustom.includes('guru-greeting-hero'))) {
+          localStorage.removeItem('anhad_companion_custom_image');
+        }
+      } catch(e) {}
+
       // PERF: cached/built-in config is already available synchronously via
       // loadCachedConfig() above, so the network refresh is not on the critical
       // path for first paint/interaction — defer it to idle time (same pattern
@@ -230,8 +238,10 @@
             const isAct = !!chaliya.active;
             const remoteImg = (chaliya.content && chaliya.content.announce && chaliya.content.announce.image) ||
                               (chaliya.content && chaliya.content.customImage);
-            if (remoteImg && (remoteImg.startsWith('http') || remoteImg.startsWith('data:') || remoteImg.startsWith('assets/'))) {
+            if (remoteImg && !remoteImg.includes('Darbar-sahib') && !remoteImg.includes('guru-greeting-hero') && (remoteImg.startsWith('http') || remoteImg.startsWith('data:') || remoteImg.startsWith('assets/'))) {
               try { localStorage.setItem('anhad_companion_custom_image', remoteImg); } catch(e) {}
+            } else if (remoteImg && remoteImg.includes('Darbar-sahib')) {
+              try { localStorage.removeItem('anhad_companion_custom_image'); } catch(e) {}
             }
             if (window.CompanionMode && typeof window.CompanionMode.setEnabled === 'function') {
               if (window.CompanionMode.isEnabled() !== isAct) {

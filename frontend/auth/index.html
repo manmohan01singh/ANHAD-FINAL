@@ -74,7 +74,7 @@
   <main class="auth-container">
     <div class="auth-header">
       <div class="auth-logo-wrap">
-        <img src="../assets/app-logo-96.avif" alt="ANHAD Logo" class="auth-logo">
+        <img src="../assets/app-logo-384.png" alt="ANHAD Logo" class="auth-logo">
       </div>
       <h1 class="auth-title">Welcome to ANHAD</h1>
       <p class="auth-subtitle">Sync your Nitnem, Chaliya journey, and Amrit Vela Sangat across all devices.</p>
@@ -99,9 +99,6 @@
         </svg>
         <span>Continue with Google</span>
       </button>
-      <div style="text-align: center; margin-top: 8px; font-size: 11px; color: var(--auth-muted-light);">
-        Popup blocked or blank? <a href="#" onclick="handleGoogleRedirect(event)" style="color: var(--auth-gold); font-weight: 600; text-decoration: underline;">Sign In with Redirect (Full Page) →</a>
-      </div>
 
       <div class="auth-divider">
         <span>or with email</span>
@@ -150,22 +147,6 @@
           <span>Create Account</span>
         </button>
       </form>
-
-      <!-- Dev Options & Firebase Setup Helper -->
-      <div id="devOptionsCard" style="display: none; margin-top: 18px; padding: 14px 16px; border-radius: 14px; background: rgba(212, 160, 58, 0.1); border: 1px solid rgba(212, 160, 58, 0.35);">
-        <div style="font-size: 13px; font-weight: 700; color: var(--auth-gold); margin-bottom: 5px;">🔑 Firebase Setup & Local Testing</div>
-        <p style="font-size: 12px; color: var(--auth-muted-light); margin: 0 0 12px; line-height: 1.45;">
-          A valid Web API key for Firebase project <code>anhad-4bf78</code> is required for live Google Sign-In. You can provide your Web API key, or sign in with a local Sangat dev account to test all features immediately.
-        </p>
-        <div style="display: flex; flex-direction: column; gap: 8px;">
-          <button type="button" class="btn-primary" style="font-size: 13px; padding: 10px 14px; margin-top: 0;" onclick="handleEnterApiKey()">
-            🔑 Paste Firebase Web API Key
-          </button>
-          <button type="button" class="btn-primary" id="devLoginBtn" style="font-size: 13px; padding: 10px 14px; margin-top: 0; background: rgba(120, 120, 128, 0.2); color: inherit; box-shadow: none;" onclick="handleDevSignIn()">
-            🛠️ Continue with Local Sangat Login (Dev Mode)
-          </button>
-        </div>
-      </div>
 
     </div>
 
@@ -244,77 +225,26 @@
       }
     }
 
-    function handleEnterApiKey() {
-      const current = localStorage.getItem('anhad_firebase_api_key') || '';
-      const key = prompt("Enter your Firebase Web API Key (from Firebase Console -> Project Settings -> General -> Web App, starts with AIzaSy...):", current);
-      if (key && key.trim()) {
-        const clean = key.trim();
-        if (window.AnhadFirebase && typeof window.AnhadFirebase.setApiKey === 'function') {
-          window.AnhadFirebase.setApiKey(clean);
-        } else {
-          localStorage.setItem('anhad_firebase_api_key', clean);
-        }
-        showAlert("Firebase Web API Key saved! Connecting...", false);
-        setTimeout(handleGoogleSignIn, 500);
-      }
-    }
-
-    async function handleDevSignIn() {
-      clearAlert();
-      const btn = document.getElementById('devLoginBtn');
-      if (btn) btn.disabled = true;
-      if (window.AnhadAuth && typeof window.AnhadAuth.signInWithDevAccount === 'function') {
-        const res = await window.AnhadAuth.signInWithDevAccount('Gursikh Sangat', 'sevadar@anhad.local');
-        if (res.ok) {
-          proceedAfterAuth();
-        }
-      }
-    }
-
-    async function handleGoogleRedirect(e) {
-      if (e && e.preventDefault) e.preventDefault();
-      clearAlert();
-      const btn = document.getElementById('googleSignInBtn');
-      if (btn) {
-        btn.innerHTML = '<span class="spinner"></span> <span>Redirecting to Google...</span>';
-        btn.disabled = true;
-      }
-      showAlert('Redirecting securely to Google Accounts...', false);
-      if (window.AnhadAuth && typeof window.AnhadAuth.signInWithGoogleRedirect === 'function') {
-        const res = await window.AnhadAuth.signInWithGoogleRedirect();
-        if (!res.ok && res.error) {
-          showAlert(res.error);
-          if (btn) {
-            btn.innerHTML = '<span>Continue with Google</span>';
-            btn.disabled = false;
-          }
-        }
-      }
-    }
-
     async function handleGoogleSignIn() {
       clearAlert();
       const btn = document.getElementById('googleSignInBtn');
       const origHtml = btn.innerHTML;
-      btn.innerHTML = '<span class="spinner"></span> <span>Connecting...</span>';
+      btn.innerHTML = '<span class="spinner"></span> <span>Connecting to Google...</span>';
       btn.disabled = true;
 
       try {
         const res = await window.AnhadAuth.signInWithGoogle();
         if (res.ok) {
-          if (res.pendingRedirect) return;
+          if (res.pendingRedirect) {
+            showAlert('Redirecting securely to Google Accounts...', false);
+            return;
+          }
           proceedAfterAuth();
         } else {
           btn.innerHTML = origHtml;
           btn.disabled = false;
           if (res.isUnauthorizedDomain) {
-            showAlert(`<strong>Domain Not Authorized in Firebase Console:</strong><br>Firebase blocked Google sign-in because <code>${res.domain || window.location.hostname}</code> is not authorized yet.<br><br><strong>Quick Fix (takes 1 minute):</strong><br>1. Open <a href="https://console.firebase.google.com" target="_blank" style="color:var(--auth-gold);font-weight:600;text-decoration:underline;">Firebase Console</a> ➔ Project <code>anhad-4bf78</code><br>2. Go to <strong>Authentication</strong> ➔ <strong>Settings</strong> ➔ <strong>Authorized domains</strong><br>3. Click <strong>Add domain</strong> and paste: <code>${res.domain || window.location.hostname}</code>`, true, true);
-          } else if (res.isInvalidApiKey || (res.code && res.code.includes('api-key-not-valid')) || (res.error && res.error.includes('api-key-not-valid'))) {
-            showAlert('Firebase Web API key is not yet configured for project anhad-4bf78.');
-            const devCard = document.getElementById('devOptionsCard');
-            if (devCard) devCard.style.display = 'block';
-          } else if (res.canUseRedirect || res.code === 'auth/popup-closed-by-user' || res.code === 'auth/popup-blocked') {
-            showAlert('Popup was closed or blocked.<br><button type="button" class="btn-primary" style="margin-top:8px; font-size:12px; padding:8px 12px; width:100%;" onclick="handleGoogleRedirect(event)">👉 Continue with Full-Page Google Sign-In</button>', true, true);
+            showAlert(`Domain "${res.domain || window.location.hostname}" needs authorization in Firebase console.`);
           } else {
             showAlert(res.error || 'Google Sign-In was cancelled or failed.');
           }
@@ -325,7 +255,6 @@
         btn.disabled = false;
       }
     }
-
 
     async function handleEmailSignIn(e) {
       e.preventDefault();
@@ -386,7 +315,6 @@
       try {
         const res = await window.AnhadAuth.signUpWithEmail(email, password, name);
         if (res.ok) {
-          // Account created, route to onboarding to pick Sangat username handle
           window.location.replace('./onboarding.html?returnUrl=' + encodeURIComponent(getReturnUrl()));
         } else {
           showAlert(res.error || 'Account creation failed. Please try again.');
@@ -401,7 +329,6 @@
     }
 
     function handleContinueAsGuest() {
-      // Ensure profile remains guest mode
       window.location.replace(getReturnUrl());
     }
 
@@ -409,15 +336,14 @@
     document.addEventListener('DOMContentLoaded', async () => {
       // 1. Fetch server-provided Firebase web config
       try {
-        const apiBase = (window.AnhadFriends && window.AnhadFriends.API_BASE) ||
-          (window.Capacitor && (window.Capacitor.isNative || (typeof window.Capacitor.isNativePlatform === 'function' && window.Capacitor.isNativePlatform())) ? 'https://anhad-final.onrender.com' : (window.location.hostname.includes('vercel.app') ? 'https://anhad-final.onrender.com' : ''));
+        const apiBase = (window.AnhadFriends && window.AnhadFriends.API_BASE) || 'https://anhad-final.onrender.com';
         const res = await fetch(apiBase + '/api/config/firebase-web').then(r => r.json()).catch(() => null);
         if (res && res.apiKey && window.AnhadFirebase && typeof window.AnhadFirebase.setApiKey === 'function') {
           window.AnhadFirebase.setApiKey(res.apiKey);
         }
       } catch(e) {}
 
-      // 2. Automatically handle Google Redirect Sign-In results
+      // 2. Automatically handle Google Redirect Sign-In results if landing after redirect
       if (window.AnhadFirebase && typeof window.AnhadFirebase.onAuthStateChanged === 'function') {
         window.AnhadFirebase.onAuthStateChanged(async (fbUser) => {
           if (fbUser && !window.__googleAuthSuccessHandled) {
@@ -438,14 +364,6 @@
             }
           }
         });
-      }
-
-      const host = window.location.hostname;
-      const isLocal = host === 'localhost' || host === '127.0.0.1';
-      const hasKey = Boolean(localStorage.getItem('anhad_firebase_api_key'));
-      if (isLocal && !hasKey) {
-        const devCard = document.getElementById('devOptionsCard');
-        if (devCard) devCard.style.display = 'block';
       }
     });
 

@@ -22,10 +22,9 @@
             android:text="☬  NAAM ABHYAS"
             android:textSize="10sp"
             android:textStyle="bold"
-            android:textColor="#CCF59E0B"
-            android:letterSpacing="0.1" />
+            android:textColor="#CCF59E0B" />
 
-        <View
+        <FrameLayout
             android:layout_width="0dp"
             android:layout_height="1dp"
             android:layout_weight="1" />

@@ -31,8 +31,7 @@
             android:text="ਅੱਜ ਦਾ ਮੁੱਖਵਾਕ"
             android:textSize="12sp"
             android:textStyle="bold"
-            android:textColor="#FCD34D"
-            android:letterSpacing="0.05" />
+            android:textColor="#FCD34D" />
 
         <!-- Ang Badge Pill -->
         <TextView
@@ -80,7 +79,6 @@
             android:textSize="13sp"
             android:textStyle="bold"
             android:textColor="#FFFDF5"
-            android:lineSpacingExtra="3dp"
             android:maxLines="3"
             android:ellipsize="end" />
     </LinearLayout>

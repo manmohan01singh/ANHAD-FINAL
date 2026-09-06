@@ -86,14 +86,17 @@ class FriendsEngine {
       }
       if (!u.isPublic) continue;
 
-      if (u.username.toLowerCase().includes(q) || u.displayName.toLowerCase().includes(q)) {
+      const uName = (u.username || '').toLowerCase();
+      const dName = (u.displayName || '').toLowerCase();
+
+      if ((uName && uName.includes(q)) || (dName && dName.includes(q))) {
         const isFriend = this.isFriend(currentUid, u.uid);
         const hasPending = this.hasPendingRequest(currentUid, u.uid);
 
         results.push({
           uid: u.uid,
-          username: u.username,
-          displayName: u.displayName,
+          username: u.username || ('user_' + (u.uid ? u.uid.slice(-6) : 'sangat')),
+          displayName: u.displayName || 'Gursikh Sangat',
           avatarUrl: u.avatarUrl || null,
           streak: u.streak || 0,
           isFriend,

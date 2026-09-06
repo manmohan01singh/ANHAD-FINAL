@@ -21,10 +21,9 @@
             android:text="☬  GURPURAB CALENDAR"
             android:textSize="10sp"
             android:textStyle="bold"
-            android:textColor="#CCF59E0B"
-            android:letterSpacing="0.12" />
+            android:textColor="#CCF59E0B" />
 
-        <View
+        <FrameLayout
             android:layout_width="0dp"
             android:layout_height="1dp"
             android:layout_weight="1" />
@@ -74,8 +73,7 @@
                 android:text="DAYS"
                 android:textSize="8sp"
                 android:textStyle="bold"
-                android:textColor="#F59E0B"
-                android:letterSpacing="0.1" />
+                android:textColor="#F59E0B" />
         </LinearLayout>
 
         <!-- Event Details (Right) -->
@@ -92,8 +90,7 @@
                 android:text="UPCOMING GURPURAB"
                 android:textSize="8sp"
                 android:textStyle="bold"
-                android:textColor="#80FFFFFF"
-                android:letterSpacing="0.1" />
+                android:textColor="#80FFFFFF" />
 
             <TextView
                 android:id="@+id/calendar_event_name"

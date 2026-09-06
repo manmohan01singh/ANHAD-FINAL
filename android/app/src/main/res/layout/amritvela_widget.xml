@@ -15,7 +15,7 @@
         android:layout_height="84dp"
         android:layout_marginEnd="14dp">
 
-        <!-- Cover Art — emoji-based (RemoteViews safe) -->
+        <!-- Cover Art Frame -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -47,22 +47,18 @@
             android:textColor="#FFFFFF"
             android:gravity="center" />
 
-        <!-- Equalizer Bars (bottom-center) -->
-        <LinearLayout
+        <!-- Equalizer Bars (bottom-center) — TextView equalizer for RemoteViews safety -->
+        <TextView
             android:id="@+id/amritvela_equalizer"
             android:layout_width="wrap_content"
-            android:layout_height="16dp"
+            android:layout_height="wrap_content"
             android:layout_gravity="bottom|center_horizontal"
-            android:layout_marginBottom="6dp"
-            android:orientation="horizontal"
-            android:gravity="bottom"
-            android:visibility="gone">
-            <View android:layout_width="3dp" android:layout_height="6dp" android:background="#818CF8" android:layout_marginEnd="2dp"/>
-            <View android:layout_width="3dp" android:layout_height="14dp" android:background="#A5B4FC" android:layout_marginEnd="2dp"/>
-            <View android:layout_width="3dp" android:layout_height="10dp" android:background="#818CF8" android:layout_marginEnd="2dp"/>
-            <View android:layout_width="3dp" android:layout_height="16dp" android:background="#A5B4FC" android:layout_marginEnd="2dp"/>
-            <View android:layout_width="3dp" android:layout_height="8dp" android:background="#818CF8"/>
-        </LinearLayout>
+            android:layout_marginBottom="4dp"
+            android:text="ılılı"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="#A5B4FC"
+            android:visibility="gone" />
     </FrameLayout>
 
     <!-- Info & Controls (Right Section) -->
@@ -81,7 +77,6 @@
             android:textSize="9sp"
             android:textStyle="bold"
             android:textColor="#B3818CF8"
-            android:letterSpacing="0.1"
             android:layout_marginBottom="3dp" />
 
         <!-- Track Title -->

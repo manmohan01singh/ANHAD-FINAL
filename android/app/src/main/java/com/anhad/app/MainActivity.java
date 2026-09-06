@@ -83,9 +83,64 @@ public class MainActivity extends BridgeActivity {
             settings.setAllowUniversalAccessFromFileURLs(true);
             settings.setAllowFileAccessFromFileURLs(true);
 
-            Log.d(TAG, "✅ WebView configured for audio streaming: " +
+            // ═══════════════════════════════════════════════════════════════════
+            // GOOGLE OAUTH POPUP SUPPORT FOR CAPACITOR
+            // ═══════════════════════════════════════════════════════════════════
+            settings.setSupportMultipleWindows(true);
+            settings.setJavaScriptCanOpenWindowsAutomatically(true);
+
+            // Remove "; wv" from user agent so Google OAuth allows sign-in inside WebView
+            String currentUa = settings.getUserAgentString();
+            if (currentUa != null && currentUa.contains("; wv")) {
+                settings.setUserAgentString(currentUa.replace("; wv", ""));
+            }
+
+            // WebChromeClient handler for window.open popups (Google Sign-In)
+            webView.setWebChromeClient(new com.getcapacitor.BridgeWebChromeClient(getBridge()) {
+                @Override
+                public boolean onCreateWindow(android.webkit.WebView view, boolean isDialog, boolean isUserGesture, android.os.Message resultMsg) {
+                    android.webkit.WebView popupWebView = new android.webkit.WebView(MainActivity.this);
+                    android.webkit.WebSettings popupSettings = popupWebView.getSettings();
+                    popupSettings.setJavaScriptEnabled(true);
+                    popupSettings.setDomStorageEnabled(true);
+                    popupSettings.setSupportMultipleWindows(true);
+                    popupSettings.setJavaScriptCanOpenWindowsAutomatically(true);
+                    popupSettings.setDatabaseEnabled(true);
+                    String ua = view.getSettings().getUserAgentString();
+                    if (ua != null) {
+                        popupSettings.setUserAgentString(ua);
+                    }
+
+                    android.app.Dialog popupDialog = new android.app.Dialog(MainActivity.this, android.R.style.Theme_DeviceDefault_Light_NoActionBar_Fullscreen);
+                    popupDialog.setContentView(popupWebView);
+                    popupDialog.show();
+
+                    popupWebView.setWebChromeClient(new android.webkit.WebChromeClient() {
+                        @Override
+                        public void onCloseWindow(android.webkit.WebView window) {
+                            if (popupDialog.isShowing()) {
+                                popupDialog.dismiss();
+                            }
+                        }
+                    });
+
+                    popupWebView.setWebViewClient(new android.webkit.WebViewClient() {
+                        @Override
+                        public boolean shouldOverrideUrlLoading(android.webkit.WebView view, String url) {
+                            return false;
+                        }
+                    });
+
+                    android.webkit.WebView.WebViewTransport transport = (android.webkit.WebView.WebViewTransport) resultMsg.obj;
+                    transport.setWebView(popupWebView);
+                    resultMsg.sendToTarget();
+                    return true;
+                }
+            });
+
+            Log.d(TAG, "✅ WebView configured for audio streaming & Google OAuth popup: " +
                 "gesture=" + settings.getMediaPlaybackRequiresUserGesture() +
-                ", mixedContent=ALWAYS_ALLOW");
+                ", mixedContent=ALWAYS_ALLOW, multipleWindows=true");
         }
 
         // Handle widget click routing

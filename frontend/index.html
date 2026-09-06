@@ -95,7 +95,7 @@
           if (effectiveTheme === 'dark') document.body.classList.add('dark-mode');
           document.body.classList.add('theme-loaded');
           try {
-            if (localStorage.getItem('anhad_companion_mode') === 'true') {
+            if (localStorage.getItem('anhad_companion_mode') === 'true' && effectiveTheme !== 'dark') {
               document.body.classList.add('companion-mode-active');
             }
           } catch(e) {}

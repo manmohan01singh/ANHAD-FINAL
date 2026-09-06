@@ -204,11 +204,11 @@ describe('Spiritual Notifications 3.0 & Admin Broadcast Suite', () => {
             expect(html).toContain('history-table');
         });
 
-        it('should have Admin broadcast link in spiritual-notifications-settings.html', () => {
+        it('should NOT expose Admin broadcast in user-facing spiritual-notifications-settings.html', () => {
             const settingsPath = path.resolve(__dirname, '../../frontend/Settings/spiritual-notifications-settings.html');
             const html = fs.readFileSync(settingsPath, 'utf8');
-            expect(html).toContain('openAdminBroadcast');
-            expect(html).toContain('Global Broadcast Console');
+            expect(html).not.toContain('openAdminBroadcast');
+            expect(html).not.toContain('Global Broadcast Console');
         });
     });
 });

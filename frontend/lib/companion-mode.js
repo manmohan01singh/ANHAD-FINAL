@@ -74,7 +74,11 @@
 
   function getCustomImage() {
     try {
-      return localStorage.getItem(STORAGE_CUSTOM_IMG) || null;
+      const img = localStorage.getItem(STORAGE_CUSTOM_IMG);
+      if (!img || img.includes('Darbar-sahib') || img.includes('guru-greeting-hero')) {
+        return null;
+      }
+      return img;
     } catch (e) {
       return null;
     }

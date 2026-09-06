@@ -52,8 +52,6 @@ public class SmartReminderWidgetProvider extends BaseWidgetProvider {
             views.setTextViewText(R.id.reminder_next, "Tap to find friends & companion Sangat");
         }
 
-        views.setProgressBar(R.id.reminder_progress, 100, 100, false);
-
         // Click opens Sangat / Friends / Notifications
         views.setOnClickPendingIntent(R.id.reminder_widget_container,
             createOpenAppIntent(context, "/notifications"));

@@ -29,18 +29,15 @@
   const API_BASE = (() => {
     if (typeof window !== 'undefined' && window.ANHAD_API_BASE !== undefined) return window.ANHAD_API_BASE;
     try {
-      if (typeof window !== 'undefined' && window.Capacitor && (
-        (typeof window.Capacitor.isNativePlatform === 'function' && window.Capacitor.isNativePlatform()) ||
-        (typeof window.Capacitor.getPlatform === 'function' && window.Capacitor.getPlatform() !== 'web') ||
-        window.Capacitor.isNative === true
-      )) {
-        return 'https://anhad-final.onrender.com';
-      }
-      if (typeof window !== 'undefined' && window.location && (window.location.protocol === 'capacitor:' || window.location.protocol === 'ionic:')) {
-        return 'https://anhad-final.onrender.com';
+      if (typeof window !== 'undefined' && window.location) {
+        const host = window.location.hostname;
+        const port = window.location.port;
+        if ((host === 'localhost' || host === '127.0.0.1') && (port === '3000' || port === '3001')) {
+          return `${window.location.protocol}//${host}:${port}`;
+        }
       }
     } catch (e) {}
-    return '';
+    return 'https://anhad-final.onrender.com';
   })();
 
   async function api(path, options = {}) {

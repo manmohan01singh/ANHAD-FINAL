@@ -88,7 +88,8 @@
         headers['Authorization'] = 'Bearer ' + profile.uid;
       }
       const apiBase = (window.AnhadFriends && window.AnhadFriends.API_BASE) ||
-        (window.Capacitor && (window.Capacitor.isNative || (typeof window.Capacitor.isNativePlatform === 'function' && window.Capacitor.isNativePlatform())) ? 'https://anhad-final.onrender.com' : '');
+        (typeof window !== 'undefined' && window.ANHAD_API_BASE) ||
+        'https://anhad-final.onrender.com';
       await fetch(apiBase + '/api/user/sync', {
         method: 'POST',
         headers,
