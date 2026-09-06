@@ -2,7 +2,13 @@
   "buildCommand": null,
   "installCommand": null,
   "outputDirectory": "frontend",
+  "rewrites": [
+    { "source": "/admin", "destination": "/Admin/index.html" },
+    { "source": "/admin/(.*)", "destination": "/Admin/$1" },
+    { "source": "/api/(.*)", "destination": "https://anhad-final.onrender.com/api/$1" }
+  ],
   "headers": [
+
     {
       "source": "/api/(.*)",
       "headers": [

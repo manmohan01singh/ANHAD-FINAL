@@ -69,15 +69,16 @@
   const VIRTUAL_LIVE_EPOCH_START = 1704067200; // 2024-01-01 00:00:00 UTC
   
   const AMRITVELA_KNOWN_DURATIONS = {
-    2: 5191, 5: 5638, 10: 5591, 12: 5633, 13: 6537, 14: 5640,
-    18: 6038, 21: 6026, 23: 4899, 25: 5771, 29: 5136, 30: 5755,
-    31: 5181, 32: 5747, 33: 6628, 34: 5990, 35: 4796, 37: 5717
+    0: 4243, 1: 5216, 2: 5191, 3: 5649, 4: 5254, 5: 5638, 6: 5680, 7: 5354, 8: 5317, 9: 5570,
+    10: 5591, 11: 3732, 12: 5633, 13: 6537, 14: 5640, 15: 6285, 16: 5680, 17: 6106, 18: 6038, 19: 5747,
+    20: 5932, 21: 6026, 22: 5975, 23: 4899, 24: 5213, 25: 5771, 26: 5823, 27: 5480, 28: 5968, 29: 5136,
+    30: 5755, 31: 5181, 32: 5747, 33: 6628, 34: 5990, 35: 4796, 36: 6172, 37: 5717, 38: 5027, 39: 5511
   };
   const SIMRAN_KNOWN_DURATIONS = {
-    0: 2747, 1: 2676, 5: 2379, 9: 2250, 10: 2287, 11: 2116,
-    12: 2250, 13: 2080, 14: 2062, 15: 2455, 17: 2024, 21: 1951,
-    23: 1959, 24: 1994, 25: 2262, 26: 2136, 27: 2477, 28: 1895,
-    31: 5371, 32: 2019, 34: 2282, 37: 3167
+    0: 2747, 1: 2676, 2: 2683, 3: 2686, 4: 2194, 5: 2379, 6: 2125, 7: 2049, 8: 2766, 9: 2250,
+    10: 2287, 11: 2116, 12: 2250, 13: 2080, 14: 2062, 15: 2455, 16: 2047, 17: 2024, 18: 2286, 19: 2124,
+    20: 1891, 21: 1951, 22: 1919, 23: 1959, 24: 1994, 25: 2262, 26: 2136, 27: 2477, 28: 1895, 29: 1834,
+    30: 2003, 31: 5371, 32: 2019, 33: 2011, 34: 2282, 35: 2416, 36: 2222, 37: 3167
   };
 
   // Asset base resolution
@@ -767,19 +768,21 @@
         this.audio.removeAttribute('crossorigin');
       }
 
-      // Pre-set seek time on loadedmetadata so audio starts directly at the correct offset without a 1-second splash from 0
+      // Pre-set seek time on canplay so audio starts directly at the correct offset without hanging on WebM/MP3
       if (Number.isFinite(initialSeekTime) && initialSeekTime > 0) {
         const applyInitialSeek = () => {
           try {
             const dur = this.audio.duration || 3600;
             const safeSeek = Math.max(0, Math.min(initialSeekTime, dur - 2));
-            this.audio.currentTime = safeSeek;
+            if (Math.abs(this.audio.currentTime - safeSeek) > 1) {
+              this.audio.currentTime = safeSeek;
+            }
           } catch(e) {}
         };
-        if (this.audio.readyState >= 1) {
+        if (this.audio.readyState >= 2) {
           applyInitialSeek();
         } else {
-          this.audio.addEventListener('loadedmetadata', applyInitialSeek, { once: true });
+          this.audio.addEventListener('canplay', applyInitialSeek, { once: true });
         }
       }
 
@@ -852,11 +855,7 @@
               setTimeout(() => {
                 if (!isPlaying && wantsPlayback && currentStream) {
                   console.log('[PlaybackQueueController] ⏭️ Executing auto-recovery after timeout...');
-                  if (STREAMS[currentStream]?.type === 'playlist') {
-                    handleTrackEnded();
-                  } else {
-                    playStream(currentStream);
-                  }
+                  playStream(currentStream);
                 }
               }, 2000);
             }

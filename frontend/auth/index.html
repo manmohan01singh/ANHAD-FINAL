@@ -307,7 +307,9 @@
         } else {
           btn.innerHTML = origHtml;
           btn.disabled = false;
-          if (res.isInvalidApiKey || (res.code && res.code.includes('api-key-not-valid')) || (res.error && res.error.includes('api-key-not-valid'))) {
+          if (res.isUnauthorizedDomain) {
+            showAlert(`<strong>Domain Not Authorized in Firebase Console:</strong><br>Firebase blocked Google sign-in because <code>${res.domain || window.location.hostname}</code> is not authorized yet.<br><br><strong>Quick Fix (takes 1 minute):</strong><br>1. Open <a href="https://console.firebase.google.com" target="_blank" style="color:var(--auth-gold);font-weight:600;text-decoration:underline;">Firebase Console</a> ➔ Project <code>anhad-4bf78</code><br>2. Go to <strong>Authentication</strong> ➔ <strong>Settings</strong> ➔ <strong>Authorized domains</strong><br>3. Click <strong>Add domain</strong> and paste: <code>${res.domain || window.location.hostname}</code>`, true, true);
+          } else if (res.isInvalidApiKey || (res.code && res.code.includes('api-key-not-valid')) || (res.error && res.error.includes('api-key-not-valid'))) {
             showAlert('Firebase Web API key is not yet configured for project anhad-4bf78.');
             const devCard = document.getElementById('devOptionsCard');
             if (devCard) devCard.style.display = 'block';
@@ -323,6 +325,7 @@
         btn.disabled = false;
       }
     }
+
 
     async function handleEmailSignIn(e) {
       e.preventDefault();
@@ -402,14 +405,40 @@
       window.location.replace(getReturnUrl());
     }
 
-    // If on localhost / 127.0.0.1, check for server-provided key or offer dev options
+    // Auto-listen for Firebase redirect auth completion and load remote config
     document.addEventListener('DOMContentLoaded', async () => {
+      // 1. Fetch server-provided Firebase web config
       try {
-        const res = await fetch('/api/config/firebase-web').then(r => r.json()).catch(() => null);
+        const apiBase = (window.AnhadFriends && window.AnhadFriends.API_BASE) ||
+          (window.Capacitor && (window.Capacitor.isNative || (typeof window.Capacitor.isNativePlatform === 'function' && window.Capacitor.isNativePlatform())) ? 'https://anhad-final.onrender.com' : (window.location.hostname.includes('vercel.app') ? 'https://anhad-final.onrender.com' : ''));
+        const res = await fetch(apiBase + '/api/config/firebase-web').then(r => r.json()).catch(() => null);
         if (res && res.apiKey && window.AnhadFirebase && typeof window.AnhadFirebase.setApiKey === 'function') {
           window.AnhadFirebase.setApiKey(res.apiKey);
         }
       } catch(e) {}
+
+      // 2. Automatically handle Google Redirect Sign-In results
+      if (window.AnhadFirebase && typeof window.AnhadFirebase.onAuthStateChanged === 'function') {
+        window.AnhadFirebase.onAuthStateChanged(async (fbUser) => {
+          if (fbUser && !window.__googleAuthSuccessHandled) {
+            window.__googleAuthSuccessHandled = true;
+            showAlert('Google Sign-In verified! Finalizing profile...', false);
+            const idToken = await fbUser.getIdToken().catch(() => null);
+            if (window.AnhadAuth && typeof window.AnhadAuth.signInWithGoogle === 'function') {
+              const syncRes = await window.AnhadAuth.signInWithGoogle({
+                uid: fbUser.uid,
+                displayName: fbUser.displayName,
+                email: fbUser.email,
+                photoURL: fbUser.photoURL,
+                idToken: idToken
+              });
+              if (syncRes && syncRes.ok) {
+                proceedAfterAuth();
+              }
+            }
+          }
+        });
+      }
 
       const host = window.location.hostname;
       const isLocal = host === 'localhost' || host === '127.0.0.1';
@@ -419,6 +448,7 @@
         if (devCard) devCard.style.display = 'block';
       }
     });
+
 
     function handleGoBack() {
       if (window.history.length > 1) {

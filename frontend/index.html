@@ -5668,8 +5668,10 @@
           <div class="hero-card__image-wrapper">
             <picture id="heroCard1Picture">
               <img decoding="async" class="hero-card__image" id="heroCard1Img"
+                src="assets/HERO CARD IMAGES/morning-darbar-sahib.webp"
                 alt="Sri Harmandir Sahib — Golden Temple" width="430" height="242" loading="eager" fetchpriority="high"
-                onerror="this.style.display='none';this.parentNode.style.background='linear-gradient(150deg,#D4943A,#C4842A)'">
+                style="display:block; opacity:1;"
+                onerror="if(!this.src.includes('morning-darbar-sahib.webp')){this.src='assets/HERO CARD IMAGES/morning-darbar-sahib.webp';}else{this.parentNode.style.background='linear-gradient(150deg,#D4943A,#C4842A)';}">
               <script>
                 (function() {
                   var slot = localStorage.getItem('anhad_forced_time_of_day');
@@ -5681,6 +5683,8 @@
                   var target = (theme === 'dark') ? 'night' : (theme === 'light' ? 'day' : slot);
                   var img = document.getElementById('heroCard1Img');
                   if (img) {
+                    img.style.display = 'block';
+                    img.style.opacity = '1';
                     img.src = 'assets/HERO CARD IMAGES/' + target + '-darbar-sahib.webp';
                     img.setAttribute('data-img-morning', 'assets/HERO CARD IMAGES/morning-darbar-sahib.webp');
                     img.setAttribute('data-img-day', 'assets/HERO CARD IMAGES/day-darbar-sahib.webp');
@@ -5711,8 +5715,10 @@
           <div class="hero-card__image-wrapper">
             <picture id="heroCard2Picture">
               <img decoding="async" class="hero-card__image" id="heroCard2Img"
+                src="assets/HERO CARD IMAGES/morning-amritvela-kirtan.webp"
                 alt="Amritvela — Sacred Dawn at Darbar Sahib" width="430" height="242" loading="lazy" fetchpriority="low"
-                onerror="this.style.display='none';this.parentNode.style.background='linear-gradient(150deg,#8B6914,#C49032)'">
+                style="display:block; opacity:1;"
+                onerror="if(!this.src.includes('morning-amritvela-kirtan.webp')){this.src='assets/HERO CARD IMAGES/morning-amritvela-kirtan.webp';}else{this.parentNode.style.background='linear-gradient(150deg,#8B6914,#C49032)';}">
               <script>
                 (function() {
                   var slot = localStorage.getItem('anhad_forced_time_of_day');
@@ -5724,6 +5730,8 @@
                   var target = (theme === 'dark') ? 'night' : (theme === 'light' ? 'day' : slot);
                   var img = document.getElementById('heroCard2Img');
                   if (img) {
+                    img.style.display = 'block';
+                    img.style.opacity = '1';
                     img.src = 'assets/HERO CARD IMAGES/' + target + '-amritvela-kirtan.webp';
                     img.setAttribute('data-img-morning', 'assets/HERO CARD IMAGES/morning-amritvela-kirtan.webp');
                     img.setAttribute('data-img-day', 'assets/HERO CARD IMAGES/day-amritvela-kirtan.webp');
@@ -5754,8 +5762,10 @@
           <div class="hero-card__image-wrapper">
             <picture id="heroCard3Picture">
               <img decoding="async" class="hero-card__image" id="heroCard3Img"
+                src="assets/HERO CARD IMAGES/morning-waheguru-simran.webp"
                 alt="Waheguru Simran — Divine Meditation" width="430" height="242" loading="lazy" fetchpriority="low"
-                onerror="this.style.display='none';this.parentNode.style.background='linear-gradient(150deg,#8B6914,#C49032)'">
+                style="display:block; opacity:1;"
+                onerror="if(!this.src.includes('morning-waheguru-simran.webp')){this.src='assets/HERO CARD IMAGES/morning-waheguru-simran.webp';}else{this.parentNode.style.background='linear-gradient(150deg,#8B6914,#C49032)';}">
               <script>
                 (function() {
                   var slot = localStorage.getItem('anhad_forced_time_of_day');
@@ -5767,6 +5777,8 @@
                   var target = (theme === 'dark') ? 'night' : (theme === 'light' ? 'day' : slot);
                   var img = document.getElementById('heroCard3Img');
                   if (img) {
+                    img.style.display = 'block';
+                    img.style.opacity = '1';
                     img.src = 'assets/HERO CARD IMAGES/' + target + '-waheguru-simran.webp';
                     img.setAttribute('data-img-morning', 'assets/HERO CARD IMAGES/morning-waheguru-simran.webp');
                     img.setAttribute('data-img-day', 'assets/HERO CARD IMAGES/day-waheguru-simran.webp');
@@ -5776,6 +5788,7 @@
                 })();
               </script>
             </picture>
+
             <div class="hero-card__badge hero-card__badge--curated" aria-label="Non-stop Simran stream">
               <span class="hero-card__badge-dot" aria-hidden="true" style="background:#FFB347"></span>
               <span class="hero-card__badge-text">24/7 SIMRAN</span>

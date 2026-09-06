@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ╔═══════════════════════════════════════════════════════════════════════════════╗
  * ║  GURBANI RADIO SERVER — True Server-Authoritative Live Broadcast            ║
  * ║  All devices hear the same audio at the same moment.                        ║
@@ -839,10 +839,11 @@ app.post('/api/user/sync', (req, res) => {
 
 app.get('/api/config/firebase-web', (req, res) => {
     res.json({
-        apiKey: process.env.FIREBASE_WEB_API_KEY || null,
+        apiKey: process.env.FIREBASE_WEB_API_KEY || 'AIzaSyB-E2ywcCux1nvoAUyPK58CESv2qID2esE',
         projectId: process.env.FIREBASE_PROJECT_ID || 'anhad-4bf78'
     });
 });
+
 
 // Rate limiters for security
 const friendSearchLimiter = createRateLimiter(40, 60000, 'search');

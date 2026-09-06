@@ -197,15 +197,26 @@
         const isInvalidKey = err.code === 'auth/api-key-not-valid' || 
                              err.code === 'auth/invalid-api-key' ||
                              (err.message && err.message.includes('api-key-not-valid'));
+        if (err.code === 'auth/unauthorized-domain') {
+          const host = (typeof window !== 'undefined' && window.location && window.location.hostname) || 'your domain';
+          return {
+            ok: false,
+            code: 'auth/unauthorized-domain',
+            error: `Domain "${host}" is not authorized in Firebase Console. Please add "${host}" to Firebase Console ➔ Authentication ➔ Settings ➔ Authorized domains.`,
+            isUnauthorizedDomain: true,
+            domain: host
+          };
+        }
         return {
           ok: false,
           error: isInvalidKey 
             ? 'Firebase Web API key is not valid or not yet configured for project anhad-4bf78.' 
-            : err.message,
+            : (err.message || 'Google Sign-In failed'),
           code: err.code,
           isInvalidApiKey: isInvalidKey
         };
       }
+
     }
 
     // Fallback if full SDK script has not finished loading
@@ -305,11 +316,27 @@
   function setApiKey(newKey) {
     if (!newKey || typeof newKey !== 'string') return false;
     const clean = newKey.trim();
+    if (clean === FIREBASE_CONFIG.apiKey && app) return true;
     try { localStorage.setItem('anhad_firebase_api_key', clean); } catch (e) {}
     window.ANHAD_FIREBASE_API_KEY = clean;
     FIREBASE_CONFIG.apiKey = clean;
+    if (window.firebase && window.firebase.apps && window.firebase.apps.length) {
+      try {
+        const current = window.firebase.app();
+        if (current && typeof current.delete === 'function') {
+          current.delete().then(() => {
+            app = null;
+            auth = null;
+            init();
+          }).catch(() => { init(); });
+          return true;
+        }
+      } catch(e) {}
+    }
+    init();
     return true;
   }
+
 
   const AnhadFirebase = {
     init,
