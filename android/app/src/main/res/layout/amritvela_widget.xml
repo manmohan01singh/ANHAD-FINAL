@@ -15,15 +15,21 @@
         android:layout_height="84dp"
         android:layout_marginEnd="14dp">
 
-        <!-- Album Cover -->
-        <ImageView
-            android:id="@+id/amritvela_cover"
+        <!-- Cover Art — emoji-based (RemoteViews safe) -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scaleType="centerCrop"
-            android:src="@drawable/artwork_amritvela"
             android:background="@drawable/widget_card_inner"
-            android:contentDescription="Amritvela Kirtan" />
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🌅"
+                android:textSize="30sp"
+                android:gravity="center" />
+        </LinearLayout>
 
         <!-- Celestial Moon Badge (top-right) -->
         <TextView

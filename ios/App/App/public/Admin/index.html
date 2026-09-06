@@ -57,7 +57,7 @@
   <link rel="stylesheet" href="../css/trendora-premium.css">
   <link rel="stylesheet" href="../css/anhad-core.css">
   <link rel="stylesheet" href="../css/nav-glass.css">
-  <link rel="stylesheet" href="./admin.css">
+  <link rel="stylesheet" href="admin.css">
 </head>
 <body>
   <nav class="glass-nav">
@@ -65,27 +65,43 @@
       <svg class="back-chevron" viewBox="0 0 9 16"><path d="M8 1L1 8L8 15" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
       <span class="back-label">Back</span>
     </button>
-    <span class="glass-nav__title">Campaign Admin</span>
+    <span class="glass-nav__title">Mission Control</span>
     <div class="glass-nav__action"></div>
   </nav>
 
   <main class="admin-page">
 
-    <!-- -- Gate: token entry ------------------------------------------- -->
-    <section class="admin-card" id="gateCard">
-      <h2 class="admin-card__title">Admin access</h2>
-      <p class="admin-hint">
-        Enter the admin token. It is stored on this device only and sent as an
-        <code>X-Admin-Token</code> header. It is never shown again after saving.
+    <!-- -- Restricted Access Card (Default view for public) ------------ -->
+    <section class="admin-card restricted-card" id="restrictedCard">
+      <div class="restricted-icon">🔒</div>
+      <h2 class="restricted-title">Access Restricted</h2>
+      <p class="restricted-desc">
+        This Mission Control dashboard is reserved for verified administrators and sevadaars of ANHAD. Public access is not permitted.
       </p>
-      <label class="admin-label" for="tokenInput">Admin token</label>
-      <input class="admin-input" id="tokenInput" type="password" autocomplete="off"
-             autocapitalize="off" autocorrect="off" spellcheck="false"
-             placeholder="Paste token">
-      <div class="admin-actions">
-        <button class="admin-btn admin-btn--primary" id="unlockBtn">Unlock</button>
-        <button class="admin-btn" id="forgetBtn" hidden>Forget token</button>
+      <div class="admin-actions" style="justify-content:center; gap:12px;">
+        <button class="admin-btn admin-btn--primary" onclick="window.location.href='../index.html'">Return to Home Screen</button>
+        <button class="admin-btn" id="showGateBtn" onclick="revealGateCard()">Unlock Admin Access</button>
       </div>
+    </section>
+
+    <!-- -- Gate: token entry ------------------------------------------- -->
+    <section class="admin-card" id="gateCard" hidden>
+      <h2 class="admin-card__title">Admin Authentication</h2>
+      <p class="admin-hint">
+        Enter the authorized admin token or passcode to access real-time Mission Control. It is stored securely on this device.
+      </p>
+      <form id="adminGateForm" onsubmit="event.preventDefault(); document.getElementById('unlockBtn').click();">
+        <input type="text" name="username" value="admin" autocomplete="username" style="display:none;" aria-hidden="true">
+        <label class="admin-label" for="tokenInput">Admin Secret Token / Passcode</label>
+        <input class="admin-input" id="tokenInput" type="password" autocomplete="current-password"
+               autocapitalize="off" autocorrect="off" spellcheck="false"
+               placeholder="Paste admin token or enter passcode">
+        <div class="admin-actions">
+          <button class="admin-btn admin-btn--primary" id="unlockBtn" type="button">Authenticate & Enter</button>
+          <button class="admin-btn" id="cancelGateBtn" type="button" onclick="hideGateCard()">Cancel</button>
+          <button class="admin-btn" id="forgetBtn" type="button" hidden>Forget token</button>
+        </div>
+      </form>
       <p class="admin-status" id="gateStatus"></p>
     </section>
 
@@ -94,6 +110,136 @@
 
       <section class="admin-card admin-card--info" id="storeCard">
         <div class="admin-store" id="storeInfo">Checking storage…</div>
+      </section>
+
+      <!-- ── Global Push Broadcast Console Banner ── -->
+      <section class="admin-card" style="background: linear-gradient(135deg, rgba(212,160,58,0.18) 0%, rgba(184,134,11,0.06) 100%); border: 1px solid rgba(212,160,58,0.4);">
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap;">
+          <div>
+            <h2 class="admin-card__title" style="margin-bottom:4px; color:#D4A03A; display:flex; align-items:center; gap:8px;">
+              <span>📢</span> Global Push Notification Broadcast Console
+            </h2>
+            <div style="font-size:0.85rem; color:var(--text-secondary); max-width:650px; line-height:1.4;">
+              Compose custom Gurbani alerts, select floral/celestial emojis, preview on the live device mockup, and broadcast immediately to all PWA, Android, and iOS devices worldwide.
+            </div>
+          </div>
+          <button class="admin-btn admin-btn--primary" onclick="window.location.href='broadcast.html'" style="padding:10px 20px; font-weight:700; white-space:nowrap;">
+            Open Broadcast Console ➔
+          </button>
+        </div>
+      </section>
+
+      <!-- ── Who Is Live Now Real-Time Dashboard ── -->
+      <section class="admin-card" id="liveNowCard">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+          <div>
+            <h2 class="admin-card__title" style="margin-bottom:2px;">👥 Who Is Live Now</h2>
+            <div style="font-size:0.8rem; color:var(--text-secondary);">Real-time active Sangat presence & Amrit Vela participation</div>
+          </div>
+          <button class="admin-btn" id="refreshLiveNowBtn" onclick="window.refreshLiveNow && window.refreshLiveNow()" style="font-size:0.8rem; padding:6px 12px;">Refresh</button>
+        </div>
+
+        <div class="grid-stats">
+          <div class="stat-card">
+            <div class="stat-label">Active Sangat</div>
+            <div class="stat-val" id="statActiveUsers">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Amrit Vela</div>
+            <div class="stat-val" id="statAmritVela" style="color:#22C55E;">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Companions</div>
+            <div class="stat-val" id="statCompanions">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Server Uptime</div>
+            <div class="stat-val" id="statUptime" style="font-size:18px;">0s</div>
+          </div>
+        </div>
+
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>User / Display Name</th>
+                <th>Activity</th>
+                <th>Streak</th>
+                <th>Amrit Vela Status</th>
+                <th>Last Active</th>
+              </tr>
+            </thead>
+            <tbody id="liveUsersTbody">
+              <tr><td colspan="5" style="text-align:center; color:var(--text-secondary); padding:16px;">Loading live users...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ── Spiritual Companion Artwork & Duration Manager ── -->
+      <section class="admin-card" id="companionAdminCard">
+        <h2 class="admin-card__title">☬ Spiritual Companion Campaign (Chaliya 2026)</h2>
+        <p class="admin-hint">
+          Dedicated sacred artwork with feathered gradient borders and duration scheduling controls for the Home Screen hero banner.
+        </p>
+
+        <!-- Live Preview -->
+        <label class="admin-label">Sacred Artwork Preview</label>
+        <div class="companion-admin-preview" id="companionAdminPreviewWrap">
+          <img id="companionAdminPreviewImg" src="../assets/companion/chaliya-2026.webp" alt="Chaliya 2026 Preview">
+        </div>
+
+        <div style="margin: 10px 0 16px; display: flex; flex-direction: column; gap: 8px;">
+          <div style="display: flex; gap: 8px; align-items: center;">
+            <input type="file" id="companionFileInput" accept="image/*" style="display: none;">
+            <button type="button" class="admin-btn" id="uploadArtworkBtn" onclick="document.getElementById('companionFileInput').click()">📁 Choose Custom Artwork Image</button>
+            <button type="button" class="admin-btn admin-btn--danger" id="resetCompanionArtworkBtn" style="padding: 8px 12px; font-size: 13px;">↺ Reset to Default</button>
+          </div>
+          <div style="display: flex; gap: 8px; align-items: center;">
+            <input class="admin-input" id="companionImgUrlInput" type="text" placeholder="Or paste image URL (https://... or assets/...)" style="font-size: 13px;">
+            <button type="button" class="admin-btn" id="applyUrlBtn" style="white-space: nowrap; font-size: 13px;">Apply URL</button>
+          </div>
+        </div>
+
+        <!-- Duration Controls (Days & Hours) -->
+        <label class="admin-label">Companion Duration Scheduling</label>
+        <p class="admin-hint">Set how long the companion campaign will actively display on the Home Screen.</p>
+
+        <div class="admin-row">
+          <div class="admin-col">
+            <label class="admin-label" for="companionDaysInput">Duration (Days)</label>
+            <input class="admin-input" id="companionDaysInput" type="number" min="0" max="365" value="40">
+          </div>
+          <div class="admin-col">
+            <label class="admin-label" for="companionHoursInput">Additional (Hours)</label>
+            <input class="admin-input" id="companionHoursInput" type="number" min="0" max="23" value="0">
+          </div>
+        </div>
+
+        <div class="preset-pills">
+          <button type="button" class="preset-pill" id="preset40" onclick="window.setDurationPreset && window.setDurationPreset(40, 0)">40 Days (Chaliya)</button>
+          <button type="button" class="preset-pill" id="preset21" onclick="window.setDurationPreset && window.setDurationPreset(21, 0)">21 Days</button>
+          <button type="button" class="preset-pill" id="preset7" onclick="window.setDurationPreset && window.setDurationPreset(7, 0)">7 Days (Gurpurab)</button>
+          <button type="button" class="preset-pill" id="preset1" onclick="window.setDurationPreset && window.setDurationPreset(1, 0)">24 Hours</button>
+        </div>
+
+        <div id="companionScheduleStatus" style="font-size: 0.84rem; color: var(--text-secondary); margin: 8px 0 16px; line-height: 1.4;">
+          <!-- Real-time dynamic calculation -->
+        </div>
+
+        <!-- Active Toggle -->
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-top: 1px solid var(--border-color, rgba(0,0,0,0.08));">
+          <div>
+            <div style="font-weight: 600; font-size: 0.95rem; color: var(--text-primary);">Enable on Home Screen</div>
+            <div style="font-size: 0.8rem; color: var(--text-secondary);">Displays companion hero artwork on Home Screen</div>
+          </div>
+          <button type="button" class="toggle" id="companionEnableToggle" role="switch" aria-checked="false"></button>
+        </div>
+
+        <div class="admin-actions" style="margin-top: 16px;">
+          <button class="admin-btn admin-btn--primary" id="saveCompanionConfigBtn">Save & Apply Companion</button>
+        </div>
+        <p class="admin-status" id="companionStatus"></p>
       </section>
 
       <section class="admin-card">
@@ -171,6 +317,7 @@
   <!-- The real renderer, used only via renderPreview(). Its own update() gates
        on isHome() so it will not try to render this page as if it were Home. -->
   <script src="../js/campaign-renderer.js" defer></script>
-  <script src="./admin.js" defer></script>
+  <script src="../lib/companion-mode.js" defer></script>
+  <script src="admin.js" defer></script>
 </body>
 </html>

@@ -178,7 +178,15 @@
     checkExpiration();
     const enabled = isEnabled();
 
-    if (enabled) {
+    const html = document.documentElement;
+    const themeMode = html.getAttribute('data-theme-mode');
+    const isDark = html.classList.contains('dark-mode') ||
+                   html.getAttribute('data-theme') === 'dark' ||
+                   themeMode === 'dark';
+    const timeOfDay = html.getAttribute('data-time-of-day');
+    const showDark = isDark || (themeMode === 'auto' && timeOfDay === 'night') || (timeOfDay === 'night' && themeMode !== 'light');
+
+    if (enabled && !showDark) {
       if (document.body) document.body.classList.add('companion-mode-active');
       if (banner) {
         banner.classList.add('companion-mode-active');
@@ -194,6 +202,16 @@
       if (document.body) document.body.classList.remove('companion-mode-active');
       if (banner) banner.classList.remove('companion-mode-active');
       if (heroImg) heroImg.classList.remove('companion-mode-active');
+      if (showDark) {
+        if (banner) banner.style.setProperty('display', 'none', 'important');
+        const darkCarousel = document.getElementById('greetingDarkCarousel');
+        if (darkCarousel) {
+          darkCarousel.style.setProperty('display', 'flex', 'important');
+          if (window.PortraitSlider && typeof window.PortraitSlider.init === 'function') {
+            window.PortraitSlider.init();
+          }
+        }
+      }
     }
 
     if (!heroImg) return;

@@ -34,6 +34,7 @@ const companionEngine = require('./lib/companion-engine');
 const companionNotifications = require('./lib/companion-notifications');
 const campaignEngine = require('./lib/campaign-engine');
 const adminEngine = require('./lib/admin-engine');
+const broadcastEngine = require('./lib/broadcast-engine');
 
 
 const app = express();
@@ -1084,6 +1085,82 @@ app.post('/api/admin/campaigns/:id/toggle', requireAdmin, (req, res) => {
         res.status(err.status || 500).json({ error: err.message || 'Failed to toggle campaign' });
     }
 });
+
+/**
+ * ═══════════════════════════════════════════════════════════════════════════
+ * GLOBAL NOTIFICATION BROADCAST API — ADMIN CONTROL & CLIENT SYNC
+ * ═══════════════════════════════════════════════════════════════════════════
+ */
+
+// 1. Client Sync: Public endpoint for PWA & Capacitor apps to fetch active broadcasts
+app.get('/api/notifications/broadcasts', (req, res) => {
+    try {
+        const since = Number(req.query.since) || 0;
+        const broadcasts = broadcastEngine.getActiveBroadcasts(since);
+        res.json({ ok: true, broadcasts, count: broadcasts.length, serverTime: Date.now() });
+    } catch (err) {
+        res.status(500).json({ ok: false, error: err.message || 'Failed to fetch broadcasts' });
+    }
+});
+
+// 2. Admin Broadcast: Send a new push notification to all devices
+app.post('/api/notifications/broadcast', requireAdmin, async (req, res) => {
+    try {
+        const { title, body, subtitle, category, emoji, deepLink, sound, priority, ttlHours } = req.body || {};
+        if (!title || !title.trim()) {
+            return res.status(400).json({ ok: false, error: 'Notification title is required.' });
+        }
+        if (!body || !body.trim()) {
+            return res.status(400).json({ ok: false, error: 'Notification body message is required.' });
+        }
+
+        const broadcastItem = await broadcastEngine.broadcast({
+            title,
+            body,
+            subtitle,
+            category: category || 'admin_broadcast',
+            emoji: emoji || '🌸',
+            deepLink: deepLink || '/',
+            sound: sound || 'default',
+            priority: priority || 'high',
+            ttlHours: Number(ttlHours) || 72,
+            createdBy: req.user ? (req.user.username || req.user.uid) : 'admin'
+        });
+
+        res.json({
+            ok: true,
+            message: 'Notification broadcast created and dispatched to all devices successfully!',
+            broadcast: broadcastItem
+        });
+    } catch (err) {
+        console.error('[AdminBroadcast] Broadcast error:', err);
+        res.status(500).json({ ok: false, error: err.message || 'Failed to dispatch broadcast' });
+    }
+});
+
+// 3. Admin: Get full broadcast history with stats
+app.get('/api/admin/notifications/broadcasts', requireAdmin, (req, res) => {
+    try {
+        const history = broadcastEngine.getAllBroadcasts();
+        res.json({ ok: true, broadcasts: history, count: history.length });
+    } catch (err) {
+        res.status(500).json({ ok: false, error: err.message || 'Failed to get broadcast history' });
+    }
+});
+
+// 4. Admin: Delete a broadcast
+app.delete('/api/admin/notifications/broadcast/:id', requireAdmin, (req, res) => {
+    try {
+        const deleted = broadcastEngine.deleteBroadcast(req.params.id);
+        if (!deleted) {
+            return res.status(404).json({ ok: false, error: 'Broadcast not found' });
+        }
+        res.json({ ok: true, message: 'Broadcast deleted successfully' });
+    } catch (err) {
+        res.status(500).json({ ok: false, error: err.message || 'Failed to delete broadcast' });
+    }
+});
+
 
 
 /**

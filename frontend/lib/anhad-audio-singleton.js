@@ -272,17 +272,60 @@
   let currentTrackArtist = '';
   let manualOffset = 0; // seconds behind live edge
   let pauseAnchor = null; // { timestamp, offset }
+  let networkInterruptAnchor = null; // { stream, trackIndex, position, offset, timestamp, title, artist }
+  let lastKnownPlaybackTime = 0;
+  let lastKnownTrackIndex = 0;
+  let lastKnownStream = null;
   let isTransitioning = false; // CRITICAL FIX: Prevent concurrent track transitions
   let connectionState = 'idle'; // 'idle' | 'connected' | 'reconnecting' | 'failed'
   let liveReconnectAttempts = 0; // reset only once 'playing' confirms real recovery; bounds the retry loop below
   let reconnectTimer = null; // the one pending scheduled reconnect attempt, if any
   let reconnectCycleActive = false; // true from first failure until confirmed recovery — blocks the watchdog/online-listener from piling on a second, overlapping reconnect
+  let stallRecoveryTimer = null;
+  let stallRecoveryAttempts = 0;
   // "The user wants audio." Set when playback is requested, cleared only by an
   // explicit pause()/stop(). Survives errors, offline periods and exhausted
   // retries, so the 'online' handler knows whether an interrupted listen should
   // be resumed. isPlaying answers "is sound coming out right now?" — a very
   // different question, and the one that must go false the moment audio dies.
   let wantsPlayback = false;
+
+  function captureNetworkInterruption(reason) {
+    if (!wantsPlayback || !currentStream) return;
+
+    // Determine accurate interrupted playback time
+    const audio = PlaybackQueueController.audio;
+    let pos = 0;
+    if (lastKnownStream === currentStream && Number.isFinite(lastKnownPlaybackTime) && lastKnownPlaybackTime > 0) {
+      pos = lastKnownPlaybackTime;
+    } else if (audio && Number.isFinite(audio.currentTime) && audio.currentTime > 0) {
+      pos = audio.currentTime;
+    }
+
+    // Only record anchor once per outage (preserve initial disconnect position)
+    if (!networkInterruptAnchor) {
+      networkInterruptAnchor = {
+        stream: currentStream,
+        trackIndex: typeof currentTrackIndex === 'number' ? currentTrackIndex : (lastKnownTrackIndex || 0),
+        title: currentTrackTitle,
+        artist: currentTrackArtist,
+        position: pos,
+        offset: manualOffset || 0,
+        timestamp: Date.now()
+      };
+      console.log(`[AnhadAudio] 🛜 Network interrupted (${reason}) — anchored at track ${networkInterruptAnchor.trackIndex}, position ${networkInterruptAnchor.position.toFixed(1)}s, offset ${networkInterruptAnchor.offset}s`);
+    }
+
+    isPlaying = false;
+    isLoading = false;
+    if (!navigator.onLine || STREAMS[currentStream]?.type === 'live') {
+      connectionState = 'reconnecting';
+    }
+    emit('loading', { isLoading: false });
+    emit('statechange', getPublicState());
+    persistState();
+    updateNativeMediaState();
+  }
 
   const listeners = {
     statechange: [],
@@ -483,6 +526,7 @@
           liveReconnectAttempts = 0;
           stallRecoveryAttempts = 0;
           reconnectCycleActive = false;
+          networkInterruptAnchor = null; // Confirmed playing, clear interruption anchor
           if (reconnectTimer) { clearTimeout(reconnectTimer); reconnectTimer = null; }
         }
         emit('loading', { isLoading: false });
@@ -502,10 +546,17 @@
         }
       });
       this.audio.addEventListener('timeupdate', () => {
+        const cur = this.audio.currentTime || 0;
+        // Continuously track playback position for seamless network-recovery freeze frame
+        if (isPlaying && Number.isFinite(cur) && cur > 0) {
+          lastKnownPlaybackTime = cur;
+          lastKnownTrackIndex = currentTrackIndex;
+          lastKnownStream = currentStream;
+        }
+
         persistState();
         // Dispatch UI timeupdate
         const dur = this.audio.duration || 3600;
-        const cur = this.audio.currentTime || 0;
         const pct = Math.max(0, Math.min(100, (cur / dur) * 100));
         emit('timeupdate', { currentTime: cur, duration: dur, progress: pct });
 
@@ -599,15 +650,6 @@
           errorType = 'offline';
         }
         
-        // A fatal MediaError stops playback but, per the HTML spec, does NOT
-        // fire a 'pause' event and does NOT set audio.paused — so nothing else
-        // in this file ever cleared isPlaying. Both recovery branches below are
-        // gated on !isPlaying, so every retry was silently skipped while the
-        // attempt counter still burned down to a terminal 'failed'. It also
-        // left every getPublicState() consumer (mini player, radio page, hero
-        // cards, lock-screen MediaSession) showing "playing" over a silent
-        // stream, which made the user's first tap call pause() instead of
-        // resuming. Clear it here, before any recovery decision is taken.
         isPlaying = false;
         isLoading = false;
         emit('loading', { isLoading: false });
@@ -624,64 +666,54 @@
           readyState: this.audio.readyState
         });
 
-        // Offline is not a stream fault — retrying on a dead network just burns
-        // the attempt budget (2+4+8+16+30s ≈ 60s total, i.e. any outage longer
-        // than a minute used to exhaust it permanently). Park until 'online'.
-        // Offline or Network Hiccup Handling
-        if (!navigator.onLine) {
-          connectionState = 'reconnecting';
-          emit('statechange', getPublicState());
-          console.log('[PlaybackQueueController] 📴 Offline detected — active network watchdog will auto-resume upon reconnection');
-          return;
-        }
+        if (wantsPlayback) {
+          // Freeze-frame the exact position at the moment of failure
+          captureNetworkInterruption('Media error: ' + errorType);
 
-        // AUTO-RECOVERY for Playlist Streams
-        if (currentStream && STREAMS[currentStream]?.type === 'playlist') {
-          console.log('[PlaybackQueueController] 🔄 Error in playlist stream, auto-recovering in 2.5 seconds...');
-          setTimeout(() => {
-            if (!isPlaying && wantsPlayback) {
-              console.log('[PlaybackQueueController] ⏭️ Re-resolving live broadcast position after error');
-              playStream(currentStream);
-            }
-          }, 2500);
-        } else if (currentStream && STREAMS[currentStream]?.type === 'live') {
-          // UNSTOPPABLE 24/7 AUTO-RECOVERY FOR LIVE STREAMS (Darbar Sahib, SikhNet, etc.)
-          // Never give up if user wants playback (wantsPlayback === true) — per
-          // product spec this only ever stops on an explicit pause/stop, never
-          // on its own. A prior version called this.stop() past 5 attempts,
-          // which cleared wantsPlayback and silently killed playback intent the
-          // user never asked to end; now it just holds at the backoff ceiling.
-          liveReconnectAttempts++;
-          reconnectCycleActive = true;
-          connectionState = 'reconnecting';
-          emit('statechange', getPublicState());
-
-          if (liveReconnectAttempts >= 6) {
-            connectionState = 'failed';
-            emit('statechange', getPublicState());
-            if (liveReconnectAttempts === 6) {
-              emit('error', { type: 'stream_failed', message: 'Still unable to reach the stream — will keep retrying automatically.' });
-            }
+          if (!navigator.onLine) {
+            console.log('[PlaybackQueueController] 📴 Offline detected — waiting for network reconnection to resume in-place');
+            return;
           }
 
-          // Adaptive backoff: 2s -> 4s -> 8s -> 12s -> 15s, then holds at 15s.
-          const backoffMs = Math.min(2000 * Math.pow(1.5, Math.min(liveReconnectAttempts - 1, 6)), 15000);
-          console.log(`[PlaybackQueueController] 🔄 Live stream auto-recovery attempt #${liveReconnectAttempts} in ${Math.round(backoffMs)}ms...`);
+          // Online recovery attempts
+          if (currentStream && STREAMS[currentStream]?.type === 'playlist') {
+            console.log('[PlaybackQueueController] 🔄 Error in playlist stream while online, auto-recovering in 2.5 seconds...');
+            setTimeout(() => {
+              if (!isPlaying && wantsPlayback && connectionState === 'reconnecting') {
+                console.log('[PlaybackQueueController] ⏭️ Resuming playlist stream from interrupted position');
+                recoverAfterReconnect('Auto-recovery after momentary playlist error');
+              }
+            }, 2500);
+          } else if (currentStream && STREAMS[currentStream]?.type === 'live') {
+            liveReconnectAttempts++;
+            reconnectCycleActive = true;
+            connectionState = 'reconnecting';
+            emit('statechange', getPublicState());
 
-          clearTimeout(reconnectTimer);
-          reconnectTimer = setTimeout(() => {
-            reconnectTimer = null;
-            if (currentStream && STREAMS[currentStream]?.type === 'live' && !isPlaying && wantsPlayback) {
-              console.log('[PlaybackQueueController] 📡 Attempting live stream reconnection now...');
-              playStream(currentStream);
+            if (liveReconnectAttempts >= 6) {
+              connectionState = 'failed';
+              emit('statechange', getPublicState());
+              if (liveReconnectAttempts === 6) {
+                emit('error', { type: 'stream_failed', message: 'Still unable to reach the stream — will keep retrying automatically.' });
+              }
             }
-          }, backoffMs);
+
+            const backoffMs = Math.min(2000 * Math.pow(1.5, Math.min(liveReconnectAttempts - 1, 6)), 15000);
+            console.log(`[PlaybackQueueController] 🔄 Live stream auto-recovery attempt #${liveReconnectAttempts} in ${Math.round(backoffMs)}ms...`);
+
+            clearTimeout(reconnectTimer);
+            reconnectTimer = setTimeout(() => {
+              reconnectTimer = null;
+              if (currentStream && STREAMS[currentStream]?.type === 'live' && !isPlaying && wantsPlayback) {
+                console.log('[PlaybackQueueController] 📡 Attempting live stream reconnection now...');
+                DarbarLiveManager.play(currentStream);
+              }
+            }, backoffMs);
+          }
         }
       });
 
-      // RAPID STALL & BUFFER WATCHDOG (6 seconds instead of 15 seconds)
-      let stallRecoveryTimer = null;
-      let stallRecoveryAttempts = 0;
+      // RAPID STALL & BUFFER WATCHDOG (6 seconds)
       const MAX_STALL_RECOVERIES = 3;
       
       const clearStallTimer = () => {
@@ -697,24 +729,27 @@
           stallRecoveryTimer = null;
           if (!currentStream || !STREAMS[currentStream]) return;
           if (!wantsPlayback) return;
-          if (!navigator.onLine) return;
           
           stallRecoveryAttempts++;
           if (stallRecoveryAttempts > MAX_STALL_RECOVERIES) {
-            // Stop re-arming this tight 6s loop; the error handler's own
-            // bounded backoff (or the network watchdog) takes over from here.
-            // Deliberately NOT calling stop(): that clears wantsPlayback and
-            // would silently end playback intent the user never asked to end
-            // — and as a plain `function attempt()` (not an arrow function),
-            // `this` here was never actually bound to PlaybackQueueController
-            // in the first place, so this call would have thrown instead of
-            // stopping anything.
-            console.error('[PlaybackQueueController] ❌ Stream stalled too many times in a row; backing off stall-recovery.');
+            console.error('[PlaybackQueueController] ❌ Stream stalled repeatedly; freezing interruption anchor.');
+            captureNetworkInterruption('Stream stalled repeatedly');
             return;
           }
 
-          console.warn(`[PlaybackQueueController] ⚠️ Audio stream stalled/hung > 6s, auto-reconnecting stream (attempt ${stallRecoveryAttempts}/${MAX_STALL_RECOVERIES})...`);
-          playStream(currentStream);
+          console.warn(`[PlaybackQueueController] ⚠️ Audio stream stalled > 6s (attempt ${stallRecoveryAttempts}/${MAX_STALL_RECOVERIES})...`);
+
+          if (!navigator.onLine) {
+            captureNetworkInterruption('Stream stalled while offline');
+            return;
+          }
+
+          if (STREAMS[currentStream].type === 'playlist') {
+            captureNetworkInterruption('Stalled while playing');
+            recoverAfterReconnect('Stall recovery retry');
+          } else {
+            DarbarLiveManager.play(currentStream);
+          }
           armStallTimer();
         }, 6000);
       };
@@ -1097,12 +1132,15 @@
     if (!isPlaying) return;
     wantsPlayback = false;
     PlaybackQueueController.pause();
+    networkInterruptAnchor = null;
     pauseAnchor = {
       timestamp: Date.now(),
       trackIndex: typeof currentTrackIndex === 'number' ? currentTrackIndex : 0,
-      position: (PlaybackQueueController.audio && Number.isFinite(PlaybackQueueController.audio.currentTime)) 
-        ? PlaybackQueueController.audio.currentTime 
-        : 0,
+      position: (lastKnownStream === currentStream && Number.isFinite(lastKnownPlaybackTime) && lastKnownPlaybackTime > 0)
+        ? lastKnownPlaybackTime
+        : ((PlaybackQueueController.audio && Number.isFinite(PlaybackQueueController.audio.currentTime)) 
+          ? PlaybackQueueController.audio.currentTime 
+          : 0),
       offset: manualOffset
     };
     persistState();
@@ -1120,6 +1158,7 @@
     PlaybackQueueController.stop();
     manualOffset = 0;
     pauseAnchor = null;
+    networkInterruptAnchor = null;
     persistState();
     _nativeServiceStarted = false;
     if ('mediaSession' in navigator) {
@@ -1132,16 +1171,18 @@
     if (isPlaying) return;
     wantsPlayback = true;
 
-    // If there is a pause anchor, add elapsed pause duration to manualOffset
-    if (pauseAnchor) {
-      const elapsedPause = Math.floor((Date.now() - pauseAnchor.timestamp) / 1000);
-      manualOffset = (pauseAnchor.offset || 0) + elapsedPause;
+    // If there is an interruption or pause anchor, freeze timeline by adding elapsed time to manualOffset
+    const anchor = networkInterruptAnchor || pauseAnchor;
+    if (anchor) {
+      const elapsedPause = Math.floor((Date.now() - anchor.timestamp) / 1000);
+      manualOffset = (anchor.offset || 0) + elapsedPause;
+      networkInterruptAnchor = null;
       pauseAnchor = null;
     }
     persistState();
 
     const audio = PlaybackQueueController.audio;
-    const isAudioValid = audio && audio.src && audio.src !== window.location.href && !audio.error;
+    const isAudioValid = audio && audio.src && audio.src !== window.location.href && !audio.error && audio.networkState !== 3;
 
     if (isAudioValid && currentStream) {
       // Direct resume in place without tearing down buffer or restarting network fetch
@@ -1159,12 +1200,22 @@
           }
           console.log('[AnhadAudio] ✅ Resumed in-place successfully');
         }).catch((err) => {
-          console.warn('[AnhadAudio] ⚠️ In-place play rejected, falling back to fresh playStream:', err);
-          playStream(currentStream);
+          console.warn('[AnhadAudio] ⚠️ In-place play rejected, falling back to clean reload:', err);
+          if (anchor && STREAMS[currentStream]?.type === 'playlist') {
+            const trackUrl = STREAMS[currentStream].getTrackUrl(anchor.trackIndex || currentTrackIndex);
+            PlaybackQueueController.loadAndPlay(trackUrl, 'auto', anchor.position || 0);
+          } else {
+            playStream(currentStream);
+          }
         });
       });
     } else {
-      playStream(currentStream || 'darbar');
+      if (anchor && currentStream && STREAMS[currentStream]?.type === 'playlist') {
+        const trackUrl = STREAMS[currentStream].getTrackUrl(anchor.trackIndex || currentTrackIndex);
+        PlaybackQueueController.loadAndPlay(trackUrl, 'auto', anchor.position || 0);
+      } else {
+        playStream(currentStream || 'darbar');
+      }
     }
   }
 
@@ -1183,13 +1234,18 @@
 
   function stop() {
     wantsPlayback = false;
-    // connectionState previously survived stop(), so a 'failed' state leaked
-    // into the next, unrelated listening session.
     connectionState = 'idle';
     liveReconnectAttempts = 0;
+    stallRecoveryAttempts = 0;
+    reconnectCycleActive = false;
+    if (reconnectTimer) {
+      clearTimeout(reconnectTimer);
+      reconnectTimer = null;
+    }
     PlaybackQueueController.stop();
     manualOffset = 0;
     pauseAnchor = null;
+    networkInterruptAnchor = null;
     persistState();
     _nativeServiceStarted = false;
     // Clear MediaSession so Android removes the notification entirely
@@ -1205,6 +1261,7 @@
   function jumpToLive() {
     manualOffset = 0;
     pauseAnchor = null;
+    networkInterruptAnchor = null;
     if (currentStream) {
       playStream(currentStream);
     }
@@ -1228,6 +1285,7 @@
       const newU = VirtualLiveEngine.convertToTimelineCoordinate(currentStream, currentTrackIndex, safeTime, currentCycle);
       manualOffset = Math.max(0, liveTime - newU);
       pauseAnchor = null;
+      networkInterruptAnchor = null;
       persistState();
 
       PlaybackQueueController.seek(safeTime);
@@ -1246,6 +1304,8 @@
     const duration = track ? track.duration : 3600;
     
     manualOffset = Math.max(0, manualOffset + (isForward ? -duration : duration));
+    pauseAnchor = null;
+    networkInterruptAnchor = null;
     playStream(currentStream);
   }
 
@@ -1264,6 +1324,7 @@
         currentStream,
         manualOffset,
         pauseAnchor,
+        networkInterruptAnchor,
         isPlaying,
         volume: PlaybackQueueController.audio ? PlaybackQueueController.audio.volume : 0.7,
         timestamp: Date.now()
@@ -1279,6 +1340,7 @@
         currentStream = state.currentStream;
         manualOffset = state.manualOffset || 0;
         pauseAnchor = state.pauseAnchor;
+        networkInterruptAnchor = state.networkInterruptAnchor || null;
         
         // Restore volume preference
         PlaybackQueueController.init();
@@ -1484,6 +1546,7 @@
       duration: (audio && Number.isFinite(audio.duration) && audio.duration > 0) ? audio.duration : defaultDur,
       volume: (audio && Number.isFinite(audio.volume)) ? audio.volume : 0.7,
       pauseAnchor: pauseAnchor ? { ...pauseAnchor } : null,
+      networkInterruptAnchor: networkInterruptAnchor ? { ...networkInterruptAnchor } : null,
       manualOffset: manualOffset || 0,
       liveOffset: manualOffset || 0,
       isBehind: (manualOffset || 0) > 5,
@@ -1584,36 +1647,106 @@
   function recoverAfterReconnect(reason) {
     if (!wantsPlayback || !currentStream) return;
     if (isPlaying || isLoading || isTransitioning) return;
-    // Only recover if connection is actually in a failed or reconnecting state
-    if (connectionState !== 'failed' && connectionState !== 'reconnecting') return;
-    if (reconnectCycleActive) return;
 
-    // Strict cooldown: at most one recovery per 20 seconds
+    // Fast debounce (600ms) to prevent storming if multiple triggers fire together
     const now = Date.now();
-    if (now - _lastWatchdogRecoveryTime < 20000) return;
+    if (now - _lastWatchdogRecoveryTime < 600) return;
     _lastWatchdogRecoveryTime = now;
 
+    console.log(`[AnhadAudio] 🌐 ${reason} — recovering "${currentStream}"`);
+
     liveReconnectAttempts = 0;
-    connectionState = 'reconnecting';
-    emit('statechange', getPublicState());
-    console.log(`[AnhadAudio] 🌐 ${reason} — resuming "${currentStream}"`);
-    playStream(currentStream);
+    stallRecoveryAttempts = 0;
+    reconnectCycleActive = false;
+    if (reconnectTimer) {
+      clearTimeout(reconnectTimer);
+      reconnectTimer = null;
+    }
+
+    const streamObj = STREAMS[currentStream];
+    if (!streamObj) return;
+
+    if (streamObj.type === 'playlist') {
+      const anchor = networkInterruptAnchor || pauseAnchor;
+      let targetTrackIndex = currentTrackIndex;
+      let targetPosition = (lastKnownStream === currentStream && Number.isFinite(lastKnownPlaybackTime) && lastKnownPlaybackTime > 0)
+        ? lastKnownPlaybackTime
+        : (PlaybackQueueController.audio && Number.isFinite(PlaybackQueueController.audio.currentTime) ? PlaybackQueueController.audio.currentTime : 0);
+
+      if (anchor && anchor.stream === currentStream) {
+        targetTrackIndex = (typeof anchor.trackIndex === 'number') ? anchor.trackIndex : currentTrackIndex;
+        targetPosition = Number.isFinite(anchor.position) ? anchor.position : targetPosition;
+        
+        // Add elapsed outage time to manualOffset so virtual timeline position remains frozen in place!
+        const elapsedOutage = Math.max(0, Math.floor((Date.now() - anchor.timestamp) / 1000));
+        manualOffset = (anchor.offset || 0) + elapsedOutage;
+      }
+
+      networkInterruptAnchor = null;
+      pauseAnchor = null;
+      persistState();
+
+      currentTrackIndex = targetTrackIndex;
+      currentTrackTitle = (anchor && anchor.title) 
+        ? anchor.title 
+        : (streamObj.name === 'Waheguru Simran' ? (getSimranTitles()[currentTrackIndex] || 'Waheguru Simran') : `Day ${currentTrackIndex + 1} - Amritvela Kirtan`);
+      currentTrackArtist = (anchor && anchor.artist) || streamObj.subtitle;
+
+      const trackUrl = streamObj.getTrackUrl(currentTrackIndex);
+      updateMediaSession();
+
+      const audio = PlaybackQueueController.audio;
+      const isAudioFunctional = audio && audio.src && !audio.error && audio.networkState !== 3;
+
+      if (isAudioFunctional && Math.abs((audio.currentTime || 0) - targetPosition) < 4) {
+        console.log(`[AnhadAudio] ⚡ Replaying directly from ${audio.currentTime.toFixed(1)}s (buffer intact)`);
+        PlaybackQueueController.enqueue(() => {
+          return audio.play().then(() => {
+            isPlaying = true;
+            isLoading = false;
+            connectionState = 'connected';
+            emit('loading', { isLoading: false });
+            emit('statechange', getPublicState());
+            persistState();
+            updateNativeMediaState();
+          }).catch((err) => {
+            console.warn('[AnhadAudio] Direct resume failed after network recovery, doing clean loadAndPlay:', err);
+            PlaybackQueueController.loadAndPlay(trackUrl, 'auto', targetPosition);
+          });
+        });
+      } else {
+        console.log(`[AnhadAudio] 🔄 Cleanly loading track ${currentTrackIndex + 1} and resuming at ${targetPosition.toFixed(1)}s`);
+        PlaybackQueueController.loadAndPlay(trackUrl, 'auto', targetPosition);
+      }
+    } else {
+      networkInterruptAnchor = null;
+      connectionState = 'reconnecting';
+      emit('statechange', getPublicState());
+      DarbarLiveManager.play(currentStream);
+    }
   }
 
   window.addEventListener('online', () => {
-    if (connectionState === 'failed' || connectionState === 'reconnecting') {
-      recoverAfterReconnect('Network restored');
+    console.log('[AnhadAudio] 🌐 OS "online" event received');
+    if (wantsPlayback && !isPlaying) {
+      recoverAfterReconnect('Network restored (online event)');
+    }
+  });
+
+  window.addEventListener('offline', () => {
+    console.log('[AnhadAudio] 📴 OS "offline" event received');
+    if (wantsPlayback) {
+      captureNetworkInterruption('Device went offline');
     }
   });
 
   // --- ACTIVE NETWORK HEARTBEAT & AUTO-RETRIEVAL WATCHDOG ---
-  // Runs every 12 seconds ONLY if playback is desired but stream is in a failed/reconnecting state
-  const NETWORK_WATCHDOG_INTERVAL_MS = 12000;
+  // Runs every 5 seconds ONLY if playback is desired but stream is in a failed/reconnecting state
+  const NETWORK_WATCHDOG_INTERVAL_MS = 5000;
   let isWatchdogProbing = false;
   
   setInterval(async () => {
     if (!wantsPlayback || !currentStream || isPlaying || isLoading || isTransitioning || isWatchdogProbing) return;
-    // Only probe if stream is genuinely disconnected
     if (connectionState !== 'failed' && connectionState !== 'reconnecting') return;
     
     if (navigator.onLine) {
@@ -1623,10 +1756,16 @@
 
     isWatchdogProbing = true;
     try {
-      const probe = await fetch(document.baseURI || window.location.href, { method: 'HEAD', cache: 'no-store' });
-      if (probe.ok || probe.status < 500) {
-        recoverAfterReconnect('Network probe succeeded — auto-resuming stream');
-      }
+      const ctrl = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+      const tId = ctrl ? setTimeout(() => ctrl.abort(), 3000) : null;
+      await fetch('https://pub-525228169e0c44e38a67c306ba1a458c.r2.dev/?t=' + Date.now(), {
+        method: 'HEAD',
+        mode: 'no-cors',
+        cache: 'no-store',
+        signal: ctrl ? ctrl.signal : undefined
+      });
+      if (tId) clearTimeout(tId);
+      recoverAfterReconnect('Active network probe confirmed internet connection');
     } catch(e) {
       // Network still offline
     } finally {

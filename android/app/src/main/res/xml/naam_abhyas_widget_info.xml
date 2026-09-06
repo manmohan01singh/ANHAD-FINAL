@@ -8,7 +8,7 @@
     android:targetCellHeight="2"
     android:maxResizeWidth="200dp"
     android:maxResizeHeight="200dp"
-    android:previewImage="@drawable/ic_launcher_foreground"
+    android:previewImage="@mipmap/ic_launcher"
     android:resizeMode="horizontal|vertical"
     android:updatePeriodMillis="300000"
     android:widgetCategory="home_screen"

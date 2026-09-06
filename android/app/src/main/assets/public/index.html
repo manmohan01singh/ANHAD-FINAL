@@ -4468,6 +4468,7 @@
        ════════════════════════════════════════════════════════════════ */
     body.companion-mode-active .greeting__hero-banner,
     .greeting__hero-banner.companion-mode-active {
+      display: flex !important;
       overflow: visible !important;
     }
     body.companion-mode-active .greeting__hero-artwork,
@@ -4475,7 +4476,7 @@
       width: 138% !important;
       object-position: 53.5% center !important;
       transform: scale(1.02) translateX(8px) !important;
-      /* Multi-directional deep feathered mask: edges fade completely into white background */
+      /* Multi-directional deep feathered mask: edges fade completely into background */
       -webkit-mask-image: 
         radial-gradient(ellipse 90% 84% at 52% 50%, #000 48%, rgba(0,0,0,0.85) 66%, rgba(0,0,0,0.35) 82%, transparent 96%),
         linear-gradient(to right, transparent 0%, rgba(0,0,0,0.5) 6%, #000 15%, #000 85%, rgba(0,0,0,0.5) 94%, transparent 100%),
@@ -4489,6 +4490,14 @@
       filter: drop-shadow(0 4px 14px rgba(0, 0, 0, 0.03)) !important;
     }
 
+    body.companion-mode-active .greeting__dark-carousel-container,
+    html.dark-mode body.companion-mode-active .greeting__dark-carousel-container,
+    [data-theme="dark"] body.companion-mode-active .greeting__dark-carousel-container,
+    [data-time-of-day="night"] body.companion-mode-active .greeting__dark-carousel-container,
+    body.companion-mode-active .greeting__text {
+      display: none !important;
+    }
+
     /* Beautiful clean gap before the Nitnem progress banner */
     html body .progress-inline,
     html body #nitnemTrackerCard,
@@ -4497,10 +4506,10 @@
       margin-bottom: 18px !important;
     }
 
-    /* Dark Mode: Hide Light Hero */
-    html.dark-mode .greeting__hero-banner,
-    [data-theme="dark"] .greeting__hero-banner,
-    [data-time-of-day="night"] .greeting__hero-banner {
+    /* Dark Mode: Hide Standard Light Hero ONLY when Companion Mode is NOT Active */
+    body:not(.companion-mode-active) html.dark-mode .greeting__hero-banner:not(.companion-mode-active),
+    body:not(.companion-mode-active) [data-theme="dark"] .greeting__hero-banner:not(.companion-mode-active),
+    body:not(.companion-mode-active) [data-time-of-day="night"] .greeting__hero-banner:not(.companion-mode-active) {
       display: none !important;
     }
 
@@ -4511,9 +4520,9 @@
       display: none;
       width: 100%;
     }
-    html.dark-mode .greeting__dark-carousel-container,
-    [data-theme="dark"] .greeting__dark-carousel-container,
-    [data-time-of-day="night"] .greeting__dark-carousel-container {
+    body:not(.companion-mode-active) html.dark-mode .greeting__dark-carousel-container,
+    body:not(.companion-mode-active) [data-theme="dark"] .greeting__dark-carousel-container,
+    body:not(.companion-mode-active) [data-time-of-day="night"] .greeting__dark-carousel-container {
       display: block !important;
       opacity: 1 !important;
       visibility: visible !important;
@@ -6912,35 +6921,19 @@
         } catch(e) {}
 
         if (isCompanion) {
-          if (showDark) {
-            // In dark mode or dynamic night: NEVER show the light companion banner!
-            // Show standard circular Guru portraits carousel!
-            if (document.body) document.body.classList.remove('companion-mode-active');
-            if (heroBanner) {
-              heroBanner.classList.remove('companion-mode-active');
-              heroBanner.style.setProperty('display', 'none', 'important');
-            }
-            if (darkCarousel) {
-              darkCarousel.style.setProperty('display', 'flex', 'important');
-              if (window.PortraitSlider && typeof window.PortraitSlider.init === 'function') {
-                window.PortraitSlider.init();
-              }
-            }
-          } else {
-            // Light mode or dynamic daytime (morning, day, evening): Show companion banner!
-            if (document.body) document.body.classList.add('companion-mode-active');
-            if (heroBanner) {
-              heroBanner.classList.add('companion-mode-active');
-              heroBanner.style.setProperty('display', 'flex', 'important');
-            }
-            if (darkCarousel) {
-              darkCarousel.style.setProperty('display', 'none', 'important');
-            }
-            if (window.CompanionMode && typeof window.CompanionMode.syncHeroImage === 'function' && !window.__syncingGreeting) {
-              window.__syncingGreeting = true;
-              try { window.CompanionMode.syncHeroImage(); } catch (e) {}
-              window.__syncingGreeting = false;
-            }
+          if (document.body) document.body.classList.add('companion-mode-active');
+          if (heroBanner) {
+            heroBanner.classList.add('companion-mode-active');
+            heroBanner.style.setProperty('display', 'flex', 'important');
+          }
+          if (darkCarousel) {
+            darkCarousel.classList.remove('companion-mode-active');
+            darkCarousel.style.setProperty('display', 'none', 'important');
+          }
+          if (window.CompanionMode && typeof window.CompanionMode.syncHeroImage === 'function' && !window.__syncingGreeting) {
+            window.__syncingGreeting = true;
+            try { window.CompanionMode.syncHeroImage(); } catch (e) {}
+            window.__syncingGreeting = false;
           }
           return;
         }

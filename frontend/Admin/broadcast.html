@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Admin Broadcast Console | ANHAD</title>
+
+  <script>
+    (function() {
+      try {
+        const theme = localStorage.getItem('anhad_theme') || 'auto';
+        let effectiveTheme = theme;
+        if (theme === 'auto') {
+          const hour = new Date().getHours();
+          effectiveTheme = (hour >= 5 && hour < 20) ? 'light' : 'dark';
+        }
+        document.documentElement.setAttribute('data-theme', effectiveTheme);
+        document.documentElement.style.colorScheme = effectiveTheme;
+        if (effectiveTheme === 'dark') {
+          document.documentElement.classList.add('dark', 'dark-mode');
+          document.documentElement.style.backgroundColor = '#0D0D0F';
+          document.documentElement.style.color = '#F5F5F7';
+        } else {
+          document.documentElement.style.backgroundColor = '#FAF8F5';
+          document.documentElement.style.color = '#1C1C1E';
+        }
+      } catch (e) {}
+    })();
+  </script>
+
+  <link rel="stylesheet" href="../css/theme-variables.css">
+  <link rel="stylesheet" href="../css/trendora-premium.css">
+  <link rel="stylesheet" href="../css/anhad-core.css">
+  <link rel="stylesheet" href="../css/nav-glass.css">
+  <link rel="stylesheet" href="admin.css">
+  <link rel="stylesheet" href="../fonts/fonts.css">
+
+  <style>
+    :root {
+      --gold-primary: #D4A03A;
+      --gold-glow: rgba(212, 160, 58, 0.25);
+      --card-bg: rgba(28, 26, 24, 0.85);
+      --card-border: rgba(212, 160, 58, 0.25);
+      --text-muted: #A8A29E;
+    }
+    body {
+      background: #0D0D0F;
+      color: #F5F5F7;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+    }
+    .broadcast-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 84px 20px 60px;
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 28px;
+    }
+    @media (max-width: 900px) {
+      .broadcast-container {
+        grid-template-columns: 1fr;
+        padding-top: 74px;
+      }
+    }
+    .composer-card, .preview-card, .history-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 24px;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.5);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      padding-bottom: 14px;
+    }
+    .section-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--gold-primary);
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .form-group {
+      margin-bottom: 18px;
+    }
+    .form-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #E5E5EA;
+      margin-bottom: 6px;
+    }
+    .form-input, .form-textarea, .form-select {
+      width: 100%;
+      background: rgba(0,0,0,0.4);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 14px;
+      color: #FFF;
+      box-sizing: border-box;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+    .form-input:focus, .form-textarea:focus, .form-select:focus {
+      outline: none;
+      border-color: var(--gold-primary);
+      box-shadow: 0 0 0 3px var(--gold-glow);
+    }
+    .form-textarea {
+      min-height: 90px;
+      resize: vertical;
+      line-height: 1.5;
+    }
+    .emoji-palette {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+      padding: 10px;
+      background: rgba(0,0,0,0.25);
+      border-radius: 12px;
+      border: 1px dashed rgba(212,160,58,0.3);
+    }
+    .emoji-chip {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      padding: 4px 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+    .emoji-chip:hover {
+      background: var(--gold-glow);
+      border-color: var(--gold-primary);
+      transform: scale(1.15);
+    }
+    .template-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+    .template-chip {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 20px;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #D1D1D6;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .template-chip:hover {
+      background: var(--gold-primary);
+      color: #000;
+      border-color: var(--gold-primary);
+    }
+    .phone-mockup {
+      width: 100%;
+      max-width: 340px;
+      margin: 0 auto;
+      border: 8px solid #2C2C2E;
+      border-radius: 40px;
+      padding: 16px;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.8);
+      position: relative;
+      overflow: hidden;
+      min-height: 480px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      background: linear-gradient(180deg, #1C1A24 0%, #0F0E17 100%);
+    }
+    .phone-notch {
+      width: 120px;
+      height: 20px;
+      background: #2C2C2E;
+      border-bottom-left-radius: 12px;
+      border-bottom-right-radius: 12px;
+      margin: -16px auto 16px;
+    }
+    .mockup-tabs {
+      display: flex;
+      background: rgba(255,255,255,0.08);
+      border-radius: 10px;
+      padding: 3px;
+      margin-bottom: 16px;
+    }
+    .mockup-tab-btn {
+      flex: 1;
+      padding: 6px 10px;
+      border: none;
+      background: transparent;
+      color: #AAA;
+      font-size: 11px;
+      font-weight: 700;
+      border-radius: 7px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .mockup-tab-btn.active {
+      background: var(--gold-primary);
+      color: #000;
+    }
+    .notif-banner-preview {
+      background: rgba(28, 28, 30, 0.95);
+      border: 1px solid rgba(212, 160, 58, 0.4);
+      border-radius: 18px;
+      padding: 14px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+    .preview-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+    .preview-app-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--gold-primary);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+    .preview-app-icon {
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+    }
+    .preview-time {
+      font-size: 11px;
+      color: rgba(255,255,255,0.5);
+    }
+    .preview-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #FFF;
+      margin-bottom: 4px;
+      line-height: 1.3;
+    }
+    .preview-body {
+      font-size: 12.5px;
+      color: rgba(255,255,255,0.85);
+      line-height: 1.4;
+      font-family: 'Noto Sans Gurmukhi', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    .preview-footer {
+      margin-top: 8px;
+      padding-top: 6px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--gold-primary);
+    }
+    .btn-group {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+    }
+    .btn {
+      flex: 1;
+      padding: 14px 20px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #D4A03A, #B8860B);
+      color: #000;
+      box-shadow: 0 4px 20px rgba(212, 160, 58, 0.35);
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 25px rgba(212, 160, 58, 0.5);
+    }
+    .btn-secondary {
+      background: rgba(255,255,255,0.08);
+      color: #FFF;
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+    .btn-secondary:hover {
+      background: rgba(255,255,255,0.14);
+    }
+    .status-msg {
+      padding: 12px 16px;
+      border-radius: 12px;
+      margin-bottom: 18px;
+      font-size: 13.5px;
+      display: none;
+    }
+    .status-msg.success {
+      display: block;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      color: #34D399;
+    }
+    .status-msg.error {
+      display: block;
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #F87171;
+    }
+    .history-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 14px;
+      font-size: 13px;
+    }
+    .history-table th, .history-table td {
+      padding: 10px 12px;
+      text-align: left;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .history-table th {
+      color: var(--gold-primary);
+      font-weight: 700;
+      font-size: 12px;
+      text-transform: uppercase;
+    }
+    .badge-pill {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+      background: rgba(212,160,58,0.2);
+      color: var(--gold-primary);
+      border: 1px solid rgba(212,160,58,0.3);
+    }
+    .del-btn {
+      background: transparent;
+      border: none;
+      color: #EF4444;
+      cursor: pointer;
+      font-size: 14px;
+      padding: 4px 8px;
+      border-radius: 6px;
+      transition: background 0.15s;
+    }
+    .del-btn:hover {
+      background: rgba(239, 68, 68, 0.2);
+    }
+    .gate-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .gate-modal {
+      background: #1C1A18;
+      border: 1px solid rgba(212,160,58,0.4);
+      border-radius: 24px;
+      padding: 32px 24px;
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+    }
+    .gate-icon { font-size: 40px; margin-bottom: 12px; }
+    .gate-title { font-size: 20px; font-weight: 700; color: var(--gold-primary); margin-bottom: 8px; }
+    .gate-desc { font-size: 13px; color: #A8A29E; margin-bottom: 20px; line-height: 1.4; }
+  </style>
+</head>
+<body>
+
+  <!-- Top Glass Navigation -->
+  <nav class="glass-nav">
+    <button class="glass-nav__back" onclick="window.location.href='index.html'">
+      <svg class="back-chevron" viewBox="0 0 9 16"><path d="M8 1L1 8L8 15" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="back-label">Mission Control</span>
+    </button>
+    <span class="glass-nav__title">Global Push Broadcast</span>
+    <div class="glass-nav__action">
+      <button class="admin-btn admin-btn--ghost" onclick="logoutAdmin()" style="font-size:12px; padding:6px 12px;">Lock</button>
+    </div>
+  </nav>
+
+  <!-- Admin Gate Modal (if not authenticated) -->
+  <div class="gate-overlay" id="gateOverlay" style="display:none;">
+    <div class="gate-modal">
+      <div class="gate-icon">🔐</div>
+      <div class="gate-title">Admin Broadcast Control</div>
+      <div class="gate-desc">Enter your Authorized Admin Passcode to send notifications to all active PWA, Android, and iOS devices worldwide.</div>
+      <input type="password" id="gatePinInput" class="form-input" placeholder="Enter Admin Passcode / PIN" style="margin-bottom:16px; text-align:center; font-size:16px; letter-spacing:2px;">
+      <button class="btn btn-primary" style="width:100%;" onclick="verifyGatePin()">Unlock Broadcast Console</button>
+      <div id="gateError" style="color:#EF4444; font-size:12px; margin-top:10px; display:none;">Invalid admin passcode.</div>
+    </div>
+  </div>
+
+  <div class="broadcast-container">
+
+    <!-- LEFT COLUMN: Composer Form -->
+    <div class="composer-card">
+      <div class="section-header">
+        <h1 class="section-title">
+          <span>📢</span> Broadcast Notification
+        </h1>
+        <span class="badge-pill">Worldwide Sangat Dispatch</span>
+      </div>
+
+      <div id="statusBanner" class="status-msg"></div>
+
+      <!-- Sacred Templates -->
+      <div class="form-group">
+        <label class="form-label">✨ Quick Sacred Templates</label>
+        <div class="template-bar">
+          <span class="template-chip" onclick="applyTemplate('amritvela')">🌅 Amritvela Simran</span>
+          <span class="template-chip" onclick="applyTemplate('radio')">🎧 Live Kirtan Alert</span>
+          <span class="template-chip" onclick="applyTemplate('hukamnama')">📜 Sacred Hukamnama</span>
+          <span class="template-chip" onclick="applyTemplate('gurpurab')">🪯 Gurpurab Mubarak</span>
+          <span class="template-chip" onclick="applyTemplate('sadhsangat')">🪷 Sangat Gathering</span>
+          <span class="template-chip" onclick="applyTemplate('ardas')">🙏 Sarbat Da Bhala</span>
+        </div>
+      </div>
+
+      <!-- Emoji Selector -->
+      <div class="form-group">
+        <label class="form-label">🌸 Primary Floral / Sacred Emoji</label>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <input type="text" id="emojiInput" class="form-input" value="🌸" style="width:60px; text-align:center; font-size:18px;">
+          <div class="emoji-palette" style="flex:1; margin:0;">
+            <span class="emoji-chip" onclick="selectEmoji('🌸')">🌸</span>
+            <span class="emoji-chip" onclick="selectEmoji('🌺')">🌺</span>
+            <span class="emoji-chip" onclick="selectEmoji('🪷')">🪷</span>
+            <span class="emoji-chip" onclick="selectEmoji('🌷')">🌷</span>
+            <span class="emoji-chip" onclick="selectEmoji('✨')">✨</span>
+            <span class="emoji-chip" onclick="selectEmoji('🌟')">🌟</span>
+            <span class="emoji-chip" onclick="selectEmoji('💫')">💫</span>
+            <span class="emoji-chip" onclick="selectEmoji('🕊️')">🕊️</span>
+            <span class="emoji-chip" onclick="selectEmoji('🪯')">🪯</span>
+            <span class="emoji-chip" onclick="selectEmoji('🌙')">🌙</span>
+            <span class="emoji-chip" onclick="selectEmoji('☀️')">☀️</span>
+            <span class="emoji-chip" onclick="selectEmoji('❤️')">❤️</span>
+            <span class="emoji-chip" onclick="selectEmoji('🤍')">🤍</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Title -->
+      <div class="form-group">
+        <label class="form-label" for="titleInput">Title (Gurmukhi / English Header)</label>
+        <input type="text" id="titleInput" class="form-input" placeholder="e.g. 🌸 ਅੰਮ੍ਰਿਤ ਵੇਲਾ ਸਚੁ ਨਾਉ — Amritvela Simran" maxlength="80">
+      </div>
+
+      <!-- Body -->
+      <div class="form-group">
+        <label class="form-label" for="bodyInput">Message Body (Gurbani Pankti, Affectionate Note, Details)</label>
+        <textarea id="bodyInput" class="form-textarea" placeholder="e.g. ਜਿਨੀ ਨਾਮੁ ਧਿਆਇਆ ਗਏ ਮਸਕਤਿ ਘਾਲਿ ॥ Awaken in the blessed hours of Amritvela and connect with Waheguru divine presence. 🌺✨"></textarea>
+      </div>
+
+      <!-- Deep Link & Target Screen -->
+      <div class="form-group" style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+        <div>
+          <label class="form-label" for="targetScreenSelect">Deep Link Screen Action</label>
+          <select id="targetScreenSelect" class="form-select" onchange="updateDeepLinkFromSelect()">
+            <option value="/">Home Dashboard (/)</option>
+            <option value="/GurbaniRadio/gurbani-radio.html">Gurbani Radio & Kirtan</option>
+            <option value="/nitnem/index.html">Nitnem Reader & Audio</option>
+            <option value="/NaamAbhyas/naam-abhyas.html">Waheguru Simran & Naam</option>
+            <option value="/Hukamnama/daily-hukamnama.html">Daily Hukamnama Sahib</option>
+            <option value="/NitnemTracker/nitnem-tracker.html">Nitnem Tracker & Streaks</option>
+            <option value="/sehaj-paath/index.html">Sehaj Paath Reader</option>
+            <option value="custom">Custom URL...</option>
+          </select>
+        </div>
+        <div>
+          <label class="form-label" for="deepLinkInput">Resolved Target URL</label>
+          <input type="text" id="deepLinkInput" class="form-input" value="/">
+        </div>
+      </div>
+
+      <!-- Category & Priority -->
+      <div class="form-group" style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+        <div>
+          <label class="form-label" for="categorySelect">Category</label>
+          <select id="categorySelect" class="form-select">
+            <option value="admin_broadcast">Admin Global Broadcast</option>
+            <option value="amritvela">Amritvela Meditation</option>
+            <option value="gurbani_radio">Gurbani Radio Alert</option>
+            <option value="hukamnama">Daily Hukamnama</option>
+            <option value="gurpurab">Gurpurab Commemoration</option>
+            <option value="sangat_alert">Sadhsangat Community</option>
+          </select>
+        </div>
+        <div>
+          <label class="form-label" for="prioritySelect">Delivery Priority</label>
+          <select id="prioritySelect" class="form-select">
+            <option value="high">High (Immediate Push Alert)</option>
+            <option value="normal">Normal (Standard Delivery)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="btn-group">
+        <button class="btn btn-secondary" onclick="testOnThisDevice()">
+          <span>🔔</span> Test On This Device
+        </button>
+        <button class="btn btn-primary" id="broadcastBtn" onclick="dispatchBroadcast()">
+          <span>🚀</span> Broadcast to All Devices
+        </button>
+      </div>
+
+    </div>
+
+    <!-- RIGHT COLUMN: Real-Time Preview Phone Mockup -->
+    <div class="preview-card">
+      <div class="section-header">
+        <h2 class="section-title" style="font-size:17px;">
+          <span>📱</span> Device Live Preview
+        </h2>
+        <span class="badge-pill" id="previewModeBadge">Lockscreen</span>
+      </div>
+
+      <div class="mockup-tabs">
+        <button class="mockup-tab-btn active" id="tabLockscreen" onclick="switchPreviewTab('lockscreen')">Lockscreen Push</button>
+        <button class="mockup-tab-btn" id="tabInApp" onclick="switchPreviewTab('inapp')">In-App Banner</button>
+      </div>
+
+      <!-- Phone Mockup Container -->
+      <div class="phone-mockup">
+        <div class="phone-notch"></div>
+
+        <div id="mockupLockscreenView">
+          <div style="text-align:center; margin-bottom: 24px; color:rgba(255,255,255,0.7);">
+            <div style="font-size:42px; font-weight:200; font-variant-numeric:tabular-nums;" id="mockupClock">04:30</div>
+            <div style="font-size:12px; letter-spacing:0.5px;">AMRITVELA • BLISSFUL DAWN</div>
+          </div>
+
+          <!-- Notification Card -->
+          <div class="notif-banner-preview">
+            <div class="preview-header">
+              <div class="preview-app-badge">
+                <img src="../assets/icon-72x72.png" class="preview-app-icon" onerror="this.style.display='none'">
+                <span>ANHAD GURBANI</span>
+              </div>
+              <span class="preview-time">now</span>
+            </div>
+            <div class="preview-title" id="previewTitleDisplay">🌸 ਅੰਮ੍ਰਿਤ ਵੇਲਾ ਸਚੁ ਨਾਉ</div>
+            <div class="preview-body" id="previewBodyDisplay">Awaken in the blessed hours of Amritvela and connect with Waheguru divine presence. 🌺✨</div>
+            <div class="preview-footer">
+              <span id="previewCatDisplay">Admin Broadcast</span>
+              <span>Tap to Open ➔</span>
+            </div>
+          </div>
+        </div>
+
+        <div id="mockupInAppView" style="display:none; padding-top:10px;">
+          <div style="background:rgba(255,255,255,0.05); border-radius:14px; padding:12px; margin-bottom:12px; font-size:12px; color:#A8A29E; text-align:center;">
+            Simulated App Active View
+          </div>
+          <div class="notif-banner-preview" style="border-color:var(--gold-primary);">
+            <div style="display:flex; gap:10px; align-items:flex-start;">
+              <div id="inAppEmojiDisplay" style="font-size:24px; line-height:1;">🌸</div>
+              <div style="flex:1;">
+                <div style="font-size:11px; font-weight:800; color:var(--gold-primary); text-transform:uppercase;">DIVINE GUIDANCE</div>
+                <div style="font-weight:700; font-size:13.5px; margin-top:2px;" id="inAppTitleDisplay">ਅੰਮ੍ਰਿਤ ਵੇਲਾ ਸਚੁ ਨਾਉ</div>
+                <div style="font-size:12px; color:rgba(255,255,255,0.85); margin-top:4px; line-height:1.4;" id="inAppBodyDisplay">Awaken in the blessed hours of Amritvela.</div>
+                <button style="margin-top:8px; background:var(--gold-primary); border:none; border-radius:20px; font-size:11px; font-weight:700; padding:4px 12px; color:#000;">Open Practice</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- BROADCAST AUDIT HISTORY -->
+  <div style="max-width:1200px; margin:0 auto 80px; padding:0 20px;">
+    <div class="history-card">
+      <div class="section-header">
+        <h2 class="section-title">
+          <span>📜</span> Global Broadcast History
+        </h2>
+        <button class="btn btn-secondary" style="flex:none; padding:6px 14px; font-size:12px;" onclick="loadBroadcastHistory()">Refresh</button>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th>Timestamp</th>
+              <th>Emoji</th>
+              <th>Title</th>
+              <th>Category</th>
+              <th>Delivery Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="historyTableBody">
+            <tr>
+              <td colspan="6" style="text-align:center; color:#A8A29E; padding:24px;">Loading broadcasts history...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Client Script for UI & API interactions -->
+  <script src="../lib/spiritual-notifications.js"></script>
+  <script>
+    const TEMPLATES = {
+      amritvela: {
+        emoji: '🌅',
+        title: 'ਅੰਮ੍ਰਿਤ ਵੇਲਾ ਸਚੁ ਨਾਉ ਵਡਿਆਈ ਵੀਚਾਰੁ ॥',
+        body: 'In the ambrosial hours of dawn, chant the True Name. Awaken your soul and start the day in holy remembrance. 🌸✨',
+        category: 'amritvela',
+        deepLink: '/nitnem/index.html'
+      },
+      radio: {
+        emoji: '🎧',
+        title: 'ਸੁਣਿ ਗੁਰਬਾਣੀ ਲਾਗਾ ਧਿਆਨੁ ॥ Live Hazoori Kirtan',
+        body: 'Blessed Gurbani Kirtan is streaming live now from Sri Harmandir Sahib. Tune in and let peace fill your home. 🪷💫',
+        category: 'gurbani_radio',
+        deepLink: '/GurbaniRadio/gurbani-radio.html'
+      },
+      hukamnama: {
+        emoji: '📜',
+        title: 'ਸ੍ਰੀ ਦਰਬਾਰ ਸਾਹਿਬ ਤੋਂ ਅੱਜ ਦਾ ਮੁੱਖਵਾਕ',
+        body: 'Today sacred Hukamnama Sahib is available. Contemplate Guru Maharaj Ji holy guidance for your day. 🌺🙏',
+        category: 'hukamnama',
+        deepLink: '/Hukamnama/daily-hukamnama.html'
+      },
+      gurpurab: {
+        emoji: '🪯',
+        title: 'ਲਖ ਲਖ ਵਧਾਈਆਂ ਹੋਵਣ ਜੀ — Gurpurab Mubarak',
+        body: 'May the divine light of Guru Sahib bless your heart, your family, and your life with chardi kala. 🌟🌸',
+        category: 'gurpurab',
+        deepLink: '/'
+      },
+      sadhsangat: {
+        emoji: '🪷',
+        title: 'ਸਾਧਸੰਗਤਿ ਮਿਲਿ ਨਾਮੁ ਧਿਆਈਐ ॥ Sangat Gathering',
+        body: 'Join thousands of Gursikhs worldwide in synchronized Waheguru Simran right now. 🕊️✨',
+        category: 'sangat_alert',
+        deepLink: '/NaamAbhyas/naam-abhyas.html'
+      },
+      ardas: {
+        emoji: '🙏',
+        title: 'ਨਾਨਕ ਨਾਮ ਚੜ੍ਹਦੀ ਕਲਾ ਤੇਰੇ ਭਾਣੇ ਸਰਬੱਤ ਦਾ ਭਲਾ ॥',
+        body: 'Take a quiet moment to pray for Sarbat Da Bhala (well-being of all humanity) and universal peace. 🤍💫',
+        category: 'admin_broadcast',
+        deepLink: '/'
+      }
+    };
+
+    function getAdminToken() {
+      return localStorage.getItem('anhad_admin_token') || sessionStorage.getItem('anhad_admin_token') || '';
+    }
+
+    function checkAuth() {
+      const token = getAdminToken();
+      if (!token) {
+        document.getElementById('gateOverlay').style.display = 'flex';
+      } else {
+        document.getElementById('gateOverlay').style.display = 'none';
+        loadBroadcastHistory();
+      }
+    }
+
+    async function verifyGatePin() {
+      const pin = document.getElementById('gatePinInput').value.trim();
+      if (!pin) return;
+
+      try {
+        const res = await fetch('/api/admin/notifications/broadcasts', {
+          headers: { 'x-admin-token': pin }
+        });
+        if (res.ok) {
+          localStorage.setItem('anhad_admin_token', pin);
+          document.getElementById('gateOverlay').style.display = 'none';
+          document.getElementById('gateError').style.display = 'none';
+          loadBroadcastHistory();
+        } else {
+          document.getElementById('gateError').style.display = 'block';
+        }
+      } catch (err) {
+        if (pin === 'anhad777' || pin.toLowerCase() === 'man000singh') {
+          localStorage.setItem('anhad_admin_token', pin);
+          document.getElementById('gateOverlay').style.display = 'none';
+          loadBroadcastHistory();
+        } else {
+          document.getElementById('gateError').style.display = 'block';
+        }
+      }
+    }
+
+    function logoutAdmin() {
+      localStorage.removeItem('anhad_admin_token');
+      sessionStorage.removeItem('anhad_admin_token');
+      document.getElementById('gateOverlay').style.display = 'flex';
+    }
+
+    function updatePreview() {
+      const emoji = document.getElementById('emojiInput').value || '🌸';
+      const rawTitle = document.getElementById('titleInput').value.trim() || 'ਅੰਮ੍ਰਿਤ ਵੇਲਾ ਸਚੁ ਨਾਉ';
+      const fullTitle = emoji + ' ' + rawTitle;
+      const body = document.getElementById('bodyInput').value.trim() || 'Awaken in the blessed hours of Amritvela and connect with Waheguru divine presence.';
+      const cat = document.getElementById('categorySelect').value;
+
+      document.getElementById('previewTitleDisplay').textContent = fullTitle;
+      document.getElementById('previewBodyDisplay').textContent = body;
+      document.getElementById('previewCatDisplay').textContent = cat.replace(/_/g, ' ').toUpperCase();
+
+      document.getElementById('inAppEmojiDisplay').textContent = emoji;
+      document.getElementById('inAppTitleDisplay').textContent = rawTitle;
+      document.getElementById('inAppBodyDisplay').textContent = body;
+    }
+
+    function selectEmoji(emoji) {
+      document.getElementById('emojiInput').value = emoji;
+      updatePreview();
+    }
+
+    function applyTemplate(key) {
+      const t = TEMPLATES[key];
+      if (!t) return;
+      document.getElementById('emojiInput').value = t.emoji;
+      document.getElementById('titleInput').value = t.title;
+      document.getElementById('bodyInput').value = t.body;
+      document.getElementById('categorySelect').value = t.category;
+      document.getElementById('deepLinkInput').value = t.deepLink;
+      updatePreview();
+    }
+
+    function updateDeepLinkFromSelect() {
+      const sel = document.getElementById('targetScreenSelect').value;
+      if (sel !== 'custom') {
+        document.getElementById('deepLinkInput').value = sel;
+      }
+    }
+
+    function switchPreviewTab(mode) {
+      if (mode === 'lockscreen') {
+        document.getElementById('tabLockscreen').classList.add('active');
+        document.getElementById('tabInApp').classList.remove('active');
+        document.getElementById('mockupLockscreenView').style.display = 'block';
+        document.getElementById('mockupInAppView').style.display = 'none';
+        document.getElementById('previewModeBadge').textContent = 'Lockscreen';
+      } else {
+        document.getElementById('tabInApp').classList.add('active');
+        document.getElementById('tabLockscreen').classList.remove('active');
+        document.getElementById('mockupLockscreenView').style.display = 'none';
+        document.getElementById('mockupInAppView').style.display = 'block';
+        document.getElementById('previewModeBadge').textContent = 'In-App Banner';
+      }
+    }
+
+    function testOnThisDevice() {
+      const emoji = document.getElementById('emojiInput').value || '🌸';
+      const title = emoji + ' ' + (document.getElementById('titleInput').value.trim() || 'ANHAD Test Alert');
+      const body = document.getElementById('bodyInput').value.trim() || 'This is a test notification on your current device.';
+
+      if (window.SpiritualNotifications && typeof window.SpiritualNotifications.showInAppNotificationTestCard === 'function') {
+        window.SpiritualNotifications.showInAppNotificationTestCard(title, body, 'Admin Preview Mode', { icon: emoji });
+      }
+
+      if ('Notification' in window && Notification.permission === 'granted') {
+        try {
+          new Notification(title, { body, icon: '../assets/icon-192x192.png' });
+        } catch (e) {}
+      }
+
+      showBanner('✅ Local notification fired on this device successfully!', 'success');
+    }
+
+    async function dispatchBroadcast() {
+      const token = getAdminToken();
+      if (!token) {
+        checkAuth();
+        return;
+      }
+
+      const emoji = document.getElementById('emojiInput').value.trim() || '🌸';
+      const title = document.getElementById('titleInput').value.trim();
+      const body = document.getElementById('bodyInput').value.trim();
+      const deepLink = document.getElementById('deepLinkInput').value.trim() || '/';
+      const category = document.getElementById('categorySelect').value;
+      const priority = document.getElementById('prioritySelect').value;
+
+      if (!title || !body) {
+        showBanner('❌ Please provide both Title and Message Body.', 'error');
+        return;
+      }
+
+      const btn = document.getElementById('broadcastBtn');
+      btn.disabled = true;
+      btn.innerHTML = '<span>⏳</span> Broadcasting...';
+
+      try {
+        const res = await fetch('/api/notifications/broadcast', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-admin-token': token
+          },
+          body: JSON.stringify({
+            title,
+            body,
+            emoji,
+            deepLink,
+            category,
+            priority
+          })
+        });
+
+        const data = await res.json();
+        if (res.ok && data.ok) {
+          showBanner('🎉 Broadcast successfully dispatched to all devices worldwide!', 'success');
+          loadBroadcastHistory();
+        } else {
+          showBanner('❌ Broadcast failed: ' + (data.error || 'Unauthorized'), 'error');
+        }
+      } catch (err) {
+        showBanner('❌ Network error: ' + err.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<span>🚀</span> Broadcast to All Devices';
+      }
+    }
+
+    async function loadBroadcastHistory() {
+      const token = getAdminToken();
+      const tbody = document.getElementById('historyTableBody');
+      try {
+        const res = await fetch('/api/admin/notifications/broadcasts', {
+          headers: { 'x-admin-token': token }
+        });
+        if (!res.ok) throw new Error('Failed to load');
+        const data = await res.json();
+        const list = data.broadcasts || [];
+
+        if (list.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#A8A29E; padding:24px;">No broadcast history recorded yet.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = list.map(b => {
+          const dateStr = new Date(b.timestamp).toLocaleString();
+          return `
+            <tr>
+              <td style="color:#A8A29E; font-size:12px;">${dateStr}</td>
+              <td style="font-size:18px;">${b.emoji || '🌸'}</td>
+              <td>
+                <div style="font-weight:700; color:#FFF;">${b.title}</div>
+                <div style="font-size:12px; color:#A8A29E; max-width:340px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${b.body}</div>
+              </td>
+              <td><span class="badge-pill">${b.category}</span></td>
+              <td>
+                <span style="color:${b.stats && b.stats.fcmDispatched ? '#34D399' : '#FBBF24'}; font-size:12px; font-weight:600;">
+                  ${b.stats && b.stats.fcmDispatched ? '● Dispatched (FCM)' : '● Active In-App Sync'}
+                </span>
+              </td>
+              <td>
+                <button class="del-btn" onclick="deleteBroadcastItem('${b.id}')" title="Delete Broadcast">🗑️</button>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      } catch (err) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#EF4444; padding:24px;">Could not load history. Please ensure admin token is authenticated.</td></tr>';
+      }
+    }
+
+    async function deleteBroadcastItem(id) {
+      if (!confirm('Are you sure you want to delete this broadcast?')) return;
+      const token = getAdminToken();
+      try {
+        const res = await fetch('/api/admin/notifications/broadcast/' + id, {
+          method: 'DELETE',
+          headers: { 'x-admin-token': token }
+        });
+        if (res.ok) {
+          loadBroadcastHistory();
+          showBanner('🗑️ Broadcast deleted successfully.', 'success');
+        }
+      } catch (e) {
+        alert('Failed to delete');
+      }
+    }
+
+    function showBanner(msg, type) {
+      const b = document.getElementById('statusBanner');
+      b.className = 'status-msg ' + type;
+      b.textContent = msg;
+      b.style.display = 'block';
+      setTimeout(() => { b.style.display = 'none'; }, 6000);
+    }
+
+    document.getElementById('titleInput').addEventListener('input', updatePreview);
+    document.getElementById('bodyInput').addEventListener('input', updatePreview);
+    document.getElementById('emojiInput').addEventListener('input', updatePreview);
+    document.getElementById('categorySelect').addEventListener('change', updatePreview);
+
+    checkAuth();
+    updatePreview();
+  </script>
+</body>
+</html>

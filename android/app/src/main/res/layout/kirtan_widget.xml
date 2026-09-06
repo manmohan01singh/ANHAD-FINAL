@@ -15,15 +15,22 @@
         android:layout_height="84dp"
         android:layout_marginEnd="14dp">
 
-        <!-- Album Cover -->
-        <ImageView
-            android:id="@+id/kirtan_cover"
+        <!-- Cover Art — emoji-based (RemoteViews safe) -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scaleType="centerCrop"
-            android:src="@drawable/artwork_darbar"
             android:background="@drawable/widget_card_inner"
-            android:contentDescription="Sri Harmandir Sahib Ji" />
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="☬"
+                android:textSize="32sp"
+                android:textColor="#F59E0B"
+                android:gravity="center" />
+        </LinearLayout>
 
         <!-- Glowing LIVE Badge (top-right) -->
         <TextView

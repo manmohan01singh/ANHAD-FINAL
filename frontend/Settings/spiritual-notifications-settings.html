@@ -448,17 +448,19 @@
           'japji_sahib',
           'jaap_sahib',
           'tav_prasad_swaye',
+          'hukamnama',
           'chaupai_sahib',
-          'anand_sahib',
-          'hukamnama'
+          'anand_sahib'
         ]
       },
       {
         id: 'day',
-        title: '🎧 Daytime Inspiration & Simran',
+        title: '🎧 Daytime Inspiration, Simran & Paath',
         categories: [
           'gurbani_radio',
           'simran',
+          'midday_peace',
+          'sehaj_paath',
           'random_spiritual_reminders'
         ]
       },
@@ -468,7 +470,9 @@
         categories: [
           'evening_peace',
           'rehras_sahib',
+          'aarti',
           'nitnem_missed',
+          'streak_milestone',
           'kirtan_sohila',
           'bedtime'
         ]
@@ -543,7 +547,41 @@
         html += `</div></div>`;
       });
 
+      // Admin Worldwide Push Broadcast Console Shortcut
+      html += `
+        <div class="section-group" style="margin-top: 28px;">
+          <div class="section-title">📢 Admin Worldwide Push Broadcast</div>
+          <div class="card-list">
+            <div class="setting-card" style="background: linear-gradient(135deg, rgba(212,160,58,0.15) 0%, rgba(184,134,11,0.05) 100%); border: 1px solid rgba(212,160,58,0.35); cursor: pointer;" onclick="openAdminBroadcast()">
+              <div class="card-main">
+                <div class="card-icon">🚀</div>
+                <div class="card-text">
+                  <div class="card-title" style="color: #D4A03A;">Global Broadcast Console</div>
+                  <div class="card-subtitle">Compose custom push messages & send to all devices worldwide</div>
+                </div>
+              </div>
+              <div class="card-controls">
+                <span style="font-size: 13px; font-weight: 700; color: #D4A03A;">Open ➔</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+
       container.innerHTML = html;
+    }
+
+    function openAdminBroadcast() {
+      const token = localStorage.getItem('anhad_admin_token') || sessionStorage.getItem('anhad_admin_token');
+      if (token) {
+        window.location.href = '../Admin/broadcast.html';
+        return;
+      }
+      const pin = prompt('Enter Admin Passcode / PIN to access Broadcast Console:');
+      if (pin) {
+        localStorage.setItem('anhad_admin_token', pin.trim());
+        window.location.href = '../Admin/broadcast.html';
+      }
     }
 
     function onToggleChange(categoryKey) {

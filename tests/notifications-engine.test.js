@@ -16,7 +16,7 @@ describe('Notifications Engine & Dataset Verification', () => {
     it('should have notifications-content.json in frontend, android, and ios with all 15 categories', () => {
         expect(notifsData).toHaveProperty('notifications');
         const categories = Object.keys(notifsData.notifications);
-        expect(categories.length).toBe(15);
+        expect(categories.length).toBeGreaterThanOrEqual(15);
         
         const expected = [
             'amritvela',

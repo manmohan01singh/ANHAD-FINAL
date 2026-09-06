@@ -224,12 +224,27 @@ function getFirestore() {
   return admin.firestore();
 }
 
+/**
+ * Access Messaging instance safely (for topic broadcasts & device push)
+ */
+function getMessaging() {
+  if (!isInitialized || !admin) return null;
+  try {
+    return admin.messaging();
+  } catch (err) {
+    console.warn('[FirebaseAdmin] getMessaging error:', err.message);
+    return null;
+  }
+}
+
 module.exports = {
   initializeFirebaseAdmin,
   verifyIdToken,
   setAdminCustomClaim,
   getAuth,
   getFirestore,
+  getMessaging,
   isInitialized: () => isInitialized,
   getProjectId: () => process.env.FIREBASE_PROJECT_ID || DEFAULT_PROJECT_ID
 };
+
