@@ -241,15 +241,29 @@
     }
 
     if (heroImg.src !== absoluteTarget) {
-      heroImg.style.transition = 'opacity 0.25s ease';
-      heroImg.style.opacity = '0.7';
-      heroImg.src = targetSrc;
-      heroImg.alt = targetAlt;
-      try { heroImg.removeAttribute('srcset'); } catch(e) {}
-
-      heroImg.onload = () => {
-        heroImg.style.opacity = '1';
+      // Preload the new image off-screen before swapping, so there's no flash
+      const preloader = new Image();
+      preloader.onload = () => {
+        // New image is fully loaded — now do the fade swap
+        heroImg.style.transition = 'opacity 0.25s ease';
+        heroImg.style.opacity = '0';
+        // Short delay to let the fade-out start before swapping src
+        setTimeout(() => {
+          heroImg.src = targetSrc;
+          heroImg.alt = targetAlt;
+          try { heroImg.removeAttribute('srcset'); } catch (e) {}
+          // Fade back in
+          requestAnimationFrame(() => {
+            heroImg.style.transition = 'opacity 0.4s ease';
+            heroImg.style.opacity = '1';
+          });
+        }, 150);
       };
+      preloader.onerror = () => {
+        // Image failed to load — keep current image, just update alt text
+        heroImg.alt = targetAlt;
+      };
+      preloader.src = absoluteTarget;
     } else {
       heroImg.alt = targetAlt;
     }
