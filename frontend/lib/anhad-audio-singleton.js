@@ -13,6 +13,64 @@
 (function () {
   'use strict';
 
+  // --- DIAGNOSTIC LOGGER ---
+  const DIAGNOSTIC_LOG_SIZE = 50;
+  const diagnosticLog = [];
+  
+  function logDiagnostic(eventType, data = {}) {
+    const audio = window.AnhadAudio?.PlaybackQueueController?.audio;
+    const entry = {
+      timestamp: Date.now(),
+      time: new Date().toISOString(),
+      eventType,
+      data,
+      context: {
+        currentStream: window.AnhadAudio?.currentStream,
+        isPlaying: window.AnhadAudio?.isPlaying,
+        isLoading: window.AnhadAudio?.isLoading,
+        connectionState: window.AnhadAudio?.connectionState,
+        liveReconnectAttempts: window.AnhadAudio?.liveReconnectAttempts,
+        stallRecoveryAttempts: window.AnhadAudio?.stallRecoveryAttempts,
+        wantsPlayback: window.AnhadAudio?.wantsPlayback,
+        navigatorOnline: navigator.onLine,
+        documentHidden: document.hidden,
+        audioSrc: audio?.src,
+        audioError: audio?.error ? {
+          code: audio.error.code,
+          message: audio.error.message
+        } : null,
+        audioNetworkState: audio?.networkState,
+        audioReadyState: audio?.readyState,
+        currentTime: audio?.currentTime,
+        duration: audio?.duration
+      }
+    };
+    
+    diagnosticLog.push(entry);
+    if (diagnosticLog.length > DIAGNOSTIC_LOG_SIZE) {
+      diagnosticLog.shift(); // Remove oldest entry
+    }
+    
+    // Also log to console in dev mode
+    if (localStorage.getItem('anhad_debug') === 'true') {
+      console.log('[DIAGNOSTIC]', eventType, entry);
+    }
+  }
+  
+  // Expose diagnostic log globally for debugging
+  window.__anhadDiagnosticLog = diagnosticLog;
+  window.exportDiagnosticLog = function() {
+    const blob = new Blob([JSON.stringify(diagnosticLog, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'anhad-diagnostic-log-' + Date.now() + '.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   // Prevent double-init
   if (window.AnhadAudio && window.AnhadAudio._singleton) return;
 
@@ -535,8 +593,14 @@
         updateNativeMediaState();
       };
 
-      this.audio.addEventListener('play', () => notifyStateChange(true, false));
-      this.audio.addEventListener('playing', () => notifyStateChange(true, true));
+      this.audio.addEventListener('play', () => {
+        logDiagnostic('audio_play');
+        notifyStateChange(true, false);
+      });
+      this.audio.addEventListener('playing', () => {
+        logDiagnostic('audio_playing', { confirmed: true });
+        notifyStateChange(true, true);
+      });
       this.audio.addEventListener('pause', () => notifyStateChange(false, false));
       this.audio.addEventListener('seeked', () => {
         if (wantsPlayback && this.audio.paused) {
@@ -594,6 +658,17 @@
       this.audio.addEventListener('ended', () => {
         console.log('[PlaybackQueueController] Track ended event fired');
         
+        // Check if this is a live stream that ended unexpectedly
+        if (currentStream && STREAMS[currentStream]?.type === 'live') {
+          // CRITICAL: An 'ended' event on a live stream represents unexpected socket EOF from the Shoutcast/Icecast server.
+          // Live streams are continuous and never end normally. Immediately recover from the live edge.
+          console.warn('[PlaybackQueueController] ⚠️ Live stream ended unexpectedly (server socket EOF). Recovering live edge...');
+          if (wantsPlayback) {
+            handleLiveStreamEnded();
+          }
+          return;
+        }
+        
         // CRITICAL FIX: Debounce to prevent duplicate 'ended' events (Android MediaSession bug)
         if (this.endedDebounceTimer) {
           console.warn('[PlaybackQueueController] ⚠️ Duplicate ended event detected within 200ms, ignoring');
@@ -607,6 +682,13 @@
         }, 200); // 200ms debounce window
       });
       this.audio.addEventListener('error', (e) => {
+        logDiagnostic('audio_error', {
+          errorCode: this.audio.error?.code,
+          errorMessage: this.audio.error?.message,
+          networkState: this.audio.networkState,
+          readyState: this.audio.readyState
+        });
+        
         console.error('[PlaybackQueueController] ❌ HTMLAudio Error Event:', {
           error: e,
           errorCode: this.audio.error?.code,
@@ -951,9 +1033,13 @@
 
   // --- DARBAR LIVE STREAM MANAGER ---
   const DarbarLiveManager = {
-    play(streamName) {
+    play(streamName, forceReload = false) {
       const streamObj = streamName ? STREAMS[streamName] : null;
-      const rawUrl = (streamObj && streamObj.url) ? streamObj.url : (SGPC_LIVE + '?t=' + Math.floor(Date.now() / 5000) * 5000);
+      let rawUrl = (streamObj && streamObj.url) ? streamObj.url : SGPC_LIVE;
+      
+      // Append cache-busting timestamp on connection / reconnect to prevent stale half-closed sockets
+      const sep = rawUrl.includes('?') ? '&' : '?';
+      rawUrl = rawUrl + sep + '_t=' + Date.now();
       const url = toProxiedUrl(rawUrl);
 
       currentTrackTitle = streamObj ? streamObj.name : 'Darbar Sahib Live';
@@ -961,9 +1047,42 @@
       updateMediaSession();
 
       // Force 'auto' preload for live Shoutcast stream to bypass metadata load stalls
-      PlaybackQueueController.loadAndPlay(url, 'auto');
+      PlaybackQueueController.loadAndPlay(url, 'auto', 0, forceReload);
     }
   };
+
+  // Dedicated EOF / disconnect handler for continuous live streams
+  function handleLiveStreamEnded() {
+    logDiagnostic('live_stream_ended');
+    
+    if (!currentStream || STREAMS[currentStream]?.type !== 'live' || !wantsPlayback) return;
+    isPlaying = false;
+    isLoading = false;
+    liveReconnectAttempts++;
+    reconnectCycleActive = true;
+    connectionState = 'reconnecting';
+    emit('statechange', getPublicState());
+
+    if (liveReconnectAttempts >= 6) {
+      connectionState = 'failed';
+      emit('statechange', getPublicState());
+      if (liveReconnectAttempts === 6) {
+        emit('error', { type: 'stream_failed', message: 'Still unable to reach the stream — will keep retrying automatically.' });
+      }
+    }
+
+    const backoffMs = Math.min(2000 * Math.pow(1.5, Math.min(liveReconnectAttempts - 1, 6)), 15000);
+    console.log(`[PlaybackQueueController] 🔄 Live stream EOF auto-recovery attempt #${liveReconnectAttempts} in ${Math.round(backoffMs)}ms...`);
+
+    clearTimeout(reconnectTimer);
+    reconnectTimer = setTimeout(() => {
+      reconnectTimer = null;
+      if (currentStream && STREAMS[currentStream]?.type === 'live' && !isPlaying && wantsPlayback) {
+        console.log('[PlaybackQueueController] 📡 Attempting live stream reconnection now...');
+        DarbarLiveManager.play(currentStream, true);
+      }
+    }, backoffMs);
+  }
 
   // --- TRACK TRANSITION & PLAYBACK CONTROLLER ---
   function playStream(streamName) {
@@ -1007,13 +1126,23 @@
     isTransitioning = true;
     console.log('[AnhadAudio] 🔄 Starting track transition...');
     
-    // SAFETY NET: Force-reset isTransitioning after 10s in case Promise chain hangs
+    // SAFETY NET: Force-reset isTransitioning after 5s in case Promise chain hangs
     const safetyResetTimer = setTimeout(() => {
       if (isTransitioning) {
-        console.warn('[AnhadAudio] 🔔 Safety timeout: resetting isTransitioning after 10s hang');
+        console.warn('[AnhadAudio] 🔔 Safety timeout: resetting isTransitioning after 5s hang, retrying transition...');
         isTransitioning = false;
+        
+        // Retry transition immediately
+        if (wantsPlayback && currentStream) {
+          setTimeout(() => {
+            if (!isPlaying && wantsPlayback) {
+              console.log('[AnhadAudio] Retrying stuck track transition...');
+              playStream(currentStream); // Re-resolve from live edge
+            }
+          }, 500);
+        }
       }
-    }, 10000);
+    }, 5000); // Reduced from 10s to 5s
 
     try {
       // Reset manual offset to 0 if the user was close to LIVE (within 10s)
@@ -1092,6 +1221,7 @@
 
   // --- API CONTROL GATEWAYS ---
   function play(streamName) {
+    logDiagnostic('user_play_request', { streamName });
     if (streamName && streamName !== currentStream) {
       playStream(streamName);
     } else if (isPlaying) {
@@ -1104,6 +1234,7 @@
   }
 
   function pause() {
+    logDiagnostic('user_pause_request');
     // Deliberate user pause — stop any in-flight auto-recovery from fighting it.
     wantsPlayback = false;
     if (!isPlaying) return;
@@ -1611,6 +1742,45 @@
   registerWithCoordinator();
   initNativeMediaListener();
 
+  // --- LIVE STREAM POSITION WATCHDOG ---
+  // If audio element position hasn't advanced in 15s, force reconnection
+  let lastLivePositionCheck = 0;
+  let lastLivePositionValue = 0;
+  const LIVE_POSITION_STALL_THRESHOLD_MS = 15000;
+  
+  setInterval(() => {
+    if (!wantsPlayback || !isPlaying || !currentStream) return;
+    if (!STREAMS[currentStream] || STREAMS[currentStream].type !== 'live') return;
+    
+    const audio = PlaybackQueueController.audio;
+    if (!audio || audio.error || audio.readyState === 0) return;
+    
+    const now = Date.now();
+    const currentPos = audio.currentTime || 0;
+    
+    if (lastLivePositionCheck === 0) {
+      // First check, initialize
+      lastLivePositionCheck = now;
+      lastLivePositionValue = currentPos;
+      return;
+    }
+    
+    const elapsedMs = now - lastLivePositionCheck;
+    const positionDelta = currentPos - lastLivePositionValue;
+    
+    if (elapsedMs >= LIVE_POSITION_STALL_THRESHOLD_MS && positionDelta < 1) {
+      // Position hasn't advanced in 15 seconds — force reconnection
+      console.warn('[AnhadAudio] Live stream position stalled for 15s, forcing reconnection...');
+      logDiagnostic('position_stall_detected', { elapsedMs, positionDelta });
+      lastLivePositionCheck = 0;
+      handleLiveStreamEnded();
+    } else if (positionDelta >= 1) {
+      // Position advanced, reset timer
+      lastLivePositionCheck = now;
+      lastLivePositionValue = currentPos;
+    }
+  }, 5000); // Check every 5 seconds
+
   // Listen for global custom play triggers
   window.addEventListener('anhadPlayStream', (e) => {
     const stream = e.detail && e.detail.stream;
@@ -1645,6 +1815,8 @@
   // --- RECOVERY: the network came back ---
   let _lastWatchdogRecoveryTime = 0;
   function recoverAfterReconnect(reason) {
+    logDiagnostic('recovery_triggered', { reason });
+    
     if (!wantsPlayback || !currentStream) return;
     if (isPlaying || isLoading || isTransitioning) return;
 
