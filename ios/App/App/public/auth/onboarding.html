@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>
+    if (typeof window !== 'undefined' && window.location && window.location.hostname === '127.0.0.1') {
+      window.location.replace(window.location.href.replace('//127.0.0.1', '//localhost'));
+    }
+  </script>
+
+  <!-- Theme blocker -->
+  <script>
+    (function() {
+      try {
+        const theme = localStorage.getItem('anhad_theme') || 'auto';
+        let effectiveTheme = theme;
+        let timeOfDay = localStorage.getItem('anhad_forced_time_of_day');
+        if (theme === 'auto') {
+          if (timeOfDay && ['morning', 'day', 'evening', 'night'].includes(timeOfDay)) {
+            effectiveTheme = (timeOfDay === 'night') ? 'dark' : 'light';
+          } else {
+            const hour = new Date().getHours();
+            effectiveTheme = (hour >= 5 && hour < 20) ? 'light' : 'dark';
+            if (hour >= 5 && hour < 9) timeOfDay = 'morning';
+            else if (hour >= 9 && hour < 16) timeOfDay = 'day';
+            else if (hour >= 16 && hour < 20) timeOfDay = 'evening';
+            else timeOfDay = 'night';
+          }
+        }
+        document.documentElement.setAttribute('data-theme', effectiveTheme);
+        document.documentElement.setAttribute('data-theme-mode', theme);
+        if (theme === 'auto') document.documentElement.setAttribute('data-time-of-day', timeOfDay);
+        document.documentElement.style.colorScheme = effectiveTheme;
+        if (effectiveTheme === 'dark') {
+          document.documentElement.classList.add('dark', 'dark-mode');
+          document.documentElement.style.backgroundColor = '#0D0D0F';
+          document.documentElement.style.color = '#F5F5F7';
+        } else {
+          document.documentElement.style.backgroundColor = '#FAF8F5';
+          document.documentElement.style.color = '#1C1C1E';
+        }
+      } catch (e) {}
+    })();
+  </script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Create Sangat Identity | ANHAD</title>
+
+  <link rel="stylesheet" href="../css/theme-variables.css">
+  <link rel="stylesheet" href="./auth.css">
+
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="../lib/firebase-client.js"></script>
+  <script src="../lib/anhad-auth.js"></script>
+  <script src="../lib/friends-system.js"></script>
+</head>
+<body class="auth-body">
+
+  <main class="auth-container">
+    <div class="auth-header">
+      <img src="../assets/app-logo-96.avif" alt="ANHAD Logo" class="auth-logo">
+      <h1 class="auth-title">Create Sangat Identity</h1>
+      <p class="auth-subtitle">Pick how companions and Sangat recognize you during Amrit Vela & Chaliya.</p>
+    </div>
+
+    <div class="auth-card">
+      <div id="onboardAlert" class="auth-alert"></div>
+
+      <form id="onboardForm" onsubmit="handleOnboardSubmit(event)">
+        <div class="form-group">
+          <label class="form-label" for="displayNameInput">Display Name</label>
+          <input class="form-input" id="displayNameInput" type="text" placeholder="e.g. Harpreet Kaur" required minlength="2" maxlength="50">
+          <div class="input-status-hint info">Visible to your friends and companions.</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="usernameInput">Sangat Handle</label>
+          <div class="form-input-wrap">
+            <span class="form-input-prefix">@</span>
+            <input class="form-input has-prefix" id="usernameInput" type="text" placeholder="harpreet_kaur" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" required minlength="3" maxlength="30" oninput="checkUsernameAvailability(this.value)">
+          </div>
+          <div id="usernameStatusHint" class="input-status-hint info">Letters, numbers, and underscores (3–30 characters).</div>
+        </div>
+
+        <button type="submit" class="btn-primary" id="completeIdentityBtn">
+          <span>Enter ANHAD 🙏</span>
+        </button>
+      </form>
+    </div>
+  </main>
+
+  <script>
+    let checkTimeout = null;
+    let isUsernameValid = false;
+
+    function getReturnUrl() {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        return params.get('returnUrl') || '../index.html';
+      } catch(e) {
+        return '../index.html';
+      }
+    }
+
+    function initProfileData() {
+      if (!window.AnhadAuth) return;
+      const profile = window.AnhadAuth.getProfile();
+      const nameInput = document.getElementById('displayNameInput');
+      const userInput = document.getElementById('usernameInput');
+
+      if (profile && !profile.isAnonymous) {
+        if (profile.displayName && profile.displayName !== 'Guest Sevadar') {
+          nameInput.value = profile.displayName;
+        }
+        if (profile.username) {
+          userInput.value = profile.username;
+          checkUsernameAvailability(profile.username);
+        }
+      }
+    }
+
+    function checkUsernameAvailability(val) {
+      const hint = document.getElementById('usernameStatusHint');
+      const submitBtn = document.getElementById('completeIdentityBtn');
+      const clean = (val || '').trim().toLowerCase();
+
+      if (checkTimeout) clearTimeout(checkTimeout);
+
+      if (!clean) {
+        hint.className = 'input-status-hint info';
+        hint.textContent = 'Letters, numbers, and underscores (3–30 characters).';
+        isUsernameValid = false;
+        return;
+      }
+
+      const regex = /^[a-z0-9_]{3,30}$/;
+      if (!regex.test(clean)) {
+        hint.className = 'input-status-hint error';
+        hint.textContent = 'Only letters, numbers, and underscores (3 to 30 chars).';
+        isUsernameValid = false;
+        return;
+      }
+
+      hint.className = 'input-status-hint info';
+      hint.textContent = 'Checking availability...';
+
+      checkTimeout = setTimeout(async () => {
+        try {
+          if (window.AnhadFriends && typeof window.AnhadFriends.searchUsers === 'function') {
+            const results = await window.AnhadFriends.searchUsers(clean);
+            const currentProfile = window.AnhadAuth ? window.AnhadAuth.getProfile() : {};
+            const exactMatch = results.find(u => u.username.toLowerCase() === clean && u.uid !== currentProfile.uid);
+            if (exactMatch) {
+              hint.className = 'input-status-hint error';
+              hint.textContent = '@' + clean + ' is already taken. Try another.';
+              isUsernameValid = false;
+              return;
+            }
+          }
+          hint.className = 'input-status-hint success';
+          hint.textContent = '✓ @' + clean + ' is available!';
+          isUsernameValid = true;
+        } catch (e) {
+          hint.className = 'input-status-hint success';
+          hint.textContent = '✓ @' + clean + ' looks great!';
+          isUsernameValid = true;
+        }
+      }, 350);
+    }
+
+    async function handleOnboardSubmit(e) {
+      e.preventDefault();
+      const alertEl = document.getElementById('onboardAlert');
+      alertEl.style.display = 'none';
+
+      const displayName = document.getElementById('displayNameInput').value.trim();
+      const username = document.getElementById('usernameInput').value.trim().toLowerCase().replace(/[^a-z0-9_]/g, '');
+      const btn = document.getElementById('completeIdentityBtn');
+
+      if (!displayName || displayName.length < 2) {
+        alertEl.textContent = 'Please provide a valid display name.';
+        alertEl.className = 'auth-alert error';
+        alertEl.style.display = 'block';
+        return;
+      }
+
+      if (!username || username.length < 3) {
+        alertEl.textContent = 'Sangat handle must be at least 3 characters.';
+        alertEl.className = 'auth-alert error';
+        alertEl.style.display = 'block';
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span> <span>Setting up Sangat Identity...</span>';
+
+      try {
+        if (window.AnhadAuth) {
+          await window.AnhadAuth.updateProfile({ displayName, username });
+          localStorage.setItem('anhad_onboarding_completed', 'true');
+        }
+        window.location.replace(getReturnUrl());
+      } catch (err) {
+        alertEl.textContent = err.message || 'Unable to update identity.';
+        alertEl.className = 'auth-alert error';
+        alertEl.style.display = 'block';
+        btn.disabled = false;
+        btn.innerHTML = '<span>Enter ANHAD 🙏</span>';
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', initProfileData);
+  </script>
+</body>
+</html>

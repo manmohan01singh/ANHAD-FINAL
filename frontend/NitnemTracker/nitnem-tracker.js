@@ -5,6 +5,24 @@
 
 'use strict';
 
+// ── Reference AuthoritativeStreakEngine (R1, R2, R3 Source of Truth) ──
+let _AuthStreakEngine = (typeof window !== 'undefined' && window.AuthoritativeStreakEngine) ? window.AuthoritativeStreakEngine : null;
+if (!_AuthStreakEngine && typeof require === 'function') {
+    try {
+        _AuthStreakEngine = require('../lib/authoritative-streak-engine.js');
+    } catch (e) {
+        try {
+            _AuthStreakEngine = require('../../frontend/lib/authoritative-streak-engine.js');
+        } catch (e2) {}
+    }
+}
+function getAuthStreakEngine() {
+    if (typeof window !== 'undefined' && window.AuthoritativeStreakEngine) {
+        return window.AuthoritativeStreakEngine;
+    }
+    return _AuthStreakEngine;
+}
+
 /* -----------------------------------------------------------------------------
    SECTION 1: CONFIGURATION & CONSTANTS
    ----------------------------------------------------------------------------- */
@@ -3902,6 +3920,12 @@ const AmritvelaManager = {
             const log = StorageManager.load(CONFIG.STORAGE_KEYS.AMRITVELA_LOG, {});
             log[today] = entry;
             StorageManager.save(CONFIG.STORAGE_KEYS.AMRITVELA_LOG, log);
+
+            // Record attendance in Authoritative Streak Engine (R1, R2, R3)
+            const engine = getAuthStreakEngine();
+            if (engine) {
+                engine.recordAmritvelaAttendance(today, entry.time, entry.slot);
+            }
 
             // Update stats
             this.updateStats();
@@ -7990,6 +8014,9 @@ const StreakManager = {
     state: {
         currentStreak: 0,
         longestStreak: 0,
+        previousBestStreak: 0,
+        brokenStreak: null,
+        recoveryChallenge: null,
         totalDays: 0,
         lastUpdated: null
     },
@@ -8022,14 +8049,31 @@ const StreakManager = {
      * Load streak data
      */
     loadStreakData() {
-        const saved = StorageManager.load(CONFIG.STORAGE_KEYS.STREAK_DATA, null);
+        const engine = getAuthStreakEngine();
+        if (engine) {
+            const authState = engine.getState();
+            this.state.currentStreak = authState.currentStreak;
+            this.state.longestStreak = authState.longestStreak;
+            this.state.previousBestStreak = authState.previousBestStreak;
+            this.state.brokenStreak = authState.brokenStreak;
+            this.state.recoveryChallenge = authState.recoveryChallenge;
+            this.state.lastUpdated = authState.lastUpdated;
 
-        if (saved) {
-            // Support both old (current) and new (currentStreak) keys during migration
-            this.state.currentStreak = saved.currentStreak || saved.current || 0;
-            this.state.longestStreak = saved.longestStreak || saved.longest || 0;
-            this.state.totalDays = saved.totalDays || 0;
-            this.state.lastUpdated = saved.lastUpdated || null;
+            const amritvelaLog = StorageManager.load(CONFIG.STORAGE_KEYS.AMRITVELA_LOG, {});
+            const nitnemLog = StorageManager.load(CONFIG.STORAGE_KEYS.NITNEM_LOG, {});
+            const allDays = new Set([...Object.keys(amritvelaLog), ...Object.keys(nitnemLog)]);
+            this.state.totalDays = allDays.size;
+        } else {
+            const saved = StorageManager.load(CONFIG.STORAGE_KEYS.STREAK_DATA, null);
+            if (saved) {
+                this.state.currentStreak = saved.currentStreak || saved.current || 0;
+                this.state.longestStreak = saved.longestStreak || saved.longest || 0;
+                this.state.previousBestStreak = saved.previousBestStreak || this.state.longestStreak;
+                this.state.brokenStreak = saved.brokenStreak || null;
+                this.state.recoveryChallenge = saved.recoveryChallenge || null;
+                this.state.totalDays = saved.totalDays || 0;
+                this.state.lastUpdated = saved.lastUpdated || null;
+            }
         }
 
         // Recalculate to ensure accuracy
@@ -8038,23 +8082,37 @@ const StreakManager = {
 
     /**
      * Recalculate streak from logs
-     * ENHANCED: More lenient - counts days with EITHER Amritvela OR Nitnem completion
+     * AUTHORITATIVE: Reads from AuthoritativeStreakEngine as single source of truth
      */
     recalculateStreak() {
+        const engine = getAuthStreakEngine();
+        if (engine) {
+            const authState = engine.recalculateStreak();
+            this.state.currentStreak = authState.currentStreak;
+            this.state.longestStreak = authState.longestStreak;
+            this.state.previousBestStreak = authState.previousBestStreak;
+            this.state.brokenStreak = authState.brokenStreak;
+            this.state.recoveryChallenge = authState.recoveryChallenge;
+            this.state.lastUpdated = authState.lastUpdated;
+
+            const amritvelaLog = StorageManager.load(CONFIG.STORAGE_KEYS.AMRITVELA_LOG, {});
+            const nitnemLog = StorageManager.load(CONFIG.STORAGE_KEYS.NITNEM_LOG, {});
+            const allDays = new Set([...Object.keys(amritvelaLog), ...Object.keys(nitnemLog)]);
+            this.state.totalDays = allDays.size;
+
+            this.updateDisplay();
+            return;
+        }
+
         const amritvelaLog = StorageManager.load(CONFIG.STORAGE_KEYS.AMRITVELA_LOG, {});
         const nitnemLog = StorageManager.load(CONFIG.STORAGE_KEYS.NITNEM_LOG, {});
 
         const completeDates = new Set();
-
-        // 1. Add Amritvela logged dates (including Streak Saver patches)
         Object.keys(amritvelaLog).forEach(date => {
             const entry = amritvelaLog[date];
-            if (entry) {
-                completeDates.add(date);
-            }
+            if (entry) completeDates.add(date);
         });
 
-        // 2. Add Nitnem 100% completed dates
         Object.keys(nitnemLog).forEach(date => {
             const entry = nitnemLog[date];
             if (entry && (entry.completed === true || entry.percentage === 100)) {
@@ -8063,18 +8121,13 @@ const StreakManager = {
         });
 
         const datesToUse = Array.from(completeDates);
-
-        // Calculate current streak using Utils.calculateStreak
         this.state.currentStreak = Utils.calculateStreak(datesToUse);
-
-        // Calculate longest streak
         this.state.longestStreak = Math.max(this.state.longestStreak, this.state.currentStreak);
-
-        // Total days
+        this.state.previousBestStreak = Math.max(this.state.previousBestStreak || 0, this.state.longestStreak);
         this.state.totalDays = datesToUse.length;
 
-        // Save
         this.saveStreakData();
+        this.updateDisplay();
     },
 
     /**
@@ -8144,8 +8197,21 @@ const StreakManager = {
      */
     saveStreakData() {
         this.state.lastUpdated = new Date().toISOString();
-        this.StreakSaverManager.enqueueSave(this.state);
-        
+        const engine = getAuthStreakEngine();
+        if (engine) {
+            engine.saveState({
+                ...engine.getState(),
+                currentStreak: this.state.currentStreak,
+                longestStreak: this.state.longestStreak,
+                previousBestStreak: this.state.previousBestStreak,
+                brokenStreak: this.state.brokenStreak,
+                recoveryChallenge: this.state.recoveryChallenge,
+                lastUpdated: this.state.lastUpdated
+            });
+        } else {
+            this.StreakSaverManager.enqueueSave(this.state);
+        }
+
         // SYNC to UnifiedStats immediately for instant home page streak update
         if (typeof UnifiedStats !== 'undefined' && typeof UnifiedStats.syncStreak === 'function') {
             UnifiedStats.syncStreak(this.state.currentStreak);
@@ -8225,6 +8291,154 @@ const StreakManager = {
 
         // Message
         this.updateMessage();
+
+        // Check and render Recovery Challenge UI (R2, R3)
+        this.checkRecoveryChallengeUI();
+    },
+
+    /**
+     * Render and update Previous-Best Streak Recovery Challenge UI (R2, R3)
+     */
+    checkRecoveryChallengeUI() {
+        if (typeof document === 'undefined') return;
+        const streakBody = document.getElementById('streakBody');
+        if (!streakBody) return;
+
+        let container = document.getElementById('recoveryChallengeContainer');
+        if (!container) {
+            container = document.createElement('div');
+            container.id = 'recoveryChallengeContainer';
+            container.className = 'recovery-challenge-container';
+            const statsRow = streakBody.querySelector('.streak-stats-row');
+            if (statsRow && statsRow.nextSibling) {
+                streakBody.insertBefore(container, statsRow.nextSibling);
+            } else {
+                streakBody.appendChild(container);
+            }
+        }
+
+        const engine = getAuthStreakEngine();
+        if (!engine) return;
+
+        const authState = engine.getState();
+        const challenge = authState.recoveryChallenge;
+        const isEligible = engine.isRecoveryEligible();
+
+        // 1. Challenge Active & In Progress
+        if (challenge && challenge.active && challenge.status === 'in_progress') {
+            const currentDay = Math.min(5, Math.max(1, challenge.currentDay || 1));
+            const passage = engine.getGurbaniPassage(currentDay);
+
+            container.innerHTML = `
+                <div class="recovery-card in-progress" style="margin: 16px 0; padding: 16px; border-radius: 16px; background: rgba(52, 199, 89, 0.08); border: 1px solid rgba(52, 199, 89, 0.25); text-align: left; transition: all 0.3s ease;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                        <span style="font-size: 13px; font-weight: 700; color: var(--system-green, #34C759); text-transform: uppercase; letter-spacing: 0.5px;">
+                            🌅 5-Day Recovery Challenge
+                        </span>
+                        <span style="font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 8px; background: rgba(52, 199, 89, 0.15); color: var(--system-green, #34C759);">
+                            Day ${challenge.currentDay} of 5
+                        </span>
+                    </div>
+
+                    <div style="display: flex; gap: 6px; margin: 10px 0 14px 0;">
+                        ${[1, 2, 3, 4, 5].map(d => `
+                            <div style="flex: 1; height: 6px; border-radius: 3px; background: ${d <= challenge.currentDay ? 'var(--system-green, #34C759)' : 'rgba(120, 120, 128, 0.2)'}; transition: background 0.3s ease;"></div>
+                        `).join('')}
+                    </div>
+
+                    <div class="recovery-gurbani-box" style="padding: 12px; border-radius: 12px; background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.06); margin-bottom: 12px;">
+                        <div style="font-size: 16px; font-weight: 600; color: var(--ac-gold, #D4943A); font-family: 'GurbaniAkhar', 'Noto Sans Gurmukhi', sans-serif; line-height: 1.6; margin-bottom: 6px;">
+                            ${passage.gurmukhi}
+                        </div>
+                        <div style="font-size: 12px; color: var(--text-primary, #ffffff); line-height: 1.4; margin-bottom: 6px;">
+                            "${passage.translation}"
+                        </div>
+                        <div style="font-size: 11px; font-weight: 600; color: var(--text-secondary, #86868b);">
+                            Ang ${passage.ang} • ${passage.source} • ${passage.author}
+                        </div>
+                    </div>
+
+                    <p style="margin: 0; font-size: 12px; color: var(--text-secondary, #86868b);">
+                        Mark Amritvela present before 6 AM each morning to advance. Missing a day resets the challenge.
+                    </p>
+                </div>
+            `;
+            return;
+        }
+
+        // 2. Challenge Failed / Reset Guidance
+        if (challenge && challenge.status === 'failed') {
+            container.innerHTML = `
+                <div class="recovery-card failed" style="margin: 16px 0; padding: 16px; border-radius: 16px; background: rgba(255, 69, 58, 0.08); border: 1px solid rgba(255, 69, 58, 0.25); text-align: left;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                        <span style="font-size: 13px; font-weight: 700; color: #FF453A; text-transform: uppercase;">
+                            🙏 Keep Chardi Kala
+                        </span>
+                    </div>
+                    <p style="margin: 0 0 12px 0; font-size: 13px; line-height: 1.4; color: var(--text-primary, #ffffff);">
+                        Missing a day during the challenge resets your progress. Spiritual discipline is a lifelong path of grace and effort — you can restart the 5-day challenge whenever you are ready.
+                    </p>
+                    <button id="retryRecoveryBtn" style="width: 100%; padding: 10px; border-radius: 10px; border: none; background: rgba(255, 255, 255, 0.12); color: #fff; font-weight: 600; font-size: 13px; cursor: pointer;">
+                        🔄 Try Again
+                    </button>
+                </div>
+            `;
+            const retryBtn = container.querySelector('#retryRecoveryBtn');
+            if (retryBtn) {
+                retryBtn.onclick = () => {
+                    engine.resetRecoveryChallenge();
+                    if (engine.isRecoveryEligible()) {
+                        engine.startRecoveryChallenge();
+                    }
+                    this.recalculateStreak();
+                };
+            }
+            return;
+        }
+
+        // 3. Challenge is Eligible to Start
+        if (isEligible) {
+            const targetStreak = authState.previousBestStreak;
+            const brokenDate = authState.brokenStreak?.brokenDate || 'recent lapse';
+
+            container.innerHTML = `
+                <div class="recovery-card eligible" style="margin: 16px 0; padding: 16px; border-radius: 16px; background: rgba(212, 148, 58, 0.08); border: 1px solid rgba(212, 148, 58, 0.25); text-align: left;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                        <span style="font-size: 13px; font-weight: 700; color: var(--ac-gold, #D4943A); text-transform: uppercase; letter-spacing: 0.5px;">
+                            🌱 Recovery Challenge Available
+                        </span>
+                        <span style="font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 8px; background: rgba(212, 148, 58, 0.15); color: var(--ac-gold, #D4943A);">
+                            ${targetStreak} Days
+                        </span>
+                    </div>
+                    <h4 style="margin: 0 0 6px 0; font-size: 15px; font-weight: 700; color: var(--text-primary, #ffffff);">
+                        Restore Previous-Best Streak (${targetStreak} Days)
+                    </h4>
+                    <p style="margin: 0 0 12px 0; font-size: 13px; line-height: 1.4; color: var(--text-secondary, #86868b);">
+                        Your streak of ${targetStreak} days broke on ${brokenDate}. Rise for Amritvela 5 consecutive days to restore your streak with authentic SGGS Gurbani contemplation.
+                    </p>
+                    <button id="startRecoveryBtn" style="width: 100%; padding: 12px; border-radius: 12px; border: none; background: linear-gradient(135deg, #FF9500, #FFCC00); color: #000; font-weight: 700; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                        <span>✨</span> Start 5-Day Challenge
+                    </button>
+                </div>
+            `;
+            const startBtn = container.querySelector('#startRecoveryBtn');
+            if (startBtn) {
+                startBtn.onclick = () => {
+                    const res = engine.startRecoveryChallenge();
+                    if (res && res.success) {
+                        if (typeof Toast !== 'undefined' && Toast.success) {
+                            Toast.success('Challenge Started', 'Day 1 of 5 Amritvela Recovery Challenge is now active!');
+                        }
+                        this.recalculateStreak();
+                    }
+                };
+            }
+            return;
+        }
+
+        // 4. Default: No active challenge and not eligible
+        container.innerHTML = '';
     },
 
     /**
@@ -11266,8 +11480,9 @@ const DateHistoryView = {
         var totalBeads = dayMala.totalCount || 0;
         var amritvelaLog = StorageManager.load(CONFIG.STORAGE_KEYS.AMRITVELA_LOG, {});
         var amritEntry = amritvelaLog[dateStr];
-        var amritvelaStatus = amritEntry ? ('✓ ' + (amritEntry.time || 'Present')) : '✗ Absent';
-        var amritvelaClass = amritEntry ? 'complete' : 'incomplete';
+        var isRestored = amritEntry && (amritEntry.origin === 'restored' || amritEntry.systemGenerated || amritEntry.isSystemGenerated);
+        var amritvelaStatus = amritEntry ? ('✓ ' + (amritEntry.time || 'Present') + (isRestored ? ' (Restored)' : '')) : '✗ Absent';
+        var amritvelaClass = amritEntry ? ('complete' + (isRestored ? ' restored' : '')) : 'incomplete';
         var alarmLog = StorageManager.load(CONFIG.STORAGE_KEYS.ALARM_LOG, {});
         var dayAlarms = alarmLog[dateStr] || {};
         var aResponded = 0, aSnoozed = 0, aMissed = 0;
@@ -11772,7 +11987,9 @@ const AmritvelaWeekView = {
                 month: d.toLocaleDateString('en-US', { month: 'short' }),
                 attended: !!entry,
                 time: entry?.time || null,
-                slot: entry?.slot || null
+                slot: entry?.slot || null,
+                origin: entry?.origin || (entry?.isStreakSaverPatch ? 'punishment' : 'user'),
+                isRestored: entry?.origin === 'restored' || !!entry?.systemGenerated || !!entry?.isSystemGenerated
             });
         }
 
@@ -11798,7 +12015,7 @@ const AmritvelaWeekView = {
                                     <span class="day-num">${day.dayNum}</span>
                                     <span style="font-size:10px;color:var(--text-tertiary)">${day.month}</span>
                                     ${day.attended
-                ? `<span class="day-time ${getSlotClass(day.slot)}">${day.time}</span>`
+                ? `<span class="day-time ${getSlotClass(day.slot)}">${day.time}${day.isRestored ? ' <small style="display:block;font-size:8px;opacity:0.85;">(Restored)</small>' : ''}</span>`
                 : `<span class="day-missed">—</span>`
             }
                                 </div>
@@ -11835,10 +12052,10 @@ const AmritvelaWeekView = {
     },
 
     /**
-     * Get average wake time
+     * Get average wake time (excludes restored and systemGenerated records)
      */
     getAverageWakeTime(weekData) {
-        const times = weekData.filter(d => d.time).map(d => {
+        const times = weekData.filter(d => d.time && d.origin !== 'restored' && !d.isRestored && !d.systemGenerated && !d.isStreakSaverPatch).map(d => {
             const [h, m] = d.time.split(':').map(Number);
             return h * 60 + m;
         });
@@ -11852,10 +12069,10 @@ const AmritvelaWeekView = {
     },
 
     /**
-     * Get earliest wake time
+     * Get earliest wake time (excludes restored and systemGenerated records)
      */
     getEarliestWake(weekData) {
-        const times = weekData.filter(d => d.time).map(d => {
+        const times = weekData.filter(d => d.time && d.origin !== 'restored' && !d.isRestored && !d.systemGenerated && !d.isStreakSaverPatch).map(d => {
             const [h, m] = d.time.split(':').map(Number);
             return { time: d.time, minutes: h * 60 + m };
         });
@@ -12375,6 +12592,13 @@ const DailyResetManager = {
         // 2. Check for streak break using StreakSaverManager (includes Mathila detection)
         StreakSaverManager.checkStreakBreak();
 
+        // 2.5 Authoritative streak break check & recalculation (R1, R2, R3)
+        const engine = getAuthStreakEngine();
+        if (engine) {
+            engine.checkStreakBreak(today);
+            StreakManager.recalculateStreak();
+        }
+
         // 3. Reset Today's Temporary State
         localStorage.removeItem('temp_amritvela_state');
         localStorage.removeItem('temp_mala_count');
@@ -12698,7 +12922,14 @@ const KeyboardShortcuts = {
 // DailyResetManager etc. are reachable from a test file without triggering
 // the real-page-only auto-start block immediately below.
 if (typeof module !== 'undefined' && module.exports) {
-    Object.assign(module.exports, { DailyResetManager, StreakSaverManager, ReportsManager });
+    Object.assign(module.exports, {
+        DailyResetManager,
+        StreakSaverManager,
+        ReportsManager,
+        StreakManager,
+        AuthoritativeStreakEngine: getAuthStreakEngine(),
+        getAuthStreakEngine
+    });
 }
 
 // Override the initialization to use full version.

@@ -65,6 +65,14 @@ function registerUser(profile) {
   if (profile.uid === 'user_manmohan') return null;
 
   const username = (profile.username || '').trim().toLowerCase();
+  if (username) {
+    for (const [k, v] of registeredUsers.entries()) {
+      if (k !== profile.uid && (v.username || '').toLowerCase() === username) {
+        registeredUsers.delete(k);
+      }
+    }
+  }
+
   const existing = registeredUsers.get(profile.uid) || {};
   const updated = {
     uid: profile.uid,

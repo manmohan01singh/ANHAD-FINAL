@@ -59,7 +59,14 @@ class OptimizedImageLoader {
      * Setup a single image for optimized loading
      */
     setupImage(img) {
-        // Add loading class
+        // If image is already complete and loaded in cache, do not degrade with loading class
+        if (img.complete && img.naturalWidth > 0) {
+            img.classList.remove('img-loading');
+            img.classList.add('img-loaded');
+            return;
+        }
+
+        // Add loading class only for genuinely pending images
         img.classList.add('img-loading');
 
         // If image should load immediately (above fold)

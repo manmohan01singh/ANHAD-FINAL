@@ -304,6 +304,16 @@
                 this.audio = new Audio();
                 this.audio.preload = 'auto';
             }
+            // Register with AudioCoordinator for mutual exclusion with Radio & Simran
+            if (window.AudioCoordinator) {
+                window.AudioCoordinator.register('hukamnama', {
+                    pause: () => {
+                        if (this.audio && !this.audio.paused) {
+                            this.audio.pause();
+                        }
+                    }
+                });
+            }
             // iOS WKWebView / Capacitor: allow inline playback within user gesture
             this.audio.setAttribute('playsinline', '');
             this.audio.setAttribute('webkit-playsinline', '');
@@ -439,6 +449,9 @@
         },
 
         stop() {
+            if (window.AudioCoordinator) {
+                window.AudioCoordinator.notifyPause('hukamnama');
+            }
             this.audio.pause();
             this.audio.src = '';
             document.getElementById('hukamPlayer')?.classList.remove('visible');
@@ -475,9 +488,23 @@
             this.setWave(playing);
         },
 
-        onPlay()  { this.setPlayState(true);  this.setSub('Sachkhand Sri Harmandir Sahib'); },
-        onPause() { this.setPlayState(false); },
+        onPlay() {
+            if (window.AudioCoordinator) {
+                window.AudioCoordinator.requestPlay('hukamnama');
+            }
+            this.setPlayState(true);
+            this.setSub('Sachkhand Sri Harmandir Sahib');
+        },
+        onPause() {
+            if (window.AudioCoordinator) {
+                window.AudioCoordinator.notifyPause('hukamnama');
+            }
+            this.setPlayState(false);
+        },
         onEnded() {
+            if (window.AudioCoordinator) {
+                window.AudioCoordinator.notifyPause('hukamnama');
+            }
             this.setPlayState(false);
             document.getElementById('hukamProgressFill').style.width = '0%';
             document.getElementById('hukamCurrent').textContent = '0:00';

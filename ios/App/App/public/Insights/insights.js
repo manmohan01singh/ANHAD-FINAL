@@ -964,37 +964,187 @@
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
-    // QUICK STATS
+    // QUICK STATS & SACRED LISTENING SANCTUM
     // ═══════════════════════════════════════════════════════════════════════════
 
+    function formatHoursAndMins(totalMinutes) {
+        if (!totalMinutes || totalMinutes <= 0) return '0h 00m';
+        const hours = Math.floor(totalMinutes / 60);
+        const mins = Math.round(totalMinutes % 60);
+        if (hours === 0) return `${mins}m`;
+        return `${hours}h ${mins < 10 ? '0' + mins : mins}m`;
+    }
+
     function loadQuickStats() {
-        let stats = {}, streak = {}, sehajStats = {};
+        let stats = {}, streak = {}, sehajStats = {}, unifiedData = null;
         try {
             stats = JSON.parse(localStorage.getItem('anhad_user_stats') || '{}');
             streak = JSON.parse(localStorage.getItem('anhad_streak_data') || '{}');
             sehajStats = JSON.parse(localStorage.getItem('sehajPaathStats') || '{}');
+            const storedUnified = localStorage.getItem('anhad_unified_stats');
+            if (storedUnified) unifiedData = JSON.parse(storedUnified);
         } catch (e) {}
 
-        const totalMin = stats.totalListeningMinutes || 0;
-        const totalDays = stats.totalDaysActive || 1;
-        const weeklyHours = Math.round((totalMin / Math.max(totalDays, 7)) * 7 / 60 * 10) / 10;
+        const todayKey = new Date().toLocaleDateString('en-CA');
+        let unifiedToday = unifiedData?.daily?.[todayKey];
 
-        const sehajAngs = sehajStats.totalAngsRead || (stats.sehajPaath?.totalAngsRead) || 0;
-        const weeklyAngs = sehajStats.todayAngsRead || Math.round((sehajAngs / Math.max(totalDays, 7)) * 7);
-        
-        const bestStreak = Math.max(
-            sehajStats.currentStreak || 0,
-            streak.currentStreak || 0,
-            stats.sehajPaath?.currentStreak || 0,
-            1
+        // 1. Today's listening minutes
+        let todayMin = 0;
+        if (window.UnifiedStats && typeof window.UnifiedStats.getTodayStats === 'function') {
+            const ut = window.UnifiedStats.getTodayStats();
+            todayMin = ut.kirtanMinutes || 0;
+        } else if (unifiedToday && typeof unifiedToday.kirtanMinutes === 'number') {
+            todayMin = unifiedToday.kirtanMinutes;
+        }
+        todayMin = Math.max(todayMin, stats.todayListeningMinutes || 0);
+
+        // 2. Weekly listening minutes & angs read (aggregate past 7 days)
+        let weeklyMin = 0;
+        let weeklyAngsSum = 0;
+        if (window.UnifiedStats && typeof window.UnifiedStats.getLast7Days === 'function') {
+            const last7 = window.UnifiedStats.getLast7Days();
+            last7.forEach(d => {
+                weeklyMin += (d.kirtanMinutes || 0);
+                weeklyAngsSum += (d.angRead || 0);
+            });
+        } else if (unifiedData && unifiedData.daily) {
+            const now = new Date();
+            for (let i = 0; i < 7; i++) {
+                const d = new Date(now);
+                d.setDate(d.getDate() - i);
+                const k = d.toLocaleDateString('en-CA');
+                const dayEntry = unifiedData.daily[k];
+                if (dayEntry) {
+                    if (typeof dayEntry.kirtanMinutes === 'number') weeklyMin += dayEntry.kirtanMinutes;
+                    if (typeof dayEntry.angRead === 'number') weeklyAngsSum += dayEntry.angRead;
+                }
+            }
+        }
+        if (weeklyMin < todayMin) weeklyMin = todayMin;
+
+        // 3. Lifetime Total listening minutes
+        let unifiedLifetimeMin = 0;
+        let unifiedLifetimeAngs = 0;
+        if (unifiedData && unifiedData.daily) {
+            Object.values(unifiedData.daily).forEach(day => {
+                if (typeof day.kirtanMinutes === 'number') unifiedLifetimeMin += day.kirtanMinutes;
+                if (typeof day.angRead === 'number') unifiedLifetimeAngs += day.angRead;
+            });
+        }
+        let totalMin = Math.max(stats.totalListeningMinutes || 0, unifiedLifetimeMin, weeklyMin, todayMin);
+
+        // 4. Sehaj Paath and Angs read
+        const totalAngs = Math.max(
+            sehajStats.totalAngsRead || 0,
+            stats.sehajPaath?.totalAngsRead || 0,
+            unifiedLifetimeAngs,
+            weeklyAngsSum
         );
 
+        // 5. Active Streak (Accurate: 0 days if no activity, never forced to 1)
+        const bestStreak = Math.max(
+            unifiedData?.streaks?.nitnem || 0,
+            unifiedData?.streaks?.sehajPath || 0,
+            unifiedData?.streaks?.kirtan || 0,
+            streak.currentStreak || 0,
+            streak.current || 0,
+            sehajStats.currentStreak || 0,
+            stats.sehajPaath?.currentStreak || 0,
+            0
+        );
+
+        // DOM elements
+        const totalHoursEl = document.getElementById('totalListeningHoursDisplay');
+        const todayEl = document.getElementById('todayListening');
         const wl = document.getElementById('weeklyListening');
         const wa = document.getElementById('weeklyAngs');
         const cs = document.getElementById('currentStreak');
-        if (wl) wl.textContent = `${weeklyHours}h`;
-        if (wa) wa.textContent = weeklyAngs;
-        if (cs) cs.textContent = `${bestStreak} 🔥`;
+        const rankText = document.getElementById('rankBadgeText');
+
+        if (totalHoursEl) {
+            totalHoursEl.textContent = formatHoursAndMins(totalMin);
+        }
+        if (todayEl) {
+            todayEl.textContent = `${todayMin} min`;
+        }
+        if (wl) {
+            const weeklyHours = Math.round((weeklyMin / 60) * 10) / 10;
+            wl.textContent = `${weeklyHours}h`;
+        }
+        if (wa) {
+            wa.textContent = `${totalAngs} Angs`;
+        }
+        if (cs) {
+            cs.textContent = bestStreak > 0 ? `${bestStreak} Days 🔥` : '0 Days';
+        }
+
+        // Determine Seeker Rank
+        if (rankText) {
+            if (totalMin >= 600) {
+                rankText.textContent = 'ਸਹਿਜ ਗਿਆਨੀ • Enlightened Mind';
+            } else if (totalMin >= 180) {
+                rankText.textContent = 'ਕੀਰਤਨੀ ਸੇਵਾਦਾਰ • Kirtan Sevadar';
+            } else if (totalMin >= 45) {
+                rankText.textContent = 'ਗੁਰਸਿੱਖ ਯਾਤਰੀ • Devoted Pilgrim';
+            } else {
+                rankText.textContent = 'ਅਭਿਆਸੀ ਸਿੱਖ • Shabad Seeker';
+            }
+        }
+    }
+
+    function setupLiveListeningMonitor() {
+        const liveAura = document.getElementById('liveListeningAura');
+        const liveTime = document.getElementById('liveSessionTime');
+        if (!liveAura) return;
+
+        let sessionSec = 0;
+        let sessionTimer = null;
+
+        function updateLiveState(isPlaying) {
+            if (isPlaying) {
+                liveAura.style.display = 'flex';
+                if (!sessionTimer) {
+                    sessionTimer = setInterval(() => {
+                        sessionSec++;
+                        if (liveTime) {
+                            const m = Math.floor(sessionSec / 60);
+                            const s = sessionSec % 60;
+                            liveTime.textContent = m > 0 ? `${m}m ${s}s` : `${s}s`;
+                        }
+                    }, 1000);
+                }
+            } else {
+                liveAura.style.display = 'none';
+                if (sessionTimer) {
+                    clearInterval(sessionTimer);
+                    sessionTimer = null;
+                }
+                sessionSec = 0;
+                loadQuickStats();
+            }
+        }
+
+        if (window.AnhadAudio && typeof window.AnhadAudio.isPlaying === 'function') {
+            if (window.AnhadAudio.isPlaying()) updateLiveState(true);
+        }
+
+        window.addEventListener('anhadaudiostatechange', (e) => {
+            const isPlaying = e.detail && e.detail.isPlaying;
+            updateLiveState(!!isPlaying);
+        });
+
+        window.addEventListener('statsUpdated', loadQuickStats);
+        window.addEventListener('dashboardRefresh', loadQuickStats);
+        window.addEventListener('statsChanged', loadQuickStats);
+        window.addEventListener('kirtanListeningUpdated', loadQuickStats);
+        window.addEventListener('angRead', loadQuickStats);
+        window.addEventListener('nitnemBaniCompleted', loadQuickStats);
+        window.addEventListener('nitnemDayCompleted', loadQuickStats);
+        window.addEventListener('storage', (e) => {
+            if (e.key && (e.key.includes('stats') || e.key.includes('streak') || e.key.includes('unified'))) {
+                loadQuickStats();
+            }
+        });
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -1133,6 +1283,7 @@
         setupDailyQuiz();
         setupSearch();
         loadQuickStats();
+        setupLiveListeningMonitor();
         setupShabadCards();
         setupShareQuote();
         setupLangSwitch();

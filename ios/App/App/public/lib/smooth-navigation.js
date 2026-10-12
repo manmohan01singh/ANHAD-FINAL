@@ -321,6 +321,44 @@
     }
   }
 
+  function restoreHeroCardImages() {
+    try {
+      const slot = localStorage.getItem('anhad_forced_time_of_day');
+      let target = 'morning';
+      if (slot && ['morning', 'day', 'evening', 'night'].includes(slot)) {
+        target = slot;
+      } else {
+        const h = new Date().getHours();
+        target = (h >= 5 && h < 9) ? 'morning' : (h >= 9 && h < 16) ? 'day' : (h >= 16 && h < 20) ? 'evening' : 'night';
+      }
+      const theme = localStorage.getItem('anhad_theme') || 'auto';
+      if (theme === 'dark') target = 'night';
+      else if (theme === 'light') target = 'day';
+
+      const cards = [
+        { id: 'heroCard1Img', file: target + '-darbar-sahib.webp' },
+        { id: 'heroCard2Img', file: target + '-amritvela-kirtan.webp' },
+        { id: 'heroCard3Img', file: target + '-waheguru-simran.webp' }
+      ];
+      cards.forEach(({ id, file }) => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.src = 'assets/HERO CARD IMAGES/' + file;
+          el.style.display = 'block';
+          el.style.opacity = '1';
+          el.style.visibility = 'visible';
+        }
+      });
+      if (typeof window.syncGreetingHeroArtwork === 'function') {
+        try { window.syncGreetingHeroArtwork(); } catch(e) {}
+      }
+      if (window.CompanionMode && typeof window.CompanionMode.syncHeroImage === 'function') {
+        try { window.CompanionMode.syncHeroImage(); } catch(e) {}
+      }
+    } catch(e) {}
+  }
+  window.restoreHeroCardImages = restoreHeroCardImages;
+
   function isShellPage(url) {
     try {
       const pathname = new URL(url, window.location.origin).pathname.toLowerCase();
@@ -635,7 +673,7 @@
           document.body.appendChild(clonedNode);
         }
       } else if (!newNode && currentNode) {
-        if (selector !== '#mainNav' && selector !== '.tab-bar') {
+        if (selector !== '#mainNav' && selector !== '#main-nav' && selector !== '.tab-bar' && selector !== '.anhad-bottom-nav' && selector !== '#anhadSvgSprite') {
           currentNode.remove();
         }
       }
@@ -731,6 +769,20 @@
     //    page renders under the same container it would on a hard refresh.
     syncElementAttributes(currentApp, newApp);
     currentApp.innerHTML = newApp.innerHTML;
+
+    // Instant Home Artwork Sync — immediately restore hero banner, hero cards, and theme before scripts execute
+    if (isHomeUrl(url)) {
+      restoreHeroCardImages();
+      if (typeof window.syncGreetingHeroArtwork === 'function') {
+        try { window.syncGreetingHeroArtwork(); } catch(e) {}
+      }
+      if (window.AnhadSky) {
+        try {
+          window.AnhadSky.applyTimeOfDay();
+          window.AnhadSky.updateHeroCardImages();
+        } catch(e) {}
+      }
+    }
 
     // 4. Only now retire the outgoing page's CSS.
     deactivateForeignPageCss(newPageKey);

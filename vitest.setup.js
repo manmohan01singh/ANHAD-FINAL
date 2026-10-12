@@ -7,12 +7,17 @@ import { vi } from 'vitest';
 // Compatibility alias for existing suites using Jest globals
 global.jest = vi;
 
-// Load AnhadAudio singleton code once
+// Load AnhadAudio singleton and AudioCoordinator code once
 const singletonPath = path.resolve(process.cwd(), 'frontend/lib/anhad-audio-singleton.js');
+const coordinatorPath = path.resolve(process.cwd(), 'frontend/lib/audio-coordinator.js');
 let singletonCode = '';
+let coordinatorCode = '';
 try {
   if (fs.existsSync(singletonPath)) {
     singletonCode = fs.readFileSync(singletonPath, 'utf8');
+  }
+  if (fs.existsSync(coordinatorPath)) {
+    coordinatorCode = fs.readFileSync(coordinatorPath, 'utf8');
   }
 } catch (e) {}
 
@@ -289,11 +294,27 @@ window.MediaMetadata = global.MediaMetadata;
 window.Audio = global.Audio;
 
 function initAnhadAudioSingleton() {
+  if (coordinatorCode) {
+    try {
+      const coordFn = new Function('window', 'document', coordinatorCode);
+      coordFn(window, document);
+      if (window.AudioCoordinator) {
+        global.AudioCoordinator = window.AudioCoordinator;
+      }
+    } catch(e) {}
+  }
+
   if (singletonCode) {
     try {
       if (window.AnhadAudio) delete window.AnhadAudio;
+      let safeLoc = { href: 'http://localhost/', origin: 'http://localhost', protocol: 'http:' };
+      try {
+        if (window && window.location && window.location.href) {
+          safeLoc = window.location;
+        }
+      } catch (locErr) {}
       const fn = new Function('window', 'document', 'navigator', 'localStorage', 'sessionStorage', 'location', 'Audio', 'MediaMetadata', singletonCode);
-      fn(window, document, navigator, global.localStorage, global.sessionStorage, window.location, global.Audio, global.MediaMetadata);
+      fn(window, document, navigator, global.localStorage, global.sessionStorage, safeLoc, global.Audio, global.MediaMetadata);
       if (window.AnhadAudio) {
         global.AnhadAudio = window.AnhadAudio;
       }

@@ -102,6 +102,16 @@
 
     function getStreak() {
         try {
+            if (typeof window !== 'undefined' && window.AuthoritativeStreakEngine) {
+                const authState = window.AuthoritativeStreakEngine.getState();
+                return {
+                    ...defaultStreak,
+                    ...authState,
+                    currentStreak: authState.currentStreak,
+                    longestStreak: authState.longestStreak,
+                    previousBestStreak: authState.previousBestStreak
+                };
+            }
             const stored = localStorage.getItem(STREAK_KEY);
             return stored ? { ...defaultStreak, ...JSON.parse(stored) } : { ...defaultStreak };
         } catch (e) {

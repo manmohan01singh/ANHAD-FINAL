@@ -14,13 +14,9 @@
 (function () {
   'use strict';
 
-  // Run-once guard. smooth-navigation.js removes and re-appends body scripts by
-  // resolved URL on every SPA arrival, and this file is a bare IIFE — so each
-  // visit to the radio page stacked another set of window listeners
-  // (online/offline), another AnhadAudio 'statechange' subscription (which is
-  // never off()'d anywhere in the app), another 15s alarm interval, and another
-  // 'timeupdate' listener on the SHARED singleton audio element.
-  if (window.__anhadGurbaniRadioInit) return;
+  // One-time global guard for persistent background intervals, window listeners,
+  // and audio event subscriptions across SPA transitions.
+  var isFirstGlobalInit = !window.__anhadGurbaniRadioInit;
   window.__anhadGurbaniRadioInit = true;
 
   // --- DOM References ---
@@ -150,6 +146,7 @@
   function syncUI() {
     var audio = window.AnhadAudio;
     if (!audio) return;
+    if (!DOM.playBtn || !DOM.coverImg || !DOM.trackTitle || !DOM.trackArtist || !DOM.waveIcon) return;
 
     var state = audio.getState();
     var stream = state.currentStream || 'darbar';
@@ -254,6 +251,7 @@
 
   function updateTimeline(current, duration, stream) {
     if (DOM.isDraggingSlider) return;
+    if (!DOM.timeCurrent || !DOM.timeTotal || !DOM.sliderFill || !DOM.sliderHandle) return;
 
     DOM.timeCurrent.textContent = formatSeconds(current);
 
@@ -663,24 +661,25 @@
     }
   }
 
-  function initTheme() {
-    function applyRadioTheme() {
-      // Time-based auto theme: dark at night (8 PM – 5 AM), light otherwise
-      var hour = new Date().getHours();
-      var isNight = (hour >= 20 || hour < 5);
+  function applyRadioTheme() {
+    // Time-based auto theme: dark at night (8 PM – 5 AM), light otherwise
+    var hour = new Date().getHours();
+    var isNight = (hour >= 20 || hour < 5);
 
-      // If global theme explicitly forces dark, honour it
-      var globalTheme = window.AnhadTheme ? window.AnhadTheme.get() : 'auto';
-      var isDark = isNight || globalTheme === 'dark' || (globalTheme === 'auto' && (window.AnhadTheme ? window.AnhadTheme.isDark() : isNight));
+    // If global theme explicitly forces dark, honour it
+    var globalTheme = window.AnhadTheme ? window.AnhadTheme.get() : 'auto';
+    var isDark = isNight || globalTheme === 'dark' || (globalTheme === 'auto' && (window.AnhadTheme ? window.AnhadTheme.isDark() : isNight));
 
-      var activeTheme = isDark ? 'dark' : 'light';
-      document.documentElement.setAttribute('data-theme', activeTheme);
-      document.body.classList.toggle('dark-mode', isDark);
-      document.body.style.backgroundColor = isDark ? '#0A0A0C' : '#FAF8F5';
-      if (typeof syncUI === 'function') {
-        syncUI();
-      }
+    var activeTheme = isDark ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', activeTheme);
+    document.body.classList.toggle('dark-mode', isDark);
+    document.body.style.backgroundColor = isDark ? '#0A0A0C' : '#FAF8F5';
+    if (typeof syncUI === 'function') {
+      syncUI();
     }
+  }
+
+  function initTheme() {
     applyRadioTheme();
     window.addEventListener('themechange', applyRadioTheme);
     window.addEventListener('anhadThemeChanged', applyRadioTheme);
@@ -900,11 +899,15 @@
       saveAlarmSettings();
     });
 
-    // Audio Engine subscriptions
+  }
+
+  // Audio Engine subscriptions (initialized once per app lifecycle)
+  function initAudioSubscriptions() {
     var audio = window.AnhadAudio;
     if (audio) {
       audio.on('statechange', syncUI);
       audio.on('loading', function (e) {
+        if (!DOM.playBtn) return;
         if (e.isLoading) {
           DOM.playBtn.classList.add('loading');
         } else {
@@ -912,13 +915,12 @@
         }
       });
       audio.on('error', function (e) {
-        // Show helpful toast when a stream fails with specific error details
+        if (!DOM.playBtn) return;
         var state = audio.getState();
         var streamName = state.currentTrackTitle || state.currentStream || 'stream';
         
         var errorMsg = '⚠️ Stream failed: ' + streamName;
         
-        // Provide specific error messages based on error type
         if (e && e.type) {
           switch (e.type) {
             case 'network':
@@ -949,6 +951,7 @@
       var audioEl = audio.getAudio();
       if (audioEl) {
         audioEl.addEventListener('timeupdate', function () {
+          if (!DOM.timeCurrent) return;
           var state = audio.getState();
           updateTimeline(audioEl.currentTime, audioEl.duration, state.currentStream);
         });
@@ -957,37 +960,38 @@
   }
 
   // --- Alarm foreground checker ---
-  var lastCheckedMinute = -1;
-  setInterval(function () {
-    var alarmRaw = localStorage.getItem('anhad_radio_alarm');
-    if (!alarmRaw) return;
-    try {
-      var alarm = JSON.parse(alarmRaw);
-      if (!alarm || !alarm.enabled || !alarm.time) return;
+  function initAlarmChecker() {
+    var lastCheckedMinute = -1;
+    setInterval(function () {
+      var alarmRaw = localStorage.getItem('anhad_radio_alarm');
+      if (!alarmRaw) return;
+      try {
+        var alarm = JSON.parse(alarmRaw);
+        if (!alarm || !alarm.enabled || !alarm.time) return;
 
-      var now = new Date();
-      var currentMin = now.getMinutes();
-      if (currentMin === lastCheckedMinute) return; // check once per minute
+        var now = new Date();
+        var currentMin = now.getMinutes();
+        if (currentMin === lastCheckedMinute) return; // check once per minute
 
-      var timeParts = alarm.time.split(':');
-      var alarmHour = parseInt(timeParts[0], 10);
-      var alarmMin = parseInt(timeParts[1], 10);
+        var timeParts = alarm.time.split(':');
+        var alarmHour = parseInt(timeParts[0], 10);
+        var alarmMin = parseInt(timeParts[1], 10);
 
-      if (now.getHours() === alarmHour && currentMin === alarmMin) {
-        lastCheckedMinute = currentMin;
-        var audio = window.AnhadAudio;
-        if (audio && !audio.isPlaying()) {
-          audio.play(alarm.stream);
-          showToast('⏰ Daily Gurbani Alarm triggered!');
-          haptic('HEAVY');
+        if (now.getHours() === alarmHour && currentMin === alarmMin) {
+          lastCheckedMinute = currentMin;
+          var audio = window.AnhadAudio;
+          if (audio && !audio.isPlaying()) {
+            audio.play(alarm.stream);
+            showToast('⏰ Daily Gurbani Alarm triggered!');
+            haptic('HEAVY');
+          }
         }
-      }
-    } catch(e) {}
-  }, 15000);
+      } catch(e) {}
+    }, 15000);
+  }
 
   // --- Network Status Monitor ---
   function initNetworkMonitor() {
-    // Check initial network status
     function updateNetworkStatus() {
       var isOnline = navigator.onLine;
       if (!isOnline) {
@@ -995,18 +999,6 @@
       }
     }
 
-    // Monitor network changes.
-    //
-    // This page used to call audio.pause() on 'offline' and, on 'online', show
-    // a toast reading "Back online! You can now stream Gurbani" while doing
-    // nothing to actually resume — so kirtan stopped on a dropped connection
-    // and never came back. The pause() also fired the audio element's 'pause'
-    // event, which disarmed the stall watchdog, removing the one mechanism
-    // that could have recovered on its own.
-    //
-    // Recovery now lives entirely in the AnhadAudio singleton, which owns the
-    // 'online' listener and knows the difference between "the user paused" and
-    // "the network died". This page only reports status.
     window.addEventListener('online', function() {
       showToast('🌐 Back online');
     });
@@ -1015,7 +1007,6 @@
       showToast('📡 Connection lost — playback will resume automatically');
     });
 
-    // Check on load
     if (!navigator.onLine) {
       setTimeout(updateNetworkStatus, 1000);
     }
@@ -1023,12 +1014,19 @@
 
   // --- Initializer ---
   function boot() {
+    if (!document.getElementById('grPlayBtn')) return;
     cacheDom();
-    initTheme();
+    if (isFirstGlobalInit) {
+      initTheme();
+      initNetworkMonitor();
+      initAlarmChecker();
+      initAudioSubscriptions();
+    } else {
+      applyRadioTheme();
+    }
     bindEvents();
     setupSlider();
     syncUI();
-    initNetworkMonitor(); // Add network monitoring
 
     var urlParams = new URLSearchParams(window.location.search);
     var streamParam = urlParams.get('stream');
@@ -1041,6 +1039,20 @@
       }
     }
   }
+
+  // Register with smooth-navigation Page Init Lifecycle for 100% reliable SPA entry
+  window.__anhadPageInit = window.__anhadPageInit || {};
+  window.__anhadPageInit['/GurbaniRadio/gurbani-radio.html'] = boot;
+  window.__anhadPageInit['/GurbaniRadio/gurbani-radio'] = boot;
+  window.__anhadPageInit['/frontend/GurbaniRadio/gurbani-radio.html'] = boot;
+  window.__anhadPageInit['/frontend/GurbaniRadio/gurbani-radio'] = boot;
+
+  window.addEventListener('anhad_page_changed', function (e) {
+    var url = (e && e.detail && e.detail.url) || window.location.href;
+    if (url.includes('gurbani-radio') || document.getElementById('grPlayBtn')) {
+      boot();
+    }
+  });
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', boot, { once: true });

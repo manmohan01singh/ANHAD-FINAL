@@ -653,9 +653,30 @@ function _anhadHomepageDataInit() {
   // ━━━ NOTIFICATION BADGE ━━━
   function updateNotificationBadge() {
     let count = 0;
-    try { const r = localStorage.getItem('cine_alarms_v4'); if (r) { const p = JSON.parse(r); if (Array.isArray(p)) count += p.filter(a => a.on).length; } const hour = new Date().getHours(); if (hour >= 6 && hour < 10) count++; if (hour >= 17 && hour < 20) count++; } catch (e) { }
+    try {
+      const r = localStorage.getItem('cine_alarms_v4');
+      if (r) {
+        const p = JSON.parse(r);
+        if (Array.isArray(p)) count += p.filter(a => a.on).length;
+      }
+      const reqs = localStorage.getItem('anhad_pending_requests');
+      if (reqs) {
+        const pReqs = JSON.parse(reqs);
+        if (Array.isArray(pReqs)) count += pReqs.length;
+      }
+      const hour = new Date().getHours();
+      if (hour >= 6 && hour < 10) count++;
+      if (hour >= 17 && hour < 20) count++;
+    } catch (e) { }
     const badge = document.getElementById('notifBadge');
-    if (badge) { if (count > 0) { badge.textContent = count > 9 ? '9+' : count; badge.style.display = 'flex'; } else { badge.style.display = 'none'; } }
+    if (badge) {
+      if (count > 0) {
+        badge.textContent = count > 9 ? '9+' : count;
+        badge.style.display = 'flex';
+      } else {
+        badge.style.display = 'none';
+      }
+    }
   }
 
   // NOTIFICATION CLICK: bound via a plain onclick="" attribute on #notifBtn

@@ -228,16 +228,23 @@
       if (done) return;
       done = true;
       el.src = newSrc;
+      el.style.display = 'block';
+      el.style.opacity = '1';
+      el.style.visibility = 'visible';
     };
     preload.onload = doSwap;
     preload.onerror = () => {
       if (done) return;
       done = true;
       el.src = newSrc;
+      el.style.display = 'block';
+      el.style.opacity = '1';
+      el.style.visibility = 'visible';
     };
     preload.src = newSrc;
     if (preload.complete && preload.naturalWidth > 0) doSwap();
   }
+
 
   function updateHeroCardImages() {
     const mode = document.documentElement.getAttribute('data-theme-mode') || 'light';

@@ -155,15 +155,11 @@
   function setState(s) {
     const el = slider();
     if (!el) return;
-    // MODIFIED: Never set state to 'b' — keep portraits always visible (state 'a')
-    // Only toggle the text pane
-    el.setAttribute('data-campaign-state', 'a');
+    el.setAttribute('data-campaign-state', s);
     const showing = s === 'b' ? 'false' : 'true';
     const art = artPane();
     const txt = textPane();
-    // Art pane (campaign disc) stays hidden always
-    if (art) art.setAttribute('aria-hidden', 'true');
-    // Text pane toggles normally to show campaign message
+    if (art) art.setAttribute('aria-hidden', showing);
     if (txt) txt.setAttribute('aria-hidden', showing);
   }
 
@@ -338,13 +334,24 @@
   // change at all — re-evaluate the schedule window periodically.
   setInterval(() => { if (!document.hidden) update(); }, 60000);
 
-  // Tapping the artwork snaps back to the Guru portraits and restarts the
-  // dwell. This is the replacement for the removed X: it dismisses the current
-  // presentation, stores nothing, and satisfies WCAG 2.2.2 for an
-  // auto-updating region without adding a control.
+  // Tapping the campaign announcement navigates to the campaign destination.
+  // Tapping the artwork snaps back to the Guru portraits and restarts the dwell.
   document.addEventListener('pointerdown', (e) => {
     if (!window.__anhadCampaignRotationTimer) return;
-    if (!e.target || !e.target.closest || !e.target.closest('#guruSlider')) return;
+    if (!e.target || !e.target.closest) return;
+    const isSlider = e.target.closest('#guruSlider');
+    const isAnnounce = e.target.closest('#greetingAnnounce') || e.target.closest('#greetingAnnounceText') || e.target.closest('.greeting__announce-text');
+    if (!isSlider && !isAnnounce) return;
+
+    if (currentState() === 'b' && isAnnounce) {
+      const c = resolveCampaign();
+      const dest = c?.content?.announcement?.actionUrl || c?.webDestination || c?.actionUrl || '/Companion/companion.html';
+      if (dest) {
+        if (window.navigateTo) window.navigateTo(dest);
+        else window.location.href = dest;
+        return;
+      }
+    }
     tick = 0;
     setState('a');
   }, true);

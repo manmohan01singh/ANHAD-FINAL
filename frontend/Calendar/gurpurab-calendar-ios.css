@@ -834,6 +834,7 @@ html.dark-mode .today-card-bg {
   padding: var(--space-lg);
   position: relative;
   z-index: 1;
+  flex-wrap: wrap;
 }
 
 .event-row .event-dot {
@@ -858,12 +859,13 @@ html.dark-mode .today-card-bg {
 }
 
 .event-title {
-  font-size: 17px;
+  font-size: 16px;
   font-weight: 600;
   color: var(--text-primary);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  line-height: 1.3;
   letter-spacing: -0.2px;
 }
 

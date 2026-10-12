@@ -38,10 +38,8 @@
             }
         }, 1000);
 
-        // Also notify AnhadStats
-        if (window.AnhadStats && window.AnhadStats.startListeningSession) {
-            window.AnhadStats.startListeningSession();
-        }
+        // Do not call AnhadStats.startListeningSession() here to prevent duplicate 60s intervals
+        // kirtan-listening-tracker is the authoritative interval counter.
     }
 
     function stopListening() {
@@ -77,7 +75,13 @@
     function syncListeningTime(minutes) {
         console.log(`[KirtanTracker] 📊 Syncing ${minutes} minute(s)`);
 
-        // CRITICAL: Sync to DashboardAnalytics FIRST (most important for graph)
+        // CRITICAL: Sync to UnifiedStats (authoritative Single Source of Truth)
+        if (window.UnifiedStats && window.UnifiedStats.recordKirtanListening) {
+            window.UnifiedStats.recordKirtanListening(minutes);
+            console.log('[KirtanTracker] ✅ Synced to UnifiedStats');
+        }
+
+        // Sync to DashboardAnalytics
         if (window.DashboardAnalytics) {
             window.DashboardAnalytics.updateDailyData('listen', minutes);
             console.log('[KirtanTracker] ✅ Synced to DashboardAnalytics');

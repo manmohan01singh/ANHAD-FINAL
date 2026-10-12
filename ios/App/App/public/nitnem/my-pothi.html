@@ -515,6 +515,414 @@
             color: var(--ios-green);
         }
 
+        /* Weekly View Clickable Rows */
+        .weekly-bar-row.clickable {
+            cursor: pointer;
+            padding: 6px 8px;
+            margin: 0 -8px;
+            border-radius: 10px;
+            transition: background-color 0.2s, transform 0.15s;
+        }
+        .weekly-bar-row.clickable:hover {
+            background: rgba(0, 0, 0, 0.04);
+            transform: translateX(2px);
+        }
+        [data-theme="dark"] .weekly-bar-row.clickable:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        .weekly-bar-arrow {
+            font-size: 15px;
+            color: var(--text-tertiary);
+            padding-left: 2px;
+            transition: color 0.2s, transform 0.2s;
+        }
+        .weekly-bar-row.clickable:hover .weekly-bar-arrow {
+            color: var(--sacred-gold);
+            transform: translateX(2px);
+        }
+
+        /* Yearly Missed Days Section */
+        .yearly-missed-section {
+            margin-top: 18px;
+            padding-top: 14px;
+            border-top: 1px solid var(--separator);
+        }
+        .yearly-missed-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .yearly-missed-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .yearly-date-picker-wrap {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--separator);
+            border-radius: 10px;
+            padding: 4px 8px;
+        }
+        [data-theme="dark"] .yearly-date-picker-wrap {
+            background: var(--bg-tertiary);
+        }
+        .yearly-date-input {
+            border: none;
+            background: transparent;
+            color: var(--text-primary);
+            font-size: 12px;
+            font-family: inherit;
+            cursor: pointer;
+            outline: none;
+        }
+        .yearly-missed-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            max-height: 220px;
+            overflow-y: auto;
+        }
+        .yearly-missed-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 12px;
+            background: rgba(0, 0, 0, 0.02);
+            border: 1px solid var(--separator);
+            border-radius: 12px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+        [data-theme="dark"] .yearly-missed-item {
+            background: rgba(255, 255, 255, 0.02);
+        }
+        .yearly-missed-item:hover {
+            background: rgba(212, 175, 55, 0.08);
+            transform: translateY(-1px);
+        }
+        .yearly-missed-item-date {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        .yearly-missed-item-pct {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--sacred-gold);
+            padding: 2px 8px;
+            border-radius: 8px;
+            background: rgba(212, 175, 55, 0.1);
+        }
+        .yearly-missed-item-pct.zero {
+            color: var(--ios-red);
+            background: rgba(255, 59, 48, 0.1);
+        }
+        .yearly-missed-item-action {
+            color: var(--ios-blue);
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        /* ═══════════════════════════════════════════════════
+           iOS-STYLE DAY DRAWER / MODAL (#pothiDayDrawer)
+           ═══════════════════════════════════════════════════ */
+        body.drawer-open {
+            overflow: hidden !important;
+        }
+
+        .pothi-drawer-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.55);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 990;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.35s;
+        }
+        .pothi-drawer-backdrop.visible {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+        }
+
+        .pothi-day-drawer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            max-height: 85vh;
+            background: var(--bg-secondary);
+            border-radius: 24px 24px 0 0;
+            z-index: 991;
+            transform: translateY(100%);
+            transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.35);
+            border-top: 1px solid var(--separator);
+            display: flex;
+            flex-direction: column;
+            padding-bottom: calc(var(--safe-bottom) + 16px);
+            pointer-events: auto;
+        }
+        .pothi-day-drawer.visible {
+            transform: translateY(0);
+        }
+        [data-theme="light"] .pothi-day-drawer {
+            background: #FFFFFF;
+            box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.15);
+            border-top: 1px solid rgba(0, 0, 0, 0.08);
+        }
+
+        .pothi-drawer-handle {
+            width: 38px;
+            height: 5px;
+            background: rgba(128, 128, 128, 0.35);
+            border-radius: 3px;
+            margin: 10px auto 4px;
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+
+        .pothi-drawer-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 20px 8px;
+            border-bottom: 1px solid var(--separator);
+            flex-shrink: 0;
+            gap: 12px;
+        }
+        .pothi-drawer-date-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            min-width: 0;
+        }
+        .pothi-drawer-date-title {
+            font-family: var(--font-gurmukhi);
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .pothi-drawer-date-subtitle {
+            font-size: 12px;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .pothi-drawer-header-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+        .pothi-drawer-pct-badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 700;
+            background: rgba(212, 175, 55, 0.15);
+            color: var(--sacred-gold);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            white-space: nowrap;
+        }
+        .pothi-drawer-pct-badge.full {
+            background: rgba(52, 199, 89, 0.15);
+            color: var(--ios-green);
+            border-color: rgba(52, 199, 89, 0.35);
+        }
+        .pothi-drawer-close-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--bg-tertiary);
+            border: none;
+            color: var(--text-secondary);
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s, color 0.2s;
+        }
+        .pothi-drawer-close-btn:hover {
+            color: var(--text-primary);
+        }
+
+        .pothi-drawer-toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 20px;
+            background: rgba(0, 0, 0, 0.02);
+            border-bottom: 1px solid var(--separator);
+            flex-shrink: 0;
+            gap: 8px;
+        }
+        [data-theme="dark"] .pothi-drawer-toolbar {
+            background: rgba(255, 255, 255, 0.02);
+        }
+        .pothi-drawer-quick-btn {
+            padding: 6px 12px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 600;
+            border: 1px solid var(--separator);
+            background: var(--card-bg);
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .pothi-drawer-quick-btn:hover {
+            background: var(--bg-tertiary);
+        }
+        .pothi-drawer-quick-btn.primary {
+            background: linear-gradient(135deg, var(--sacred-gold), var(--sacred-saffron));
+            color: #000;
+            border: none;
+            font-weight: 700;
+            box-shadow: 0 2px 8px rgba(212, 175, 55, 0.25);
+        }
+
+        .pothi-drawer-body {
+            padding: 14px 20px;
+            overflow-y: auto;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .pothi-drawer-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 14px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 14px;
+            transition: background-color 0.2s, border-color 0.2s;
+            gap: 12px;
+        }
+        .pothi-drawer-item.completed {
+            border-color: rgba(52, 199, 89, 0.35);
+            background: rgba(52, 199, 89, 0.07);
+        }
+        .pothi-drawer-item-leading {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+            min-width: 0;
+        }
+        .pothi-drawer-item-img {
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid var(--separator);
+            flex-shrink: 0;
+            background: rgba(255, 255, 255, 0.05);
+        }
+        .pothi-drawer-item-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center 30%;
+        }
+        .pothi-drawer-item-info {
+            flex: 1;
+            min-width: 0;
+        }
+        .pothi-drawer-item-title {
+            font-family: var(--font-gurmukhi);
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .pothi-drawer-item-subtitle {
+            font-size: 12px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 2px;
+        }
+        .pothi-period-tag {
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 6px;
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+        .pothi-drawer-item-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+        .pothi-drawer-read-btn {
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 15px;
+            transition: background-color 0.2s, color 0.2s;
+        }
+        .pothi-drawer-read-btn:hover {
+            color: var(--sacred-gold);
+        }
+        .pothi-drawer-check-btn {
+            padding: 8px 14px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            border: 1px solid var(--separator);
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+        .pothi-drawer-check-btn.completed {
+            background: rgba(52, 199, 89, 0.2);
+            border-color: var(--ios-green);
+            color: var(--ios-green);
+        }
+        .pothi-drawer-check-btn:not(.completed):hover {
+            background: rgba(212, 175, 55, 0.15);
+            border-color: var(--sacred-gold);
+            color: var(--sacred-gold);
+        }
+
         /* Yearly Stats CSS */
         .yearly-stats-grid {
             display: grid;
@@ -810,8 +1218,41 @@
         <div class="toast" id="toast">✅ Pothi Saved!</div>
     </div>
 
-    <!-- GurbaniDB — IndexedDB offline cache -->
+    <!-- Day Drawer Backdrop Overlay -->
+    <div class="pothi-drawer-backdrop" id="pothiDrawerBackdrop" onclick="closePothiDayDrawer()"></div>
+
+    <!-- iOS-Style Bottom Sheet Day Drawer -->
+    <div class="pothi-day-drawer" id="pothiDayDrawer" role="dialog" aria-modal="true" aria-labelledby="pothiDrawerDateTitle">
+        <div class="pothi-drawer-handle" onclick="closePothiDayDrawer()"></div>
+        <div class="pothi-drawer-header">
+            <div class="pothi-drawer-date-info">
+                <h3 class="pothi-drawer-date-title" id="pothiDrawerDateTitle">ਤਾਰੀਖ</h3>
+                <span class="pothi-drawer-date-subtitle" id="pothiDrawerDateSubtitle">Date</span>
+            </div>
+            <div class="pothi-drawer-header-actions">
+                <span class="pothi-drawer-pct-badge" id="pothiDrawerPctBadge">0% Completed</span>
+                <button class="pothi-drawer-close-btn" id="pothiDrawerCloseBtn" onclick="closePothiDayDrawer()" aria-label="Close">✕</button>
+            </div>
+        </div>
+        <div class="pothi-drawer-toolbar">
+            <button class="pothi-drawer-quick-btn primary" id="pothiDrawerMarkAllBtn" onclick="if(window.currentDrawerDate) markAllDayBanis(window.currentDrawerDate, true)">
+                ✓ Mark All Read
+            </button>
+            <button class="pothi-drawer-quick-btn" id="pothiDrawerClearAllBtn" onclick="if(window.currentDrawerDate) markAllDayBanis(window.currentDrawerDate, false)">
+                ✕ Clear All
+            </button>
+            <button class="pothi-drawer-quick-btn" onclick="closePothiDayDrawer()">
+                Close
+            </button>
+        </div>
+        <div class="pothi-drawer-body" id="pothiDrawerBody">
+            <!-- Rendered list of banis from pothiOrder -->
+        </div>
+    </div>
+
+    <!-- GurbaniDB & Engines -->
     <script src="../lib/unified-stats.js"></script>
+    <script src="../lib/authoritative-streak-engine.js"></script>
     <script src="../lib/gurbani-db.js"></script>
 
     <script>
@@ -895,10 +1336,10 @@
             } catch(e) {}
         }
 
-        function isBaniCompleted(baniId) {
+        function isBaniCompleted(baniId, dateStr) {
             const completed = loadCompletedBanis();
-            const today = new Date().toLocaleDateString('en-CA');
-            return completed[today]?.includes(baniId) || false;
+            const targetDate = dateStr || new Date().toLocaleDateString('en-CA');
+            return completed[targetDate]?.includes(baniId) || false;
         }
 
         // ═══ Top-level period helper — needed by syncCompletionToNitnemTracker ═══
@@ -933,16 +1374,24 @@
                 completed[today].splice(index, 1);
                 button.classList.remove('completed');
                 button.title = 'Mark complete';
-                syncCompletionToNitnemTracker(baniId, false);
+                syncCompletionToNitnemTracker(baniId, false, today);
             } else {
                 // CHECKING: Add to My Pothi AND Nitnem Tracker
                 completed[today].push(baniId);
                 button.classList.add('completed');
                 button.title = 'Mark incomplete';
-                syncCompletionToNitnemTracker(baniId, true);
+                syncCompletionToNitnemTracker(baniId, true, today);
             }
 
             saveCompletedBanis(completed);
+
+            // Notify AuthoritativeStreakEngine if present
+            try {
+                if (window.AuthoritativeStreakEngine && typeof window.AuthoritativeStreakEngine.recordNitnemCompletion === 'function') {
+                    window.AuthoritativeStreakEngine.recordNitnemCompletion(today, completed[today]);
+                }
+            } catch (e) {}
+
             renderInsights();
             renderPendingBanis(); // Update pending banis in real-time
             
@@ -956,7 +1405,7 @@
             } catch(ex) {}
         }
 
-        function syncCompletionToNitnemTracker(baniId, isComplete) {
+        function syncCompletionToNitnemTracker(baniId, isComplete, targetDateStr) {
             try {
                 // Get bani info from My Pothi database
                 const bani = ALL_BANIS.find(b => b.id === baniId);
@@ -1004,23 +1453,23 @@
                     console.log('[My Pothi] Auto-registered bani in Nitnem Tracker:', bani.english, 'uid:', uid);
                 }
 
-                // FIX: Use CORRECT log format: log[today][period] = [uid1, uid2, ...]
-                // NitnemTracker reads: log[today].amritvela, log[today].rehras, log[today].sohila
+                // FIX: Use CORRECT log format: log[targetDate][period] = [uid1, uid2, ...]
+                // NitnemTracker reads: log[targetDate].amritvela, log[targetDate].rehras, log[targetDate].sohila
                 const nitnemLog = JSON.parse(localStorage.getItem('nitnemTracker_nitnemLog') || '{}');
-                const today = new Date().toLocaleDateString('en-CA');
+                const targetDate = targetDateStr || new Date().toLocaleDateString('en-CA');
 
-                if (!nitnemLog[today]) {
-                    nitnemLog[today] = { amritvela: [], rehras: [], sohila: [] };
+                if (!nitnemLog[targetDate]) {
+                    nitnemLog[targetDate] = { amritvela: [], rehras: [], sohila: [] };
                 }
                 // Ensure period array exists
-                if (!nitnemLog[today][period]) nitnemLog[today][period] = [];
+                if (!nitnemLog[targetDate][period]) nitnemLog[targetDate][period] = [];
 
                 if (isComplete) {
-                    if (!nitnemLog[today][period].includes(uid)) {
-                        nitnemLog[today][period].push(uid);
+                    if (!nitnemLog[targetDate][period].includes(uid)) {
+                        nitnemLog[targetDate][period].push(uid);
                     }
                 } else {
-                    nitnemLog[today][period] = nitnemLog[today][period].filter(id => id !== uid);
+                    nitnemLog[targetDate][period] = nitnemLog[targetDate][period].filter(id => id !== uid);
                 }
 
                 localStorage.setItem('nitnemTracker_nitnemLog', JSON.stringify(nitnemLog));
@@ -1033,18 +1482,22 @@
                 }));
                 // Also dispatch custom event for in-page listeners
                 window.dispatchEvent(new CustomEvent('nitnemCompletionUpdated', {
-                    detail: { baniId, uid, isComplete, period }
+                    detail: { baniId, uid, isComplete, period, targetDate }
                 }));
-                // Trigger NitnemManager directly if on same page
-                try {
-                    if (window.NitnemManager && typeof window.NitnemManager.loadTodayProgress === 'function') {
-                        window.NitnemManager.loadTodayProgress();
-                        window.NitnemManager.renderAllLists();
-                        window.NitnemManager.updateProgress();
-                    }
-                } catch(ex) {}
 
-                console.log('[My Pothi] Synced ' + (isComplete ? 'completion' : 'removal') + ' for ' + bani.english + ' uid:' + uid + ' in period:' + period);
+                const today = new Date().toLocaleDateString('en-CA');
+                if (targetDate === today) {
+                    // Trigger NitnemManager directly if on same page
+                    try {
+                        if (window.NitnemManager && typeof window.NitnemManager.loadTodayProgress === 'function') {
+                            window.NitnemManager.loadTodayProgress();
+                            window.NitnemManager.renderAllLists();
+                            window.NitnemManager.updateProgress();
+                        }
+                    } catch(ex) {}
+                }
+
+                console.log('[My Pothi] Synced ' + (isComplete ? 'completion' : 'removal') + ' for ' + bani.english + ' on ' + targetDate + ' uid:' + uid + ' in period:' + period);
             } catch (e) {
                 console.error('[My Pothi] Error syncing completion:', e);
             }
@@ -1407,24 +1860,20 @@
                 if (!completed[dateStr]) completed[dateStr] = [];
                 if (!completed[dateStr].includes(id)) completed[dateStr].push(id);
                 saveCompletedBanis(completed);
+
+                // Sync with Nitnem Tracker for this specific date
+                syncCompletionToNitnemTracker(id, true, dateStr);
+
+                // Sync with AuthoritativeStreakEngine if present
+                try {
+                    if (window.AuthoritativeStreakEngine && typeof window.AuthoritativeStreakEngine.recordNitnemCompletion === 'function') {
+                        window.AuthoritativeStreakEngine.recordNitnemCompletion(dateStr, completed[dateStr]);
+                    }
+                } catch (e) {}
+
                 renderPendingBanis();
                 renderInsights();
                 showToast('✅ Bani marked complete!');
-                
-                // Sync with Nitnem Tracker if it's for today
-                const today = new Date().toLocaleDateString('en-CA');
-                if (dateStr === today) {
-                    syncCompletionToNitnemTracker(id, true);
-                }
-                
-                // Trigger Nitnem Tracker progress update if available
-                try {
-                    if (window.NitnemManager && typeof window.NitnemManager.loadTodayProgress === 'function') {
-                        window.NitnemManager.loadTodayProgress();
-                        window.NitnemManager.renderAllLists();
-                        window.NitnemManager.updateProgress();
-                    }
-                } catch(ex) {}
             } catch(e) {
                 console.error('Error marking pending bani complete:', e);
             }

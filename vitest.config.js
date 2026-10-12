@@ -55,7 +55,6 @@ export default defineConfig({
       '**/*bug-exploration*.test.js',
       'frontend/js/theme-rendering.test.js',
       'tests/audio/stall-watchdog-recovery.test.js',
-      'tests/campaign-rotation.test.js',
       'frontend/sadhsangat-live/js/collage-image-loader.test.js',
     ],
     

@@ -2805,20 +2805,47 @@
       }
     }
 
-    /* Prevent layout shifts - fixed dimensions */
+    /* Responsive event card layout - flexible sizing without paint clipping */
     .event-card {
-      min-height: 85px !important;
-      contain: layout style paint !important;
+      min-height: auto !important;
+      contain: none !important;
+    }
+    .event-card__main {
+      display: flex !important;
+      flex-direction: row !important;
+      align-items: center !important;
+      gap: 12px !important;
+      flex-wrap: nowrap !important;
     }
     .event-card__guru-img-wrapper {
-      width: 130px !important;
-      height: 130px !important;
-      min-width: 130px !important;
-      min-height: 130px !important;
+      width: clamp(64px, 18vw, 80px) !important;
+      height: clamp(64px, 18vw, 80px) !important;
+      min-width: clamp(64px, 18vw, 80px) !important;
+      min-height: clamp(64px, 18vw, 80px) !important;
       aspect-ratio: 1 / 1 !important;
       flex-shrink: 0 !important;
-      margin-right: -5px !important;
+      margin-right: 0 !important;
+      overflow: visible !important;
+    }
+    .event-card__info {
+      flex: 1 1 auto !important;
+      min-width: 0 !important;
       overflow: hidden !important;
+    }
+    .event-card__title {
+      max-width: 100% !important;
+      word-break: break-word !important;
+      overflow-wrap: break-word !important;
+    }
+    .event-card__header-row,
+    .event-card__bottom-row {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      gap: 6px !important;
+      width: 100% !important;
+      min-width: 0 !important;
+      flex-wrap: wrap !important;
     }
     .header.home-header {
       margin-bottom: 16px !important;
@@ -5846,7 +5873,7 @@
     <!-- ════════════════════════════════════════════════════════════════════
          UPCOMING GURPURAB — Redesigned Modern Sacred Event Card
     ════════════════════════════════════════════════════════════════════ -->
-    <article class="event-card ios-haptic" id="eventCard" aria-label="Upcoming Gurpurab" data-href="Calendar/GurpurabCalendar-ios.html">
+    <article class="event-card ios-haptic" id="eventCard" aria-label="Upcoming Gurpurab" data-href="Calendar/GurpurabCalendar-ios.html" data-youtube-url="">
       <div class="event-card__main">
         <div class="event-card__guru-img-wrapper" id="eventGuruImgWrapper">
           <img decoding="async" class="event-card__guru-img loaded" id="eventGuruImg" src="guruimages/gurugranthsahebji.jpeg" alt="Sri Guru Granth Sahib Ji" width="84" height="84">
@@ -6031,15 +6058,15 @@
 
 
 
-    <!-- 🙏 Chaliya 2026 — Coming Soon -->
-    <article class="quick-card quick-card--gold ios-haptic" id="chaliya2026Card" aria-label="Chaliya 2026" role="button" tabindex="0">
+    <!-- 🙏 Chaliya 2026 — Live on YouTube -->
+    <article class="quick-card quick-card--gold ios-haptic" id="chaliya2026Card" aria-label="Chaliya 2026" role="button" tabindex="0" onclick="window.open('https://youtube.com/@amritvelatrustlive?si=H5M_4aEpeZbFjCl2', '_blank')">
       <div class="quick-card__icon" aria-hidden="true"><svg width="22" height="22"><use href="#icon-mala-beads"/></svg></div>
       <div class="quick-card__content">
         <div class="quick-card__title">Chaliya 2026</div>
         <div class="quick-card__subtitle">Parkash Purab Guru Nanak Dev Ji</div>
       </div>
       <div class="quick-card__meta">
-        <span class="quick-card__meta-value" style="color: #D4943A; font-weight: 700; font-size: 11px;">Coming Soon</span>
+        <span class="quick-card__meta-value" style="color: #FF4D4F; font-weight: 700; font-size: 11px;">● LIVE</span>
       </div>
       <svg class="quick-card__chevron" aria-hidden="true"><use href="#icon-chevron-right"/></svg>
     </article>

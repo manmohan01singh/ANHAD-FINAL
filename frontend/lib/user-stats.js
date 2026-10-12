@@ -102,6 +102,16 @@
 
     function getStreak() {
         try {
+            if (typeof window !== 'undefined' && window.AuthoritativeStreakEngine) {
+                const authState = window.AuthoritativeStreakEngine.getState();
+                return {
+                    ...defaultStreak,
+                    ...authState,
+                    currentStreak: authState.currentStreak,
+                    longestStreak: authState.longestStreak,
+                    previousBestStreak: authState.previousBestStreak
+                };
+            }
             const stored = localStorage.getItem(STREAK_KEY);
             return stored ? { ...defaultStreak, ...JSON.parse(stored) } : { ...defaultStreak };
         } catch (e) {
@@ -210,8 +220,7 @@
             saveGoals(goals);
         }
 
-        // Update streak
-        updateStreak();
+        // DECOUPLED per R1: Passive audio playback must NEVER increment Amritvela/Nitnem streak.
 
         return stats;
     }
@@ -230,7 +239,7 @@
             saveGoals(goals);
         }
 
-        updateStreak();
+        // DECOUPLED per R1: Reading pages does not increment Amritvela streak.
         return stats;
     }
 
@@ -248,7 +257,11 @@
             saveGoals(goals);
         }
 
-        updateStreak();
+        if (typeof window !== 'undefined' && window.AuthoritativeStreakEngine) {
+            window.AuthoritativeStreakEngine.recordNitnemCompletion(getTodayString());
+        } else {
+            updateStreak();
+        }
         return stats;
     }
 
@@ -257,7 +270,6 @@
         stats.totalShabadsViewed++;
         stats.lastActiveDate = getTodayString();
         saveStats(stats);
-        updateStreak();
         return stats;
     }
 
@@ -266,6 +278,20 @@
     // ═══════════════════════════════════════════════════════════════════════════
 
     function updateStreak() {
+        if (typeof window !== 'undefined' && window.AuthoritativeStreakEngine) {
+            try {
+                const authState = window.AuthoritativeStreakEngine.recalculateStreak();
+                const streak = {
+                    ...defaultStreak,
+                    ...authState,
+                    currentStreak: authState.currentStreak,
+                    longestStreak: authState.longestStreak,
+                    previousBestStreak: authState.previousBestStreak
+                };
+                saveStreak(streak);
+                return streak;
+            } catch (e) {}
+        }
         const streak = getStreak();
         const today = getTodayString();
 
@@ -515,12 +541,7 @@
     function deferredInit() {
         // Check daily reset
         checkAndResetDaily();
-        // Track page visit as activity (but don't block)
-        try {
-            updateStreak();
-        } catch (e) {
-            console.warn('[UserStats] Streak update deferred');
-        }
+        // DECOUPLED per R1: Merely opening app / page visit must NEVER increment streak
     }
 
     // Use requestIdleCallback if available, otherwise setTimeout

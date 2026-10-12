@@ -1962,16 +1962,20 @@
         const doSwap = () => {
           if (done) return;
           done = true;
+          img.style.display = 'block';
+          img.style.visibility = 'visible';
           img.style.transition = 'opacity 0s';
           img.style.opacity = '0';
           requestAnimationFrame(() => {
             img.src = src;
+            img.style.display = 'block';
+            img.style.visibility = 'visible';
             img.style.transition = 'opacity 0.5s ease';
             requestAnimationFrame(() => { img.style.opacity = '1'; });
           });
         };
         preload.onload = doSwap;
-        preload.onerror = () => { if (!done) { done = true; img.src = src; } };
+        preload.onerror = () => { if (!done) { done = true; img.src = src; img.style.display = 'block'; img.style.opacity = '1'; } };
         preload.src = src;
         if (preload.complete && preload.naturalWidth > 0) doSwap();
       });

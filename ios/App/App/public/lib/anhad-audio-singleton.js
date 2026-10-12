@@ -535,9 +535,19 @@
         updateNativeMediaState();
       };
 
-      this.audio.addEventListener('play', () => notifyStateChange(true, false));
+      this.audio.addEventListener('play', () => {
+        if (window.AudioCoordinator) {
+          window.AudioCoordinator.requestPlay('AnhadAudio');
+        }
+        notifyStateChange(true, false);
+      });
       this.audio.addEventListener('playing', () => notifyStateChange(true, true));
-      this.audio.addEventListener('pause', () => notifyStateChange(false, false));
+      this.audio.addEventListener('pause', () => {
+        if (window.AudioCoordinator) {
+          window.AudioCoordinator.notifyPause('AnhadAudio');
+        }
+        notifyStateChange(false, false);
+      });
       this.audio.addEventListener('seeked', () => {
         if (wantsPlayback && this.audio.paused) {
           try {
@@ -594,16 +604,24 @@
       this.audio.addEventListener('ended', () => {
         console.log('[PlaybackQueueController] Track ended event fired');
         
-        // CRITICAL FIX: Debounce to prevent duplicate 'ended' events (Android MediaSession bug)
+        // Debounce to prevent duplicate 'ended' events (Android MediaSession bug)
         if (this.endedDebounceTimer) {
-          console.warn('[PlaybackQueueController] ⚠️ Duplicate ended event detected within 200ms, ignoring');
           clearTimeout(this.endedDebounceTimer);
         }
         
         this.endedDebounceTimer = setTimeout(() => {
-          console.log('[PlaybackQueueController] ✅ Debounced ended event, calling handleTrackEnded()');
-          handleTrackEnded();
           this.endedDebounceTimer = null;
+          if (currentStream && STREAMS[currentStream]?.type === 'live') {
+            // CRITICAL: An 'ended' event on a live stream represents unexpected socket EOF from the Shoutcast/Icecast server.
+            // Live streams are continuous and never end normally. Immediately recover from the live edge.
+            console.warn('[PlaybackQueueController] ⚠️ Live stream ended unexpectedly (server socket EOF). Recovering live edge...');
+            if (wantsPlayback) {
+              handleLiveStreamEnded();
+            }
+          } else {
+            console.log('[PlaybackQueueController] ✅ Debounced ended event, calling handleTrackEnded()');
+            handleTrackEnded();
+          }
         }, 200); // 200ms debounce window
       });
       this.audio.addEventListener('error', (e) => {
@@ -644,6 +662,12 @@
           }
         }
         
+        // If aborted by a new user gesture/command, ignore harmless abort
+        if (errorType === 'aborted') {
+          console.log('[PlaybackQueueController] ℹ️ Media operation was aborted by newer request; ignoring.');
+          return;
+        }
+
         // Check if network is offline
         if (!navigator.onLine) {
           errorMessage = 'No internet connection. Please check your network and try again.';
@@ -706,7 +730,7 @@
               reconnectTimer = null;
               if (currentStream && STREAMS[currentStream]?.type === 'live' && !isPlaying && wantsPlayback) {
                 console.log('[PlaybackQueueController] 📡 Attempting live stream reconnection now...');
-                DarbarLiveManager.play(currentStream);
+                DarbarLiveManager.play(currentStream, true);
               }
             }, backoffMs);
           }
@@ -732,8 +756,14 @@
           
           stallRecoveryAttempts++;
           if (stallRecoveryAttempts > MAX_STALL_RECOVERIES) {
-            console.error('[PlaybackQueueController] ❌ Stream stalled repeatedly; freezing interruption anchor.');
-            captureNetworkInterruption('Stream stalled repeatedly');
+            console.warn(`[PlaybackQueueController] ⚠️ Audio stream stalled repeatedly (${stallRecoveryAttempts} times); triggering recovery.`);
+            stallRecoveryAttempts = 0;
+            if (STREAMS[currentStream].type === 'live') {
+              handleLiveStreamEnded();
+            } else {
+              captureNetworkInterruption('Stream stalled repeatedly');
+              recoverAfterReconnect('Stall recovery retry');
+            }
             return;
           }
 
@@ -748,7 +778,7 @@
             captureNetworkInterruption('Stalled while playing');
             recoverAfterReconnect('Stall recovery retry');
           } else {
-            DarbarLiveManager.play(currentStream);
+            DarbarLiveManager.play(currentStream, true);
           }
           armStallTimer();
         }, 6000);
@@ -801,7 +831,7 @@
       return this.promiseChain;
     },
 
-    loadAndPlay(url, preloadMode, initialSeekTime) {
+    loadAndPlay(url, preloadMode, initialSeekTime, forceReload = false) {
       this.init();
       isLoading = true;
       emit('loading', { isLoading: true });
@@ -835,14 +865,13 @@
       }
 
       const isErrored = !!this.audio.error || this.audio.networkState === 3 /* NETWORK_NO_SOURCE */;
-      if (this.audio.src !== url) {
-        this.audio.src = url;
-        try { this.audio.load(); } catch (e) { }
-      } else if (isErrored) {
-        console.log('[PlaybackQueueController] ♻️ Resetting errored media element to force a fresh load');
+      if (forceReload || this.audio.src !== url || isErrored) {
         try {
-          this.audio.removeAttribute('src');
-          this.audio.load();
+          if (forceReload || isErrored) {
+            this.audio.pause();
+            this.audio.removeAttribute('src');
+            this.audio.load();
+          }
           this.audio.src = url;
           this.audio.load();
         } catch (e) {
@@ -878,6 +907,11 @@
             updateNativeMediaState();
             console.log('[PlaybackQueueController] ✅ Playback started successfully');
           } catch (e) {
+            const isAbort = e.name === 'AbortError' || (e.message && e.message.includes('aborted'));
+            if (isAbort) {
+              console.log('[PlaybackQueueController] ℹ️ Play promise was aborted by subsequent action');
+              return;
+            }
             const isTimeout = e.message && e.message.includes('TIMEOUT');
             console.warn('[PlaybackQueueController] ❌ Play failed:', isTimeout ? 'TIMEOUT' : e.message);
 
@@ -897,13 +931,17 @@
               trackTitle: currentTrackTitle
             });
             
-            // AUTO-RECOVERY on timeout
-            if (isTimeout && currentStream && wantsPlayback) {
-              console.log('[PlaybackQueueController] 🔄 Auto-recovering from timeout in 2 seconds...');
+            // AUTO-RECOVERY on timeout or play rejection
+            if (currentStream && wantsPlayback) {
+              console.log('[PlaybackQueueController] 🔄 Auto-recovering from playback failure in 2 seconds...');
               setTimeout(() => {
                 if (!isPlaying && wantsPlayback && currentStream) {
-                  console.log('[PlaybackQueueController] ⏭️ Executing auto-recovery after timeout...');
-                  playStream(currentStream);
+                  console.log('[PlaybackQueueController] ⏭️ Executing auto-recovery...');
+                  if (STREAMS[currentStream]?.type === 'live') {
+                    DarbarLiveManager.play(currentStream, true);
+                  } else {
+                    playStream(currentStream);
+                  }
                 }
               }, 2000);
             }
@@ -951,9 +989,12 @@
 
   // --- DARBAR LIVE STREAM MANAGER ---
   const DarbarLiveManager = {
-    play(streamName) {
+    play(streamName, forceReload = false) {
       const streamObj = streamName ? STREAMS[streamName] : null;
-      const rawUrl = (streamObj && streamObj.url) ? streamObj.url : (SGPC_LIVE + '?t=' + Math.floor(Date.now() / 5000) * 5000);
+      let rawUrl = (streamObj && streamObj.url) ? streamObj.url : SGPC_LIVE;
+      // Append cache-busting timestamp on connection / reconnect to prevent stale half-closed sockets:
+      const sep = rawUrl.includes('?') ? '&' : '?';
+      rawUrl = rawUrl + sep + '_t=' + Date.now();
       const url = toProxiedUrl(rawUrl);
 
       currentTrackTitle = streamObj ? streamObj.name : 'Darbar Sahib Live';
@@ -961,9 +1002,40 @@
       updateMediaSession();
 
       // Force 'auto' preload for live Shoutcast stream to bypass metadata load stalls
-      PlaybackQueueController.loadAndPlay(url, 'auto');
+      PlaybackQueueController.loadAndPlay(url, 'auto', 0, forceReload);
     }
   };
+
+  // Dedicated EOF / disconnect handler for continuous live streams
+  function handleLiveStreamEnded() {
+    if (!currentStream || STREAMS[currentStream]?.type !== 'live' || !wantsPlayback) return;
+    isPlaying = false;
+    isLoading = false;
+    liveReconnectAttempts++;
+    reconnectCycleActive = true;
+    connectionState = 'reconnecting';
+    emit('statechange', getPublicState());
+
+    if (liveReconnectAttempts >= 6) {
+      connectionState = 'failed';
+      emit('statechange', getPublicState());
+      if (liveReconnectAttempts === 6) {
+        emit('error', { type: 'stream_failed', message: 'Still unable to reach the stream — will keep retrying automatically.' });
+      }
+    }
+
+    const backoffMs = Math.min(2000 * Math.pow(1.5, Math.min(liveReconnectAttempts - 1, 6)), 15000);
+    console.log(`[PlaybackQueueController] 🔄 Live stream EOF auto-recovery attempt #${liveReconnectAttempts} in ${Math.round(backoffMs)}ms...`);
+
+    clearTimeout(reconnectTimer);
+    reconnectTimer = setTimeout(() => {
+      reconnectTimer = null;
+      if (currentStream && STREAMS[currentStream]?.type === 'live' && !isPlaying && wantsPlayback) {
+        console.log('[PlaybackQueueController] 📡 Attempting live stream reconnection now...');
+        DarbarLiveManager.play(currentStream, true);
+      }
+    }, backoffMs);
+  }
 
   // --- TRACK TRANSITION & PLAYBACK CONTROLLER ---
   function playStream(streamName) {
@@ -998,7 +1070,7 @@
   function handleTrackEnded() {
     if (!currentStream || STREAMS[currentStream].type !== 'playlist') return;
 
-    // CRITICAL FIX: Prevent concurrent execution (race condition guard)
+    // Prevent concurrent execution (race condition guard)
     if (isTransitioning) {
       console.warn('[AnhadAudio] ⚠️ Track transition already in progress, ignoring duplicate ended event');
       return;
@@ -1055,7 +1127,7 @@
 
       const trackUrl = STREAMS[currentStream].getTrackUrl(currentTrackIndex);
       
-      // CRITICAL FIX: Validate track URL before attempting to load
+      // Validate track URL before attempting to load
       if (!trackUrl || typeof trackUrl !== 'string' || trackUrl.trim() === '') {
         console.error('[AnhadAudio] ❌ Invalid track URL, skipping transition');
         clearTimeout(safetyResetTimer);
@@ -1065,24 +1137,11 @@
       
       updateMediaSession();
 
-      PlaybackQueueController.loadAndPlay(trackUrl, 'metadata').then(() => {
-        PlaybackQueueController.seek(0);
-      }).catch((err) => {
-        console.error('[AnhadAudio] ❌ Track transition failed:', err);
-        // RECOVERY: Retry with a fresh playStream call after 3 seconds
-        // This prevents the app from silently freezing after a CDN/network error
-        setTimeout(() => {
-          if (!isPlaying && currentStream) {
-            console.log('[AnhadAudio] 🔄 Recovery: Retrying playStream after transition failure');
-            try { playStream(currentStream); } catch(e) { console.error('[AnhadAudio] Recovery playStream failed:', e); }
-          }
-        }, 3000);
-      }).finally(() => {
-        // CRITICAL FIX: Always reset transition flag
-        clearTimeout(safetyResetTimer);
-        isTransitioning = false;
-        console.log('[AnhadAudio] ✅ Track transition complete');
-      });
+      // Use 'auto' preload and forced reload for clean transition (never 'metadata', which stalls on mobile)
+      PlaybackQueueController.loadAndPlay(trackUrl, 'auto', 0, true);
+      clearTimeout(safetyResetTimer);
+      isTransitioning = false;
+      console.log('[AnhadAudio] ✅ Track transition enqueued');
     } catch (err) {
       console.error('[AnhadAudio] ❌ Fatal error in handleTrackEnded:', err);
       clearTimeout(safetyResetTimer);
@@ -1091,7 +1150,14 @@
   }
 
   // --- API CONTROL GATEWAYS ---
+  let _lastPlayTap = 0;
   function play(streamName) {
+    const now = Date.now();
+    if (now - _lastPlayTap < 250) {
+      return; // Debounce rapid taps within 250ms
+    }
+    _lastPlayTap = now;
+
     if (streamName && streamName !== currentStream) {
       playStream(streamName);
     } else if (isPlaying) {
@@ -1224,7 +1290,13 @@
     resume();
   }
 
+  let _lastToggleTap = 0;
   function toggle() {
+    const now = Date.now();
+    if (now - _lastToggleTap < 250) {
+      return;
+    }
+    _lastToggleTap = now;
     if (isPlaying) {
       pause();
     } else {
@@ -1711,18 +1783,18 @@
             updateNativeMediaState();
           }).catch((err) => {
             console.warn('[AnhadAudio] Direct resume failed after network recovery, doing clean loadAndPlay:', err);
-            PlaybackQueueController.loadAndPlay(trackUrl, 'auto', targetPosition);
+            PlaybackQueueController.loadAndPlay(trackUrl, 'auto', targetPosition, true);
           });
         });
       } else {
         console.log(`[AnhadAudio] 🔄 Cleanly loading track ${currentTrackIndex + 1} and resuming at ${targetPosition.toFixed(1)}s`);
-        PlaybackQueueController.loadAndPlay(trackUrl, 'auto', targetPosition);
+        PlaybackQueueController.loadAndPlay(trackUrl, 'auto', targetPosition, true);
       }
     } else {
       networkInterruptAnchor = null;
       connectionState = 'reconnecting';
       emit('statechange', getPublicState());
-      DarbarLiveManager.play(currentStream);
+      DarbarLiveManager.play(currentStream, true);
     }
   }
 

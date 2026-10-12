@@ -307,7 +307,25 @@
     }
   }
 
+  function validateCampaignForm() {
+    const title = $('fTitle') ? $('fTitle').value.trim() : '';
+    if (!title) {
+      return 'Campaign title is required.';
+    }
+    const s = $('fStart') ? localInputToIso($('fStart').value) : null;
+    const e = $('fEnd') ? localInputToIso($('fEnd').value) : null;
+    if (s && e && new Date(s).getTime() >= new Date(e).getTime()) {
+      return 'Start date must be strictly before end date.';
+    }
+    return null;
+  }
+
   async function preview() {
+    const valErr = validateCampaignForm();
+    if (valErr) {
+      setStatus('editStatus', valErr, 'error');
+      return;
+    }
     const draft = buildDraftConfig();
     try {
       await api('/api/config/admin/preview', {
@@ -335,6 +353,11 @@
   }
 
   async function publish() {
+    const valErr = validateCampaignForm();
+    if (valErr) {
+      setStatus('editStatus', valErr, 'error');
+      return;
+    }
     const draft = buildDraftConfig();
     $('publishBtn').disabled = true;
     try {
@@ -368,7 +391,7 @@
     const enableToggle = $('companionEnableToggle');
     const saveBtn = $('saveCompanionConfigBtn');
     const statusText = $('companionScheduleStatus');
-    const defaultArtwork = '../assets/companion/chaliya-2026.webp';
+    const defaultArtwork = '/assets/companion/chaliya-2026.webp';
 
     if (!previewImg || !enableToggle) return;
 
@@ -540,12 +563,13 @@
             config = syncRes.config;
             renderList();
           }
+          setStatus('companionStatus', 'Companion saved and synced to all devices! Home Screen hero artwork updated.', 'ok');
+          toast('Companion updated successfully on all devices! 🙏');
         } catch (err) {
           console.warn('[Admin] Server campaign sync note:', err);
+          setStatus('companionStatus', 'Saved locally, but server sync failed: ' + (err.message || 'Network error'), 'warn');
+          toast('Saved locally (server sync offline)');
         }
-
-        setStatus('companionStatus', 'Companion saved and synced to all devices! Home Screen hero artwork updated.', 'ok');
-        toast('Companion updated successfully on all devices! 🙏');
       });
     }
   }

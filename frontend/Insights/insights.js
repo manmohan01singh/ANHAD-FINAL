@@ -976,49 +976,81 @@
     }
 
     function loadQuickStats() {
-        let stats = {}, streak = {}, sehajStats = {}, analyticsData = {};
+        let stats = {}, streak = {}, sehajStats = {}, unifiedData = null;
         try {
             stats = JSON.parse(localStorage.getItem('anhad_user_stats') || '{}');
             streak = JSON.parse(localStorage.getItem('anhad_streak_data') || '{}');
             sehajStats = JSON.parse(localStorage.getItem('sehajPaathStats') || '{}');
-            analyticsData = JSON.parse(localStorage.getItem('anhad_analytics_data') || '{}');
+            const storedUnified = localStorage.getItem('anhad_unified_stats');
+            if (storedUnified) unifiedData = JSON.parse(storedUnified);
         } catch (e) {}
 
-        // 1. Today's listening minutes
-        let todayMin = stats.todayListeningMinutes || 0;
-        const todayKey = new Date().toISOString().slice(0, 10);
-        if (analyticsData[todayKey] && analyticsData[todayKey].listenMinutes) {
-            todayMin = Math.max(todayMin, analyticsData[todayKey].listenMinutes);
-        }
+        const todayKey = new Date().toLocaleDateString('en-CA');
+        let unifiedToday = unifiedData?.daily?.[todayKey];
 
-        // 2. Weekly listening minutes (aggregate past 7 days)
+        // 1. Today's listening minutes
+        let todayMin = 0;
+        if (window.UnifiedStats && typeof window.UnifiedStats.getTodayStats === 'function') {
+            const ut = window.UnifiedStats.getTodayStats();
+            todayMin = ut.kirtanMinutes || 0;
+        } else if (unifiedToday && typeof unifiedToday.kirtanMinutes === 'number') {
+            todayMin = unifiedToday.kirtanMinutes;
+        }
+        todayMin = Math.max(todayMin, stats.todayListeningMinutes || 0);
+
+        // 2. Weekly listening minutes & angs read (aggregate past 7 days)
         let weeklyMin = 0;
-        const now = new Date();
-        for (let i = 0; i < 7; i++) {
-            const d = new Date(now);
-            d.setDate(d.getDate() - i);
-            const k = d.toISOString().slice(0, 10);
-            if (analyticsData[k] && typeof analyticsData[k].listenMinutes === 'number') {
-                weeklyMin += analyticsData[k].listenMinutes;
+        let weeklyAngsSum = 0;
+        if (window.UnifiedStats && typeof window.UnifiedStats.getLast7Days === 'function') {
+            const last7 = window.UnifiedStats.getLast7Days();
+            last7.forEach(d => {
+                weeklyMin += (d.kirtanMinutes || 0);
+                weeklyAngsSum += (d.angRead || 0);
+            });
+        } else if (unifiedData && unifiedData.daily) {
+            const now = new Date();
+            for (let i = 0; i < 7; i++) {
+                const d = new Date(now);
+                d.setDate(d.getDate() - i);
+                const k = d.toLocaleDateString('en-CA');
+                const dayEntry = unifiedData.daily[k];
+                if (dayEntry) {
+                    if (typeof dayEntry.kirtanMinutes === 'number') weeklyMin += dayEntry.kirtanMinutes;
+                    if (typeof dayEntry.angRead === 'number') weeklyAngsSum += dayEntry.angRead;
+                }
             }
         }
-        if (weeklyMin === 0 && todayMin > 0) weeklyMin = todayMin;
+        if (weeklyMin < todayMin) weeklyMin = todayMin;
 
         // 3. Lifetime Total listening minutes
-        let totalMin = stats.totalListeningMinutes || 0;
-        if (totalMin < weeklyMin) totalMin = weeklyMin;
-        if (totalMin === 0 && todayMin > 0) totalMin = todayMin;
+        let unifiedLifetimeMin = 0;
+        let unifiedLifetimeAngs = 0;
+        if (unifiedData && unifiedData.daily) {
+            Object.values(unifiedData.daily).forEach(day => {
+                if (typeof day.kirtanMinutes === 'number') unifiedLifetimeMin += day.kirtanMinutes;
+                if (typeof day.angRead === 'number') unifiedLifetimeAngs += day.angRead;
+            });
+        }
+        let totalMin = Math.max(stats.totalListeningMinutes || 0, unifiedLifetimeMin, weeklyMin, todayMin);
 
         // 4. Sehaj Paath and Angs read
-        const sehajAngs = sehajStats.totalAngsRead || (stats.sehajPaath?.totalAngsRead) || 0;
-        const weeklyAngs = sehajStats.todayAngsRead || Math.round((sehajAngs / Math.max(stats.totalDaysActive || 1, 7)) * 7);
+        const totalAngs = Math.max(
+            sehajStats.totalAngsRead || 0,
+            stats.sehajPaath?.totalAngsRead || 0,
+            unifiedLifetimeAngs,
+            weeklyAngsSum
+        );
 
-        // 5. Active Streak
+        // 5. Active Streak (Accurate: 0 days if no activity, never forced to 1)
         const bestStreak = Math.max(
-            sehajStats.currentStreak || 0,
+            unifiedData?.streaks?.nitnem || 0,
+            unifiedData?.streaks?.sehajPath || 0,
+            unifiedData?.streaks?.kirtan || 0,
             streak.currentStreak || 0,
+            streak.current || 0,
+            sehajStats.currentStreak || 0,
             stats.sehajPaath?.currentStreak || 0,
-            1
+            0
         );
 
         // DOM elements
@@ -1036,14 +1068,14 @@
             todayEl.textContent = `${todayMin} min`;
         }
         if (wl) {
-            const weeklyHours = Math.round(weeklyMin / 60 * 10) / 10;
+            const weeklyHours = Math.round((weeklyMin / 60) * 10) / 10;
             wl.textContent = `${weeklyHours}h`;
         }
         if (wa) {
-            wa.textContent = `${sehajAngs || weeklyAngs} Angs`;
+            wa.textContent = `${totalAngs} Angs`;
         }
         if (cs) {
-            cs.textContent = `${bestStreak} Days 🔥`;
+            cs.textContent = bestStreak > 0 ? `${bestStreak} Days 🔥` : '0 Days';
         }
 
         // Determine Seeker Rank
@@ -1103,8 +1135,13 @@
 
         window.addEventListener('statsUpdated', loadQuickStats);
         window.addEventListener('dashboardRefresh', loadQuickStats);
+        window.addEventListener('statsChanged', loadQuickStats);
+        window.addEventListener('kirtanListeningUpdated', loadQuickStats);
+        window.addEventListener('angRead', loadQuickStats);
+        window.addEventListener('nitnemBaniCompleted', loadQuickStats);
+        window.addEventListener('nitnemDayCompleted', loadQuickStats);
         window.addEventListener('storage', (e) => {
-            if (e.key && (e.key.includes('stats') || e.key.includes('streak') || e.key.includes('analytics'))) {
+            if (e.key && (e.key.includes('stats') || e.key.includes('streak') || e.key.includes('unified'))) {
                 loadQuickStats();
             }
         });

@@ -87,12 +87,15 @@
         // Store original mode for UI
         html.setAttribute('data-theme-mode', theme);
 
-        // In auto mode with time-based backgrounds
+        // In auto mode with time-based backgrounds:
+        // ONLY the home screen (data-anhad-home) gets the sky tint (morning #FFF5EC, evening #FFF8E7).
+        // Subpages (Settings, Sangat, Notifications, etc.) stay pure crisp white/light (#FAF8F5) during daytime!
         if (theme === 'auto') {
+            const isHome = html.hasAttribute('data-anhad-home');
             let autoBg = '#FAF8F5';
-            if (activeTimeOfDay === 'morning') autoBg = '#FFF5EC';
+            if (activeTimeOfDay === 'morning') autoBg = isHome ? '#FFF5EC' : '#FAF8F5';
             else if (activeTimeOfDay === 'day') autoBg = '#FAF8F5';
-            else if (activeTimeOfDay === 'evening') autoBg = '#FFF8E7';
+            else if (activeTimeOfDay === 'evening') autoBg = isHome ? '#FFF8E7' : '#FAF8F5';
             else if (activeTimeOfDay === 'night') autoBg = '#0D0D0F';
             html.style.setProperty('background-color', autoBg, 'important');
         }

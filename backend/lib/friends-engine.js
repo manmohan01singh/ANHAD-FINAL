@@ -13,6 +13,12 @@ const { registeredUsers, getUser, getUserByUsername, sanitizeString } = require(
 
 const FRIENDS_DATA_FILE = path.join(__dirname, '..', 'data', 'friends-data.json');
 
+function makeHttpError(status, message) {
+  const err = new Error(message);
+  err.status = status;
+  return err;
+}
+
 class FriendsEngine {
   constructor() {
     // friendshipId -> { id, userA, userB, createdAt }
@@ -76,11 +82,14 @@ class FriendsEngine {
 
     const results = [];
     const curLower = currentUid ? String(currentUid).toLowerCase().trim() : null;
+    const curUser = currentUid ? getUser(currentUid) : null;
+    const curUserUsername = curUser && curUser.username ? curUser.username.toLowerCase().trim() : null;
 
     for (const u of registeredUsers.values()) {
       if (curLower && (
-        u.uid.toLowerCase() === curLower || 
-        (u.username && u.username.toLowerCase() === curLower)
+        (u.uid && u.uid.toLowerCase() === curLower) || 
+        (u.username && u.username.toLowerCase() === curLower) ||
+        (curUserUsername && u.username && u.username.toLowerCase() === curUserUsername)
       )) {
         continue; // Skip self
       }
@@ -129,26 +138,31 @@ class FriendsEngine {
   }
 
   sendRequest(fromUid, toIdentifier) {
-    if (!fromUid) throw { status: 401, message: 'Authentication required' };
+    if (!fromUid) throw makeHttpError(401, 'Authentication required');
     const raw = sanitizeString(toIdentifier, 100).trim();
     const lower = raw.toLowerCase();
 
     // Find target user by UID or username (both exact case and lowercase)
     let target = getUser(raw) || getUser(lower) || getUserByUsername(lower) || getUserByUsername(raw);
     if (!target) {
-      throw { status: 404, message: 'User not found with specified username or ID' };
+      throw makeHttpError(404, 'User not found with specified username or ID');
     }
 
-    if (target.uid === fromUid || target.uid.toLowerCase() === fromUid.toLowerCase()) {
-      throw { status: 400, message: 'You cannot send a friend request to yourself' };
+    const fromUser = getUser(fromUid);
+    if (
+      target.uid === fromUid ||
+      (target.uid && target.uid.toLowerCase() === fromUid.toLowerCase()) ||
+      (fromUser && target.username && fromUser.username && target.username.toLowerCase() === fromUser.username.toLowerCase())
+    ) {
+      throw makeHttpError(400, 'You cannot send a friend request to yourself');
     }
 
     if (this.isFriend(fromUid, target.uid)) {
-      throw { status: 400, message: 'You are already friends with this user' };
+      throw makeHttpError(400, 'You are already friends with this user');
     }
 
     if (this.hasPendingRequest(fromUid, target.uid)) {
-      throw { status: 400, message: 'A pending friend request already exists between you and this user' };
+      throw makeHttpError(400, 'A pending friend request already exists between you and this user');
     }
 
     const requestId = 'req_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7);
@@ -169,16 +183,16 @@ class FriendsEngine {
   respondRequest(userUid, requestId, action) {
     const req = this.friendRequests.get(requestId);
     if (!req) {
-      throw { status: 404, message: 'Friend request not found' };
+      throw makeHttpError(404, 'Friend request not found');
     }
 
     // Strict Authorization: User must be the recipient
     if (req.toUid !== userUid) {
-      throw { status: 403, message: 'Forbidden: You cannot respond to another user\'s friend request' };
+      throw makeHttpError(403, 'Forbidden: You cannot respond to another user\'s friend request');
     }
 
     if (req.status !== 'pending') {
-      throw { status: 400, message: 'This friend request has already been processed' };
+      throw makeHttpError(400, 'This friend request has already been processed');
     }
 
     if (action === 'accept') {
@@ -199,7 +213,7 @@ class FriendsEngine {
       this.saveToDisk();
       return { ok: true, action: 'rejected' };
     } else {
-      throw { status: 400, message: 'Invalid action. Must be "accept" or "reject"' };
+      throw makeHttpError(400, 'Invalid action. Must be "accept" or "reject"');
     }
   }
 
@@ -213,7 +227,7 @@ class FriendsEngine {
     }
 
     if (!removed) {
-      throw { status: 404, message: 'Friendship not found' };
+      throw makeHttpError(404, 'Friendship not found');
     }
 
     this.saveToDisk();

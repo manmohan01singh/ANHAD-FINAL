@@ -62,6 +62,18 @@ const STATIC_FILES = [
   'enhanced-functionality.js',
   'js/audio-core.js',
   'lib/global-alarm-system.js',
+  'lib/anhad-image-cache.js',
+
+  // Core Devotional & Hero Artwork (Critical Instant Caching)
+  'guruimages/guru-greeting-hero.webp',
+  'assets/darbar-sahib-morning-bg.webp',
+  'assets/darbar-sahib-day-bg.webp',
+  'assets/darbar-sahib-evening-bg.webp',
+  'assets/darbar-sahib-night-bg.webp',
+  'assets/HERO CARD IMAGES/day-darbar-sahib.webp',
+  'assets/HERO CARD IMAGES/day-amritvela-kirtan.webp',
+  'assets/HERO CARD IMAGES/day-waheguru-simran.webp',
+  'assets/HUKAMNAMA-SAHIB.webp',
 
   // Assets - Icons (CRITICAL: All manifest icons must be listed for cache bust)
   'assets/icon-72x72.png',
@@ -283,7 +295,19 @@ const STATIC_FILES = [
   'assets/HERO CARD IMAGES/evening-waheguru-simran.webp',
   'assets/HERO CARD IMAGES/night-darbar-sahib.webp',
   'assets/HERO CARD IMAGES/night-amritvela-kirtan.webp',
-  'assets/HERO CARD IMAGES/night-waheguru-simran.webp'
+  'assets/HERO CARD IMAGES/night-waheguru-simran.webp',
+
+  // Auth, Sangat, Companion & Notification Modules
+  'auth/index.html',
+  'auth/onboarding.html',
+  'auth/auth.css',
+  'notifications/index.html',
+  'sangat/friends.html',
+  'lib/anhad-auth.js',
+  'lib/firebase-client.js',
+  'lib/friends-system.js',
+  'lib/companion-mode.js',
+  'lib/community-presence.js'
 ];
 
 // Data URLs that need special caching

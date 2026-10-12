@@ -5,8 +5,10 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.AudioAttributes;
@@ -29,6 +31,7 @@ import androidx.media.app.NotificationCompat.MediaStyle;
  * Features:
  * - Persistent media player notification when paused (does not vanish)
  * - Auto-resume after audio interruptions (phone calls, Instagram reels) via AudioFocus
+ * - Audio becoming noisy receiver (auto-pause on unplug/bluetooth disconnect)
  * - Track advance (Next/Previous) actions for Amritvela / Waheguru Simran
  * - MediaSession integration for lock screen & bluetooth controls
  * - PARTIAL_WAKE_LOCK to keep playback smooth in background
@@ -50,6 +53,11 @@ public class AudioForegroundService extends Service {
     
     private PowerManager.WakeLock wakeLock;
     private MediaSessionCompat mediaSession;
+    private AudioManager audioManager;
+    private AudioFocusRequest audioFocusRequest;
+    private AudioManager.OnAudioFocusChangeListener audioFocusChangeListener;
+    private boolean resumeOnFocusGain = false;
+    private BroadcastReceiver becomingNoisyReceiver;
     
     private boolean isPlaying = false;
     private String currentTitle = "ANHAD Kirtan";
@@ -61,6 +69,7 @@ public class AudioForegroundService extends Service {
         super.onCreate();
         createNotificationChannel();
         acquireWakeLock();
+        initAudioFocus();
         initMediaSession();
     }
 
@@ -99,6 +108,9 @@ public class AudioForegroundService extends Service {
         // 1. User clicked Stop on notification
         if (ACTION_STOP.equals(action) || "STOP".equals(action)) {
             isPlaying = false;
+            resumeOnFocusGain = false;
+            abandonAudioFocus();
+            unregisterNoisyReceiver();
             updateMediaSessionState();
             broadcastCommand("STOP");
             stopForeground(true);
@@ -109,6 +121,8 @@ public class AudioForegroundService extends Service {
         // 2. User clicked Pause on notification
         if (ACTION_PAUSE.equals(action)) {
             isPlaying = false;
+            resumeOnFocusGain = false;
+            abandonAudioFocus();
             updateMediaSessionState();
             startForeground(NOTIFICATION_ID, buildNotification());
             broadcastCommand("PAUSE");
@@ -118,6 +132,9 @@ public class AudioForegroundService extends Service {
         // 3. User clicked Play on notification
         if (ACTION_PLAY.equals(action)) {
             isPlaying = true;
+            resumeOnFocusGain = false;
+            requestAudioFocus();
+            registerNoisyReceiver();
             updateMediaSessionState();
             startForeground(NOTIFICATION_ID, buildNotification());
             broadcastCommand("PLAY");
@@ -134,6 +151,9 @@ public class AudioForegroundService extends Service {
             if (stream != null) currentStream = stream;
 
             isPlaying = true;
+            resumeOnFocusGain = false;
+            requestAudioFocus();
+            registerNoisyReceiver();
             updateMediaSessionMetadata();
             updateMediaSessionState();
             startForeground(NOTIFICATION_ID, buildNotification());
@@ -143,6 +163,8 @@ public class AudioForegroundService extends Service {
         // 5. JS Sync: Pause state updated from web layer (DO NOT ECHO BROADCAST)
         if (ACTION_SYNC_PAUSE.equals(action)) {
             isPlaying = false;
+            resumeOnFocusGain = false;
+            abandonAudioFocus();
             updateMediaSessionState();
             startForeground(NOTIFICATION_ID, buildNotification());
             return START_STICKY;
@@ -179,11 +201,135 @@ public class AudioForegroundService extends Service {
         if (artist != null) currentArtist = artist;
         if (stream != null) currentStream = stream;
         isPlaying = true;
+        resumeOnFocusGain = false;
+        requestAudioFocus();
+        registerNoisyReceiver();
         
         updateMediaSessionMetadata();
         updateMediaSessionState();
         startForeground(NOTIFICATION_ID, buildNotification());
         return START_STICKY;
+    }
+
+    private void initAudioFocus() {
+        audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        audioFocusChangeListener = new AudioManager.OnAudioFocusChangeListener() {
+            @Override
+            public void onAudioFocusChange(int focusChange) {
+                Log.d(TAG, "onAudioFocusChange: " + focusChange);
+                switch (focusChange) {
+                    case AudioManager.AUDIOFOCUS_LOSS:
+                        // Permanent loss (e.g. another music app played)
+                        resumeOnFocusGain = false;
+                        if (isPlaying) {
+                            isPlaying = false;
+                            updateMediaSessionState();
+                            updateNotification();
+                            broadcastCommand("PAUSE");
+                        }
+                        break;
+                    case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
+                    case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
+                        // Temporary loss (e.g. phone call, reel audio)
+                        if (isPlaying) {
+                            resumeOnFocusGain = true;
+                            isPlaying = false;
+                            updateMediaSessionState();
+                            updateNotification();
+                            broadcastCommand("PAUSE");
+                        }
+                        break;
+                    case AudioManager.AUDIOFOCUS_GAIN:
+                        if (resumeOnFocusGain) {
+                            resumeOnFocusGain = false;
+                            isPlaying = true;
+                            updateMediaSessionState();
+                            startForeground(NOTIFICATION_ID, buildNotification());
+                            broadcastCommand("PLAY");
+                        }
+                        break;
+                }
+            }
+        };
+    }
+
+    private void requestAudioFocus() {
+        if (audioManager == null) return;
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                AudioAttributes playbackAttributes = new AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_MEDIA)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                    .build();
+                audioFocusRequest = new AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN)
+                    .setAudioAttributes(playbackAttributes)
+                    .setAcceptsDelayedFocusGain(true)
+                    .setOnAudioFocusChangeListener(audioFocusChangeListener)
+                    .build();
+                audioManager.requestAudioFocus(audioFocusRequest);
+            } else {
+                audioManager.requestAudioFocus(
+                    audioFocusChangeListener,
+                    AudioManager.STREAM_MUSIC,
+                    AudioManager.AUDIOFOCUS_GAIN
+                );
+            }
+        } catch (Exception e) {
+            Log.w(TAG, "Failed to request audio focus: " + e.getMessage());
+        }
+    }
+
+    private void abandonAudioFocus() {
+        if (audioManager == null) return;
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                if (audioFocusRequest != null) {
+                    audioManager.abandonAudioFocusRequest(audioFocusRequest);
+                    audioFocusRequest = null;
+                }
+            } else {
+                audioManager.abandonAudioFocus(audioFocusChangeListener);
+            }
+        } catch (Exception e) {
+            Log.w(TAG, "Failed to abandon audio focus: " + e.getMessage());
+        }
+    }
+
+    private void registerNoisyReceiver() {
+        if (becomingNoisyReceiver == null) {
+            becomingNoisyReceiver = new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    if (AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(intent.getAction())) {
+                        Log.d(TAG, "Audio becoming noisy (headphone/bluetooth disconnected) - pausing");
+                        if (isPlaying) {
+                            isPlaying = false;
+                            resumeOnFocusGain = false;
+                            abandonAudioFocus();
+                            updateMediaSessionState();
+                            updateNotification();
+                            broadcastCommand("PAUSE");
+                        }
+                    }
+                }
+            };
+            try {
+                registerReceiver(becomingNoisyReceiver, new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY));
+            } catch (Exception e) {
+                Log.w(TAG, "Failed to register becoming noisy receiver: " + e.getMessage());
+            }
+        }
+    }
+
+    private void unregisterNoisyReceiver() {
+        if (becomingNoisyReceiver != null) {
+            try {
+                unregisterReceiver(becomingNoisyReceiver);
+            } catch (Exception e) {
+                // already unregistered
+            }
+            becomingNoisyReceiver = null;
+        }
     }
 
     private void initMediaSession() {
@@ -194,6 +340,9 @@ public class AudioForegroundService extends Service {
             @Override
             public void onPlay() {
                 isPlaying = true;
+                resumeOnFocusGain = false;
+                requestAudioFocus();
+                registerNoisyReceiver();
                 updateMediaSessionState();
                 startForeground(NOTIFICATION_ID, buildNotification());
                 broadcastCommand("PLAY");
@@ -202,6 +351,8 @@ public class AudioForegroundService extends Service {
             @Override
             public void onPause() {
                 isPlaying = false;
+                resumeOnFocusGain = false;
+                abandonAudioFocus();
                 updateMediaSessionState();
                 startForeground(NOTIFICATION_ID, buildNotification());
                 broadcastCommand("PAUSE");
@@ -220,6 +371,9 @@ public class AudioForegroundService extends Service {
             @Override
             public void onStop() {
                 isPlaying = false;
+                resumeOnFocusGain = false;
+                abandonAudioFocus();
+                unregisterNoisyReceiver();
                 updateMediaSessionState();
                 broadcastCommand("STOP");
                 stopForeground(true);
@@ -406,6 +560,8 @@ public class AudioForegroundService extends Service {
 
     @Override
     public void onDestroy() {
+        abandonAudioFocus();
+        unregisterNoisyReceiver();
         if (wakeLock != null && wakeLock.isHeld()) {
             wakeLock.release();
         }
