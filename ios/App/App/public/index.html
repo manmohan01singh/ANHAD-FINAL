@@ -1860,16 +1860,19 @@
       pointer-events: auto;
     }
     #anhadComingSoonCard {
-      background: #FFFFFF;
-      border: 1px solid rgba(0, 0, 0, 0.08);
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(40px) saturate(180%);
+      -webkit-backdrop-filter: blur(40px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.5);
       border-radius: 28px;
       padding: 28px 24px 22px;
       max-width: 440px;
       width: 100%;
       text-align: center;
       box-shadow: 
-        0 24px 70px rgba(0, 0, 0, 0.14),
-        0 4px 16px rgba(0, 0, 0, 0.04);
+        0 24px 70px rgba(0, 0, 0, 0.18),
+        0 4px 16px rgba(0, 0, 0, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6);
       transform: scale(0.94) translateY(14px);
       transition: transform 0.32s cubic-bezier(0.34, 1.4, 0.64, 1);
       position: relative;
@@ -1881,17 +1884,24 @@
     }
     .dark-mode #anhadComingSoonCard,
     [data-theme="dark"] #anhadComingSoonCard {
-      background: #1C1C1E;
-      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(28, 28, 30, 0.75);
+      backdrop-filter: blur(40px) saturate(180%);
+      -webkit-backdrop-filter: blur(40px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.18);
       box-shadow: 
-        0 30px 80px rgba(0, 0, 0, 0.7),
-        0 4px 20px rgba(0, 0, 0, 0.5);
+        0 30px 80px rgba(0, 0, 0, 0.8),
+        0 4px 20px rgba(0, 0, 0, 0.6),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
       color: #FFFFFF;
     }
     [data-theme-mode="auto"] #anhadComingSoonCard {
-      background: var(--sky-card-bg, #FFFFFF);
-      border: 1px solid var(--sky-card-border, rgba(0, 0, 0, 0.08));
-      box-shadow: 0 24px 70px rgba(0, 0, 0, 0.2);
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(40px) saturate(180%);
+      -webkit-backdrop-filter: blur(40px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      box-shadow: 
+        0 24px 70px rgba(0, 0, 0, 0.18),
+        0 4px 16px rgba(0, 0, 0, 0.08);
       color: var(--sky-card-text, #1C1C1E);
     }
 
@@ -1957,6 +1967,7 @@
       font-weight: 800;
       color: #D4943A;
       margin-bottom: 4px;
+      text-shadow: 0 2px 8px rgba(212, 148, 58, 0.3);
     }
     #anhadComingSoonCard .cs-title {
       font-size: 1.6rem;
@@ -1965,10 +1976,12 @@
       line-height: 1.2;
       margin-bottom: 2px;
       letter-spacing: -0.4px;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
     }
     [data-theme="dark"] #anhadComingSoonCard .cs-title,
     .dark-mode #anhadComingSoonCard .cs-title {
       color: #FFFFFF;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
     }
     #anhadComingSoonCard .cs-gurmukhi-subtitle {
       font-family: var(--font-gurmukhi, 'Noto Sans Gurmukhi', sans-serif);
@@ -1976,16 +1989,19 @@
       font-weight: 600;
       color: #D4943A;
       margin-bottom: 2px;
+      text-shadow: 0 1px 4px rgba(212, 148, 58, 0.25);
     }
     #anhadComingSoonCard .cs-feature {
       font-size: 0.84rem;
       font-weight: 500;
-      color: #8E8E93;
+      color: #6E6E73;
       margin-bottom: 14px;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
     }
     [data-theme="dark"] #anhadComingSoonCard .cs-feature,
     .dark-mode #anhadComingSoonCard .cs-feature {
-      color: #98989D;
+      color: #AEAEB2;
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
     }
 
     /* 3-Pillar Sadhana Cards Grid - Hidden */
@@ -4478,10 +4494,16 @@
       margin-bottom: 18px !important;
     }
 
-    /* Dark Mode & Dynamic Night: Hide Standard Hero Banner ONLY when Companion Mode is NOT active */
+    /* Dark Mode & Dynamic Night: Hide Standard Hero Banner (Campaign Image) - Show Circular Carousel Instead */
     html.dark-mode body:not(.companion-mode-active) .greeting__hero-banner,
     [data-theme="dark"] body:not(.companion-mode-active) .greeting__hero-banner,
     [data-time-of-day="night"] body:not(.companion-mode-active) .greeting__hero-banner {
+      display: none !important;
+    }
+
+    /* ALSO hide in dark mode even if companion mode is active, unless explicitly overridden */
+    html.dark-mode .greeting__hero-banner,
+    [data-theme="dark"] .greeting__hero-banner {
       display: none !important;
     }
 
