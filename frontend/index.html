@@ -4504,6 +4504,11 @@
     }
 
     /* ALSO hide in dark mode even if companion mode is active, unless explicitly overridden */
+    html.dark-mode body .greeting__hero-banner,
+    [data-theme="dark"] body .greeting__hero-banner {
+      display: none !important;
+    }
+
     html.dark-mode .greeting__hero-banner,
     [data-theme="dark"] .greeting__hero-banner {
       display: none !important;

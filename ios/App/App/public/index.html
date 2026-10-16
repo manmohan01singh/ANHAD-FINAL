@@ -1946,18 +1946,10 @@
     #anhadComingSoonCard .cs-badge-pill {
       display: none;
     }
-    [data-theme="dark"] #anhadComingSoonCard .cs-badge-pill,
-    .dark-mode #anhadComingSoonCard .cs-badge-pill {
-      display: none;
-    }
     #anhadComingSoonCard .cs-badge-dot {
       display: none;
     }
     #anhadComingSoonCard .cs-badge-text {
-      display: none;
-    }
-    [data-theme="dark"] #anhadComingSoonCard .cs-badge-text,
-    .dark-mode #anhadComingSoonCard .cs-badge-text {
       display: none;
     }
     #anhadComingSoonCard .cs-ik-onkar {
@@ -2004,6 +1996,7 @@
       text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
     }
 
+    /* 3-Pillar Sadhana Cards Grid */
     /* 3-Pillar Sadhana Cards Grid - Hidden */
     .cs-pillars-grid {
       display: none;
@@ -2038,6 +2031,15 @@
 
     /* Milestones Bar - Hidden */
     .cs-milestones-bar {
+      display: none;
+    }
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      background: #F2F2F7;
+      border: 1px solid rgba(0, 0, 0, 0.04);
+      border-radius: 14px;
+      margin-bottom: 18px;
       display: none;
     }
     html.dark-mode .cs-milestones-bar,
@@ -4501,7 +4503,12 @@
       display: none !important;
     }
 
-    /* ALSO hide in dark mode even if companion mode is active, unless explicitly overridden */
+    /* ALSO hide in dark mode with higher specificity to override html body selector */
+    html.dark-mode body .greeting__hero-banner,
+    [data-theme="dark"] body .greeting__hero-banner {
+      display: none !important;
+    }
+
     html.dark-mode .greeting__hero-banner,
     [data-theme="dark"] .greeting__hero-banner {
       display: none !important;
@@ -6587,7 +6594,7 @@
 
   <!-- Floating Tab Bar — Same as Dashboard -->
   <nav class="tab-bar" id="mainNav" aria-label="Main Navigation" style="position: fixed !important; bottom: 32px !important; left: 50% !important; transform: translateX(-50%) !important; z-index: 200 !important;">
-    <a href="/index.html" class="tab-item active">
+    <a href="index.html" class="tab-item active">
       <span class="tab-icon"><svg width="22" height="22" aria-hidden="true"><use href="#icon-home"/></svg></span>
       <span class="tab-label">Home</span>
     </a>
@@ -6888,45 +6895,30 @@
         } catch(e) {}
 
         if (isCompanion) {
-          if (showDark) {
-            // Dark Mode or Dynamic Night: Preserve dark Guru carousel
-            if (document.body) document.body.classList.remove('companion-mode-active');
-            if (heroBanner) {
-              heroBanner.classList.remove('companion-mode-active');
-              heroBanner.style.setProperty('display', 'none', 'important');
+          // Companion Mode Active: Show companion hero banner full-time across light and dark themes
+          if (document.body) document.body.classList.add('companion-mode-active');
+          if (heroBanner) {
+            heroBanner.classList.add('companion-mode-active');
+            heroBanner.style.setProperty('display', 'flex', 'important');
+            if (!heroBanner._hasCompanionClick) {
+              heroBanner._hasCompanionClick = true;
+              heroBanner.addEventListener('click', function() {
+                var active = false;
+                try { active = localStorage.getItem('anhad_companion_mode') === 'true'; } catch(e) {}
+                if (active) {
+                  if (window.navigateTo) window.navigateTo('Companion/companion.html');
+                  else window.location.href = 'Companion/companion.html';
+                }
+              });
             }
-            if (darkCarousel) {
-              darkCarousel.style.setProperty('display', 'flex', 'important');
-              if (window.PortraitSlider && typeof window.PortraitSlider.init === 'function') {
-                window.PortraitSlider.init();
-              }
-            }
-          } else {
-            // Light Mode or Dynamic Daytime (morning, day, evening): Show companion banner!
-            if (document.body) document.body.classList.add('companion-mode-active');
-            if (heroBanner) {
-              heroBanner.classList.add('companion-mode-active');
-              heroBanner.style.setProperty('display', 'flex', 'important');
-              if (!heroBanner._hasCompanionClick) {
-                heroBanner._hasCompanionClick = true;
-                heroBanner.addEventListener('click', function() {
-                  var active = false;
-                  try { active = localStorage.getItem('anhad_companion_mode') === 'true'; } catch(e) {}
-                  if (active) {
-                    if (window.navigateTo) window.navigateTo('Companion/companion.html');
-                    else window.location.href = 'Companion/companion.html';
-                  }
-                });
-              }
-            }
-            if (darkCarousel) {
-              darkCarousel.style.setProperty('display', 'none', 'important');
-            }
-            if (window.CompanionMode && typeof window.CompanionMode.syncHeroImage === 'function' && !window.__syncingGreeting) {
-              window.__syncingGreeting = true;
-              try { window.CompanionMode.syncHeroImage(); } catch (e) {}
-              window.__syncingGreeting = false;
-            }
+          }
+          if (darkCarousel) {
+            darkCarousel.style.setProperty('display', 'none', 'important');
+          }
+          if (window.CompanionMode && typeof window.CompanionMode.syncHeroImage === 'function' && !window.__syncingGreeting) {
+            window.__syncingGreeting = true;
+            try { window.CompanionMode.syncHeroImage(); } catch (e) {}
+            window.__syncingGreeting = false;
           }
           return;
         }
