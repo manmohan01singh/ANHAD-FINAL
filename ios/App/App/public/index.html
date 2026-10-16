@@ -4410,7 +4410,9 @@
     /* ════════════════════════════════════════════════════════════════
        2. LIGHT MODE HERO ARTWORK — GRAND FULL SCALE, MOVED UP & SOFT BOTTOM FADE
        ════════════════════════════════════════════════════════════════ */
-    html body .greeting__hero-banner {
+    html body:not(.dark-mode) .greeting__hero-banner,
+    html body[data-theme="light"] .greeting__hero-banner,
+    html body:not([data-theme="dark"]) .greeting__hero-banner {
       display: flex !important;
       flex-direction: column !important;
       width: 100% !important;
