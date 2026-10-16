@@ -1934,36 +1934,13 @@
     }
 
     #anhadComingSoonCard .cs-badge-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 4px 12px;
-      background: rgba(212, 148, 58, 0.1);
-      border: 1px solid rgba(212, 148, 58, 0.22);
-      border-radius: 20px;
-      margin-bottom: 8px;
-    }
-    [data-theme="dark"] #anhadComingSoonCard .cs-badge-pill,
-    .dark-mode #anhadComingSoonCard .cs-badge-pill {
-      background: rgba(247, 198, 52, 0.12);
-      border-color: rgba(247, 198, 52, 0.28);
+      display: none;
     }
     #anhadComingSoonCard .cs-badge-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: #D4943A;
+      display: none;
     }
     #anhadComingSoonCard .cs-badge-text {
-      font-size: 0.7rem;
-      font-weight: 700;
-      letter-spacing: 0.8px;
-      text-transform: uppercase;
-      color: #B87A24;
-    }
-    [data-theme="dark"] #anhadComingSoonCard .cs-badge-text,
-    .dark-mode #anhadComingSoonCard .cs-badge-text {
-      color: #F7C634;
+      display: none;
     }
     #anhadComingSoonCard .cs-ik-onkar {
       font-family: var(--font-gurmukhi, 'Noto Sans Gurmukhi', sans-serif);
@@ -2004,57 +1981,42 @@
     }
 
     /* 3-Pillar Sadhana Cards Grid */
+    /* 3-Pillar Sadhana Cards Grid - Hidden */
     .cs-pillars-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      margin-bottom: 14px;
-      width: 100%;
+      display: none;
     }
     .cs-pillar-card {
-      padding: 10px 6px;
-      border-radius: 14px;
-      background: #F2F2F7;
-      border: 1px solid rgba(0, 0, 0, 0.04);
-      text-align: center;
-      transition: transform 0.2s var(--ease-spring), background 0.2s ease;
+      display: none;
     }
     .cs-pillar-card:hover {
-      transform: translateY(-2px);
-      background: #E5E5EA;
+      display: none;
     }
     html.dark-mode .cs-pillar-card,
     [data-theme="dark"] .cs-pillar-card {
-      background: #2C2C2E;
-      border-color: rgba(255, 255, 255, 0.06);
+      display: none;
     }
     html.dark-mode .cs-pillar-card:hover,
     [data-theme="dark"] .cs-pillar-card:hover {
-      background: #3A3A3C;
+      display: none;
     }
     .cs-pillar-icon {
-      font-size: 1.25rem;
-      margin-bottom: 2px;
+      display: none;
     }
     .cs-pillar-title {
-      font-size: 0.74rem;
-      font-weight: 700;
-      color: #1C1C1E;
-      margin-bottom: 1px;
+      display: none;
     }
     html.dark-mode .cs-pillar-title,
     [data-theme="dark"] .cs-pillar-title {
-      color: #FFFFFF;
+      display: none;
     }
     .cs-pillar-desc {
-      font-size: 0.64rem;
-      color: #8E8E93;
-      line-height: 1.2;
+      display: none;
     }
 
-    /* Milestones Bar */
+    /* Milestones Bar - Hidden */
     .cs-milestones-bar {
-      display: flex;
+      display: none;
+    }
       align-items: center;
       justify-content: space-between;
       padding: 8px 12px;
@@ -2062,85 +2024,75 @@
       border: 1px solid rgba(0, 0, 0, 0.04);
       border-radius: 14px;
       margin-bottom: 18px;
+      display: none;
     }
     html.dark-mode .cs-milestones-bar,
     [data-theme="dark"] .cs-milestones-bar {
-      background: #2C2C2E;
-      border-color: rgba(255, 255, 255, 0.06);
+      display: none;
     }
     .cs-milestone-step {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 2px;
+      display: none;
     }
     .cs-step-num {
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      background: #D4943A;
-      color: #FFFFFF;
-      font-size: 0.68rem;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: none;
     }
     .cs-step-label {
-      font-size: 0.65rem;
-      font-weight: 600;
-      color: #8E8E93;
+      display: none;
     }
     .cs-milestone-line {
-      flex: 1;
-      height: 2px;
-      background: #E5E5EA;
-      margin: 0 8px 12px 8px;
+      display: none;
     }
     html.dark-mode .cs-milestone-line,
     [data-theme="dark"] .cs-milestone-line {
-      background: rgba(255, 255, 255, 0.12);
+      display: none;
     }
 
-    /* Actions Row */
+    /* Actions Row - Hidden */
     .cs-actions-row {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 8px;
-      width: 100%;
+      display: none;
     }
     .cs-notify-btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      padding: 12px 18px;
-      background: linear-gradient(135deg, #FF9500 0%, #D4943A 100%);
-      color: #FFFFFF;
-      border: none;
-      border-radius: 14px;
-      font-size: 0.9rem;
-      font-weight: 700;
-      cursor: pointer;
-      box-shadow: 0 4px 14px rgba(212, 148, 58, 0.25);
-      transition: transform 0.2s var(--ease-spring), box-shadow 0.2s ease, opacity 0.2s ease;
+      display: none;
     }
     .cs-notify-btn:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 6px 18px rgba(212, 148, 58, 0.35);
+      display: none;
     }
     .cs-notify-btn:active {
-      transform: scale(0.97);
+      display: none;
     }
     .cs-notify-btn.joined {
-      background: #34C759;
-      box-shadow: 0 4px 14px rgba(52, 199, 89, 0.3);
+      display: none;
+    }
+
+    /* Watch Live Button */
+    .chaliya-watch-live-btn {
+      display: block;
+      width: 100%;
+      padding: 14px 0;
+      margin: 20px 0 8px;
+      background: linear-gradient(135deg, #c17f3d, #e8a84a);
+      color: #fff;
+      font-size: 1.1rem;
+      font-weight: 700;
+      text-align: center;
+      text-decoration: none;
+      border-radius: 12px;
+      letter-spacing: 0.04em;
+      box-shadow: 0 4px 18px rgba(193,127,61,0.35);
+      transition: opacity 0.2s, transform 0.15s;
+    }
+    .chaliya-watch-live-btn:hover,
+    .chaliya-watch-live-btn:focus {
+      opacity: 0.88;
+      transform: translateY(-2px);
+      outline: 2px solid #e8a84a;
+      outline-offset: 2px;
     }
 
     #anhadComingSoonCard .cs-close {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
+      display: block;
+      width: 100%;
+      text-align: center;
       padding: 12px 18px;
       background: #F2F2F7;
       border: 1px solid rgba(0, 0, 0, 0.05);
@@ -4497,12 +4449,14 @@
     .greeting__hero-banner.companion-mode-active {
       display: flex !important;
       overflow: visible !important;
+      cursor: pointer !important;
     }
     body.companion-mode-active .greeting__hero-artwork,
     .greeting__hero-artwork.companion-mode-active {
       width: 138% !important;
       object-position: 53.5% center !important;
       transform: scale(1.02) translateX(8px) !important;
+      cursor: pointer !important;
       /* Multi-directional deep feathered mask: edges fade completely into background */
       -webkit-mask-image: 
         radial-gradient(ellipse 90% 84% at 52% 50%, #000 48%, rgba(0,0,0,0.85) 66%, rgba(0,0,0,0.35) 82%, transparent 96%),
@@ -4515,6 +4469,7 @@
         linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.5) 5%, #000 14%, #000 82%, rgba(0,0,0,0.35) 91%, transparent 100%) !important;
       mask-composite: intersect;
       filter: drop-shadow(0 4px 14px rgba(0, 0, 0, 0.03)) !important;
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), filter 0.3s ease !important;
     }
 
     /* Beautiful clean gap before the Nitnem progress banner */
@@ -4525,10 +4480,29 @@
       margin-bottom: 18px !important;
     }
 
-    /* Dark Mode & Dynamic Night: ALWAYS Hide Hero Banner (Campaign / Standard) and Show Dark Guru Carousel */
-    html.dark-mode .greeting__hero-banner,
-    [data-theme="dark"] .greeting__hero-banner,
-    [data-time-of-day="night"] .greeting__hero-banner {
+    /* Dark Mode & Dynamic Night: Hide Standard Hero Banner ONLY when Companion Mode is NOT active */
+    html.dark-mode body:not(.companion-mode-active) .greeting__hero-banner,
+    [data-theme="dark"] body:not(.companion-mode-active) .greeting__hero-banner,
+    [data-time-of-day="night"] body:not(.companion-mode-active) .greeting__hero-banner {
+      display: none !important;
+    }
+
+    /* Companion Mode in Dark Mode / Night: Show Sacred Hero Banner with Celestial Glow */
+    html.dark-mode body.companion-mode-active .greeting__hero-banner,
+    [data-theme="dark"] body.companion-mode-active .greeting__hero-banner,
+    [data-time-of-day="night"] body.companion-mode-active .greeting__hero-banner {
+      display: flex !important;
+      background: radial-gradient(ellipse 70% 55% at 50% 50%, rgba(212, 175, 55, 0.16) 0%, rgba(6, 21, 39, 0.4) 60%, transparent 100%) !important;
+      border-radius: 24px !important;
+    }
+    html.dark-mode body.companion-mode-active .greeting__hero-artwork,
+    [data-theme="dark"] body.companion-mode-active .greeting__hero-artwork,
+    [data-time-of-day="night"] body.companion-mode-active .greeting__hero-artwork {
+      filter: drop-shadow(0 6px 24px rgba(0, 0, 0, 0.7)) drop-shadow(0 0 20px rgba(212, 175, 55, 0.3)) !important;
+    }
+    html.dark-mode body.companion-mode-active .greeting__dark-carousel-container,
+    [data-theme="dark"] body.companion-mode-active .greeting__dark-carousel-container,
+    [data-time-of-day="night"] body.companion-mode-active .greeting__dark-carousel-container {
       display: none !important;
     }
 
@@ -5582,7 +5556,7 @@
         <div class="greeting__hero-banner" id="greetingHeroBanner" aria-label="Sacred Guru Darbar">
           <picture id="greetingHeroPicture">
             <source id="greetingHeroSource" srcset="guruimages/guru-greeting-hero.webp" type="image/webp">
-            <img class="greeting__hero-artwork" id="greetingHeroArtwork" src="guruimages/guru-greeting-hero.webp" alt="Sri Guru Granth Sahib Ji with Sri Guru Gobind Singh Ji and Sri Guru Nanak Dev Ji" width="1906" height="650" loading="eager" fetchpriority="high" decoding="async">
+            <img class="greeting__hero-artwork" id="greetingHeroArtwork" src="guruimages/guru-greeting-hero.webp" alt="Sri Guru Granth Sahib Ji with Sri Guru Gobind Singh Ji and Sri Guru Nanak Dev Ji" width="1906" height="650" loading="eager" fetchpriority="high" decoding="async" onerror="if(this.src.endsWith('.webp')) this.src=this.src.replace(/\.webp$/, '.jpg');">
           </picture>
         </div>
 
@@ -5650,6 +5624,30 @@
                     <img src="guruimages/gurugranthsahebji.jpeg" alt="Sri Guru Granth Sahib Ji" style="object-position: center 25%;" loading="eager" draggable="false">
                   </div>
                 </div>
+              </div>
+
+              <!-- Campaign Announcement Overlay — State B in the portrait rotation.
+                   Renderer: js/campaign-renderer.js; config: lib/remote-config.js.
+                   These divs are siblings of #guruSliderTrack and are shown/hidden via
+                   data-campaign-state attribute on #guruSlider. -->
+              <div id="greetingAnnounce" class="greeting__announce" hidden aria-hidden="true">
+                <div class="greeting__announce-disc">
+                  <span class="greeting__announce-ik" aria-hidden="true">ੴ</span>
+                  <span id="greetingAnnounceBadge" class="greeting__announce-badge" hidden></span>
+                  <img id="greetingAnnounceImg" class="greeting__announce-img" 
+                       src="assets/companion/chaliya-2026.webp" 
+                       alt="" 
+                       loading="lazy" 
+                       draggable="false"
+                       onerror="if(this.src.endsWith('.webp')) this.src=this.src.replace(/\.webp$/, '.jpg');">
+                </div>
+              </div>
+
+              <div id="greetingAnnounceText" class="greeting__announce-text" hidden aria-hidden="true">
+                <div id="greetingAnnounceTitle" class="greeting__announce-title" hidden></div>
+                <div id="greetingAnnounceLine" class="greeting__announce-line" hidden></div>
+                <div id="greetingAnnounceSub" class="greeting__announce-sub" hidden></div>
+                <div id="greetingAnnouncePill" class="greeting__announce-pill" hidden></div>
               </div>
             </div>
             <button class="greeting__slider-arrow greeting__slider-arrow--next" id="guruSliderNext" aria-label="Next Guru" type="button">
@@ -6058,8 +6056,8 @@
 
 
 
-    <!-- 🙏 Chaliya 2026 — Live on YouTube -->
-    <article class="quick-card quick-card--gold ios-haptic" id="chaliya2026Card" aria-label="Chaliya 2026" role="button" tabindex="0" onclick="window.open('https://youtube.com/@amritvelatrustlive?si=H5M_4aEpeZbFjCl2', '_blank')">
+    <!-- 🙏 Chaliya 2026 — Sacred Amritvela Sadhana -->
+    <article class="quick-card quick-card--gold ios-haptic" id="chaliya2026Card" aria-label="Chaliya 2026" role="button" tabindex="0">
       <div class="quick-card__icon" aria-hidden="true"><svg width="22" height="22"><use href="#icon-mala-beads"/></svg></div>
       <div class="quick-card__content">
         <div class="quick-card__title">Chaliya 2026</div>
@@ -6489,63 +6487,24 @@
     <div id="anhadComingSoonCard" class="chaliya-luxury-card">
       <button class="cs-top-close-btn" id="anhadComingSoonTopClose" aria-label="Close modal">✕</button>
       
-      <div class="cs-badge-pill">
-        <span class="cs-badge-dot"></span>
-        <span class="cs-badge-text">✦ ANNUAL SACRED SADHANA • 40 DAYS</span>
-      </div>
-
       <div class="cs-ik-onkar">ੴ</div>
       <div class="cs-title">Chaliya Sahib 2026</div>
       <div class="cs-gurmukhi-subtitle">ਪ੍ਰਕਾਸ਼ ਪੁਰਬ ਸ੍ਰੀ ਗੁਰੂ ਨਾਨਕ ਦੇਵ ਜੀ</div>
       <div class="cs-feature">40 Days of Collective Amritvela Naam Simran &amp; Nitnem</div>
 
-      <!-- 3-Pillar Sadhana Cards Grid -->
-      <div class="cs-pillars-grid">
-        <div class="cs-pillar-card">
-          <div class="cs-pillar-icon">🌅</div>
-          <div class="cs-pillar-title">Amritvela</div>
-          <div class="cs-pillar-desc">3:30 AM Global Simran</div>
-        </div>
-        <div class="cs-pillar-card">
-          <div class="cs-pillar-icon">📿</div>
-          <div class="cs-pillar-title">Nitnem</div>
-          <div class="cs-pillar-desc">Daily Streak Tracker</div>
-        </div>
-        <div class="cs-pillar-card">
-          <div class="cs-pillar-icon">🤝</div>
-          <div class="cs-pillar-title">Sadhsangat</div>
-          <div class="cs-pillar-desc">Live Sangat Presence</div>
-        </div>
-      </div>
+      <a
+        href="https://youtube.com/@amritvelatrustlive"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="chaliya-watch-live-btn"
+        aria-label="Watch Chaliya Sahib 2026 live on YouTube"
+      >
+        ▶ Watch Live
+      </a>
 
-      <!-- Milestones Bar -->
-      <div class="cs-milestones-bar">
-        <div class="cs-milestone-step">
-          <span class="cs-step-num">1</span>
-          <span class="cs-step-label">Sankalp</span>
-        </div>
-        <div class="cs-milestone-line"></div>
-        <div class="cs-milestone-step">
-          <span class="cs-step-num">20</span>
-          <span class="cs-step-label">Madhya</span>
-        </div>
-        <div class="cs-milestone-line"></div>
-        <div class="cs-milestone-step">
-          <span class="cs-step-num">40</span>
-          <span class="cs-step-label">Bhog Smagam</span>
-        </div>
-      </div>
-
-      <!-- Actions Row -->
-      <div class="cs-actions-row">
-        <button class="cs-notify-btn ios-haptic" id="chaliyaNotifyBtn">
-          <span id="chaliyaNotifyIcon">🔔</span>
-          <span id="chaliyaNotifyText">Join &amp; Remind Me</span>
-        </button>
-        <button class="cs-close ios-haptic" id="anhadComingSoonClose">
-          ਵਾਹਿਗੁਰੂ &nbsp;✓
-        </button>
-      </div>
+      <button class="cs-close ios-haptic" id="anhadComingSoonClose">
+        ਵਾਹਿਗੁਰੂ &nbsp;✓
+      </button>
     </div>
   </div>
 
@@ -6556,40 +6515,10 @@
       var overlay = document.getElementById('anhadComingSoonOverlay');
       var closeBtn = document.getElementById('anhadComingSoonClose');
       var topCloseBtn = document.getElementById('anhadComingSoonTopClose');
-      var notifyBtn = document.getElementById('chaliyaNotifyBtn');
-      var notifyText = document.getElementById('chaliyaNotifyText');
-      var notifyIcon = document.getElementById('chaliyaNotifyIcon');
-
-      function updateNotifyState() {
-        if (!notifyBtn) return;
-        var isJoined = localStorage.getItem('anhad_chaliya_2026_joined') === '1';
-        if (isJoined) {
-          notifyBtn.classList.add('joined');
-          if (notifyIcon) notifyIcon.textContent = '✅';
-          if (notifyText) notifyText.textContent = 'Joined & Reminders Active';
-        } else {
-          notifyBtn.classList.remove('joined');
-          if (notifyIcon) notifyIcon.textContent = '🔔';
-          if (notifyText) notifyText.textContent = 'Join & Remind Me';
-        }
-      }
-
-      function toggleNotify(e) {
-        if (e) { e.preventDefault(); e.stopPropagation(); }
-        var isJoined = localStorage.getItem('anhad_chaliya_2026_joined') === '1';
-        if (isJoined) {
-          localStorage.setItem('anhad_chaliya_2026_joined', '0');
-        } else {
-          localStorage.setItem('anhad_chaliya_2026_joined', '1');
-          if (navigator.vibrate) navigator.vibrate([15, 40, 20]);
-        }
-        updateNotifyState();
-      }
 
       function showComingSoon(e) {
         if (e) { e.preventDefault(); e.stopPropagation(); }
         if (!overlay) return;
-        updateNotifyState();
         overlay.classList.add('active');
         overlay.setAttribute('aria-hidden', 'false');
         document.body.style.overflow = 'hidden';
@@ -6613,7 +6542,6 @@
       }
       if (closeBtn) closeBtn.addEventListener('click', hideComingSoon);
       if (topCloseBtn) topCloseBtn.addEventListener('click', hideComingSoon);
-      if (notifyBtn) notifyBtn.addEventListener('click', toggleNotify);
 
       // Close on backdrop click
       if (overlay) {
@@ -6639,7 +6567,7 @@
 
   <!-- Floating Tab Bar — Same as Dashboard -->
   <nav class="tab-bar" id="mainNav" aria-label="Main Navigation" style="position: fixed !important; bottom: 32px !important; left: 50% !important; transform: translateX(-50%) !important; z-index: 200 !important;">
-    <a href="/index.html" class="tab-item active">
+    <a href="index.html" class="tab-item active">
       <span class="tab-icon"><svg width="22" height="22" aria-hidden="true"><use href="#icon-home"/></svg></span>
       <span class="tab-label">Home</span>
     </a>
@@ -6940,34 +6868,30 @@
         } catch(e) {}
 
         if (isCompanion) {
-          if (showDark) {
-            // Dark Mode or Dynamic Night: Do NOT show campaign/companion banner. Show dark Guru carousel!
-            if (document.body) document.body.classList.remove('companion-mode-active');
-            if (heroBanner) {
-              heroBanner.classList.remove('companion-mode-active');
-              heroBanner.style.setProperty('display', 'none', 'important');
+          // Companion Mode Active: Show companion hero banner full-time across light and dark themes
+          if (document.body) document.body.classList.add('companion-mode-active');
+          if (heroBanner) {
+            heroBanner.classList.add('companion-mode-active');
+            heroBanner.style.setProperty('display', 'flex', 'important');
+            if (!heroBanner._hasCompanionClick) {
+              heroBanner._hasCompanionClick = true;
+              heroBanner.addEventListener('click', function() {
+                var active = false;
+                try { active = localStorage.getItem('anhad_companion_mode') === 'true'; } catch(e) {}
+                if (active) {
+                  if (window.navigateTo) window.navigateTo('Companion/companion.html');
+                  else window.location.href = 'Companion/companion.html';
+                }
+              });
             }
-            if (darkCarousel) {
-              darkCarousel.style.setProperty('display', 'flex', 'important');
-              if (window.PortraitSlider && typeof window.PortraitSlider.init === 'function') {
-                window.PortraitSlider.init();
-              }
-            }
-          } else {
-            // Light Mode or Dynamic Daytime (morning, day, evening): Show companion banner!
-            if (document.body) document.body.classList.add('companion-mode-active');
-            if (heroBanner) {
-              heroBanner.classList.add('companion-mode-active');
-              heroBanner.style.setProperty('display', 'flex', 'important');
-            }
-            if (darkCarousel) {
-              darkCarousel.style.setProperty('display', 'none', 'important');
-            }
-            if (window.CompanionMode && typeof window.CompanionMode.syncHeroImage === 'function' && !window.__syncingGreeting) {
-              window.__syncingGreeting = true;
-              try { window.CompanionMode.syncHeroImage(); } catch (e) {}
-              window.__syncingGreeting = false;
-            }
+          }
+          if (darkCarousel) {
+            darkCarousel.style.setProperty('display', 'none', 'important');
+          }
+          if (window.CompanionMode && typeof window.CompanionMode.syncHeroImage === 'function' && !window.__syncingGreeting) {
+            window.__syncingGreeting = true;
+            try { window.CompanionMode.syncHeroImage(); } catch (e) {}
+            window.__syncingGreeting = false;
           }
           return;
         }
