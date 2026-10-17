@@ -43,10 +43,27 @@
     return `${localDate(date)}T${pad2(hour)}:${pad2(minute)}`;
   }
 
-  function readSchedule() {
-    const schedule = readJson(KEYS.schedule, null);
+  function readSchedule(inputSchedule) {
+    const schedule = (inputSchedule !== undefined) ? inputSchedule : readJson(KEYS.schedule, null);
     if (Array.isArray(schedule)) return schedule;
     if (schedule && Array.isArray(schedule.sessions)) return schedule.sessions;
+
+    if (schedule && typeof schedule === 'object') {
+      const map = (schedule._schedule && typeof schedule._schedule === 'object') ? schedule._schedule : schedule;
+      const sessions = [];
+      Object.keys(map).forEach(function (k) {
+        if (k.startsWith('_')) return;
+        const item = map[k];
+        if (item && typeof item === 'object') {
+          const h = Number(item.hour !== undefined ? item.hour : k);
+          const m = Number(item.startMinute !== undefined ? item.startMinute : (item.minute || 0));
+          if (Number.isFinite(h) && Number.isFinite(m)) {
+            sessions.push({ hour: h, minute: m, enabled: item.status !== 'skipped' && item.enabled !== false });
+          }
+        }
+      });
+      if (sessions.length > 0) return sessions;
+    }
 
     const config = readJson(KEYS.config, null);
     if (config && Array.isArray(config.sessions)) return config.sessions;
@@ -56,7 +73,10 @@
       if (Number.isFinite(start) && Number.isFinite(end)) {
         const sessions = [];
         for (let hour = start; hour <= end; hour += 1) {
-          sessions.push({ hour, minute: Number(config.minute) || 0, enabled: true });
+          const min = (config.minute !== undefined && config.minute !== null && config.minute !== '')
+            ? Number(config.minute)
+            : (2 + Math.floor(Math.random() * 56));
+          sessions.push({ hour, minute: min, enabled: true });
         }
         return sessions;
       }
@@ -249,6 +269,7 @@
     _singleton: true,
     KEYS,
     SESSION_TOLERANCE_MS,
+    readSchedule,
     findScheduledSession,
     storeLaunchIntent,
     consumeLaunchIntent,

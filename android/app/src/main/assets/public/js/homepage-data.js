@@ -411,8 +411,20 @@ function _anhadHomepageDataInit() {
       const scheduleData = localStorage.getItem('naam_abhyas_schedule');
       if (scheduleData) {
         const schedule = JSON.parse(scheduleData);
-        const now = new Date(), ch = now.getHours(), cm = now.getMinutes(), sh = ch; // Always check from current hour - status='pending' handles filtering
-        if (typeof schedule === 'object') { for (let h = sh; h < 24; h++) { if (schedule[h] && schedule[h].status === 'pending') { nextScheduledHour = h; break; } } }
+        const schedMap = (schedule && schedule._schedule) ? schedule._schedule : schedule;
+        const now = new Date(), ch = now.getHours(), cm = now.getMinutes();
+        if (schedMap && typeof schedMap === 'object') {
+          for (let h = ch; h < 24; h++) {
+            const item = schedMap[h];
+            if (item && item.status === 'pending') {
+              const startM = (typeof item.startMinute === 'number') ? item.startMinute : 0;
+              const dur = (typeof item.durationMinutes === 'number') ? item.durationMinutes : 2;
+              if (h === ch && (startM + dur) < cm) continue;
+              nextScheduledHour = h;
+              break;
+            }
+          }
+        }
       }
       if (nextScheduledHour === null) {
         const configData = localStorage.getItem('naam_abhyas_config');
@@ -422,7 +434,22 @@ function _anhadHomepageDataInit() {
     const subtitleEl = document.getElementById('naamSubtitle') || document.getElementById('nextSession'), timeEl = document.getElementById('naamMeta') || document.getElementById('sessionTime');
     if (!subtitleEl || !timeEl) return;
     if (nextScheduledHour !== null) {
-      let timeStr; try { const sd = localStorage.getItem('naam_abhyas_schedule'); if (sd) { const s = JSON.parse(sd); if (s[nextScheduledHour]?.startTime) timeStr = s[nextScheduledHour].startTime; } } catch (e) { }
+      let timeStr;
+      try {
+        const sd = localStorage.getItem('naam_abhyas_schedule');
+        if (sd) {
+          const s = JSON.parse(sd);
+          const sm = (s && s._schedule) ? s._schedule : s;
+          if (sm[nextScheduledHour]?.startTime) {
+            timeStr = sm[nextScheduledHour].startTime;
+          } else if (sm[nextScheduledHour]?.startMinute !== undefined) {
+            const m = sm[nextScheduledHour].startMinute;
+            const per = nextScheduledHour >= 12 ? 'PM' : 'AM';
+            const hh = nextScheduledHour % 12 || 12;
+            timeStr = `${hh}:${m < 10 ? '0' + m : m} ${per}`;
+          }
+        }
+      } catch (e) { }
       if (!timeStr) { const ampm = nextScheduledHour >= 12 ? 'PM' : 'AM'; timeStr = `${nextScheduledHour % 12 || 12}:00 ${ampm}`; }
       subtitleEl.textContent = completedToday > 0 ? `${completedToday} sessions today • Next at` : 'Next session at';
       timeEl.textContent = timeStr;

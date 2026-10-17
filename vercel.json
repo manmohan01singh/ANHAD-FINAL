@@ -5,7 +5,12 @@
   "rewrites": [
     { "source": "/admin", "destination": "/Admin/index.html" },
     { "source": "/admin/(.*)", "destination": "/Admin/$1" },
-    { "source": "/api/(.*)", "destination": "https://anhad-final.onrender.com/api/$1" }
+    { "source": "/api/(.*)", "destination": "https://anhad-final.onrender.com/api/$1" },
+    { "source": "/goal", "destination": "/Dashboard/dashboard.html" },
+    { "source": "/boost", "destination": "/NitnemTracker/nitnem-tracker.html" },
+    { "source": "/teamwork-preview", "destination": "/sangat/friends.html" },
+    { "source": "/companion", "destination": "/Companion/companion.html" },
+    { "source": "/insights", "destination": "/Insights/insights.html" }
   ],
   "headers": [
 

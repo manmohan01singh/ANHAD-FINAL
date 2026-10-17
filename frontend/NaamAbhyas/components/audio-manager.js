@@ -25,6 +25,7 @@ class AudioManager {
     async init() {
         // Pre-define available sounds
         this.soundPaths = {
+            'calm-singing-bowl': 'assets/sounds/calm-singing-bowl.mp3',
             'gentle-bell': 'assets/sounds/gentle-bell.mp3',
             'soft-chime': 'assets/sounds/soft-chime.mp3',
             'start-bell': 'assets/sounds/start-bell.mp3',

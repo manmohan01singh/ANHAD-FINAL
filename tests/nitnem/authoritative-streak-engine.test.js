@@ -251,5 +251,27 @@ describe('R1: Authoritative Streak Engine', () => {
 
       window.removeEventListener('authoritativeStreakUpdated', handler);
     });
+
+    it('handles dynamic partial vs 100% Nitnem completions accurately', () => {
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date('2026-10-01T12:00:00'));
+
+      // 1 of 5 banis complete (20%, isComplete: false) -> DOES NOT QUALIFY FOR STREAK
+      let state = engine.recordNitnemCompletion('2026-10-01', [2], 20, false);
+      expect(state.currentStreak).toBe(0);
+
+      // Now all 5 banis complete (100%, isComplete: true) -> QUALIFIES!
+      state = engine.recordNitnemCompletion('2026-10-01', [2, 4, 9, 21, 23], 100, true);
+      expect(state.currentStreak).toBe(1);
+
+      // Day 2: 100% completion
+      vi.setSystemTime(new Date('2026-10-02T12:00:00'));
+      state = engine.recordNitnemCompletion('2026-10-02', [2, 4, 9, 21, 23], 100, true);
+      expect(state.currentStreak).toBe(2);
+
+      // Unchecking Day 2 banis (0%, isComplete: false) -> reverts streak to 1
+      state = engine.recordNitnemCompletion('2026-10-02', [], 0, false);
+      expect(state.currentStreak).toBe(1);
+    });
   });
 });

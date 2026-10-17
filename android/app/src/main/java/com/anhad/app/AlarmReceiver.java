@@ -14,7 +14,7 @@ import androidx.core.app.NotificationCompat;
 
 public class AlarmReceiver extends BroadcastReceiver {
     private static final String TAG = "AlarmReceiver";
-    private static final String CHANNEL_ID = "anhad_full_screen_alarms";
+    private static final String CHANNEL_ID = "anhad_full_screen_alarms_v3";
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -34,6 +34,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         String message = intent.getStringExtra("message");
         String hour = intent.getStringExtra("hour");
         String minute = intent.getStringExtra("minute");
+        String mode = intent.getStringExtra("mode");
 
         Intent activityIntent = new Intent(context, FullScreenAlarmActivity.class);
         activityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -41,6 +42,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         activityIntent.putExtra("message", message != null ? message : "Time to remember Vaheguru");
         activityIntent.putExtra("hour", hour);
         activityIntent.putExtra("minute", minute);
+        activityIntent.putExtra("mode", mode != null ? mode : "simran");
 
         int requestCode = intent.getIntExtra("id", (int) (System.currentTimeMillis() & 0xfffffff));
         int flags = PendingIntent.FLAG_UPDATE_CURRENT;
@@ -51,23 +53,30 @@ public class AlarmReceiver extends BroadcastReceiver {
         PendingIntent fullScreenIntent = PendingIntent.getActivity(context, requestCode, activityIntent, flags);
 
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        android.net.Uri soundUri = null;
+        try {
+            soundUri = android.net.Uri.parse("android.resource://" + context.getPackageName() + "/" + R.raw.naam_bell);
+        } catch (Exception ignored) {}
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && notificationManager != null) {
             NotificationChannel channel = new NotificationChannel(
                     CHANNEL_ID,
                     "ANHAD Full Screen Alarms",
-                    // FIX: IMPORTANCE_MAX required for full-screen intents on Android 8+
-                    // IMPORTANCE_HIGH is insufficient — system may suppress the full-screen activity
                     NotificationManager.IMPORTANCE_HIGH
             );
             channel.setDescription("Full screen reminders for Naam Abhyas and smart alarms");
             channel.setLockscreenVisibility(android.app.Notification.VISIBILITY_PUBLIC);
-            // FIX: Enable vibration and bypass DND for alarm-level importance
             channel.enableVibration(true);
             channel.setBypassDnd(true);
-            // FIX: Only create channel if it doesn't already exist
-            if (notificationManager.getNotificationChannel(CHANNEL_ID) == null) {
-                notificationManager.createNotificationChannel(channel);
+            if (soundUri != null) {
+                android.media.AudioAttributes audioAttributes = new android.media.AudioAttributes.Builder()
+                        .setContentType(android.media.AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                        .setUsage(android.media.AudioAttributes.USAGE_ALARM)
+                        .build();
+                channel.setSound(soundUri, audioAttributes);
             }
+            // Always ensure channel exists
+            notificationManager.createNotificationChannel(channel);
         }
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
@@ -81,6 +90,10 @@ public class AlarmReceiver extends BroadcastReceiver {
                 .setOngoing(false)
                 .setContentIntent(fullScreenIntent)
                 .setFullScreenIntent(fullScreenIntent, true);
+
+        if (soundUri != null) {
+            builder.setSound(soundUri);
+        }
 
         if (notificationManager != null) {
             notificationManager.notify(requestCode, builder.build());

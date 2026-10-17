@@ -178,7 +178,7 @@
 <body>
 
   <nav class="glass-nav">
-    <button class="glass-nav__back" onclick="history.back()">
+    <button class="glass-nav__back" onclick="if(window.navigateTo){window.navigateTo('../index.html');}else if(history.length>1){history.back();}else{window.location.href='../index.html';}">
       <svg class="back-chevron" viewBox="0 0 9 16"><path d="M8 1L1 8L8 15" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
       <span class="back-label">Back</span>
     </button>

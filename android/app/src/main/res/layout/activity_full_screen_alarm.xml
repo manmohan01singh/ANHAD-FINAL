@@ -15,9 +15,18 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="ਵਾਹਿਗੁਰੂ"
-            android:textSize="48sp"
+            android:text="ੴ"
+            android:textSize="56sp"
             android:textColor="#FFB347"
+            android:layout_marginBottom="4dp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ਵਾਹਿਗੁਰੂ"
+            android:textSize="38sp"
+            android:textColor="#FFFFFF"
             android:layout_marginBottom="16dp"
             android:textStyle="bold" />
 
@@ -25,9 +34,9 @@
             android:id="@+id/alarmTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Naam Abhyas"
-            android:textSize="28sp"
-            android:textColor="#FFFFFF"
+            android:text="ਨਾਮ ਅਭਿਆਸ | Naam Abhyas"
+            android:textSize="24sp"
+            android:textColor="#FFB347"
             android:layout_marginBottom="8dp"
             android:textStyle="bold" />
 
@@ -35,31 +44,43 @@
             android:id="@+id/alarmMessage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Time to remember Vaheguru"
-            android:textSize="18sp"
-            android:textColor="#BBBBBB"
+            android:text="ਸਬ ਕੰਮ ਛੱਡੋ, ਵਾਹਿਗੁਰੂ ਜੀ ਦਾ ਸਿਮਰਨ ਕਰੋ\nLeave all work. Remember Vaheguru."
+            android:textSize="16sp"
+            android:textColor="#DDDDDD"
             android:gravity="center"
-            android:layout_marginBottom="48dp" />
+            android:lineSpacingExtra="4dp"
+            android:layout_marginBottom="40dp" />
 
         <Button
             android:id="@+id/btnStart"
             android:layout_width="match_parent"
-            android:layout_height="60dp"
+            android:layout_height="56dp"
             android:backgroundTint="#FFB347"
             android:textColor="#000000"
-            android:text="Start 2 Min Session"
-            android:textSize="18sp"
+            android:text="🙏 Start Simran (2 min)"
+            android:textSize="17sp"
             android:textStyle="bold"
-            android:layout_marginBottom="16dp" />
+            android:layout_marginBottom="12dp" />
+
+        <Button
+            android:id="@+id/btnReading"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:backgroundTint="#2E2315"
+            android:textColor="#FFB347"
+            android:text="📖 Sacred Reading &amp; Simran"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="12dp" />
 
         <Button
             android:id="@+id/btnDismiss"
             android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:backgroundTint="#2A2A35"
-            android:textColor="#FFFFFF"
+            android:layout_height="50dp"
+            android:backgroundTint="#1F1F28"
+            android:textColor="#BBBBBB"
             android:text="Skip For Now"
-            android:textSize="16sp" />
+            android:textSize="15sp" />
 
     </LinearLayout>
 

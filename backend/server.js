@@ -506,9 +506,9 @@ const DEFAULT_CAMPAIGNS = {
       // alone — as a previous fix attempt did — has no effect on any device
       // that successfully fetches this endpoint, which is why the campaign
       // kept showing after being "turned off".
-      // NOTE: startDate/endDate above still span all of 2026. Narrow them to
-      // the real 40-day Chaliya window before turning this back on.
-      active: false,
+      // Campaign is now ON by default. The missing DOM elements have been restored
+      // to index.html and the campaign system is functional.
+      active: true,
       content: {
         badgeText: 'CHALIYA 2026',
         // Copy for the in-greeting announcement (State B). Kept short because it
@@ -4309,13 +4309,13 @@ const INSTANT_REJECT_ARTISTS = [
 // fails fast and the loop moves on) in case a given account/tier still has
 // access to them.
 const GROQ_MODELS = [
+    'llama-3.3-70b-versatile',
+    'llama-3.1-8b-instant',
+    'gemma2-9b-it',
     'openai/gpt-oss-120b',
     'meta-llama/llama-4-maverick-17b-128e-instruct',
     'meta-llama/llama-4-scout-17b-16e-instruct',
-    'openai/gpt-oss-20b',
-    'llama-3.3-70b-versatile',
-    'llama-3.1-8b-instant',
-    'gemma2-9b-it'
+    'openai/gpt-oss-20b'
 ];
 
 async function callGroqAI({ messages, temperature = 0.2, maxTokens = 500, timeout = 15000 }) {

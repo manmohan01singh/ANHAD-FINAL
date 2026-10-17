@@ -2147,7 +2147,7 @@ body.modal-open .bottom-nav {
     --khalsa-sanctum-bg: linear-gradient(150deg, #0B192C 0%, #002B49 50%, #0A192F 100%);
 }
 
-/* ── 1. Khalsa Library Hero Banner ── */
+/* ── 1. Khalsa Library Hero Banner (Pure Royal Devotional Sanctum) ── */
 .khalsa-library-hero {
     margin-bottom: 24px;
     width: 100%;
@@ -2158,75 +2158,78 @@ body.modal-open .bottom-nav {
     border-radius: 24px;
     overflow: hidden;
     border: 1.5px solid rgba(212, 175, 55, 0.45);
-    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35), 0 0 25px rgba(255, 153, 51, 0.18);
-    background: #00172D;
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.38), 0 0 28px rgba(255, 153, 51, 0.16);
+    background: linear-gradient(145deg, #061527 0%, #002242 50%, #051425 100%);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.library-hero-image-wrap {
-    position: relative;
-    width: 100%;
-    height: 220px;
-    overflow: hidden;
+html.light-mode .library-hero-card,
+html:not(.dark-mode) .library-hero-card {
+    background: linear-gradient(145deg, #FFFDF8 0%, #FAF1DF 50%, #F5E4C6 100%);
+    border: 1.5px solid rgba(212, 175, 55, 0.55);
+    box-shadow: 0 12px 32px rgba(180, 140, 60, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.95);
 }
 
-@media (min-width: 600px) {
-    .library-hero-image-wrap {
-        height: 270px;
-    }
-}
-
-.library-hero-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center 30%;
-    transform: scale(1.02);
-    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.library-hero-card:hover .library-hero-img {
-    transform: scale(1.06);
-}
-
-.library-hero-overlay {
+.library-hero-ambient-glow {
     position: absolute;
     inset: 0;
-    background: linear-gradient(180deg, 
-        rgba(0, 43, 73, 0.15) 0%, 
-        rgba(0, 23, 45, 0.6) 45%, 
-        rgba(0, 15, 30, 0.96) 100%);
+    pointer-events: none;
+    background: radial-gradient(circle at 88% 18%, rgba(212, 175, 55, 0.32) 0%, rgba(255, 153, 51, 0.14) 38%, transparent 72%);
+}
+
+html.light-mode .library-hero-ambient-glow,
+html:not(.dark-mode) .library-hero-ambient-glow {
+    background: radial-gradient(circle at 88% 18%, rgba(212, 175, 55, 0.28) 0%, rgba(255, 175, 75, 0.14) 42%, transparent 75%);
+}
+
+.library-hero-mesh {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.05;
+    background-image: radial-gradient(#D4AF37 1px, transparent 1px);
+    background-size: 16px 16px;
 }
 
 .library-hero-content {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    padding: 20px 20px 18px;
+    position: relative;
+    z-index: 2;
+    padding: 22px 22px 20px;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    z-index: 2;
+}
+
+.library-hero-topline {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 10px;
 }
 
 .library-khanda-emblem {
-    position: absolute;
-    top: -160px;
-    right: 20px;
-    font-size: 54px;
+    font-size: 36px;
+    line-height: 1;
     font-weight: 700;
     color: var(--khalsa-gold-light);
     text-shadow: 0 0 20px var(--khalsa-gold-glow);
-    opacity: 0.9;
     user-select: none;
     pointer-events: none;
+}
+
+html.light-mode .library-khanda-emblem,
+html:not(.dark-mode) .library-khanda-emblem {
+    color: #9E6A00;
+    text-shadow: 0 0 14px rgba(212, 175, 55, 0.4);
 }
 
 .library-badge-pill {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    padding: 4px 12px;
+    gap: 7px;
+    padding: 5px 13px;
     border-radius: 20px;
     font-size: 11px;
     font-weight: 800;
@@ -2234,8 +2237,22 @@ body.modal-open .bottom-nav {
     background: linear-gradient(135deg, rgba(255, 153, 51, 0.25) 0%, rgba(212, 175, 55, 0.35) 100%);
     color: #FFD27D;
     border: 1px solid rgba(255, 210, 125, 0.5);
-    margin-bottom: 8px;
     text-transform: uppercase;
+}
+
+html.light-mode .library-badge-pill,
+html:not(.dark-mode) .library-badge-pill {
+    background: rgba(212, 175, 55, 0.18);
+    color: #7D4C00;
+    border-color: rgba(212, 175, 55, 0.45);
+}
+
+.library-badge-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #FF9933;
+    box-shadow: 0 0 6px #FF9933;
 }
 
 .library-hero-title {
@@ -2244,16 +2261,79 @@ body.modal-open .bottom-nav {
     color: #FFFFFF;
     margin: 0 0 6px;
     letter-spacing: -0.3px;
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+html.light-mode .library-hero-title,
+html:not(.dark-mode) .library-hero-title {
+    color: #2E1B05;
+    text-shadow: none;
 }
 
 .library-hero-desc {
     font-size: 13px;
-    color: rgba(255, 255, 255, 0.82);
-    margin: 0;
-    line-height: 1.45;
-    max-width: 480px;
-    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+    color: rgba(255, 255, 255, 0.85);
+    margin: 0 0 14px;
+    line-height: 1.48;
+    max-width: 520px;
+}
+
+html.light-mode .library-hero-desc,
+html:not(.dark-mode) .library-hero-desc {
+    color: #5F472A;
+}
+
+.library-hero-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    width: 100%;
+}
+
+.library-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 13px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 700;
+    border: 1px solid rgba(212, 175, 55, 0.35);
+    background: rgba(0, 34, 66, 0.55);
+    color: #FFF2D1;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    backdrop-filter: blur(8px);
+    -webkit-tap-highlight-color: transparent;
+}
+
+.library-chip:hover,
+.library-chip:focus-visible {
+    transform: translateY(-2px);
+    border-color: rgba(212, 175, 55, 0.8);
+    background: rgba(212, 175, 55, 0.22);
+    color: #FFFFFF;
+    box-shadow: 0 4px 14px rgba(212, 175, 55, 0.25);
+}
+
+.library-chip:active {
+    transform: scale(0.96);
+}
+
+html.light-mode .library-chip,
+html:not(.dark-mode) .library-chip {
+    background: rgba(255, 255, 255, 0.8);
+    border-color: rgba(212, 175, 55, 0.45);
+    color: #3F2706;
+    box-shadow: 0 2px 6px rgba(180, 140, 60, 0.08);
+}
+
+html.light-mode .library-chip:hover,
+html:not(.dark-mode) .library-chip:hover {
+    background: #FFFFFF;
+    border-color: #D4AF37;
+    color: #1A0F00;
+    box-shadow: 0 4px 12px rgba(180, 140, 60, 0.2);
 }
 
 /* ── 2. Spiritual Journey & Listening Sanctum ── */
@@ -2585,6 +2665,36 @@ html:not(.dark-mode) .pothi-manuscript-card {
     align-items: center;
     justify-content: center;
     padding: 6px;
+    transition: transform 0.25s ease, background 0.25s ease;
+}
+
+html.light-mode .pothi-img-wrap,
+html:not(.dark-mode) .pothi-img-wrap {
+    background: radial-gradient(circle, rgba(255, 214, 153, 0.4) 0%, rgba(255, 245, 230, 0.8) 100%);
+    border-color: rgba(212, 175, 55, 0.4);
+}
+
+.pothi-sacred-symbol {
+    font-size: 28px;
+    font-weight: 900;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #FFD54F;
+    text-shadow: 0 0 14px rgba(255, 153, 51, 0.6);
+    user-select: none;
+    transition: transform 0.2s ease;
+}
+
+.pothi-manuscript-card:hover .pothi-sacred-symbol {
+    transform: scale(1.1);
+}
+
+html.light-mode .pothi-sacred-symbol,
+html:not(.dark-mode) .pothi-sacred-symbol {
+    color: #925300;
+    text-shadow: 0 1px 4px rgba(212, 175, 55, 0.4);
 }
 
 .pothi-img {

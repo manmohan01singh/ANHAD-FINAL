@@ -65,6 +65,12 @@
     function hash(s) {
         var h = 0;
         for (var i = 0; i < s.length; i++) { h = ((h << 5) - h) + s.charCodeAt(i); h |= 0; }
+        // Murmur3 finalizer mix to ensure non-linear avalanche effect across sequential inputs
+        h ^= h >>> 16;
+        h = Math.imul(h, 0x85ebca6b);
+        h ^= h >>> 13;
+        h = Math.imul(h, 0xc2b2ae35);
+        h ^= h >>> 16;
         return Math.abs(h) % 2000000000;
     }
 
@@ -162,21 +168,28 @@
             '.anhad-alarm-btn svg{width:26px;height:26px}',
             '.anhad-alarm-btn.snooze{background:var(--bg-tertiary,#f0f0f5);color:var(--text-primary,#1a1a2e)}',
             '.anhad-alarm-btn.complete{background:linear-gradient(135deg,#ff9500,#e65c00);color:#fff;box-shadow:0 6px 20px rgba(255,100,0,.35)}',
-            '.anhad-alarm-btn.complete:active,.anhad-naam-btn:active{transform:scale(.95)}',
-            // Naam Abhyas specific popup
-            '#anhadNaamPopup{position:fixed;inset:0;z-index:9999999;display:flex;align-items:flex-end;padding:0;opacity:0;visibility:hidden;transition:all .35s cubic-bezier(.4,0,.2,1)}',
+            '.anhad-alarm-btn.complete:active,.anhad-naam-btn-primary:active,.anhad-naam-btn-reading:active{transform:scale(.95)}',
+            // Naam Abhyas specific popup — Serene, calm spiritual design
+            '#anhadNaamPopup{position:fixed;inset:0;z-index:9999999;display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;visibility:hidden;transition:all .35s cubic-bezier(.4,0,.2,1)}',
             '#anhadNaamPopup.active{opacity:1;visibility:visible}',
-            '.anhad-naam-sheet{width:100%;background:linear-gradient(175deg,#0d0d1a 0%,#1a0a00 100%);border-radius:24px 24px 0 0;padding:28px 24px 36px;position:relative;box-shadow:0 -24px 60px rgba(0,0,0,.7);animation:anhadSheetIn .4s cubic-bezier(.4,0,.2,1)}',
-            '@keyframes anhadSheetIn{from{transform:translateY(100%)}to{transform:translateY(0)}}',
-            '.anhad-naam-handle{width:40px;height:4px;background:rgba(255,255,255,.2);border-radius:2px;margin:0 auto 20px;display:block}',
-            '.anhad-naam-header{display:flex;align-items:center;gap:12px;margin-bottom:16px}',
-            '.anhad-naam-emoji{font-size:40px;filter:drop-shadow(0 0 12px rgba(255,149,0,.5))}',
-            '.anhad-naam-title{font-size:22px;font-weight:700;color:#fff;margin-bottom:2px}',
-            '.anhad-naam-subtitle{font-size:13px;color:rgba(255,255,255,.5)}',
-            '.anhad-naam-quote-g{font-size:18px;color:#ffb347;margin-bottom:4px;line-height:1.6}',
-            '.anhad-naam-quote-e{font-size:13px;color:rgba(255,255,255,.6);font-style:italic;margin-bottom:22px;line-height:1.5}',
-            '.anhad-naam-btn{width:100%;padding:18px;background:linear-gradient(135deg,#ff9500,#e65c00);color:#fff;font-size:17px;font-weight:700;border:none;border-radius:16px;cursor:pointer;box-shadow:0 8px 24px rgba(255,100,0,.4);margin-bottom:10px;letter-spacing:.3px}',
-            '.anhad-naam-skip{width:100%;padding:12px;background:transparent;color:rgba(255,255,255,.4);font-size:14px;border:none;cursor:pointer;border-radius:12px}',
+            '.anhad-naam-sheet{width:100%;max-width:380px;background:linear-gradient(165deg,#120f24 0%,#1c0c00 100%);border:1px solid rgba(255,180,50,.3);border-radius:28px;padding:32px 24px 28px;position:relative;box-shadow:0 30px 80px rgba(0,0,0,.85),0 0 40px rgba(255,149,0,.15);text-align:center;animation:anhadPopupIn .4s cubic-bezier(.175,.885,.32,1.275)}',
+            '@keyframes anhadPopupIn{from{opacity:0;transform:scale(.88) translateY(24px)}to{opacity:1;transform:scale(1) translateY(0)}}',
+            '.anhad-naam-aura{position:relative;width:76px;height:76px;margin:0 auto 14px;display:flex;align-items:center;justify-content:center}',
+            '.anhad-naam-pulse{position:absolute;inset:0;border-radius:50%;border:2px solid rgba(255,180,50,.4);animation:anhadPulse 2.4s ease-out infinite}',
+            '.anhad-naam-pulse:nth-child(2){animation-delay:.9s;border-color:rgba(255,149,0,.25)}',
+            '@keyframes anhadPulse{0%{transform:scale(.8);opacity:.9}100%{transform:scale(1.7);opacity:0}}',
+            '.anhad-naam-ikonkar{font-size:46px;color:#ffb347;filter:drop-shadow(0 0 16px rgba(255,179,71,.6));z-index:2;line-height:1;user-select:none}',
+            '.anhad-naam-title{font-size:22px;font-weight:800;color:#fff;margin-bottom:4px;letter-spacing:-.3px}',
+            '.anhad-naam-badge{display:inline-block;padding:4px 14px;background:rgba(255,180,50,.15);border:1px solid rgba(255,180,50,.3);border-radius:20px;font-size:12px;font-weight:600;color:#ffc56e;margin-bottom:16px}',
+            '.anhad-naam-quote-box{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:16px;margin-bottom:20px}',
+            '.anhad-naam-quote-g{font-size:17px;font-weight:600;color:#ffb347;margin-bottom:6px;line-height:1.5}',
+            '.anhad-naam-quote-e{font-size:13px;color:rgba(255,255,255,.75);font-style:italic;line-height:1.5}',
+            '.anhad-naam-actions{display:flex;flex-direction:column;gap:10px;margin-bottom:12px}',
+            '.anhad-naam-btn-primary{width:100%;padding:16px;background:linear-gradient(135deg,#ff9500,#e65c00);color:#fff;font-size:16px;font-weight:700;border:none;border-radius:18px;cursor:pointer;box-shadow:0 8px 24px rgba(255,120,0,.4);transition:all .2s ease;display:flex;align-items:center;justify-content:center;gap:8px}',
+            '.anhad-naam-btn-reading{width:100%;padding:14px;background:rgba(255,255,255,.08);border:1px solid rgba(255,180,50,.35);color:#ffc56e;font-size:15px;font-weight:600;border-radius:18px;cursor:pointer;transition:all .2s ease;display:flex;align-items:center;justify-content:center;gap:8px}',
+            '.anhad-naam-subactions{display:flex;gap:8px;justify-content:center}',
+            '.anhad-naam-subbtn{flex:1;padding:10px;background:transparent;border:none;color:rgba(255,255,255,.5);font-size:13px;cursor:pointer;border-radius:10px;transition:color .2s ease}',
+            '.anhad-naam-subbtn:hover{color:#fff}',
             '[data-theme="dark"] .anhad-alarm-card,[data-theme="dark"] .anhad-alarm-card{background:#1a1a2e}',
             '[data-theme="dark"] .anhad-alarm-time{color:#fff}',
             '[data-theme="dark"] .anhad-alarm-label{color:#aaa}',
@@ -329,49 +342,71 @@
 
         // Resolve Naam Abhyas URL relative to current page depth
         var path = window.location.pathname;
-        var naamUrl;
+        var naamBaseUrl;
         if (path.includes('/NaamAbhyas/')) {
-            naamUrl = 'naam-abhyas.html';
+            naamBaseUrl = 'naam-abhyas.html';
         } else if (path.indexOf('/nitnem/category/') !== -1) {
-            naamUrl = '../../NaamAbhyas/naam-abhyas.html';
+            naamBaseUrl = '../../NaamAbhyas/naam-abhyas.html';
         } else if (path.includes('/reminders/') || path.includes('/Homepage/') || path.includes('/NitnemTracker/') ||
                    path.includes('/GurbaniRadio/') || path.includes('/Calendar/') || path.includes('/Hukamnama/') ||
                    path.includes('/GurbaniKhoj/') || path.includes('/SehajPaath/') || path.includes('/Favorites/') ||
                    path.includes('/Notes/') || path.includes('/Insights/') || path.includes('/Profile/') ||
                    path.includes('/ShabadVichar/') || path.includes('/RandomShabad/') || path.includes('/nitnem/')) {
-            naamUrl = '../NaamAbhyas/naam-abhyas.html';
+            naamBaseUrl = '../NaamAbhyas/naam-abhyas.html';
         } else {
-            naamUrl = 'NaamAbhyas/naam-abhyas.html';
+            naamBaseUrl = 'NaamAbhyas/naam-abhyas.html';
         }
-        naamUrl += '?autoStart=true&hour=' + h + '&minute=' + m;
 
         var el = document.createElement('div');
         el.id = 'anhadNaamPopup';
         el.innerHTML =
-            '<div style="position:absolute;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(6px)" id="anhadNaamBd"></div>' +
+            '<div style="position:absolute;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)" id="anhadNaamBd"></div>' +
             '<div class="anhad-naam-sheet">' +
-            '  <span class="anhad-naam-handle"></span>' +
-            '  <div class="anhad-naam-header">' +
-            '    <span class="anhad-naam-emoji">🙏</span>' +
-            '    <div><div class="anhad-naam-title">ਨਾਮ ਅਭਿਆਸ — ' + esc(timeStr) + '</div>' +
-            '      <div class="anhad-naam-subtitle">Naam Abhyas · 2 min session</div>' +
-            '    </div>' +
+            '  <div class="anhad-naam-aura">' +
+            '    <div class="anhad-naam-pulse"></div>' +
+            '    <div class="anhad-naam-pulse"></div>' +
+            '    <div class="anhad-naam-ikonkar">ੴ</div>' +
             '  </div>' +
-            '  <div class="anhad-naam-quote-g">' + esc(quote.g) + '</div>' +
-            '  <div class="anhad-naam-quote-e">' + esc(quote.e) + '</div>' +
-            '  <button class="anhad-naam-btn" id="anhadNaamStartBtn">🙏 Start Simran Now</button>' +
-            '  <button class="anhad-naam-skip" id="anhadNaamSkipBtn">Not now</button>' +
+            '  <div class="anhad-naam-title">ਨਾਮ ਅਭਿਆਸ | Naam Abhyas</div>' +
+            '  <div class="anhad-naam-badge">✨ ' + esc(timeStr) + ' • Sacred Pause</div>' +
+            '  <div class="anhad-naam-quote-box">' +
+            '    <div class="anhad-naam-quote-g">' + esc(quote.g) + '</div>' +
+            '    <div class="anhad-naam-quote-e">“' + esc(quote.e) + '”</div>' +
+            '  </div>' +
+            '  <div class="anhad-naam-actions">' +
+            '    <button class="anhad-naam-btn-primary" id="anhadNaamStartBtn">' +
+            '      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 3l14 9-14 9V3z"/></svg>' +
+            '      <span>Start Simran (2 min)</span>' +
+            '    </button>' +
+            '    <button class="anhad-naam-btn-reading" id="anhadNaamReadingBtn">' +
+            '      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>' +
+            '      <span>Sacred Reading &amp; Simran</span>' +
+            '    </button>' +
+            '  </div>' +
+            '  <div class="anhad-naam-subactions">' +
+            '    <button class="anhad-naam-subbtn" id="anhadNaamSnoozeBtn">⏰ Snooze 5 min</button>' +
+            '    <button class="anhad-naam-subbtn" id="anhadNaamSkipBtn">Dismiss</button>' +
+            '  </div>' +
             '</div>';
 
         document.body.appendChild(el);
         requestAnimationFrame(function() { el.classList.add('active'); });
 
-        // Play audio softly
+        // Play calm Tibetan singing bowl softly
         var audio = document.createElement('audio');
-        audio.id = 'anhadNaamAudio'; audio.loop = false; audio.volume = 0.7;
-        audio.src = getAudioBasePath() + 'audio1.mp3';
+        audio.id = 'anhadNaamAudio'; audio.loop = false; audio.volume = 0.6;
+        audio.src = getAudioBasePath() + 'calm-singing-bowl.mp3';
         document.body.appendChild(audio);
-        audio.play().catch(function() {});
+        audio.play().catch(function() {
+            // Fallback to audio1 if needed
+            audio.src = getAudioBasePath() + 'audio1.mp3';
+            audio.play().catch(function() {});
+        });
+
+        // Vibration
+        if (navigator.vibrate) {
+            navigator.vibrate([200, 100, 200]);
+        }
 
         function closePopup() {
             el.classList.remove('active');
@@ -380,16 +415,50 @@
             if (a) { a.pause(); a.remove(); }
         }
 
-        document.getElementById('anhadNaamStartBtn').onclick = function() {
+        function launchSession(mode) {
             closePopup();
-            // Store pending launch for cold-start bridge
+            var targetMode = mode || 'simran';
+            var finalUrl = naamBaseUrl + '?autoStart=true&hour=' + h + '&minute=' + m + '&mode=' + targetMode;
             try {
                 localStorage.setItem('anhad_pending_naam_launch', JSON.stringify({
-                    autoStart: true, hour: String(h), minute: String(m), timestamp: Date.now()
+                    autoStart: true,
+                    hour: String(h),
+                    minute: String(m),
+                    mode: targetMode,
+                    practiceType: targetMode,
+                    timestamp: Date.now()
                 }));
             } catch(e) {}
-            window.location.href = naamUrl;
+            window.location.href = finalUrl;
+        }
+
+        document.getElementById('anhadNaamStartBtn').onclick = function() { launchSession('simran'); };
+        document.getElementById('anhadNaamReadingBtn').onclick = function() { launchSession('reading'); };
+
+        document.getElementById('anhadNaamSnoozeBtn').onclick = function() {
+            closePopup();
+            showToast('Naam Abhyas snoozed for 5 minutes 🙏');
+            if (isNative() && window.Capacitor.Plugins.LocalNotifications) {
+                window.Capacitor.Plugins.LocalNotifications.schedule({
+                    notifications: [{
+                        id: hash('naam_snz_' + Date.now()),
+                        title: '🙏 ਨਾਮ ਅਭਿਆਸ — Reminder',
+                        body: 'Time to pause and remember Vaheguru ✨',
+                        schedule: { at: new Date(Date.now() + 5 * 60000), allowWhileIdle: true, exact: true },
+                        channelId: 'naam_abhyas_v3',
+                        sound: 'naam_bell',
+                        extra: {
+                            action: 'auto_start_naam',
+                            autoStart: 'true',
+                            hour: String(h),
+                            minute: String(m),
+                            url: 'NaamAbhyas/naam-abhyas.html'
+                        }
+                    }]
+                });
+            }
         };
+
         document.getElementById('anhadNaamSkipBtn').onclick = closePopup;
         document.getElementById('anhadNaamBd').onclick = closePopup;
 
@@ -517,10 +586,11 @@
             // importance=4 (IMPORTANCE_HIGH) is required for heads-up popup.
             try { await LN.createChannel({ id: 'anhad_alarms', name: 'Anhad Alarms', importance: 4, visibility: 1, vibration: true, sound: 'default', lights: true, lightColor: '#f7c634' }); } catch(e) {}
             try { await LN.createChannel({ id: 'anhad_reminders', name: 'ANHAD Reminders', description: 'Nitnem and spiritual practice alarms', importance: 4, visibility: 1, vibration: true, sound: 'default', lights: true, lightColor: '#f7c634' }); } catch(e) {}
-            // Delete old channel (may have wrong importance locked from earlier builds)
+            // Delete old channels
             try { await LN.deleteChannel({ id: 'naam_abhyas' }); } catch(e) {}
-            // Create fresh channel with guaranteed IMPORTANCE_HIGH for heads-up popup
-            try { await LN.createChannel({ id: 'naam_abhyas_v2', name: 'Naam Abhyas Reminders', description: 'Hourly reminders for Naam Simran', importance: 4, visibility: 1, vibration: true, sound: 'default', lights: true, lightColor: '#f7c634' }); } catch(e) {}
+            try { await LN.deleteChannel({ id: 'naam_abhyas_v3' }); } catch(e) {}
+            // Create fresh channel with guaranteed IMPORTANCE_HIGH for heads-up popup and calm bell sound
+            try { await LN.createChannel({ id: 'naam_abhyas_v4', name: 'Naam Abhyas Reminders', description: 'Hourly sacred reminders for Naam Simran & Reading', importance: 4, visibility: 1, vibration: true, sound: 'naam_bell', lights: true, lightColor: '#f7c634' }); } catch(e) {}
             try { await LN.createChannel({ id: 'spiritual_reminders', name: 'Spiritual Reminders', importance: 4, visibility: 1, vibration: true, sound: 'default', lights: true, lightColor: '#f7c634' }); } catch(e) {}
             await ensureAndroidAlarmReliability();
             await cancelManagedNotifications(LN);
@@ -585,26 +655,64 @@
                 });
             }
 
-            // NaamAbhyas
+            // NaamAbhyas — Enabled by default to guarantee hourly notifications
             var nc = null;
             try { nc = JSON.parse(localStorage.getItem('naam_abhyas_config')); } catch(e) {}
-            if (nc && nc.enabled) {
+            if (!nc) {
+                nc = {
+                    enabled: true,
+                    duration: 2,
+                    activeHours: { start: 5, end: 22 },
+                    notifications: { hourStart: true, sound: 'calm-singing-bowl', vibration: true, soundEnabled: true },
+                    autoStartTimer: true,
+                    theme: 'system'
+                };
+                try { localStorage.setItem('naam_abhyas_config', JSON.stringify(nc)); } catch(e) {}
+            }
+            if (nc && nc.enabled !== false) {
                 var sh = (nc.activeHours && nc.activeHours.start) || 5;
                 var eh = (nc.activeHours && nc.activeHours.end) || 22;
                 var auto = nc.autoStartTimer || false;
                 
-                // ═══ BUG 1/2 FIX: Read from DEDICATED schedule key, then history fallback ═══
-                var scheduleData = null;
-                try { scheduleData = JSON.parse(localStorage.getItem('naam_abhyas_schedule')); } catch(e) {}
-                if (!scheduleData) {
+                // Read schedule data safely (support object, wrapper, or array)
+                var rawSchedule = null;
+                try { rawSchedule = JSON.parse(localStorage.getItem('naam_abhyas_schedule')); } catch(e) {}
+                var scheduleMap = (rawSchedule && rawSchedule._schedule) ? rawSchedule._schedule : (rawSchedule || {});
+
+                // Helper to format 12-hour time with leading zero on minute
+                function formatTime12(h, m) {
+                    var per = h >= 12 ? 'PM' : 'AM';
+                    var hh = h % 12 || 12;
+                    var mm = m < 10 ? '0' + m : m;
+                    return hh + ':' + mm + ' ' + per;
+                }
+
+                // If scheduleMap is missing, empty, or from a different day, generate today's random timeline!
+                var todayDateStr = now.toLocaleDateString('en-CA');
+                var isScheduleFresh = rawSchedule && rawSchedule._date === todayDateStr && scheduleMap && Object.keys(scheduleMap).length > 0 && scheduleMap[sh];
+                if (!isScheduleFresh) {
+                    scheduleMap = {};
+                    for (var hIdx = sh; hIdx <= eh; hIdx++) {
+                        var randMin = 2 + (hash(todayDateStr + '_naam_slot_' + hIdx) % 56);
+                        scheduleMap[hIdx] = {
+                            hour: hIdx,
+                            startMinute: randMin,
+                            endMinute: randMin + 2,
+                            durationMinutes: 2,
+                            startTime: formatTime12(hIdx, randMin),
+                            endTime: formatTime12(hIdx, randMin + 2),
+                            status: 'pending'
+                        };
+                    }
                     try {
-                        var history = JSON.parse(localStorage.getItem('naam_abhyas_history') || '{}');
-                        var today = new Date().toLocaleDateString('en-CA');
-                        scheduleData = history.scheduleHistory && history.scheduleHistory[today];
+                        localStorage.setItem('naam_abhyas_schedule', JSON.stringify({
+                            _date: todayDateStr,
+                            _schedule: scheduleMap,
+                            ...scheduleMap
+                        }));
                     } catch(e) {}
                 }
-                
-                // ═══ FIX 2: Richer bilingual Naam Abhyas notification messages ═══
+
                 var spiritualMessages = [
                     { gurmukhi: 'ਵਾਹਿਗੁਰੂ ਜੀ — ਸਮਾਂ ਹੋ ਗਿਆ', english: 'Time for Naam! Leave everything for 2 minutes 🙏' },
                     { gurmukhi: 'ਸਬ ਕੰਮ ਛੱਡੋ, ਵਾਹਿਗੁਰੂ ਜੀ ਦਾ ਸਿਮਰਨ ਕਰੋ', english: 'Leave all work, remember Vaheguru Ji 🙏' },
@@ -633,65 +741,61 @@
                 ];
 
                 for (var nd = 0; nd < 7; nd++) {
+                    var ndtDay = new Date(now);
+                    ndtDay.setDate(ndtDay.getDate() + nd);
+                    var dayDateStr = ndtDay.toLocaleDateString('en-CA');
+
                     for (var nh = sh; nh <= eh; nh++) {
-                        // ═══ PRODUCTION FIX: ONLY schedule for hours with actual session data ═══
-                        // No more fallback hash — if schedule doesn't have this hour, skip it.
-                        // This eliminates the :58 minute bug completely.
-                        var session = scheduleData && scheduleData[nh];
-                        if (!session || typeof session.startMinute !== 'number') continue;
-                        var sessionMinute = session.startMinute;
-                        
-                        var ndt = new Date(now); 
-                        ndt.setDate(ndt.getDate() + nd); 
+                        var sessionMinute;
+                        if (nd === 0 && scheduleMap[nh] && typeof scheduleMap[nh].startMinute === 'number') {
+                            sessionMinute = scheduleMap[nh].startMinute;
+                        } else {
+                            // Generate deterministic random minute for each day and hour between 2 and 57 (e.g. 8:43, 9:05)
+                            sessionMinute = 2 + (hash(dayDateStr + '_naam_slot_' + nh) % 56);
+                        }
+
+                        var ndt = new Date(ndtDay);
                         ndt.setHours(nh, sessionMinute, 0, 0);
-                        
-                        // PRECISION FIX: Fire at exact session time (no 30s early offset)
-                        // The previous 30s offset compounded with Android's Doze-mode batching,
-                        // causing notifications to fire 1-7 minutes late.
+
                         var alertTime = new Date(ndt.getTime());
                         if (ndt <= now) continue;
-                        if (alertTime <= now) alertTime = new Date(now.getTime() + 1000);
-                        
-                        // Deterministic message selection (consistent per hour)
+
                         var msgIdx = (nh + nd * 7) % spiritualMessages.length;
                         var message = spiritualMessages[msgIdx];
                         var bodyText = message.gurmukhi && message.english 
                             ? message.gurmukhi + ' — ' + message.english 
                             : message.english || message.gurmukhi;
-                        
-                        // ═══ FIX 2: Include session time in notification title ═══
+
                         var sessionH12 = (function(h, m) {
                             var per = h >= 12 ? 'PM' : 'AM';
                             var hh = h % 12 || 12;
                             return hh + ':' + (m < 10 ? '0' + m : m) + ' ' + per;
                         })(nh, sessionMinute);
-                        var naamTitle = '\ud83d\ude4f Naam Abhyas — ' + sessionH12;
+                        var naamTitle = '🙏 ਨਾਮ ਅਭਿਆਸ — ' + sessionH12;
 
-                        // ═══ FIX 3: Add launchUrl for reliable cold-start navigation ═══
-                        var naamLaunchUrl = 'NaamAbhyas/naam-abhyas.html?autoStart=true&hour=' + nh + '&minute=' + sessionMinute;
+                        var naamLaunchUrl = 'NaamAbhyas/naam-abhyas.html?autoStart=true&hour=' + nh + '&minute=' + sessionMinute + '&mode=simran';
 
                         notifs.push({
                             id: 90000 + (nd * 24) + nh,
                             title: naamTitle,
                             body: bodyText,
                             schedule: { at: alertTime, allowWhileIdle: true, exact: true },
-                            channelId: 'naam_abhyas_v2',
-                            sound: 'default',
+                            channelId: 'naam_abhyas_v4',
+                            sound: 'naam_bell',
                             smallIcon: 'ic_stat_notify',
                             extra: {
                                 action: 'auto_start_naam',
                                 autoStart: 'true',
                                 hour: String(nh),
                                 minute: String(sessionMinute),
+                                mode: 'simran',
+                                practiceType: 'simran',
                                 url: 'NaamAbhyas/naam-abhyas.html',
                                 launchUrl: naamLaunchUrl,
                                 type: 'naam_abhyas'
                             }
                         });
 
-                        // ═══ FIX 5: Native full-screen alarm for locked screen (Naam Abhyas) ═══
-                        // Extended to days 0-2 for better coverage when app isn't opened daily.
-                        // ~18 hours × 3 days = ~54 alarms, within Android's 50+ exact alarm quota.
                         if (reliabilityPlugin && nd <= 2) {
                             var fsId = hash('fs_naam_' + nh + '_d' + nd);
                             fsAlarmIds.push(fsId);
@@ -702,7 +806,8 @@
                                     title: lbl,
                                     message: alTime + ' \u2014 ' + bodyText,
                                     hour: hStr,
-                                    minute: mStr
+                                    minute: mStr,
+                                    mode: 'simran'
                                 }).catch(function(e) {
                                     console.warn('[ANHAD] FS alarm failed:', e);
                                 });
@@ -710,7 +815,7 @@
                         }
                     }
                 }
-                console.log('[ANHAD] Naam Abhyas: scheduled ' + notifs.filter(function(n) { return n.channelId === 'naam_abhyas_v2'; }).length + ' notifications');
+                console.log('[ANHAD] Naam Abhyas: scheduled ' + notifs.filter(function(n) { return n.channelId === 'naam_abhyas_v4'; }).length + ' notifications with calm sound');
             }
 
             // Daily nitnem summary at 10 PM
@@ -832,6 +937,8 @@
             var params = ['autoStart=true'];
             if (ex.hour !== undefined) params.push('hour=' + ex.hour);
             if (ex.minute !== undefined) params.push('minute=' + ex.minute);
+            var modeParam = ex.mode || ex.practiceType || 'simran';
+            params.push('mode=' + modeParam);
             return basePath + '?' + params.join('&');
         }
 
@@ -846,10 +953,13 @@
                 return;
             }
             try {
+                var targetMode = (ex && (ex.mode || ex.practiceType)) || 'simran';
                 localStorage.setItem('anhad_pending_naam_launch', JSON.stringify({
                     autoStart: true,
-                    hour: ex.hour || '',
-                    minute: ex.minute || '',
+                    hour: (ex && ex.hour) || '',
+                    minute: (ex && ex.minute) || '',
+                    mode: targetMode,
+                    practiceType: targetMode,
                     timestamp: Date.now()
                 }));
                 console.log('[ANHAD] 💾 Stored pending Naam launch for cold-start pickup');
@@ -884,6 +994,7 @@
                 // Instead, just trigger the session directly
                 var currentPath = window.location.pathname;
                 var isOnNaamPage = currentPath.indexOf('/NaamAbhyas/naam-abhyas.html') !== -1;
+                var m = ex.mode || ex.practiceType || 'simran';
                 
                 if (isOnNaamPage) {
                     // ✅ Already on the page - trigger session directly (no reload)
@@ -902,10 +1013,10 @@
                     // Dispatch custom events for listeners
                     else {
                         window.dispatchEvent(new CustomEvent('naamAbhyasLaunchReady', {
-                            detail: { hour: ex.hour, minute: ex.minute, autoStart: true }
+                            detail: { hour: ex.hour, minute: ex.minute, mode: m, practiceType: m, autoStart: true }
                         }));
                         window.dispatchEvent(new CustomEvent('naamAbhyasNotificationClick', {
-                            detail: { hour: ex.hour, minute: ex.minute, autoStart: true }
+                            detail: { hour: ex.hour, minute: ex.minute, mode: m, practiceType: m, autoStart: true }
                         }));
                     }
                 } else {
@@ -965,24 +1076,66 @@
     // ═══ FOREGROUND ALARM CHECK — pass tone ═══
     var lastCheckedMin = -1;
     function checkAlarms() {
-        var sr = null;
-        try { sr = JSON.parse(localStorage.getItem('sr_reminders_v7')); } catch(e) {}
-        if (!sr) return;
         var now = new Date();
         var ct = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
         var dow = now.getDay();
         var mk = now.getHours() * 60 + now.getMinutes();
         if (mk === lastCheckedMin) return;
 
-        var all = [];
-        if (sr.core) { Object.keys(sr.core).forEach(function(k) { var r = sr.core[k]; if (r && r.enabled) all.push(r); }); }
-        if (sr.custom) { sr.custom.forEach(function(r) { if (r && r.enabled) all.push(r); }); }
-        for (var i = 0; i < all.length; i++) {
-            if (all[i].time === ct && (!all[i].days || all[i].days.indexOf(dow) !== -1)) {
-                lastCheckedMin = mk;
-                showAlarmPopup(all[i].label || all[i].title || 'Alarm', all[i].time, all[i].icon || '🔔', all[i].tone || 'audio1');
-                return;
+        // 1. Check Smart Reminders
+        var sr = null;
+        try { sr = JSON.parse(localStorage.getItem('sr_reminders_v7')); } catch(e) {}
+        if (sr) {
+            var all = [];
+            if (sr.core) { Object.keys(sr.core).forEach(function(k) { var r = sr.core[k]; if (r && r.enabled) all.push(r); }); }
+            if (sr.custom) { sr.custom.forEach(function(r) { if (r && r.enabled) all.push(r); }); }
+            for (var i = 0; i < all.length; i++) {
+                if (all[i].time === ct && (!all[i].days || all[i].days.indexOf(dow) !== -1)) {
+                    lastCheckedMin = mk;
+                    showAlarmPopup(all[i].label || all[i].title || 'Alarm', all[i].time, all[i].icon || '🔔', all[i].tone || 'audio1');
+                    return;
+                }
             }
+        }
+
+        // 2. Check Naam Abhyas foreground reminder
+        try {
+            var naamConfig = JSON.parse(localStorage.getItem('naam_abhyas_config') || '{}');
+            var isNaamEnabled = naamConfig.enabled !== false;
+            var isNaamPage = window.location.pathname.toLowerCase().includes('naamabhyas');
+            if (isNaamEnabled) {
+                var sched = getNaamScheduleMap();
+                var curH = now.getHours();
+                var curM = now.getMinutes();
+                var item = sched ? sched[curH] : null;
+                if (item && item.status !== 'completed' && item.status !== 'skipped') {
+                    var sMin = (typeof item.startMinute === 'number') ? item.startMinute : (typeof item.minute === 'number' ? item.minute : 0);
+                    if (sMin === curM) {
+                        lastCheckedMin = mk;
+                        if (isNaamPage) {
+                            window.dispatchEvent(new CustomEvent('naamAbhyasDueNow', {
+                                detail: { hour: curH, minute: curM, item: item }
+                            }));
+                        } else if (!document.getElementById('anhadNaamPopup')) {
+                            showNaamAbhyasPopup(curH, curM);
+                        }
+                        return;
+                    }
+                }
+            }
+        } catch(e) {
+            console.warn('[ANHAD] Foreground alarm check error:', e);
+        }
+    }
+
+    function getNaamScheduleMap() {
+        try {
+            var raw = JSON.parse(localStorage.getItem('naam_abhyas_schedule'));
+            if (!raw) return {};
+            if (raw._schedule && typeof raw._schedule === 'object') return raw._schedule;
+            return raw;
+        } catch(e) {
+            return {};
         }
     }
 
@@ -1136,4 +1289,12 @@
     window._anhadAlarmPopup = showAlarmPopup;
     window._anhadRecordAlarmResponse = recordAlarmResponse;
     window.AnhadShowNaamPopup = showNaamAbhyasPopup;
+    window.CapacitorNotifications = {
+        scheduleAll: scheduleAll,
+        rescheduleAll: scheduleAll
+    };
+    window.__anhadGlobalScheduler = {
+        scheduleAll: scheduleAll,
+        rescheduleAll: scheduleAll
+    };
 })();

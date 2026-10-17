@@ -30,7 +30,7 @@ const NAAM_CONFIG = {
     },
 
     DEFAULTS: {
-        enabled: false,
+        enabled: true,
         duration: 2, // minutes
         activeHours: {
             start: 5,
@@ -38,7 +38,7 @@ const NAAM_CONFIG = {
         },
         notifications: {
             hourStart: true,
-            sound: 'gentle-bell',
+            sound: 'calm-singing-bowl',
             vibration: true,
             soundEnabled: true
         },
@@ -234,6 +234,9 @@ class NaamStatsEngine {
         const duration = Math.max(0, Math.round(Number(sessionData.duration) || 120));
         const hour = sessionData.hour !== undefined ? Number(sessionData.hour) : now.getHours();
         const isExtra = !!sessionData.isExtra;
+        const practiceType = sessionData.practiceType || (sessionData.mode === 'reading' ? 'reading' : 'simran');
+        const gurbaniText = sessionData.gurbaniText || null;
+        const gurbaniSource = sessionData.gurbaniSource || null;
 
         const session = {
             id: sessionData.id || `session_${now.getTime()}`,
@@ -243,6 +246,9 @@ class NaamStatsEngine {
             duration: duration,
             status: sessionData.status || 'completed',
             isExtra: isExtra,
+            practiceType: practiceType,
+            gurbaniText: gurbaniText,
+            gurbaniSource: gurbaniSource,
             presenceConfirmed: !!sessionData.presenceConfirmed,
             endedEarly: !!sessionData.endedEarly,
             recordedAt: now.toISOString()
@@ -263,7 +269,7 @@ class NaamStatsEngine {
 
         // Update daily bucket (compatible with Profile and Dashboard)
         if (!this.history.daily[today]) {
-            this.history.daily[today] = { completed: 0, total: 0, totalMinutes: 0, sessions: [] };
+            this.history.daily[today] = { completed: 0, total: 0, totalMinutes: 0, readingCompleted: 0, simranCompleted: 0, readingMinutes: 0, sessions: [] };
         }
         const dailyBucket = this.history.daily[today];
         dailyBucket.sessions = dailyBucket.sessions || [];
@@ -271,12 +277,27 @@ class NaamStatsEngine {
 
         if (session.status === 'completed') {
             dailyBucket.completed = (dailyBucket.completed || 0) + 1;
-            dailyBucket.totalMinutes = (dailyBucket.totalMinutes || 0) + Math.round(duration / 60);
+            const durMin = Math.round(duration / 60);
+            dailyBucket.totalMinutes = (dailyBucket.totalMinutes || 0) + durMin;
+
+            if (practiceType === 'reading') {
+                dailyBucket.readingCompleted = (dailyBucket.readingCompleted || 0) + 1;
+                dailyBucket.readingMinutes = (dailyBucket.readingMinutes || 0) + durMin;
+            } else {
+                dailyBucket.simranCompleted = (dailyBucket.simranCompleted || 0) + 1;
+            }
 
             // Update top-level statistics
             this.history.statistics.completedSessions = (this.history.statistics.completedSessions || 0) + 1;
             this.history.statistics.totalTimeSeconds = (this.history.statistics.totalTimeSeconds || 0) + duration;
             this.history.totalCompleted = this.history.statistics.completedSessions;
+
+            if (practiceType === 'reading') {
+                this.history.statistics.totalReadingSessions = (this.history.statistics.totalReadingSessions || 0) + 1;
+                this.history.statistics.totalReadingMinutes = (this.history.statistics.totalReadingMinutes || 0) + durMin;
+            } else {
+                this.history.statistics.totalSimranSessions = (this.history.statistics.totalSimranSessions || 0) + 1;
+            }
 
             if (isExtra) {
                 this.history.statistics.extraSessions = (this.history.statistics.extraSessions || 0) + 1;
@@ -349,6 +370,8 @@ class NaamStatsEngine {
         const extraCompleted = completedSessions.filter(s => s.isExtra).length;
 
         const totalTimeSeconds = completedSessions.reduce((acc, s) => acc + (s.duration || 0), 0);
+        const readingSessions = completedSessions.filter(s => s.practiceType === 'reading');
+        const simranSessions = completedSessions.filter(s => s.practiceType !== 'reading');
 
         return {
             today,
@@ -358,6 +381,9 @@ class NaamStatsEngine {
             totalExpected: activeHoursCount,
             totalTimeSeconds,
             totalTimeMinutes: Math.round(totalTimeSeconds / 60),
+            readingCompleted: readingSessions.length,
+            simranCompleted: simranSessions.length,
+            totalReadingMinutes: Math.round(readingSessions.reduce((acc, s) => acc + (s.duration || 0), 0) / 60),
             currentStreak: this.history.statistics.currentStreak || 0,
             longestStreak: this.history.statistics.longestStreak || 0,
             completionRate: activeHoursCount > 0 ? Math.min(100, Math.round((scheduledCompleted / activeHoursCount) * 100)) : 0,
@@ -405,6 +431,8 @@ class NaamStatsEngine {
                     count: 1,
                     duration: session.duration,
                     hour: session.hour,
+                    practiceType: session.practiceType || 'simran',
+                    gurbaniText: session.gurbaniText || null,
                     isScheduled: !session.isExtra,
                     presenceConfirmed: session.presenceConfirmed
                 }
@@ -440,19 +468,9 @@ class NaamScheduleManager {
             const raw = localStorage.getItem(NAAM_CONFIG.STORAGE_KEYS.SCHEDULE);
             if (raw) {
                 const parsed = JSON.parse(raw);
-                // Support both plain schedule objects and { date, schedule } wrappers
                 if (parsed && typeof parsed === 'object') {
-                    // If wrapped with date, check freshness
-                    if (parsed._date) {
-                        if (parsed._date === today && parsed._schedule && Object.keys(parsed._schedule).length > 0) {
-                            return parsed._schedule;
-                        }
-                        // Stale — fall through to regenerate
-                    } else if (Object.keys(parsed).length > 0 && !parsed._date) {
-                        // Legacy plain schedule — check if any of the hours are reasonable
-                        // We'll accept it but mark today's date on next save
-                        this._scheduleDate = today;
-                        return parsed;
+                    if (parsed._date === today && parsed._schedule && Object.keys(parsed._schedule).length > 0) {
+                        return parsed._schedule;
                     }
                 }
             }
@@ -464,8 +482,15 @@ class NaamScheduleManager {
     saveSchedule() {
         try {
             const today = new Date().toLocaleDateString('en-CA');
-            const wrapper = { _date: today, _schedule: this.currentSchedule };
+            const wrapper = {
+                _date: today,
+                _schedule: this.currentSchedule,
+                ...this.currentSchedule
+            };
             localStorage.setItem(NAAM_CONFIG.STORAGE_KEYS.SCHEDULE, JSON.stringify(wrapper));
+            if (this.app && typeof this.app.syncNativeNotifications === 'function') {
+                this.app.syncNativeNotifications();
+            }
         } catch (e) {}
     }
 
@@ -475,9 +500,29 @@ class NaamScheduleManager {
         const endHour = Number(config.activeHours?.end || 22);
         const duration = Number(config.duration || 2);
         const schedule = {};
+        const now = new Date();
+        const currentHour = now.getHours();
+        const currentMinute = now.getMinutes();
 
         for (let h = startHour; h <= endHour; h++) {
-            const min = 0;
+            let min = 0;
+            if (h < currentHour) {
+                // Past hour today: natural random minute between 2 and 57 (e.g. 8:43, 9:05)
+                min = Math.floor(Math.random() * 56) + 2;
+            } else if (h === currentHour) {
+                // Current hour: at least 2 minutes ahead if possible, else 58
+                if (currentMinute < 56) {
+                    const minAllowed = currentMinute + 2;
+                    const maxAllowed = 57;
+                    min = Math.floor(Math.random() * (maxAllowed - minAllowed + 1)) + minAllowed;
+                } else {
+                    min = 58;
+                }
+            } else {
+                // Future hour: natural random minute between 2 and 57 (e.g. 8:43, 9:05)
+                min = Math.floor(Math.random() * 56) + 2;
+            }
+
             const endMin = min + duration;
             schedule[h] = {
                 hour: h,
@@ -516,15 +561,24 @@ class NaamScheduleManager {
         const duration = Number(config.duration || 2);
         const now = new Date();
         const currentHour = now.getHours();
+        const currentMinute = now.getMinutes();
 
         for (let h = startHour; h <= endHour; h++) {
             if (this.currentSchedule[h]?.status === 'completed') continue;
 
             let min = 0;
-            if (h === currentHour) {
-                min = Math.min(55, Math.max(0, now.getMinutes() + 2));
+            if (h < currentHour) {
+                min = Math.floor(Math.random() * 56) + 2;
+            } else if (h === currentHour) {
+                if (currentMinute < 56) {
+                    const minAllowed = currentMinute + 2;
+                    const maxAllowed = 57;
+                    min = Math.floor(Math.random() * (maxAllowed - minAllowed + 1)) + minAllowed;
+                } else {
+                    min = 58;
+                }
             } else {
-                min = Math.floor(Math.random() * 50);
+                min = Math.floor(Math.random() * 56) + 2;
             }
 
             const endMin = min + duration;
@@ -620,6 +674,53 @@ class NaamTimerPlayer {
 
         this.CIRCUMFERENCE = 2 * Math.PI * 85; // 534.07 for r=85
 
+        this.practiceType = 'simran';
+        this.currentVerseIndex = 0;
+        this.sacredVerses = [
+            {
+                gurmukhi: "ਗੁਰ ਸਤਿਗੁਰ ਕਾ ਜੋ ਸਿਖੁ ਅਖਾਏ ਸੁ ਭਲਕੇ ਉਠਿ ਹਰਿ ਨਾਮੁ ਧਿਆਵੈ ॥",
+                english: "One who calls themselves a disciple of the Guru shall rise in the early morning and meditate on the Lord's Name.",
+                translit: "Gur satgur kaa jo sikh akhaae so bhalke uth har naam dhiaavai",
+                ang: "Sri Guru Granth Sahib Ji • Ang 305"
+            },
+            {
+                gurmukhi: "ਉਦਮੁ ਕਰੇ ਭਲਕੇ ਪਰਭਾਤੀ ਇਸਨਾਨੁ ਕਰੇ ਅੰਮ੍ਰਿਤ ਸਰਿ ਨਾਵੈ ॥",
+                english: "Upon rising early in the morning, they bathe in the sacred nectar tank.",
+                translit: "Udam karay bhalkay parbhaatee isnaan karay amrit sar naavai",
+                ang: "Sri Guru Granth Sahib Ji • Ang 305"
+            },
+            {
+                gurmukhi: "ਸਿਮਰਉ ਸਿਮਰਿ ਸਿਮਰਿ ਸੁਖ ਪਾਵਉ ॥ ਕਲਿ ਕਲੇਸ ਤਨ ਮਾਹਿ ਮਿਟਾਵਉ ॥",
+                english: "Meditate, meditate, meditate on Him and find peace. Afflictions and sorrows depart from your body.",
+                translit: "Simrau simar simar sukh paavau. Kal kalays tan maahi mitaavau.",
+                ang: "Sri Guru Granth Sahib Ji • Ang 262 (Sukhmani Sahib)"
+            },
+            {
+                gurmukhi: "ਪ੍ਰਭ ਕੈ ਸਿਮਰਨਿ ਮਨ ਕੀ ਮਲੁ ਜਾਇ ॥ ਅੰਮ੍ਰਿਤ ਨਾਮੁ ਰਿਦ ਮਾਹਿ ਸਮਾਇ ॥",
+                english: "In the remembrance of God, the pollution of the mind is cleansed. The Ambrosial Nectar permeates the heart.",
+                translit: "Prabh kai simran man kee mal jaae. Amrit naam rid maahi samaae.",
+                ang: "Sri Guru Granth Sahib Ji • Ang 263"
+            },
+            {
+                gurmukhi: "ਮਨ ਤੂੰ ਜੋਤਿ ਸਰੂਪੁ ਹੈ ਆਪਣਾ ਮੂਲੁ ਪਛਾਣੁ ॥",
+                english: "O my mind, you are the embodiment of Divine Light; recognize your true origin.",
+                translit: "Man toon jot saroop hai aapnaa mool pachhaan.",
+                ang: "Sri Guru Granth Sahib Ji • Ang 441"
+            },
+            {
+                gurmukhi: "ਤੂ ਮੇਰਾ ਪਿਤਾ ਤੂਹੈ ਮੇਰਾ ਮਾਤਾ ॥ ਤੂ ਮੇਰਾ ਬੰਧਪੁ ਤੂ ਮੇਰਾ ਭ੍ਰਾਤਾ ॥",
+                english: "You are my Father, and You are my Mother. You are my Kin, and You are my Brother.",
+                translit: "Too mayraa pitaa toohai mayraa maataa. Too mayraa bandhap too mayraa bhraataa.",
+                ang: "Sri Guru Granth Sahib Ji • Ang 103"
+            },
+            {
+                gurmukhi: "ਚਿਤਿ ਆਵੈ ਓਸੁ ਪਾਰਬ੍ਰਹਮੁ ਲਗੈ ਨ ਤਤੀ ਵਾਉ ॥",
+                english: "When you remember the Supreme Lord God, even the hot wind shall not touch you.",
+                translit: "Chit aavai os paarbrahm lagai na tatee vaau.",
+                ang: "Sri Guru Granth Sahib Ji • Ang 70"
+            }
+        ];
+
         this.initDOM();
     }
 
@@ -630,6 +731,17 @@ class NaamTimerPlayer {
         this.progressBar = document.getElementById('timerProgressBar');
         this.breathingGuide = document.getElementById('breathingGuide');
         this.waheguruText = document.getElementById('waheguruText');
+
+        this.simranModeContent = document.getElementById('simranModeContent');
+        this.readingModeContent = document.getElementById('readingModeContent');
+        this.readingGurmukhi = document.getElementById('readingGurmukhi');
+        this.readingTranslit = document.getElementById('readingTranslit');
+        this.readingTranslation = document.getElementById('readingTranslation');
+        this.readingAng = document.getElementById('readingAng');
+        this.readingNextBtn = document.getElementById('readingNextBtn');
+        this.medModeToggleBtn = document.getElementById('medModeToggleBtn');
+        this.medModeLabel = document.getElementById('medModeLabel');
+        this.medModeIcon = document.getElementById('medModeIcon');
 
         this.medPresentBtn = document.getElementById('medPresentBtn');
         this.medSilentBtn = document.getElementById('medSilentBtn');
@@ -654,11 +766,61 @@ class NaamTimerPlayer {
             this.skipBtn.addEventListener('click', () => this.skipOrEndEarly());
         }
 
+        if (this.readingNextBtn) {
+            this.readingNextBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.nextVerse();
+            });
+        }
+
+        if (this.medModeToggleBtn) {
+            this.medModeToggleBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.togglePracticeMode();
+            });
+        }
+
         document.addEventListener('visibilitychange', () => {
             if (this.state === 'RUNNING' && !document.hidden) {
                 this.tick();
             }
         });
+    }
+
+    setPracticeMode(mode) {
+        this.practiceType = (mode === 'reading') ? 'reading' : 'simran';
+        if (this.simranModeContent && this.readingModeContent) {
+            if (this.practiceType === 'reading') {
+                this.simranModeContent.style.display = 'none';
+                this.readingModeContent.style.display = 'block';
+                if (this.medModeLabel) this.medModeLabel.textContent = 'Simran';
+                if (this.medModeIcon) this.medModeIcon.textContent = '🧘';
+                this.displayVerse();
+            } else {
+                this.simranModeContent.style.display = 'block';
+                this.readingModeContent.style.display = 'none';
+                if (this.medModeLabel) this.medModeLabel.textContent = 'Read Gurbani';
+                if (this.medModeIcon) this.medModeIcon.textContent = '📖';
+            }
+        }
+    }
+
+    togglePracticeMode() {
+        this.setPracticeMode(this.practiceType === 'reading' ? 'simran' : 'reading');
+    }
+
+    nextVerse() {
+        this.currentVerseIndex = (this.currentVerseIndex + 1) % this.sacredVerses.length;
+        this.displayVerse();
+    }
+
+    displayVerse() {
+        const v = this.sacredVerses[this.currentVerseIndex];
+        if (!v) return;
+        if (this.readingGurmukhi) this.readingGurmukhi.textContent = v.gurmukhi;
+        if (this.readingTranslit) this.readingTranslit.textContent = v.translit;
+        if (this.readingTranslation) this.readingTranslation.textContent = `“${v.english}”`;
+        if (this.readingAng) this.readingAng.textContent = v.ang;
     }
 
     start(durationMinutes = 2, sessionInfo = null) {
@@ -675,6 +837,9 @@ class NaamTimerPlayer {
         };
         this.presenceConfirmed = false;
         this.tenSecondWarningFired = false;
+
+        const reqMode = (sessionInfo && (sessionInfo.practiceType || sessionInfo.mode)) || 'simran';
+        this.setPracticeMode(reqMode);
 
         document.body.classList.add('timer-active');
 
@@ -700,7 +865,7 @@ class NaamTimerPlayer {
 
         this.timerInterval = setInterval(() => this.tick(), 100);
 
-        console.log(`[NaamTimerPlayer] ⏱️ Timer started: ${durationMinutes} min (${this.totalDurationSeconds}s)`);
+        console.log(`[NaamTimerPlayer] ⏱️ Timer started (${this.practiceType}): ${durationMinutes} min (${this.totalDurationSeconds}s)`);
     }
 
     tick() {
@@ -836,6 +1001,8 @@ class NaamTimerPlayer {
 
         const finalDuration = actualDurationSeconds || this.totalDurationSeconds;
         const sessionInfo = this.currentSessionInfo || {};
+        const savedPracticeType = this.practiceType || 'simran';
+        const currentVerse = (savedPracticeType === 'reading') ? this.sacredVerses[this.currentVerseIndex] : null;
 
         this.stop();
 
@@ -850,6 +1017,9 @@ class NaamTimerPlayer {
             duration: finalDuration,
             status: 'completed',
             isExtra: !!sessionInfo.isExtra,
+            practiceType: savedPracticeType,
+            gurbaniText: currentVerse ? currentVerse.gurmukhi : null,
+            gurbaniSource: currentVerse ? currentVerse.ang : null,
             presenceConfirmed: this.presenceConfirmed,
             endedEarly: endedEarly
         };
@@ -877,6 +1047,7 @@ class NaamTimerPlayer {
         }
 
         this.app.audioManager?.stopAmbient?.();
+        this.setPracticeMode('simran');
     }
 }
 
@@ -908,7 +1079,20 @@ class NaamCompletionManager {
     show(sessionData, durationSeconds) {
         if (!this.modal) return;
 
-        const blessings = NAAM_CONFIG.BLESSINGS;
+        if (this.titleEl) {
+            this.titleEl.textContent = (sessionData?.practiceType === 'reading')
+                ? 'Sacred Reading Complete! 📖'
+                : 'Naam Abhyas Complete! 🙏';
+        }
+
+        const blessings = (sessionData?.practiceType === 'reading')
+            ? [
+                "ਗੁਰਬਾਣੀ ਇਸੁ ਜਗ ਮਹਿ ਚਾਨਣੁ — Gurbani is the Divine Light in this world! ✨",
+                "Blessed is the heart that reads and contemplates Gurbani 🌸",
+                "Beautiful! You connected with the Guru's holy words 🙏",
+                "Waheguru! Sacred reading enriches your mind and soul 🌺"
+            ]
+            : NAAM_CONFIG.BLESSINGS;
         const blessing = blessings[Math.floor(Math.random() * blessings.length)];
         if (this.blessingEl) this.blessingEl.textContent = blessing;
 
@@ -997,9 +1181,11 @@ class NaamAbhyas {
         try {
             this.bindDOM();
             this.initWisdom();
+            this.initSessionAlertModal();
             this.startHeaderClock();
             this.startCountdownTicker();
             this.updateUI();
+            this.syncNativeNotifications();
         } catch (e) {
             console.error('[NaamAbhyas] Error during init:', e);
         } finally {
@@ -1013,6 +1199,20 @@ class NaamAbhyas {
         window.addEventListener('naamAbhyasLaunchReady', (e) => {
             if (e.detail?.autoStart) {
                 this.executeAutoStart(e.detail);
+            }
+        });
+
+        window.addEventListener('naamAbhyasDueNow', (e) => {
+            if (this.config.autoStartTimer) {
+                this.executeAutoStart(e.detail);
+            } else {
+                this.showSessionAlert({
+                    hour: e.detail?.hour !== undefined ? Number(e.detail.hour) : new Date().getHours(),
+                    startTime: this.statsEngine.formatTime12h(
+                        e.detail?.hour !== undefined ? Number(e.detail.hour) : new Date().getHours(),
+                        e.detail?.minute !== undefined ? Number(e.detail.minute) : 0
+                    )
+                });
             }
         });
     }
@@ -1198,6 +1398,7 @@ class NaamAbhyas {
             const autoStart = url.searchParams.get('autoStart') === 'true';
             const hour = url.searchParams.get('hour');
             const minute = url.searchParams.get('minute');
+            const mode = url.searchParams.get('mode') || url.searchParams.get('practiceType') || 'simran';
 
             if (autoStart) {
                 window.history.replaceState({}, document.title, window.location.pathname);
@@ -1206,7 +1407,9 @@ class NaamAbhyas {
                 const sessionInfo = {
                     hour: targetHour,
                     startTime: this.statsEngine.formatTime12h(targetHour, minute !== null ? Number(minute) : 0),
-                    isExtra: false
+                    isExtra: false,
+                    practiceType: mode,
+                    mode: mode
                 };
 
                 const dur = Number(this.config.duration || 2);
@@ -1224,10 +1427,13 @@ class NaamAbhyas {
 
                 if (age < 10 * 60 * 1000 && intent.autoStart) {
                     const targetHour = intent.hour ? Number(intent.hour) : new Date().getHours();
+                    const intentMode = intent.mode || intent.practiceType || 'simran';
                     const sessionInfo = {
                         hour: targetHour,
                         startTime: this.statsEngine.formatTime12h(targetHour, intent.minute ? Number(intent.minute) : 0),
-                        isExtra: false
+                        isExtra: false,
+                        practiceType: intentMode,
+                        mode: intentMode
                     };
                     const dur = Number(this.config.duration || 2);
                     setTimeout(() => {
@@ -1242,10 +1448,13 @@ class NaamAbhyas {
 
     executeAutoStart(detail) {
         const targetHour = detail?.hour !== undefined ? Number(detail.hour) : new Date().getHours();
+        const mode = detail?.mode || detail?.practiceType || 'simran';
         const sessionInfo = {
             hour: targetHour,
             startTime: this.statsEngine.formatTime12h(targetHour, detail?.minute !== undefined ? Number(detail.minute) : 0),
-            isExtra: false
+            isExtra: false,
+            practiceType: mode,
+            mode: mode
         };
         const dur = Number(this.config.duration || 2);
         this.timerPlayer.start(dur, sessionInfo);
@@ -1257,6 +1466,119 @@ class NaamAbhyas {
                 window.CapacitorNotifications.rescheduleAll();
             }
         } catch (e) {}
+    }
+
+    initSessionAlertModal() {
+        const modal = document.getElementById('sessionAlertModal');
+        if (!modal || this._sessionAlertModalInitialized) return;
+        this._sessionAlertModalInitialized = true;
+
+        const startNowBtn = document.getElementById('alertStartNowBtn');
+        const startReadingBtn = document.getElementById('alertStartReadingBtn');
+        const silentBtn = document.getElementById('alertSilentBtn');
+        const skipBtn = document.getElementById('skipSessionBtn');
+        const backdrop = modal.querySelector('.alert-backdrop');
+
+        if (startNowBtn) {
+            startNowBtn.addEventListener('click', () => {
+                const session = this._activeAlertSession;
+                this.hideSessionAlert();
+                const dur = Number(this.config.duration || 2);
+                this.timerPlayer.start(dur, {
+                    hour: session?.hour !== undefined ? session.hour : new Date().getHours(),
+                    startTime: session?.startTime || this.statsEngine.formatTime12h(new Date().getHours(), new Date().getMinutes()),
+                    isExtra: false,
+                    practiceType: 'simran',
+                    mode: 'simran'
+                });
+            });
+        }
+
+        if (startReadingBtn) {
+            startReadingBtn.addEventListener('click', () => {
+                const session = this._activeAlertSession;
+                this.hideSessionAlert();
+                const dur = Number(this.config.duration || 2);
+                this.timerPlayer.start(dur, {
+                    hour: session?.hour !== undefined ? session.hour : new Date().getHours(),
+                    startTime: session?.startTime || this.statsEngine.formatTime12h(new Date().getHours(), new Date().getMinutes()),
+                    isExtra: false,
+                    practiceType: 'reading',
+                    mode: 'reading'
+                });
+            });
+        }
+
+        if (silentBtn) {
+            silentBtn.addEventListener('click', () => {
+                const session = this._activeAlertSession;
+                this.hideSessionAlert();
+                this.timerPlayer.isSilent = true;
+                const dur = Number(this.config.duration || 2);
+                this.timerPlayer.start(dur, {
+                    hour: session?.hour !== undefined ? session.hour : new Date().getHours(),
+                    startTime: session?.startTime || this.statsEngine.formatTime12h(new Date().getHours(), new Date().getMinutes()),
+                    isExtra: false,
+                    practiceType: 'simran',
+                    mode: 'simran'
+                });
+            });
+        }
+
+        if (skipBtn) {
+            skipBtn.addEventListener('click', () => {
+                const session = this._activeAlertSession;
+                this.hideSessionAlert();
+                if (session && session.hour !== undefined) {
+                    this.statsEngine.recordSession({
+                        hour: session.hour,
+                        startTime: session.startTime || this.statsEngine.formatTime12h(session.hour, 0),
+                        status: 'skipped',
+                        duration: 0
+                    });
+                    this.scheduleManager.markCompleted(session.hour);
+                    this.updateUI();
+                }
+            });
+        }
+
+        if (backdrop) {
+            backdrop.addEventListener('click', () => {
+                this.hideSessionAlert();
+            });
+        }
+    }
+
+    showSessionAlert(session) {
+        const modal = document.getElementById('sessionAlertModal');
+        if (!modal) return;
+        this._sessionAlertActive = true;
+        this._activeAlertSession = session || {
+            hour: new Date().getHours(),
+            startTime: this.statsEngine.formatTime12h(new Date().getHours(), new Date().getMinutes())
+        };
+
+        const chip = document.getElementById('alertTimeChip');
+        if (chip) chip.textContent = `${this.config.duration || 2} min`;
+
+        const startBtn = document.getElementById('alertStartNowBtn');
+        if (startBtn) startBtn.textContent = `Start Simran (${this.config.duration || 2} min)`;
+
+        try {
+            if (this.audioManager) {
+                this.audioManager.play('calm-singing-bowl', { volume: 0.6 }).catch(() => {});
+            }
+        } catch (e) {}
+
+        if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+        modal.classList.add('active');
+    }
+
+    hideSessionAlert() {
+        this._sessionAlertActive = false;
+        this._activeAlertSession = null;
+        const modal = document.getElementById('sessionAlertModal');
+        if (modal) modal.classList.remove('active');
     }
 
     startHeaderClock() {
@@ -1344,6 +1666,21 @@ class NaamAbhyas {
             } else {
                 if (cdValEl) cdValEl.textContent = 'Starting now!';
                 if (subEl) subEl.textContent = 'Time for Naam Simran';
+
+                // Automatically engage practice or present calm session alert
+                if (this.timerPlayer && this.timerPlayer.state === 'IDLE' && !this._sessionAlertActive && diff >= -180000) {
+                    if (this.config.autoStartTimer) {
+                        const dur = Number(this.config.duration || 2);
+                        this.timerPlayer.start(dur, {
+                            hour: next.hour,
+                            startTime: next.startTime,
+                            isExtra: false,
+                            practiceType: 'simran'
+                        });
+                    } else {
+                        this.showSessionAlert(next);
+                    }
+                }
             }
         };
 
@@ -1410,6 +1747,17 @@ class NaamAbhyas {
         if (perfDaysEl) perfDaysEl.textContent = weeklyStats.perfectDays;
         if (perfBadgeEl) {
             perfBadgeEl.classList.toggle('hidden', !todayStats.isPerfectDay);
+        }
+
+        const readingStatsSub = document.getElementById('readingStatsSub');
+        const readingStatsTime = document.getElementById('readingStatsTime');
+        if (readingStatsSub) {
+            const count = todayStats.readingCompleted || 0;
+            readingStatsSub.textContent = `${count} sacred reading ${count === 1 ? 'session' : 'sessions'} today`;
+        }
+        if (readingStatsTime) {
+            const mins = todayStats.totalReadingMinutes || 0;
+            readingStatsTime.textContent = `${mins} min`;
         }
 
         this.renderTimeline();
@@ -1586,6 +1934,20 @@ class NaamAbhyas {
                     <div class="stat-cell">
                         <span class="stat-number">${Math.round((stats.totalTimeSeconds || 0) / 60)}m</span>
                         <span class="stat-name">Total Practice</span>
+                    </div>
+                </div>
+
+                <div style="background:var(--sp-surface-inner); border-radius:var(--sp-radius-inner); padding:14px; border:1px solid var(--sp-border-inner);">
+                    <div style="font-size:0.875rem; font-weight:700; color:var(--sp-text-primary); margin-bottom:8px; display:flex; align-items:center; gap:8px;">
+                        <span>📖</span> Practice Modes Breakdown
+                    </div>
+                    <div style="display:flex; justify-content:space-between; font-size:0.8125rem; color:var(--sp-text-secondary); margin-bottom:4px;">
+                        <span>🧘 Naam Simran:</span>
+                        <span style="font-weight:700;">${stats.totalSimranSessions || 0} sessions</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; font-size:0.8125rem; color:var(--sp-text-secondary);">
+                        <span>📖 Sacred Reading:</span>
+                        <span style="font-weight:700;">${stats.totalReadingSessions || 0} sessions (${stats.totalReadingMinutes || 0} min)</span>
                     </div>
                 </div>
 

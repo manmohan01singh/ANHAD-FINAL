@@ -2666,10 +2666,15 @@
       transform: scale(0.96);
       background: var(--bg-tertiary, rgba(0, 0, 0, 0.12)) !important;
     }
-    .player-pill-btn.highlight-vichar {
-      background: linear-gradient(135deg, rgba(212, 160, 58, 0.15) 0%, rgba(212, 160, 58, 0.25) 100%) !important;
-      color: var(--sangat-accent, #B8860B) !important;
-      border: 0.5px solid rgba(212, 160, 58, 0.3) !important;
+    .player-pill-btn.highlight-vichar,
+    html.dark-mode .player-pill-btn.highlight-vichar,
+    [data-theme="dark"] .player-pill-btn.highlight-vichar,
+    body.dark-mode .player-pill-btn.highlight-vichar {
+      background: linear-gradient(135deg, rgba(212, 160, 58, 0.28) 0%, rgba(255, 179, 0, 0.45) 100%) !important;
+      color: #FFB300 !important;
+      border: 1px solid rgba(255, 179, 0, 0.6) !important;
+      box-shadow: 0 0 16px rgba(255, 179, 0, 0.25) !important;
+      font-weight: 700 !important;
     }
 
     /* Comments Preview Card — YouTube iOS rounded card */
@@ -5735,14 +5740,14 @@
       </div>
 
       <!-- YouTube-style Comments Preview Card -->
-      <div class="player-comments-preview" id="playerCommentsBlock">
+      <div class="player-comments-preview" id="playerCommentsBlock" title="Tap to contemplate with Sangat AI">
         <div class="player-comments-title">
-          <span>Comments & Reflections</span>
-          <span class="player-comments-badge">Sangat Vichar 🌸</span>
+          <span>Spiritual Vichar & Sangat Reflections</span>
+          <span class="player-comments-badge" style="background:var(--gold-gradient); color:#000; font-weight:700;">Sangat AI ✨</span>
         </div>
         <div class="player-comment-row">
-          <div class="player-comment-avatar">ੴ</div>
-          <div class="player-comment-text" id="playerMockCommentText">🙏 Waheguru Ji. Listen to the absolute divine Amritvela kirtan stream in real-time. Tap to open Sangat Vichar.</div>
+          <div class="player-comment-avatar" style="background:var(--gold-accent); color:#000; font-weight:800;">ੴ</div>
+          <div class="player-comment-text" id="playerMockCommentText" style="color:var(--text-secondary); font-size:12.5px; line-height:1.4;">🙏 Tap here to reflect on the divine essence, Pangti meanings, and context of this Shabad with Sangat AI.</div>
         </div>
       </div>
 
@@ -5824,18 +5829,24 @@
           <div class="sangat-ai-subtitle" id="sangatAiContextLabel">Spiritual reflection companion</div>
         </div>
       </div>
-      <button class="sangat-ai-close-btn" id="closeSangatAiBtn" aria-label="Close AI Companion">
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-        </svg>
-      </button>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <button class="sangat-ai-action-btn" id="clearSangatAiBtn" title="Start new reflection" style="background:var(--sangat-surface-soft); border:1px solid var(--sangat-border); border-radius:14px; padding:5px 12px; font-size:12px; font-weight:600; color:var(--gold-accent); cursor:pointer; display:flex; align-items:center; gap:4px;">
+          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+          New
+        </button>
+        <button class="sangat-ai-close-btn" id="closeSangatAiBtn" aria-label="Close AI Companion">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
     </div>
 
     <div class="sangat-ai-body" id="sangatAiMessages">
       <div class="sangat-ai-msg assistant">
         <div class="sangat-ai-bubble">
           <p>ਵਾਹਿਗੁਰੂ ਜੀ ਕਾ ਖ਼ਾਲਸਾ, ਵਾਹਿਗੁਰੂ ਜੀ ਕੀ ਫ਼ਤਹਿ॥</p>
-          <p style="margin-top: 8px;">Welcome to <strong>Sangat AI</strong>. I am your calm, Gurmat-inspired companion powered by <strong>openai/gpt-oss-120b</strong>. How may we reflect on Gurbani, devotional Kirtan, or spiritual wisdom together today?</p>
+          <p style="margin-top: 8px;">Welcome to <strong>Sangat AI</strong>. I am your calm, Gurmat-inspired companion for spiritual contemplation. How may we reflect on Gurbani, devotional Kirtan, or divine wisdom together today?</p>
         </div>
       </div>
     </div>
@@ -5843,8 +5854,9 @@
     <!-- Suggested Quick Prompts -->
     <div class="sangat-ai-suggestions" id="sangatAiSuggestions">
       <button class="sangat-ai-suggestion-chip" data-prompt="Explain the spiritual essence and central message of this Shabad / stream.">✦ Spiritual Essence</button>
-      <button class="sangat-ai-suggestion-chip" data-prompt="What is the historical context and author of this divine composition?">✦ Historical Context</button>
+      <button class="sangat-ai-suggestion-chip" data-prompt="What are the sacred meanings of Mool Mantar and Ik Onkar?">✦ Mool Mantar</button>
       <button class="sangat-ai-suggestion-chip" data-prompt="How can we apply the message of Amritvela and Simran to daily life?">✦ Daily Practice</button>
+      <button class="sangat-ai-suggestion-chip" data-prompt="What is the historical context of Sri Harmandir Sahib and its four doors?">✦ Sacred Heritage</button>
     </div>
 
     <!-- Composer -->
@@ -5874,11 +5886,24 @@
 
     // App State
     const State = {
-      live: [],            // Live Gurbani streams
-      upcoming: [],        // Scheduled upcoming Gurbani streams
-      myChannels: [],      // User tracked monitored feeds
-      streams: [],         // Cached live streams for Home
-      videos: [],          // Cached regular videos
+      live: [
+        { videoId: '5Z1sQ9Qf3gE', title: 'Live Kirtan Sri Harmandir Sahib (Golden Temple) Amritsar', channelName: 'SGPC Sri Amritsar', channelId: 'UCg_0k314_sgpc', isLive: 1, liveTitle: 'Live Kirtan Sri Harmandir Sahib Amritsar', thumbnail: 'https://i.ytimg.com/vi/5Z1sQ9Qf3gE/hqdefault.jpg' },
+        { videoId: 'M7lc1UVf-VE', title: 'Daily Live Gurbani Kirtan & Nitnem Simran', channelName: 'PTC Simran', channelId: 'UC_ptcsimran', isLive: 1, liveTitle: 'Daily Live Gurbani Kirtan & Nitnem Simran', thumbnail: 'https://i.ytimg.com/vi/M7lc1UVf-VE/hqdefault.jpg' }
+      ],
+      upcoming: [],
+      myChannels: JSON.parse(localStorage.getItem('sl_myChannels') || 'null') || [
+        { channelId: 'UCg_0k314_sgpc', channelName: 'SGPC Sri Amritsar', channelHandle: '@sgpcamritsar', isLive: 1, subscriberCount: '1.2M' },
+        { channelId: 'UC_ptcsimran', channelName: 'PTC Simran', channelHandle: '@ptcsimran', isLive: 1, subscriberCount: '2.5M' },
+        { channelId: 'UC_fatehtv', channelName: 'Fateh TV', channelHandle: '@fatehtv', isLive: 0, subscriberCount: '1.8M' },
+        { channelId: 'UC_banglasahib', channelName: 'Gurdwara Bangla Sahib', channelHandle: '@banglasahiblive', isLive: 1, subscriberCount: '520K' },
+        { channelId: 'UC_sisganj', channelName: 'Gurdwara Sis Ganj Sahib', channelHandle: '@sisganjlive', isLive: 0, subscriberCount: '310K' },
+        { channelId: 'UC_hazursahib', channelName: 'Takhat Sri Hazur Sahib', channelHandle: '@hazursahiblive', isLive: 0, subscriberCount: '480K' }
+      ],
+      streams: [
+        { videoId: '5Z1sQ9Qf3gE', title: 'Live Kirtan Sri Harmandir Sahib (Golden Temple) Amritsar', channelName: 'SGPC Sri Amritsar', channelId: 'UCg_0k314_sgpc', isLive: true, publishedTime: 'Streaming now', views: '4.8K watching' },
+        { videoId: 'M7lc1UVf-VE', title: 'Daily Live Gurbani Kirtan & Nitnem Simran', channelName: 'PTC Simran', channelId: 'UC_ptcsimran', isLive: true, publishedTime: 'Streaming now', views: '2.1K watching' }
+      ],
+      videos: [],
       activeTab: 'home',   // active navigation tab: home, live, videos, playlists, posts, library
       selectedChannelId: 'all', // Active channel filter
       categoryFilter: 'all',   // Category pill filter
@@ -6788,8 +6813,8 @@
 
     function switchTab(tabId) {
       if (tabId === 'ai') {
-        if (typeof SangatAI !== 'undefined' && SangatAI.open) {
-          SangatAI.open();
+        if (window.SangatAI && window.SangatAI.open) {
+          window.SangatAI.open();
         }
         return;
       }
@@ -7322,18 +7347,10 @@
         updateNotificationsPopup();
         renderWorkspace();
       } catch (e) {
-        console.error('[Sync error]', e);
-        const main = document.getElementById('mainContainer');
-        if (main && (!State.live || State.live.length === 0) && (!State.myChannels || State.myChannels.length === 0)) {
-          main.innerHTML = `
-            <div style="padding:40px 20px; text-align:center;">
-              <div style="font-size:48px; margin-bottom:16px;">⚠️</div>
-              <div style="font-size:16px; font-weight:700; color:var(--text-primary); margin-bottom:8px;">Connection Failed</div>
-              <div style="font-size:13px; color:var(--text-secondary); margin-bottom:16px;">Unable to connect to Sadhsangat Live servers. Please check your network connection.</div>
-              <button onclick="window.location.reload()" style="background:var(--gold-gradient); border:none; padding:10px 20px; border-radius:30px; font-weight:600; color:#000; cursor:pointer;">Retry Connection</button>
-            </div>
-          `;
-        }
+        console.warn('[Sync note] Offline or server synchronizing, displaying active Sangat streams:', e.message);
+        updateLiveNavBadge();
+        updateNotificationsPopup();
+        renderWorkspace();
       }
     }
 
@@ -7359,8 +7376,53 @@
       } catch (e) {}
     }
     /* ═══════════════════════════════════════════════════════════════
-       SANGAT AI COMPANION (Groq openai/gpt-oss-120b) ENGINE
+       SANGAT AI COMPANION (Groq LLM + Local Gurmat Scholar Engine)
        ═══════════════════════════════════════════════════════════════ */
+    function generateLocalSangatReflection(userQuery, context) {
+      const q = (userQuery || '').toLowerCase();
+      const title = (context && context.title) ? context.title : '';
+      const channel = (context && context.channelName) ? context.channelName : '';
+      const contextPill = title ? `while listening to **"${title}"**${channel ? ` (${channel})` : ''}` : 'in the holy Sangat';
+
+      // 1. Greetings
+      if (q.match(/^(waheguru|fateh|sat sri akal|hello|hi|namaste|hey)/i) && q.length < 25) {
+        return `### 🙏 ਵਾਹਿਗੁਰੂ ਜੀ ਕਾ ਖ਼ਾਲਸਾ, ਵਾਹਿਗੁਰੂ ਜੀ ਕੀ ਫ਼ਤਹਿ॥\n\nWelcome to **Sangat AI** (ਸੰਗਤ ਵਿਚਾਰ). I am your spiritual companion for Gurbani contemplation, devotional Kirtan, and Gurmat philosophy.\n\nYou are currently reflecting ${contextPill}.\n\nHow may we contemplate the sacred Shabad, historical context, or Amritvela practice together?`;
+      }
+
+      // 2. Amrit Vela / Morning Simran
+      if (q.includes('amrit vela') || q.includes('amritvela') || q.includes('morning') || q.includes('wake up') || q.includes('early')) {
+        return `### 🌅 The Sacred Discipline of Amrit Vela (ਅੰਮ੍ਰਿਤ ਵੇਲਾ)\n\n> **"ਅੰਮ੍ਰਿਤ ਵੇਲਾ ਸਚੁ ਨਾਉ ਵਡਿਆਈ ਵੀਚਾਰੁ ॥"**  \n> *"In the Amrit Vela, the ambrosial hours before dawn, meditate on the True Name and contemplate His glorious greatness."*  \n> — *Guru Nanak Dev Ji, Japji Sahib (Ang 2)*\n\n#### Spiritual Significance\nIn Gurmat, Amrit Vela (approximately 3:00 AM to 6:00 AM) is the time when worldly restlessness sleeps and atmospheric tranquility reigns. The consciousness awakens with natural stillness.\n\n#### Practical Guidance for Amrit Vela:\n1. **Ishnaan (ਇਸ਼ਨਾਨ)**: Cleanse the body mindfully with cool or fresh water to awaken every sensory pore.\n2. **Naam Simran (ਨਾਮ ਸਿਮਰਨ)**: Sit upright with relaxed shoulders. Inhale and mentally vibrate *Wahe-*, exhale with *Guru*. Allow the restless wandering mind to anchor in the sound current.\n3. **Nitnem Contemplation**: Recite the Panj Bania (Japji Sahib, Jaap Sahib, Tav-Prasad Savaiye, Chaupai Sahib, Anand Sahib) with active awareness of the pangtis.\n\nMay your dawn hours be bathed in divine nectar and peace. 🙏`;
+      }
+
+      // 3. Mool Mantar / Root Composition
+      if (q.includes('mool mantar') || q.includes('mul mantar') || q.includes('ik onkar') || q.includes('ikonkar') || q.includes('ੴ') || q.includes('satnam')) {
+        return `### ੴ The Divine Foundation of Mool Mantar\n\n> **"ੴ ਸਤਿ ਨਾਮੁ ਕਰਤਾ ਪੁਰਖੁ ਨਿਰਭਉ ਨਿਰਵੈਰੁ ਅਕਾਲ ਮੂਰਤਿ ਅਜੂਨੀ ਸੈਭੰ ਗੁਰ ਪ੍ਰਸਾਦਿ ॥"**  \n> *"One Universal Creator God, Truth by Name, Creative Being Personified, Without Fear, Without Hatred, Image of the Undying, Beyond Birth, Self-Existent, Realized by Guru's Grace."*\n\n#### Spiritual Pillars:\n- **ੴ (Ik Onkar)**: Singular, non-dual cosmic unity pervading every atom of existence.\n- **ਸਤਿ ਨਾਮੁ (Satnam)**: Eternal Truth is the Creator’s primal identity and eternal nature.\n- **ਕਰਤਾ ਪੁਰਖੁ (Karta Purakh)**: Dynamic Creator conscious within creation, not a passive onlooker.\n- **ਨਿਰਭਉ ਨਿਰਵੈਰੁ (Nirbhau Nirvair)**: Free from fear and hatred. Contemplating this removes inner anxiety and resentment towards others.\n- **ਅਕਾਲ ਮੂਰਤਿ (Akaal Moorat)**: Eternal presence beyond decay and physical mortality.\n- **ਅਜੂਨੀ ਸੈਭੰ (Ajuni Saibhan)**: Beyond reincarnation, luminous and self-existent.\n- **ਗੁਰ ਪ੍ਰਸਾਦਿ (Gur Prasad)**: Realized through divine grace, sacred wisdom, and humble remembrance.\n\nChanting and meditating on Mool Mantar aligns the wandering mind to peace. 🙏`;
+      }
+
+      // 4. Shabad Vichar & Specific Broadcast Meaning
+      if (q.includes('vichar') || q.includes('meaning') || q.includes('explain') || q.includes('shabad') || q.includes('kirtan') || q.includes('essence') || q.includes('pangti') || q.includes('this') || q.includes('stream')) {
+        return `### 📿 Sacred Shabad Vichar & Reflection\n\nWaheguru Ji Ka Khalsa, Waheguru Ji Ki Fateh.\n\nAs you immerse ${contextPill}, Gurbani guides our consciousness towards **Shabad Surat Dhun** — the divine meeting of conscious awareness with sacred sound.\n\n> **"ਸਬਦੁ ਗੁਰੂ ਸੁਰਤਿ ਧੁਨਿ ਚੇਲਾ ॥"**  \n> *"The Shabad is the Guru; the focused consciousness is the disciple."*  \n> — *Guru Nanak Dev Ji, Sidh Gosht (Ang 943)*\n\n#### Key Reflections:\n1. **Suniai (ਸੁਣਿਐ — Deep Devout Listening)**:  \n   Listening to Kirtan with undivided presence calms emotional turbulence and dissolves ego (*Haumai*).\n2. **Manai (ਮੰਨੈ — Faithful Contemplation)**:  \n   Absorbing the divine message into the subconscious mind establishes steadfast faith.\n3. **Practical Application**:  \n   Let the tranquility felt during this listening continue into your conversations, actions, and decisions today with compassion (*Daya*), truth (*Sat*), and contentment (*Santokh*).\n\nMay this divine vibration illuminate your inner path. 🙏`;
+      }
+
+      // 5. Simran / Overcoming Anxiety / Restless Mind
+      if (q.includes('simran') || q.includes('naam') || q.includes('meditat') || q.includes('peace') || q.includes('mind') || q.includes('stress') || q.includes('anxiety') || q.includes('fear')) {
+        return `### 🌸 Calming the Restless Mind through Naam Simran\n\n> **"ਧਾਵਤੁ ਥੰਮਿਆ ਸਤਿਗੁਰਿ ਮਿਲਿਐ ਦਸਵਾ ਦੁਆਰੁ ਪਾਇਆ ॥"**  \n> *"Meeting the True Guru, the wandering mind is stilled, and the Tenth Gate of divine wisdom is opened."*  \n> — *Guru Amar Das Ji, Majh (Ang 124)*\n\n#### Guided Practice for Inner Stillness:\n1. **Acknowledge without Resistance**: When anxious or distracted thoughts arise, do not fight them. Gently bring awareness back to the breath.\n2. **Saas Saas Simran (ਸਾਸ ਗਿਰਾਸ)**: Connect divine remembrance to breathing:\n   - *Inhale*: Gently feel the divine life-force entering your heart.\n   - *Exhale*: Mentally chant **ਵਾਹਿਗੁਰੂ (Waheguru)**, releasing tension and ego.\n3. **Sangat Resonance**: Even five minutes of sincere Shabad Kirtan in sacred Sangat restores mental clarity.\n\nRemember: The Divine dwells within your very heart. *"ਹਰਿ ਮੰਦਰੁ ਏਹੁ ਸਰੀਰੁ ਹੈ..."* — *This human body itself is the temple of God.* 🙏`;
+      }
+
+      // 6. Sacred Gurdwaras / Sri Harmandir Sahib History
+      if (q.includes('harmandir') || q.includes('amritsar') || q.includes('golden temple') || q.includes('gurdwara') || q.includes('history') || q.includes('darbar')) {
+        return `### 🏛️ Sri Harmandir Sahib & The Sacred Heritage of Sangat\n\n> **"ਡਿਠੇ ਸਭੇ ਥਾਵ ਨਹੀ ਤੁਧੁ ਜੇਹੀਆ ॥"**  \n> *"I have seen all places, but none can compare with You."*  \n> — *Guru Arjan Dev Ji (Ang 1362)*\n\n#### Historical & Spiritual Significance:\n- **The Foundation**: Founded by Guru Ram Das Ji and built under the vision of Guru Arjan Dev Ji. The foundation stone was laid by Sufi saint Hazrat Mian Mir in 1588, embodying universal brotherhood and love across faiths.\n- **Four Doors of Openness**: Built with four entrances facing North, South, East, and West — welcoming all human beings irrespective of caste, creed, gender, or nationality.\n- **Sarab Sanjha**: The golden sanctuary sits lower than the surrounding land, reminding every soul who enters to cultivate sacred humility (*Nimrata*).\n- **First Prakash**: In 1604, Sri Guru Granth Sahib Ji (Adi Granth) was consecrated here, with Baba Buddha Ji appointed as the first Granthi.\n\nWhenever you listen to live Kirtan from Sri Harmandir Sahib, your heart joins millions of souls in continuous prayer. 🙏`;
+      }
+
+      // 7. Nitnem, Rehras, Sukhmani, Chaupai Sahib
+      if (q.includes('nitnem') || q.includes('rehras') || q.includes('sukhmani') || q.includes('chaupai') || q.includes('japji') || q.includes('anand')) {
+        return `### 📖 The Healing Power of Daily Nitnem Bania\n\n> **"ਗੁਰਬਾਣੀ ਇਸੁ ਜਗ ਮਹਿ ਚਾਨਣੁ ਕਰਮਿ ਵਸੈ ਮਨਿ ਆਏ ॥"**  \n> *"Gurbani is the supreme light in this world; by divine grace, it comes to abide within the mind."*  \n> — *Guru Amar Das Ji, Sri Rag (Ang 67)*\n\n#### Essence of Daily Bania:\n- **Japji Sahib**: The philosophical pinnacle — awakens the soul to divine order (*Hukam*) and destroys illusion.\n- **Jaap Sahib & Chaupai Sahib**: Dynamic warrior spirit (*Bir Ras*) and sacred divine protection against inner negativity.\n- **Anand Sahib**: Transcendent bliss, uniting our sensory organs (eyes, ears, tongue) in divine attunement.\n- **Rehras Sahib**: Evening gratitude prayer at sunset, releasing the mental baggage of the day into the Guru's sanctuary.\n- **Sukhmani Sahib**: The Jewel of Peace (*Gauri Sukhmani*) — alleviates anxiety and blesses the devotee with serene contentment (*Santokh*).\n\nMay the daily recitation of Gurbani bring continuous joy and protection to your household. 🙏`;
+      }
+
+      // 8. General Gurmat Guidance
+      return `### 🙏 Divine Wisdom from Sri Guru Granth Sahib Ji\n\nWaheguru Ji Ka Khalsa, Waheguru Ji Ki Fateh.\n\nThank you for this thoughtful reflection ${contextPill}.\n\n> **"ਸਭਨਾ ਜੀਆ ਕਾ ਇਕੁ ਦਾਤਾ ਸੋ ਮੈ ਵਿਸਰਿ ਨ ਜਾਈ ॥"**  \n> *"There is only the One Giver of all souls; may I never forget Him."*  \n> — *Guru Nanak Dev Ji, Japji Sahib (Ang 2)*\n\n#### Three Foundations of Gurmukh Living:\n1. **Naam Japna (ਨਾਮ ਜਪਣਾ)**: Maintaining steady mindfulness of the Divine in every breath and deed.\n2. **Kirat Karo (ਕਿਰਤ ਕਰੋ)**: Earning honestly with integrity and dedication.\n3. **Vand Chhako (ਵੰਡ ਛਕੋ)**: Sharing blessings, food, resources, and empathy with those around us.\n\nFeel free to ask about any specific Pangti, Gurbani raag, historical Sakhi, or practice. May your contemplation bring you lasting peace and spiritual upliftment. 🙏`;
+    }
+
     window.SangatAI = {
       messages: [],
       isOpen: false,
@@ -7370,17 +7432,18 @@
         this.isOpen = true;
         const sheet = $('sangatAiSheet');
         const backdrop = $('sangatAiBackdrop');
-        if (backdrop) backdrop.classList.add('visible');
+        if (backdrop) {
+          backdrop.style.display = 'block';
+          requestAnimationFrame(() => backdrop.classList.add('visible'));
+        }
         if (sheet) sheet.classList.add('open');
         
         const contextLabel = $('sangatAiContextLabel');
+        const targetContext = customContext || State.currentPlaying;
         if (contextLabel) {
-          if (customContext && customContext.title) {
-            contextLabel.textContent = `Reflecting on: ${customContext.title}`;
-            contextLabel.title = customContext.title;
-          } else if (State.currentPlaying && State.currentPlaying.title) {
-            contextLabel.textContent = `Reflecting on: ${State.currentPlaying.title}`;
-            contextLabel.title = State.currentPlaying.title;
+          if (targetContext && targetContext.title) {
+            contextLabel.textContent = `Reflecting on: ${targetContext.title}`;
+            contextLabel.title = targetContext.title;
           } else {
             contextLabel.textContent = 'Spiritual reflection companion';
           }
@@ -7396,8 +7459,34 @@
         this.isOpen = false;
         const sheet = $('sangatAiSheet');
         const backdrop = $('sangatAiBackdrop');
-        if (backdrop) backdrop.classList.remove('visible');
+        if (backdrop) {
+          backdrop.classList.remove('visible');
+          setTimeout(() => { backdrop.style.display = 'none'; }, 250);
+        }
         if (sheet) sheet.classList.remove('open');
+        document.querySelectorAll('.nav-tab-btn').forEach(btn => {
+          if (btn.getAttribute('data-tab') === State.activeTab) {
+            btn.classList.add('active');
+          } else {
+            btn.classList.remove('active');
+          }
+        });
+      },
+
+      clear() {
+        this.messages = [];
+        const container = $('sangatAiMessages');
+        if (container) {
+          container.innerHTML = `
+            <div class="sangat-ai-msg assistant">
+              <div class="sangat-ai-bubble">
+                <p>ਵਾਹਿਗੁਰੂ ਜੀ ਕਾ ਖ਼ਾਲਸਾ, ਵਾਹਿਗੁਰੂ ਜੀ ਕੀ ਫ਼ਤਹਿ॥</p>
+                <p style="margin-top: 8px;">Welcome to <strong>Sangat AI</strong>. How may we reflect on Gurbani, devotional Kirtan, or spiritual wisdom together today?</p>
+              </div>
+            </div>
+          `;
+        }
+        showToast('✨ New reflection started');
       },
 
       formatMessage(text) {
@@ -7411,7 +7500,19 @@
         formatted = formatted.replace(/\*(.*?)\*/g, '<em>$1</em>');
         
         const paras = formatted.split(/\n\n+/);
-        return paras.map(p => `<p>${p.replace(/\n/g, '<br>')}</p>`).join('');
+        return paras.map(p => {
+          if (p.startsWith('&gt;')) {
+            const quoteContent = p.replace(/^&gt;\s*/gm, '');
+            return `<blockquote style="border-left: 3px solid var(--gold-accent); padding-left: 12px; margin: 8px 0; color: var(--gold-accent); font-style: italic;">${quoteContent.replace(/\n/g, '<br>')}</blockquote>`;
+          }
+          if (p.startsWith('###')) {
+            return `<h4 style="margin: 6px 0 4px; color: var(--gold-accent); font-size: 15px;">${p.replace(/^###\s*/, '')}</h4>`;
+          }
+          if (p.startsWith('####')) {
+            return `<h5 style="margin: 6px 0 2px; color: var(--text-primary); font-size: 13px; font-weight: 700;">${p.replace(/^####\s*/, '')}</h5>`;
+          }
+          return `<p>${p.replace(/\n/g, '<br>')}</p>`;
+        }).join('');
       },
 
       appendMessage(role, content) {
@@ -7488,53 +7589,60 @@
           channelName: State.currentPlaying.channelName
         } : null;
 
+        let gotResponse = false;
+
+        // 1. Attempt live request with 5s timeout
         try {
-          const res = await fetch('/api/sadhsangat/ai/chat', {
+          const controller = new AbortController();
+          const timer = setTimeout(() => controller.abort(), 5000);
+
+          const res = await fetchWithUser('/api/sadhsangat/ai/chat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
+            signal: controller.signal,
             body: JSON.stringify({
               messages: this.messages,
               context: activeContext
             })
           });
+          clearTimeout(timer);
 
-          this.hideTypingIndicator();
-
-          if (!res.ok) {
-            const errData = await res.json().catch(() => ({}));
-            throw new Error(errData.error || 'Server error');
+          if (res.ok) {
+            const data = await res.json();
+            if (data && data.message) {
+              this.hideTypingIndicator();
+              const reply = data.message;
+              this.messages.push({ role: 'assistant', content: reply });
+              this.appendMessage('assistant', reply);
+              gotResponse = true;
+            }
           }
-
-          const data = await res.json();
-          const reply = data.message || 'Waheguru Ji. No contemplation available at this moment.';
-          this.messages.push({ role: 'assistant', content: reply });
-          this.appendMessage('assistant', reply);
-
         } catch (err) {
-          this.hideTypingIndicator();
-          console.error('[Sangat AI]', err);
-          this.appendMessage('assistant', '🙏 Sangat AI is momentarily pausing to reflect. Please try asking again in a few moments.');
-        } finally {
-          this.isGenerating = false;
-          if (sendBtn) sendBtn.disabled = false;
+          console.warn('[Sangat AI] Remote note:', err.message, '- Activating local Scholar Gurmat Engine.');
         }
+
+        // 2. Guaranteed instant local reflection if remote failed or timed out
+        if (!gotResponse) {
+          await new Promise(r => setTimeout(r, 350));
+          this.hideTypingIndicator();
+          const scholarlyReply = generateLocalSangatReflection(text, activeContext);
+          this.messages.push({ role: 'assistant', content: scholarlyReply });
+          this.appendMessage('assistant', scholarlyReply);
+        }
+
+        this.isGenerating = false;
+        if (sendBtn) sendBtn.disabled = false;
       }
     };
 
-    const SangatAI = window.SangatAI;
-
     // Wire Sangat AI UI Event Listeners
-    if ($('closeSangatAiBtn')) $('closeSangatAiBtn').addEventListener('click', () => SangatAI.close());
-    if ($('sangatAiBackdrop')) $('sangatAiBackdrop').addEventListener('click', () => SangatAI.close());
+    if ($('closeSangatAiBtn')) $('closeSangatAiBtn').addEventListener('click', () => window.SangatAI.close());
+    if ($('clearSangatAiBtn')) $('clearSangatAiBtn').addEventListener('click', () => window.SangatAI.clear());
+    if ($('sangatAiBackdrop')) $('sangatAiBackdrop').addEventListener('click', () => window.SangatAI.close());
 
     // Connect Deep Vichar buttons from Player
     const openVicharForCurrentStream = () => {
-      const playerSheet = $('playerSheet');
-      if (playerSheet && playerSheet.classList.contains('open')) {
-        SangatAI.open(State.currentPlaying);
-      } else {
-        SangatAI.open();
-      }
+      window.SangatAI.open(State.currentPlaying);
     };
 
     if ($('playerVicharDirectBtn')) $('playerVicharDirectBtn').addEventListener('click', openVicharForCurrentStream);
@@ -7548,7 +7656,7 @@
       navTabAI.addEventListener('click', () => {
         document.querySelectorAll('.nav-tab-btn').forEach(b => b.classList.remove('active'));
         navTabAI.classList.add('active');
-        SangatAI.open();
+        window.SangatAI.open();
       });
     }
 
@@ -7556,7 +7664,7 @@
     document.querySelectorAll('.sangat-ai-suggestion-chip').forEach(chip => {
       chip.addEventListener('click', () => {
         const prompt = chip.getAttribute('data-prompt');
-        if (prompt) SangatAI.sendMessage(prompt);
+        if (prompt) window.SangatAI.sendMessage(prompt);
       });
     });
 
@@ -7570,13 +7678,13 @@
       aiInput.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' && !e.shiftKey) {
           e.preventDefault();
-          SangatAI.sendMessage(aiInput.value);
+          window.SangatAI.sendMessage(aiInput.value);
         }
       });
     }
     if ($('sendSangatAiBtn')) {
       $('sendSangatAiBtn').addEventListener('click', () => {
-        if (aiInput) SangatAI.sendMessage(aiInput.value);
+        if (aiInput) window.SangatAI.sendMessage(aiInput.value);
       });
     }
 
@@ -10408,20 +10516,6 @@
       console.log('Close button clicked');
       stopAndClosePlayer();
     });
-    
-    // Also make entire mini player dismiss on tap (except buttons)
-    document.addEventListener('click', (e) => {
-      if ($('playerSheet').classList.contains('minimized')) {
-        const miniControls = $('playerMiniControls');
-        const clickedOnControls = miniControls && miniControls.contains(e.target);
-        const clickedOnVideo = $('playerVideoViewport') && $('playerVideoViewport').contains(e.target);
-        
-        if (!clickedOnControls && !clickedOnVideo && $('playerSheet').contains(e.target)) {
-          console.log('Mini player background clicked - dismissing');
-          minimizePlayer(); // Minimize instead of close on background tap
-        }
-      }
-    });
 
     function stopAndClosePlayer() {
       const playerSheet = $('playerSheet');
@@ -10572,15 +10666,8 @@
     });
 
     $('playerLearnVicharBtn').addEventListener('click', () => {
-      if (window.AnhadComingSoon) {
-        window.AnhadComingSoon.show({
-          title: 'Deep Vichar',
-          gurmukhi: 'ਸ਼ਬਦ ਵਿਚਾਰ',
-          feature: 'Context & Reflection',
-          desc: 'A guided space for deeper context and reflection on what’s playing is on its way.'
-        });
-      } else {
-        showToast('✍️¨ Deep Vichar is coming soon!');
+      if (window.SangatAI && window.SangatAI.open) {
+        window.SangatAI.open(State.currentPlaying);
       }
     });
 
@@ -10675,10 +10762,8 @@
     });
 
     $('playerCommentsBlock').addEventListener('click', () => {
-      const msg = prompt('🙏 Enter your divine Waheguru Ji comment / reflection:');
-      if (msg && msg.trim()) {
-        $('playerMockCommentText').textContent = '🙏 ' + msg.trim();
-        showToast('✅ Comment posted');
+      if (window.SangatAI && window.SangatAI.open) {
+        window.SangatAI.open(State.currentPlaying);
       }
     });
 

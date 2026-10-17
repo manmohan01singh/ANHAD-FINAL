@@ -827,19 +827,49 @@
     overflow: visible !important;
   }
 
+  /* Light mode / daytime companion banner styling */
+  body.companion-mode-active:not(.dark-mode) .greeting__hero-banner,
+  html:not(.dark-mode) body.companion-mode-active .greeting__hero-banner {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    width: 100% !important;
+  }
+
+  /* Dark Mode & Dynamic Night: ALWAYS hide hero banner (including in companion mode) */
   html.dark-mode .greeting__hero-banner,
   html[data-theme="dark"] .greeting__hero-banner,
   html[data-theme-mode="dark"] .greeting__hero-banner,
   html[data-time-of-day="night"] .greeting__hero-banner,
-  html[data-theme-mode="auto"][data-time-of-day="night"] .greeting__hero-banner {
+  html[data-theme-mode="auto"][data-time-of-day="night"] .greeting__hero-banner,
+  html.dark-mode body.companion-mode-active .greeting__hero-banner,
+  html[data-theme="dark"] body.companion-mode-active .greeting__hero-banner,
+  html[data-theme-mode="dark"] body.companion-mode-active .greeting__hero-banner,
+  html[data-time-of-day="night"] body.companion-mode-active .greeting__hero-banner,
+  html[data-theme-mode="auto"][data-time-of-day="night"] body.companion-mode-active .greeting__hero-banner {
     display: none !important;
   }
 
+  html.dark-mode #greetingDarkCarousel,
+  html[data-theme="dark"] #greetingDarkCarousel,
+  html[data-theme-mode="dark"] #greetingDarkCarousel,
+  html[data-time-of-day="night"] #greetingDarkCarousel,
+  html[data-theme-mode="auto"][data-time-of-day="night"] #greetingDarkCarousel,
+  html.dark-mode body.companion-mode-active #greetingDarkCarousel,
+  html[data-theme="dark"] body.companion-mode-active #greetingDarkCarousel,
+  html[data-theme-mode="dark"] body.companion-mode-active #greetingDarkCarousel,
+  html[data-time-of-day="night"] body.companion-mode-active #greetingDarkCarousel,
+  html[data-theme-mode="auto"][data-time-of-day="night"] body.companion-mode-active #greetingDarkCarousel,
   html.dark-mode .greeting__dark-carousel-container,
   html[data-theme="dark"] .greeting__dark-carousel-container,
   html[data-theme-mode="dark"] .greeting__dark-carousel-container,
   html[data-time-of-day="night"] .greeting__dark-carousel-container,
-  html[data-theme-mode="auto"][data-time-of-day="night"] .greeting__dark-carousel-container {
+  html[data-theme-mode="auto"][data-time-of-day="night"] .greeting__dark-carousel-container,
+  html.dark-mode body.companion-mode-active .greeting__dark-carousel-container,
+  html[data-theme="dark"] body.companion-mode-active .greeting__dark-carousel-container,
+  html[data-theme-mode="dark"] body.companion-mode-active .greeting__dark-carousel-container,
+  html[data-time-of-day="night"] body.companion-mode-active .greeting__dark-carousel-container,
+  html[data-theme-mode="auto"][data-time-of-day="night"] body.companion-mode-active .greeting__dark-carousel-container {
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
@@ -2694,8 +2724,7 @@
   #readerContainer,
   .paath-reader,
   .gurbani-content,
-  .gurbani-scroll,
-  .verses-container {
+  .gurbani-scroll {
     height: auto !important;
     min-height: 100vh !important;
     overflow-y: auto !important;
@@ -2750,7 +2779,12 @@
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6) !important;
   }
 
-  .verse-gurmukhi,
+  .verse-card .verse-gurmukhi,
+  .verse-container .verse-gurmukhi,
+  .bani-line-card .verse-gurmukhi,
+  .shabad-line-card .verse-gurmukhi,
+  .paath-reader .verse-gurmukhi,
+  .gurbani-content .verse-gurmukhi,
   .gurbani-text,
   .bani-gurmukhi {
     font-size: 2.1rem !important;
@@ -2759,16 +2793,30 @@
     color: var(--gold-dark, #8B6508) !important;
     margin-bottom: 12px !important;
   }
-  html.dark-mode .verse-gurmukhi,
+  html.dark-mode .verse-card .verse-gurmukhi,
+  html.dark-mode .verse-container .verse-gurmukhi,
+  html.dark-mode .bani-line-card .verse-gurmukhi,
+  html.dark-mode .shabad-line-card .verse-gurmukhi,
+  html.dark-mode .paath-reader .verse-gurmukhi,
+  html.dark-mode .gurbani-content .verse-gurmukhi,
   html.dark-mode .gurbani-text,
   html.dark-mode .bani-gurmukhi,
-  [data-theme="dark"] .verse-gurmukhi,
+  [data-theme="dark"] .verse-card .verse-gurmukhi,
+  [data-theme="dark"] .verse-container .verse-gurmukhi,
+  [data-theme="dark"] .bani-line-card .verse-gurmukhi,
+  [data-theme="dark"] .shabad-line-card .verse-gurmukhi,
+  [data-theme="dark"] .paath-reader .verse-gurmukhi,
+  [data-theme="dark"] .gurbani-content .verse-gurmukhi,
   [data-theme="dark"] .gurbani-text,
   [data-theme="dark"] .bani-gurmukhi {
     color: #F7C634 !important;
   }
 
-  .verse-translit,
+  .verse-card .verse-translit,
+  .verse-container .verse-translit,
+  .bani-line-card .verse-translit,
+  .shabad-line-card .verse-translit,
+  .paath-reader .verse-translit,
   .bani-translit {
     font-size: 1.05rem !important;
     line-height: 1.6 !important;
@@ -2777,7 +2825,11 @@
     margin-bottom: 8px !important;
   }
 
-  .verse-translation,
+  .verse-card .verse-translation,
+  .verse-container .verse-translation,
+  .bani-line-card .verse-translation,
+  .shabad-line-card .verse-translation,
+  .paath-reader .verse-translation,
   .bani-english {
     font-size: 1rem !important;
     line-height: 1.6 !important;

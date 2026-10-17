@@ -122,7 +122,11 @@
                 const raw = localStorage.getItem(SCHEDULE_KEY)
                          || localStorage.getItem('naam_abhyas_schedule');
                 if (!raw) return {};
-                return JSON.parse(raw) || {};
+                const parsed = JSON.parse(raw);
+                if (parsed && typeof parsed === 'object') {
+                    return parsed._schedule || parsed;
+                }
+                return {};
             } catch { return {}; }
         }
 
@@ -614,6 +618,7 @@
 
         // --- Session Alert buttons ---
         const alertStart  = document.getElementById('alertStartNowBtn');
+        const alertReading = document.getElementById('alertStartReadingBtn');
         const alertSilent = document.getElementById('alertSilentBtn');
         const alertSkip   = document.getElementById('skipSessionBtn');
 
@@ -621,7 +626,22 @@
             alertStart.addEventListener('click', () => {
                 alarm._hideSessionAlert();
                 const dur = alarm._cfg().duration || 2;
-                alarm._startMeditation(dur, false);
+                if (window.naamAbhyasApp?.timerPlayer) {
+                    window.naamAbhyasApp.timerPlayer.start(dur, { practiceType: 'simran', isExtra: false });
+                } else {
+                    alarm._startMeditation(dur, false);
+                }
+            });
+        }
+        if (alertReading) {
+            alertReading.addEventListener('click', () => {
+                alarm._hideSessionAlert();
+                const dur = alarm._cfg().duration || 2;
+                if (window.naamAbhyasApp?.timerPlayer) {
+                    window.naamAbhyasApp.timerPlayer.start(dur, { practiceType: 'reading', isExtra: false });
+                } else {
+                    alarm._startMeditation(dur, false);
+                }
             });
         }
         if (alertSilent) {

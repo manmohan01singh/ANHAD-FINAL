@@ -117,6 +117,21 @@ describe('R4: My Pothi Missed-Day Interactive Completion', () => {
       expect(dateStr).toMatch(/^\d{4}-\d{2}-\d{2}$/);
       expect(firstRow.getAttribute('onclick')).toContain(`openPothiDayDrawer('${dateStr}')`);
     });
+
+    it('renderYearlyView binds openPothiDayDrawer click handlers to missed days list and date picker', () => {
+      const container = document.getElementById('insightsTabContent');
+      pothi.renderYearlyView(container, {});
+
+      const missedItems = container.querySelectorAll('.yearly-missed-item');
+      expect(missedItems.length).toBeGreaterThan(0);
+
+      const firstItem = missedItems[0];
+      expect(firstItem.getAttribute('onclick')).toContain('openPothiDayDrawer(');
+
+      const datePicker = container.querySelector('#yearlyDateJumper');
+      expect(datePicker).not.toBeNull();
+      expect(datePicker.getAttribute('onchange')).toContain('openPothiDayDrawer');
+    });
   });
 
   describe('2. Day Drawer Opening, Presentation & State', () => {

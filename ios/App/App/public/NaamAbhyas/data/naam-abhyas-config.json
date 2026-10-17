@@ -1,5 +1,5 @@
 {
-    "enabled": false,
+    "enabled": true,
     "duration": 2,
     "activeHours": {
         "start": 5,
@@ -14,7 +14,7 @@
         "hourStart": true,
         "preReminder": true,
         "preReminderMinutes": 2,
-        "sound": "gentle-bell",
+        "sound": "calm-singing-bowl",
         "vibration": true,
         "lockScreen": true,
         "soundEnabled": true

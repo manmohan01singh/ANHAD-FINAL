@@ -134,15 +134,36 @@
     ════════════════════════════════════════════════════════════════════ -->
     <section class="khalsa-library-hero" aria-label="Khalsa Sacred Library">
       <div class="library-hero-card">
-        <div class="library-hero-image-wrap">
-          <img src="../assets/sacred-library-hero.jpg" alt="Sacred Khalsa Gurbani Library & Manuscript Repository" class="library-hero-img" loading="eager" fetchpriority="high">
-          <div class="library-hero-overlay"></div>
-        </div>
+        <div class="library-hero-ambient-glow" aria-hidden="true"></div>
+        <div class="library-hero-mesh" aria-hidden="true"></div>
         <div class="library-hero-content">
-          <div class="library-khanda-emblem">ੴ</div>
-          <span class="library-badge-pill">ਗੁਰਮਤਿ ਗਿਆਨ ਭੰਡਾਰ • KHALSA SANCTUM</span>
+          <div class="library-hero-topline">
+            <span class="library-badge-pill">
+              <span class="library-badge-dot"></span>
+              ਗੁਰਮਤਿ ਗਿਆਨ ਭੰਡਾਰ • KHALSA SANCTUM
+            </span>
+            <div class="library-khanda-emblem" aria-hidden="true">ੴ</div>
+          </div>
           <h2 class="library-hero-title">The Sacred Gurbani Library</h2>
           <p class="library-hero-desc">Explore centuries of divine wisdom, illuminated Pothi Sahibs, 31 sacred Raags, and inspiring Gursikhi heritage.</p>
+          <div class="library-hero-chips" role="navigation" aria-label="Quick Library Access">
+            <button type="button" class="library-chip" onclick="openModal('sakhis')">
+              <span class="chip-icon">📜</span>
+              <span>Divine Sakhis</span>
+            </button>
+            <button type="button" class="library-chip" onclick="openModal('raags')">
+              <span class="chip-icon">🎵</span>
+              <span>31 Sacred Raags</span>
+            </button>
+            <button type="button" class="library-chip" onclick="window.navigateTo ? window.navigateTo('../SehajPaath/reader.html?ang=1') : (window.location.href='../SehajPaath/reader.html?ang=1')">
+              <span class="chip-icon">📖</span>
+              <span>Pothi Sahibs</span>
+            </button>
+            <button type="button" class="library-chip" onclick="openModal('history')">
+              <span class="chip-icon">☬</span>
+              <span>Sikh History</span>
+            </button>
+          </div>
         </div>
       </div>
     </section>
@@ -222,7 +243,7 @@
         <div class="pothi-manuscript-card" onclick="window.navigateTo ? window.navigateTo('../SehajPaath/reader.html?ang=1') : window.location.href='../SehajPaath/reader.html?ang=1'">
           <div class="pothi-card-glow"></div>
           <div class="pothi-img-wrap">
-            <img src="../assets/sggs-transparent.webp" alt="Sri Guru Granth Sahib Ji" class="pothi-img" onerror="this.src='../assets/app-logo.webp'">
+            <span class="pothi-sacred-symbol sggs" aria-hidden="true">ੴ</span>
           </div>
           <div class="pothi-content">
             <span class="pothi-ang-badge">੧੪੩੦ ਅੰਗ • ੩੧ ਰਾਗ</span>
@@ -236,7 +257,7 @@
         <div class="pothi-manuscript-card" onclick="openModal('themes')">
           <div class="pothi-card-glow"></div>
           <div class="pothi-img-wrap">
-            <img src="../assets/dasam-granth-transparent.webp" alt="Sri Dasam Granth Ji" class="pothi-img" onerror="this.src='../assets/app-logo.webp'">
+            <span class="pothi-sacred-symbol dasam" aria-hidden="true">☬</span>
           </div>
           <div class="pothi-content">
             <span class="pothi-ang-badge">੧੪੨੮ ਧਿਆਇ • ਬੀਰ ਰਸ</span>
@@ -250,7 +271,7 @@
         <div class="pothi-manuscript-card" onclick="openModal('history')">
           <div class="pothi-card-glow"></div>
           <div class="pothi-img-wrap">
-            <img src="../assets/sarbloh-granth-transparent.webp" alt="Sri Sarbloh Granth Ji" class="pothi-img" onerror="this.src='../assets/app-logo.webp'">
+            <span class="pothi-sacred-symbol sarbloh" aria-hidden="true">⚔️</span>
           </div>
           <div class="pothi-content">
             <span class="pothi-ang-badge">ਖ਼ਾਲਸਾ ਮਹਿਮਾ • ਸਿਦਕ</span>
@@ -264,7 +285,7 @@
         <div class="pothi-manuscript-card" onclick="openModal('sakhis')">
           <div class="pothi-card-glow"></div>
           <div class="pothi-img-wrap">
-            <img src="../assets/ikonkar_guru-gobind-singh.webp" alt="Vaaran Bhai Gurdas Ji" class="pothi-img" onerror="this.src='../assets/app-logo.webp'">
+            <span class="pothi-sacred-symbol vaaran" aria-hidden="true">📜</span>
           </div>
           <div class="pothi-content">
             <span class="pothi-ang-badge">ਕੁੰਜੀ ਗੁਰਬਾਣੀ ਦੀ • ੪੦ ਵਾਰਾਂ</span>
@@ -509,25 +530,26 @@
   <script src="../lib/smart-back.js"></script>
   <script src="../lib/share-card.js"></script>
   <script src="../pwa-register.js?v=2"></script>
+  <script src="../lib/authoritative-streak-engine.js"></script>
   <script src="../lib/unified-stats.js"></script>
   <script src="../lib/user-stats.js"></script>
   <script src="insights.js"></script>
 
   <!-- Floating Navigation Tab Bar -->
   <nav class="tab-bar" id="mainNav" aria-label="Main Navigation">
-    <a href="/index.html" class="tab-item">
+    <a href="../index.html" class="tab-item">
       <span class="tab-icon"><svg width="22" height="22" aria-hidden="true"><use href="#icon-home"/></svg></span>
       <span class="tab-label">Home</span>
     </a>
-    <a href="/Insights/insights.html" class="tab-item active">
+    <a href="../Insights/insights.html" class="tab-item active">
       <span class="tab-icon"><svg width="22" height="22" aria-hidden="true"><use href="#icon-library-books"/></svg></span>
       <span class="tab-label">Learning</span>
     </a>
-    <a href="/Favorites/favorites.html" class="tab-item">
+    <a href="../Favorites/favorites.html" class="tab-item">
       <span class="tab-icon"><svg width="22" height="22" aria-hidden="true"><use href="#icon-heart-fav"/></svg></span>
       <span class="tab-label">Favorites</span>
     </a>
-    <a href="/sadhsangat-live/index.html" class="tab-item">
+    <a href="../sadhsangat-live/index.html" class="tab-item">
       <span class="tab-icon"><svg width="22" height="22" aria-hidden="true"><use href="#icon-radio-broadcast"/></svg></span>
       <span class="tab-label">Sadhsangat</span>
     </a>

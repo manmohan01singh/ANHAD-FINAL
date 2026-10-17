@@ -163,24 +163,100 @@ class BaniCacheOptimizer {
         });
     }
 
+    getChunksBaseUrl() {
+        if (typeof window === 'undefined') return 'data/banis-chunks/';
+        
+        // 1. If BaniDB is available and has chunksPath, use that
+        if (typeof window !== 'undefined' && window.BaniDB && window.BaniDB.CONFIG && window.BaniDB.CONFIG.chunksPath) {
+            return window.BaniDB.CONFIG.chunksPath.replace(/\/?$/, '/');
+        }
+
+        // 2. Check ANHAD_ROOT
+        let root = (typeof window !== 'undefined' && window.ANHAD_ROOT) ? window.ANHAD_ROOT : null;
+        if (!root) {
+            const loc = (typeof window !== 'undefined' && window.location) ? window.location : null;
+            const path = loc ? (loc.pathname || '').replace(/\\/g, '/') : '';
+            if (path.includes('/nitnem/category/')) {
+                return '../../data/banis-chunks/';
+            } else if (
+                path.includes('/nitnem/') || 
+                path.includes('/SehajPaath/') || 
+                path.includes('/NaamAbhyas/') || 
+                path.includes('/Insights/') || 
+                path.includes('/Dashboard/') || 
+                path.includes('/Favorites/') || 
+                path.includes('/Companion/') ||
+                path.includes('/NitnemTracker/') ||
+                path.includes('/GurbaniRadio/')
+            ) {
+                return '../data/banis-chunks/';
+            } else {
+                return 'data/banis-chunks/';
+            }
+        }
+        
+        if (root && !root.startsWith('http://') && !root.startsWith('https://') && !root.startsWith('capacitor://')) {
+            const origin = (typeof window !== 'undefined' && window.location && window.location.origin) ? window.location.origin : '';
+            root = origin + (root.startsWith('/') ? '' : '/') + root;
+        }
+        
+        try {
+            return new URL('data/banis-chunks/', root).href;
+        } catch(e) {
+            return '/data/banis-chunks/';
+        }
+    }
+
+    async fetchChunkFile(filename) {
+        const base = this.getChunksBaseUrl();
+        const candidateUrls = [
+            base.endsWith('/') ? base + filename : base + '/' + filename,
+            `../data/banis-chunks/${filename}`,
+            `/data/banis-chunks/${filename}`,
+            `data/banis-chunks/${filename}`,
+            `../../data/banis-chunks/${filename}`
+        ];
+        
+        const uniqueUrls = [...new Set(candidateUrls)];
+        
+        for (const url of uniqueUrls) {
+            try {
+                const response = await fetch(url);
+                if (response && response.ok) {
+                    return response;
+                }
+            } catch (err) {
+                // Try next candidate url
+            }
+        }
+        return null;
+    }
+
     async fetchBaniFromOfflineJSON(baniId) {
         try {
             // Use BaniDB chunked loading if available
-            if (window.BaniDB && window.BaniDB.getBani) {
-                console.log(`[BaniCache] Using BaniDB chunked loading: ${baniId}`);
-                return await window.BaniDB.getBani(baniId);
+            if (typeof window !== 'undefined' && window.BaniDB && typeof window.BaniDB.getBani === 'function') {
+                try {
+                    const baniDbResult = await window.BaniDB.getBani(baniId);
+                    if (baniDbResult && baniDbResult.verses && baniDbResult.verses.length > 0) {
+                        console.log(`[BaniCache] Using BaniDB chunked loading: ${baniId}`);
+                        return baniDbResult;
+                    }
+                } catch (bErr) {
+                    console.warn(`[BaniCache] BaniDB.getBani threw, falling back to direct chunks:`, bErr);
+                }
             }
             
             // Load index to find which file contains this bani
-            const indexResponse = await fetch('data/banis-chunks/index.json');
-            if (indexResponse.ok) {
+            const indexResponse = await this.fetchChunkFile('index.json');
+            if (indexResponse && indexResponse.ok) {
                 const indexData = await indexResponse.json();
-                const chunkFile = indexData.baniIndex[String(baniId)];
+                const chunkFile = indexData && indexData.baniIndex && indexData.baniIndex[String(baniId)];
                 
                 if (chunkFile) {
                     console.log(`[BaniCache] Loading bani ${baniId} from ${chunkFile}`);
-                    const response = await fetch(`data/banis-chunks/${chunkFile}`);
-                    if (response.ok) {
+                    const response = await this.fetchChunkFile(chunkFile);
+                    if (response && response.ok) {
                         const jsonData = await response.json();
                         
                         if (jsonData.banis && jsonData.banis[baniId]) {
@@ -188,7 +264,7 @@ class BaniCacheOptimizer {
                             return jsonData.banis[baniId];
                         }
                     } else {
-                        console.warn(`[BaniCache] Chunk file ${chunkFile} not found, falling back to API`);
+                        console.warn(`[BaniCache] Chunk file ${chunkFile} not found, falling back to nitnem bundle`);
                     }
                 }
             }
@@ -196,23 +272,45 @@ class BaniCacheOptimizer {
             // Fallback to nitnem bundle for nitnem banis
             const nitnemBanis = [1, 2, 3, 4, 5, 6, 7, 9, 10, 21, 22, 23, 24, 25, 26];
             if (nitnemBanis.includes(baniId)) {
-                const response = await fetch('data/banis-chunks/nitnem-banis.json');
-                if (!response.ok) throw new Error('Failed to load nitnem bundle');
-                const jsonData = await response.json();
-                
-                if (jsonData.banis && jsonData.banis[baniId]) {
-                    console.log(`[BaniCache] ✅ Loaded from nitnem bundle: ${baniId}`);
-                    return jsonData.banis[baniId];
+                const response = await this.fetchChunkFile('nitnem-banis.json');
+                if (response && response.ok) {
+                    const jsonData = await response.json();
+                    
+                    if (jsonData.banis && jsonData.banis[baniId]) {
+                        console.log(`[BaniCache] ✅ Loaded from nitnem bundle: ${baniId}`);
+                        return jsonData.banis[baniId];
+                    }
+                }
+            }
+
+            // Fallback: Check popular-banis bundle
+            const popularResponse = await this.fetchChunkFile('popular-banis.json');
+            if (popularResponse && popularResponse.ok) {
+                const popularJson = await popularResponse.json();
+                if (popularJson.banis && popularJson.banis[baniId]) {
+                    console.log(`[BaniCache] ✅ Loaded from popular bundle: ${baniId}`);
+                    return popularJson.banis[baniId];
                 }
             }
             
-            // Final fallback: Try API endpoint
+            // Final fallback: Try API endpoints
             console.log(`[BaniCache] Falling back to API for bani ${baniId}`);
-            const apiResponse = await fetch(`/api/banidb/v2/${baniId}`);
-            if (apiResponse.ok) {
-                const apiData = await apiResponse.json();
-                console.log(`[BaniCache] ✅ Loaded from API: ${baniId}`);
-                return apiData;
+            if (typeof window !== 'undefined' && window.BaniDB && typeof window.BaniDB.getBani === 'function') {
+                return await window.BaniDB.getBani(baniId);
+            }
+            const apiEndpoints = [
+                `/api/banidb/v2/${baniId}`,
+                `https://api.banidb.com/v2/banis/${baniId}`
+            ];
+            for (const endpoint of apiEndpoints) {
+                try {
+                    const apiResponse = await fetch(endpoint);
+                    if (apiResponse && apiResponse.ok) {
+                        const apiData = await apiResponse.json();
+                        console.log(`[BaniCache] ✅ Loaded from API (${endpoint}): ${baniId}`);
+                        return apiData;
+                    }
+                } catch (e) {}
             }
             
             throw new Error(`Bani ${baniId} not found in offline data or API`);
@@ -264,10 +362,48 @@ class BaniCacheOptimizer {
     // IMAGE PRELOADING
     // ═══════════════════════════════════════════════════════════════
 
+    getCandidateAssetUrls(path) {
+        if (!path) return [];
+        if (path.startsWith('http://') || path.startsWith('https://') || path.startsWith('data:')) {
+            return [path];
+        }
+        const cleaned = path.replace(/^\.?\.\//, '').replace(/^\//, '');
+        const p = (typeof window !== 'undefined' && window.location && window.location.pathname) 
+            ? window.location.pathname.replace(/\\/g, '/') 
+            : '';
+        
+        let prefix = '';
+        if (p.includes('/nitnem/category/')) {
+            prefix = '../../';
+        } else if (
+            p.includes('/nitnem/') || 
+            p.includes('/SehajPaath/') || 
+            p.includes('/NaamAbhyas/') || 
+            p.includes('/Insights/') || 
+            p.includes('/Dashboard/') || 
+            p.includes('/Favorites/') || 
+            p.includes('/Companion/') ||
+            p.includes('/NitnemTracker/') ||
+            p.includes('/GurbaniRadio/')
+        ) {
+            prefix = '../';
+        }
+        
+        return [...new Set([
+            prefix + cleaned,
+            '/' + cleaned,
+            path,
+            '../' + cleaned,
+            cleaned
+        ])];
+    }
+
     /**
      * Preload an image and cache it
      */
     async preloadImage(url) {
+        if (!url) return null;
+
         // Check if already cached
         if (this.imageCache.has(url)) {
             return this.imageCache.get(url);
@@ -280,25 +416,25 @@ class BaniCacheOptimizer {
             return cached.blob;
         }
 
-        // Fetch and cache
-        try {
-            const response = await fetch(url);
-            if (!response.ok) throw new Error(`Failed to load ${url}`);
-            
-            const blob = await response.blob();
-            
-            // Cache in memory
-            this.imageCache.set(url, blob);
-            
-            // Cache in IndexedDB
-            await this.cacheImage(url, blob);
-            
-            console.log(`[BaniCache] 🖼️ Image cached: ${url}`);
-            return blob;
-        } catch (error) {
-            console.warn(`[BaniCache] Image load failed: ${url}`, error);
-            return null;
+        // Fetch and cache across candidate URLs
+        const candidates = this.getCandidateAssetUrls(url);
+        for (const candidate of candidates) {
+            try {
+                const response = await fetch(candidate);
+                if (response && response.ok) {
+                    const blob = await response.blob();
+                    this.imageCache.set(url, blob);
+                    await this.cacheImage(url, blob);
+                    console.log(`[BaniCache] 🖼️ Image cached: ${candidate}`);
+                    return blob;
+                }
+            } catch (err) {
+                // Try next candidate
+            }
         }
+
+        console.warn(`[BaniCache] Image load failed: ${url}`);
+        return null;
     }
 
     async getImageFromDB(url) {
@@ -881,7 +1017,10 @@ class BaniCacheOptimizer {
 // GLOBAL INSTANCE
 // ═══════════════════════════════════════════════════════════════
 
-window.baniCacheOptimizer = new BaniCacheOptimizer();
+if (typeof window !== 'undefined') {
+    window.BaniCacheOptimizer = BaniCacheOptimizer;
+    window.baniCacheOptimizer = new BaniCacheOptimizer();
+}
 
 // Export for modules
 if (typeof module !== 'undefined' && module.exports) {

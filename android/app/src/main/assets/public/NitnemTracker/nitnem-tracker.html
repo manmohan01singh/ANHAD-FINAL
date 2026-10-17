@@ -259,6 +259,62 @@
                 transform: rotate(360deg);
             }
         }
+
+        /* 5-Day Nitnem Recovery Challenge (/boost) Styling */
+        .recovery-card {
+            margin: 16px 0;
+            padding: 18px;
+            border-radius: 18px;
+            text-align: left;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+        }
+        .recovery-card.in-progress {
+            background: rgba(52, 199, 89, 0.1);
+            border: 1px solid rgba(52, 199, 89, 0.3);
+        }
+        html.dark-mode .recovery-card.in-progress, [data-theme="dark"] .recovery-card.in-progress {
+            background: rgba(52, 199, 89, 0.08);
+            border: 1px solid rgba(52, 199, 89, 0.25);
+        }
+        .recovery-card.eligible {
+            background: rgba(212, 148, 58, 0.1);
+            border: 1px solid rgba(212, 148, 58, 0.3);
+        }
+        html.dark-mode .recovery-card.eligible, [data-theme="dark"] .recovery-card.eligible {
+            background: rgba(212, 148, 58, 0.08);
+            border: 1px solid rgba(212, 148, 58, 0.25);
+        }
+        .recovery-card.failed {
+            background: rgba(255, 69, 58, 0.1);
+            border: 1px solid rgba(255, 69, 58, 0.3);
+        }
+        html.dark-mode .recovery-card.failed, [data-theme="dark"] .recovery-card.failed {
+            background: rgba(255, 69, 58, 0.08);
+            border: 1px solid rgba(255, 69, 58, 0.25);
+        }
+        .recovery-gurbani-box {
+            padding: 14px;
+            border-radius: 14px;
+            margin-bottom: 12px;
+            background: rgba(255, 255, 255, 0.85);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+        html.dark-mode .recovery-gurbani-box, [data-theme="dark"] .recovery-gurbani-box {
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+        .recovery-translation-text {
+            font-size: 13px;
+            line-height: 1.45;
+            color: #1C1C1E;
+            margin-bottom: 6px;
+        }
+        html.dark-mode .recovery-translation-text, [data-theme="dark"] .recovery-translation-text {
+            color: #F2F2F7;
+        }
     </style>
     <!-- High-Priority Fixed Bottom Tab Bar Override for Mobile & iOS -->
     <style id="nitnem-tab-bar-fix">
@@ -871,6 +927,20 @@
                             <span class="streak-stat-value" id="totalDays">0</span>
                             <span class="streak-stat-label">Total Days</span>
                         </div>
+                    </div>
+
+                    <!-- Streak Restore Policy & Quick Backup Controls -->
+                    <div id="streakRestorePolicyContainer"></div>
+                    <div class="streak-tools-row" style="display: flex; gap: 8px; margin-top: 10px; margin-bottom: 16px;">
+                        <button class="streak-tool-btn" id="nitnemBoostQuickBtn" onclick="StreakRestorePolicyManager.openModal(true)" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 5px; padding: 10px; background: rgba(255,149,0,0.12); border: 1px solid rgba(255,149,0,0.3); border-radius: 12px; color: #FF9500; font-weight: 700; font-size: 12px; cursor: pointer;">
+                            <span>⚡</span> /boost
+                        </button>
+                        <button class="streak-tool-btn" id="nitnemExportQuickBtn" onclick="StreakBackupManager.exportBackup()" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 5px; padding: 10px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; color: #fff; font-weight: 600; font-size: 12px; cursor: pointer;">
+                            <span>📥</span> Backup Data
+                        </button>
+                        <button class="streak-tool-btn" id="nitnemImportQuickBtn" onclick="StreakBackupManager.openImportModal()" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 5px; padding: 10px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; color: #fff; font-weight: 600; font-size: 12px; cursor: pointer;">
+                            <span>📤</span> Restore Data
+                        </button>
                     </div>
 
                     <!-- Achievements Grid -->
@@ -1545,8 +1615,9 @@
     <script src="data-persistence-guard.js?v=1.0"></script>
     <script src="auto-alarm-sync.js?v=1.0"></script>
     
-    <script src="../lib/unified-stats.js"></script>
-    <script src="nitnem-tracker.js?v=2.5"></script>
+    <script src="../lib/unified-stats.js?v=2.6"></script>
+    <script src="../lib/authoritative-streak-engine.js?v=2.6"></script>
+    <script src="nitnem-tracker.js?v=2.6"></script>
     <script src="../lib/alarm-coordinator.js?v=1.0" defer></script>
     <script src="../lib/global-alarm-system.js?v=1.0" defer></script>
 

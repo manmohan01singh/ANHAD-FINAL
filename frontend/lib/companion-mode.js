@@ -27,8 +27,10 @@
     }
     const clean = relPath.replace(/^\//, '');
     const pathname = (typeof window !== 'undefined' && window.location && window.location.pathname) || '';
-    const isSub = /\/(Companion|Admin|Settings|sangat|notifications|nitnem|Insights|Favorites)\//i.test(pathname);
-    return isSub ? `../${clean}` : clean;
+    const parts = pathname.split('/').filter(Boolean);
+    const isSub = parts.length > 1 && !(parts.length === 2 && parts[0] === 'frontend');
+    const isSingleDir = parts.length === 1 && !parts[0].includes('.html') && parts[0] !== 'frontend';
+    return (isSub || isSingleDir) ? `../${clean}` : clean;
   }
 
   function checkExpiration() {
@@ -203,6 +205,7 @@
       }
       if (heroImg) heroImg.classList.add('companion-mode-active');
     } else {
+      // Standard mode or dark mode (showDark === true)
       if (document.body) document.body.classList.remove('companion-mode-active');
       if (banner) banner.classList.remove('companion-mode-active');
       if (heroImg) heroImg.classList.remove('companion-mode-active');
@@ -215,14 +218,34 @@
             window.PortraitSlider.init();
           }
         }
+      } else {
+        if (banner) banner.style.removeProperty('display');
+        const darkCarousel = document.getElementById('greetingDarkCarousel');
+        if (darkCarousel) darkCarousel.style.setProperty('display', 'none', 'important');
       }
     }
 
     if (!heroImg) return;
 
     const customImg = getCustomImage();
-    const targetSrc = enabled ? (customImg || resolveAssetPath(COMPANION_HERO)) : resolveAssetPath(DEFAULT_HERO);
+    const rawTarget = enabled ? (customImg || COMPANION_HERO) : DEFAULT_HERO;
+    const targetSrc = resolveAssetPath(rawTarget);
     const targetAlt = enabled ? (localStorage.getItem(STORAGE_TITLE) || COMPANION_ALT) : DEFAULT_ALT;
+
+    // Attach JPG fallback on heroImg if not already attached
+    if (!heroImg._hasCompanionError) {
+      heroImg._hasCompanionError = true;
+      heroImg.addEventListener('error', function() {
+        if (this.src && this.src.endsWith('.webp')) {
+          const jpg = this.src.replace(/\.webp$/, '.jpg');
+          this.src = jpg;
+          if (heroSource) {
+            heroSource.srcset = jpg;
+            heroSource.type = 'image/jpeg';
+          }
+        }
+      });
+    }
 
     // Resolve URL if not a data URL
     let absoluteTarget;
@@ -236,10 +259,6 @@
       }
     }
 
-    if (heroSource && heroSource.srcset !== targetSrc) {
-      heroSource.srcset = targetSrc;
-    }
-
     if (heroImg.src !== absoluteTarget) {
       // Preload the new image off-screen before swapping, so there's no flash
       const preloader = new Image();
@@ -247,10 +266,13 @@
         // New image is fully loaded — now do the fade swap
         heroImg.style.transition = 'opacity 0.25s ease';
         heroImg.style.opacity = '0';
-        // Short delay to let the fade-out start before swapping src
         setTimeout(() => {
           heroImg.src = targetSrc;
           heroImg.alt = targetAlt;
+          if (heroSource) {
+            heroSource.srcset = targetSrc;
+            heroSource.type = targetSrc.endsWith('.jpg') || targetSrc.endsWith('.jpeg') ? 'image/jpeg' : 'image/webp';
+          }
           try { heroImg.removeAttribute('srcset'); } catch (e) {}
           // Fade back in
           requestAnimationFrame(() => {
@@ -260,12 +282,35 @@
         }, 150);
       };
       preloader.onerror = () => {
-        // Image failed to load — keep current image, just update alt text
+        // Fallback: If WebP failed, attempt JPG
+        if (absoluteTarget.endsWith('.webp')) {
+          const jpgTarget = absoluteTarget.replace(/\.webp$/, '.jpg');
+          const jpgSrc = targetSrc.replace(/\.webp$/, '.jpg');
+          const fallbackImg = new Image();
+          fallbackImg.onload = () => {
+            heroImg.src = jpgSrc;
+            heroImg.alt = targetAlt;
+            if (heroSource) {
+              heroSource.srcset = jpgSrc;
+              heroSource.type = 'image/jpeg';
+            }
+          };
+          fallbackImg.onerror = () => {
+            heroImg.src = targetSrc;
+            heroImg.alt = targetAlt;
+            if (heroSource) heroSource.srcset = targetSrc;
+          };
+          fallbackImg.src = jpgTarget;
+          return;
+        }
+        heroImg.src = targetSrc;
         heroImg.alt = targetAlt;
+        if (heroSource) heroSource.srcset = targetSrc;
       };
       preloader.src = absoluteTarget;
     } else {
       heroImg.alt = targetAlt;
+      if (heroSource) heroSource.srcset = targetSrc;
     }
 
     // Safely sync with greeting hero artwork controller if present

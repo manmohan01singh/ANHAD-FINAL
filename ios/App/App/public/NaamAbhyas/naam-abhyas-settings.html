@@ -394,10 +394,27 @@
         };
       }
 
+      function formatH12M(h, m) {
+        var per = h >= 12 ? 'PM' : 'AM';
+        var hh = h % 12 || 12;
+        var mm = m < 10 ? '0' + m : m;
+        return hh + ':' + mm + ' ' + per;
+      }
+
       function buildDefaultSchedule(config) {
         var s = {};
         for (var h = config.activeHours.start; h <= config.activeHours.end; h++) {
-          s[h] = { startMinute: 30, enabled: true };
+          var randMin = 2 + Math.floor(Math.random() * 56);
+          s[h] = {
+            hour: h,
+            startMinute: randMin,
+            endMinute: randMin + (config.duration || 2),
+            durationMinutes: config.duration || 2,
+            startTime: formatH12M(h, randMin),
+            endTime: formatH12M(h, randMin + (config.duration || 2)),
+            enabled: true,
+            status: 'pending'
+          };
         }
         return s;
       }
@@ -412,12 +429,29 @@
       async function saveScheduleData() {
         var config = collectModalConfig();
         var existing = getSchedule();
-        // Ensure all hours in range have entries
+        var scheduleMap = (existing && existing._schedule) ? existing._schedule : existing;
+        // Ensure all hours in range have entries with natural random minutes
         for (var h = config.activeHours.start; h <= config.activeHours.end; h++) {
-          if (!existing[h]) existing[h] = { startMinute: 30, enabled: true };
+          if (!scheduleMap[h]) {
+            var randMin = 2 + Math.floor(Math.random() * 56);
+            scheduleMap[h] = {
+              hour: h,
+              startMinute: randMin,
+              endMinute: randMin + (config.duration || 2),
+              durationMinutes: config.duration || 2,
+              startTime: formatH12M(h, randMin),
+              endTime: formatH12M(h, randMin + (config.duration || 2)),
+              enabled: true,
+              status: 'pending'
+            };
+          }
         }
         write(CONFIG_KEY, config);
-        write(SCHEDULE_KEY, existing);
+        write(SCHEDULE_KEY, {
+          _date: todayStr(),
+          _schedule: scheduleMap,
+          ...scheduleMap
+        });
 
         if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.LocalNotifications) {
           try {

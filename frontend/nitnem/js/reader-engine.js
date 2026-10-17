@@ -24,6 +24,13 @@
         showTitles: true,
         hideGurmukhi: false,
 
+        // Theme (Apple Books 4 Iconic Themes: light, sepia, charcoal, dark)
+        theme: 'dark',
+
+        // Auto Scroll
+        autoScroll: false,
+        autoScrollSpeed: 2,
+
         // Translation
         translationSize: 16,
         punjabiTranslation: false,
@@ -79,6 +86,7 @@
     // Font Families
     const FONT_MAP = {
         'noto': "'Noto Sans Gurmukhi', sans-serif",
+        'riyasti-naveen': "'Riyasti Naveen', 'Noto Sans Gurmukhi', sans-serif",
         'pg-serif': "'PG Serif', 'Noto Sans Gurmukhi', sans-serif",
         'mfjashan': "'MFJashan', 'Noto Sans Gurmukhi', sans-serif",
         'pg-khanna': "'PG Khanna', 'Noto Sans Gurmukhi', sans-serif",
@@ -90,6 +98,7 @@
     // Font Display Names (User-friendly)
     const FONT_NAMES = {
         'noto': 'Gurmukhi Lipi',
+        'riyasti-naveen': 'Riyasti Naveen',
         'pg-serif': 'Gurmukhi Font 1',
         'mfjashan': 'Gurmukhi Font 2',
         'pg-khanna': 'Gurmukhi Font 3',
@@ -100,13 +109,14 @@
 
     // Default font sizes (larger for non-Noto fonts)
     const FONT_SIZES = {
-        'noto': 28,      // Noto Sans default
-        'pg-serif': 36,  // Larger for handwritten fonts
+        'noto': 28,             // Noto Sans default
+        'riyasti-naveen': 32,   // Modern Gurmukhi editorial
+        'pg-serif': 36,         // Larger for handwritten fonts
         'mfjashan': 36,
         'pg-khanna': 34,
         'pixel-r': 34,
-        'riyasti': 36,   // Handwritten style
-        'pg-muskan': 36  // Handwritten style
+        'riyasti': 36,          // Handwritten style
+        'pg-muskan': 36         // Handwritten style
     };
 
     // ═══════════════════════════════════════════════════════════════
@@ -119,6 +129,8 @@
         baniMeta: null,
         settings: { ...DEFAULTS },
         isSettingsOpen: false,
+        isAaMenuOpen: false,
+        isAutoScrolling: false,
         wakeLockSentinel: null,
         currentColorPicker: null,
         // My Pothi context
@@ -157,6 +169,7 @@
             // Header
             readerHeader: document.querySelector('.reader-header'),
             readerToggles: document.querySelector('.reader-toggles'),
+            headerAaBtn: $('headerAaBtn'),
             settingsBtn: $('settingsBtn'),
             settingsOverlay: $('settingsOverlay'),
             settingsDrawer: $('settingsDrawer'),
@@ -165,6 +178,35 @@
             tickBtn: $('tickBtn'),
             readAgainBtn: $('readAgainBtn'),
             resetBtn: $('resetBtn'),
+
+            // Apple Books Floating Bottom Bar
+            readerBottomBar: $('readerBottomBar'),
+            bottomProgressBtn: $('bottomProgressBtn'),
+            bottomProgressRing: $('bottomProgressRing'),
+            bottomProgressText: $('bottomProgressText'),
+            bottomAutoScrollBtn: $('bottomAutoScrollBtn'),
+            bottomSpeedBtn: $('bottomSpeedBtn'),
+            bottomSpeedLabel: $('bottomSpeedLabel'),
+            bottomAaBtn: $('bottomAaBtn'),
+            bottomScrollTopBtn: $('bottomScrollTopBtn'),
+
+            // Apple Books "Aa" Quick Appearance Popover Sheet
+            aaMenuOverlay: $('aaMenuOverlay'),
+            aaMenuSheet: $('aaMenuSheet'),
+            aaSheetClose: $('aaSheetClose'),
+            aaSizeMinusBtn: $('aaSizeMinusBtn'),
+            aaSizePlusBtn: $('aaSizePlusBtn'),
+            aaFontSlider: $('aaFontSlider'),
+            aaSizeBadge: $('aaSizeBadge'),
+            aaFontSelect: $('aaFontSelect'),
+            aaAutoScrollToggle: $('aaAutoScrollToggle'),
+            aaSpeedRow: $('aaSpeedRow'),
+            aaSpeedDivider: $('aaSpeedDivider'),
+            aaMoreSettingsBtn: $('aaMoreSettingsBtn'),
+            aaToggleGurmukhi: $('aaToggleGurmukhi'),
+            aaToggleRoman: $('aaToggleRoman'),
+            aaToggleEnglish: $('aaToggleEnglish'),
+            aaTogglePunjabi: $('aaTogglePunjabi'),
 
             // Display toggles
             toggleGurmukhi: $('toggleGurmukhi'),
@@ -247,7 +289,28 @@
         initElements();
 
         const params = new URLSearchParams(window.location.search);
-        state.baniId = parseInt(params.get('id'), 10);
+        let parsedId = parseInt(params.get('id'), 10);
+        if (!parsedId || isNaN(parsedId)) {
+            const baniSlug = params.get('bani');
+            const BANI_SLUG_MAP = {
+                'japji-sahib': 2,
+                'jaap-sahib': 4,
+                'tav-prasad-savaiye': 6,
+                'tav-prasad-swaye': 6,
+                'chaupai-sahib': 9,
+                'anand-sahib': 10,
+                'rehras-sahib': 21,
+                'aarti': 22,
+                'sohila-sahib': 23,
+                'kirtan-sohila': 23,
+                'sukhmani-sahib': 24,
+                'asa-di-var': 25,
+                'baarah-maaha': 26,
+                'ardas': 30
+            };
+            if (baniSlug && BANI_SLUG_MAP[baniSlug]) parsedId = BANI_SLUG_MAP[baniSlug];
+        }
+        state.baniId = parsedId;
 
         if (!state.baniId || isNaN(state.baniId)) {
             showError('Invalid Bani ID');
@@ -487,14 +550,13 @@
 
     function renderInfo(data) {
         const meta = state.baniMeta;
+        const parts = [];
+        if (meta?.source === 'sggs') parts.push('ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ');
+        else if (meta?.source === 'dasam') parts.push('ਸ੍ਰੀ ਦਸਮ ਗ੍ਰੰਥ ਸਾਹਿਬ');
+        if (meta?.estimatedTime) parts.push(meta.estimatedTime);
         const verseCount = data.verses?.length || 0;
-
-        let info = `${verseCount} verses`;
-        if (meta?.estimatedTime) {
-            info += ` • ${meta.estimatedTime}`;
-        }
-
-        els.readerInfo.textContent = info;
+        if (verseCount > 0) parts.push(`${verseCount} verses`);
+        els.readerInfo.textContent = parts.length > 0 ? parts.join(' • ') : '';
     }
 
     // ═══════════════════════════════════════════════════════════════
@@ -747,11 +809,13 @@
         const isBaniTitle = baniTitlePattern.test(parsed.gurmukhi);
         const isFalseVaar = falseVaarPattern.test(parsed.gurmukhi);
         
-        if (
+        if (ikOnkarPattern.test(parsed.gurmukhi)) {
+            el.classList.add('verse-manglacharan');
+            console.log('[Manglacharan detected]:', parsed.gurmukhi);
+        } else if (
             !isBaniTitle && // EXCLUDE bani titles
             !isFalseVaar && // EXCLUDE false "ਵਾਰ" matches like "ਵਾਰਿਆ ਨ ਜਾਵਾ"
             (
-                ikOnkarPattern.test(parsed.gurmukhi) || // Ik Onkar
                 raagPattern.test(parsed.gurmukhi) || // Raag
                 (mahalaPattern.test(parsed.gurmukhi) && isShortVerse) || // Mahala (only if short)
                 (otherHeadingPattern.test(parsed.gurmukhi) && isVeryShort) || // Other headings (very short only)
@@ -760,6 +824,12 @@
         ) {
             el.classList.add('verse-heading');
             console.log('[Heading detected]:', parsed.gurmukhi);
+        }
+
+        // 8. Stanza end / Paudi break (॥੧॥, ॥੨॥, ॥੧੦॥, or contains ਰਹਾਉ)
+        const paudiEndPattern = /(?:॥\s*[੦-੯]+\s*॥|॥\s*ਰਹਾਉ\s*॥|ਰਹਾਉ\s*॥)\s*$/;
+        if (paudiEndPattern.test(parsed.gurmukhi.trim())) {
+            el.classList.add('paudi-end');
         }
 
         // Get current font class
@@ -881,7 +951,7 @@
 
         document.querySelectorAll('.verse-gurmukhi').forEach(el => {
             // Remove all font classes first
-            el.classList.remove('font-noto', 'font-pg-serif', 'font-mfjashan', 'font-pg-khanna', 'font-pixel-r', 'font-riyasti', 'font-pg-muskan');
+            el.classList.remove('font-noto', 'font-riyasti-naveen', 'font-pg-serif', 'font-mfjashan', 'font-pg-khanna', 'font-pixel-r', 'font-riyasti', 'font-pg-muskan');
 
             // Add current font class
             el.classList.add(`font-${fontKey}`);
@@ -944,15 +1014,36 @@
 
         if (els.toggleGurmukhi) {
             els.toggleGurmukhi.classList.toggle('active', s.showGurmukhi);
+            els.toggleGurmukhi.setAttribute('aria-selected', s.showGurmukhi ? 'true' : 'false');
         }
         if (els.toggleRoman) {
             els.toggleRoman.classList.toggle('active', s.showRoman);
+            els.toggleRoman.setAttribute('aria-selected', s.showRoman ? 'true' : 'false');
         }
         if (els.toggleEnglish) {
             els.toggleEnglish.classList.toggle('active', s.showEnglish);
+            els.toggleEnglish.setAttribute('aria-selected', s.showEnglish ? 'true' : 'false');
         }
         if (els.togglePunjabi) {
             els.togglePunjabi.classList.toggle('active', s.showPunjabi);
+            els.togglePunjabi.setAttribute('aria-selected', s.showPunjabi ? 'true' : 'false');
+        }
+
+        if (els.aaToggleGurmukhi) {
+            els.aaToggleGurmukhi.classList.toggle('active', s.showGurmukhi);
+            els.aaToggleGurmukhi.setAttribute('aria-pressed', s.showGurmukhi);
+        }
+        if (els.aaToggleRoman) {
+            els.aaToggleRoman.classList.toggle('active', s.showRoman);
+            els.aaToggleRoman.setAttribute('aria-pressed', s.showRoman);
+        }
+        if (els.aaToggleEnglish) {
+            els.aaToggleEnglish.classList.toggle('active', s.showEnglish);
+            els.aaToggleEnglish.setAttribute('aria-pressed', s.showEnglish);
+        }
+        if (els.aaTogglePunjabi) {
+            els.aaTogglePunjabi.classList.toggle('active', s.showPunjabi);
+            els.aaTogglePunjabi.setAttribute('aria-pressed', s.showPunjabi);
         }
     }
 
@@ -1039,7 +1130,7 @@
         root.style.setProperty('--translation-size', `${s.translationSize}px`);
         root.style.setProperty('--roman-size', `${s.translitSize}px`);
         root.style.setProperty('--font-weight', s.fontWeight);
-        root.style.setProperty('--line-spacing', '1.8');
+        root.style.setProperty('--line-spacing', '2.1');
 
         // Text Colors
         const gColor = COLOR_PALETTE[s.gurmukhiColorIdx] || 'currentColor';
@@ -1064,12 +1155,30 @@
             root.style.removeProperty('--translit-text-color');
         }
 
-        // Theme
-        if (s.paperBackground) {
-            root.setAttribute('data-theme', 'sepia');
-        } else {
-            root.setAttribute('data-theme', s.theme);
+        // Theme (Apple Books 4 Iconic Themes: light, sepia, charcoal, dark)
+        let theme = s.theme || 'dark';
+        if (s.paperBackground) theme = 'sepia';
+
+        root.setAttribute('data-theme', theme);
+        const isDarkVariant = theme === 'dark' || theme === 'charcoal';
+        root.classList.toggle('dark', isDarkVariant);
+        root.classList.toggle('dark-mode', isDarkVariant);
+        root.style.colorScheme = isDarkVariant ? 'dark' : 'light';
+        if (document.body) {
+            document.body.classList.toggle('dark', isDarkVariant);
+            document.body.classList.toggle('dark-mode', isDarkVariant);
         }
+
+        let bg = '#000000';
+        if (theme === 'light') bg = '#FAF8F5';
+        else if (theme === 'sepia') bg = '#F4ECD8';
+        else if (theme === 'charcoal') bg = '#202124';
+        else if (theme === 'dark') bg = '#000000';
+        root.style.backgroundColor = bg;
+        if (document.body) document.body.style.backgroundColor = bg;
+
+        const metaTheme = document.querySelector('meta[name="theme-color"]');
+        if (metaTheme) metaTheme.setAttribute('content', bg);
 
         // Paper background
         if (els.paperBackground) {
@@ -1167,13 +1276,32 @@
 
         // Selects
         if (els.fontFamilySelect) els.fontFamilySelect.value = s.fontFamily;
+        if (els.aaFontSelect) els.aaFontSelect.value = s.fontFamily;
         if (els.fontWeightSelect) els.fontWeightSelect.value = s.fontWeight;
         if (els.textAlignSelect) els.textAlignSelect.value = s.textAlign;
         if (els.playbackSpeedSelect) els.playbackSpeedSelect.value = s.playbackSpeed;
 
-        // Theme bubbles
+        // Quick Aa font slider & badge
+        if (els.aaFontSlider) els.aaFontSlider.value = s.gurbaniFontSize;
+        if (els.aaSizeBadge) els.aaSizeBadge.textContent = `${s.gurbaniFontSize} px`;
+
+        // Alignment segmented buttons
+        document.querySelectorAll('.aa-align-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.align === s.textAlign);
+        });
+
+        // Speed pills & labels
+        if (els.bottomSpeedLabel) els.bottomSpeedLabel.textContent = `${s.autoScrollSpeed || 2}x`;
+        document.querySelectorAll('.aa-speed-pill').forEach(pill => {
+            pill.classList.toggle('active', parseInt(pill.dataset.speed, 10) === (s.autoScrollSpeed || 2));
+        });
+
+        // Theme bubbles & swatches
         document.querySelectorAll('.theme-bubble').forEach(btn => {
-            btn.classList.toggle('active', btn.dataset.theme === s.theme && !s.paperBackground);
+            btn.classList.toggle('active', btn.dataset.theme === s.theme);
+        });
+        document.querySelectorAll('.aa-theme-swatch').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.theme === s.theme);
         });
 
         // Color circles
@@ -1219,21 +1347,153 @@
     }
 
     // ═══════════════════════════════════════════════════════════════
-    // THEME
+    // THEME (Apple Books 4 Iconic Palettes)
     // ═══════════════════════════════════════════════════════════════
 
     function setTheme(theme) {
-        // Normalize to only dark/light
-        const normalizedTheme = (theme === 'light' || theme === 'sepia') ? 'light' : 'dark';
-        state.settings.theme = normalizedTheme;
+        const validThemes = ['light', 'sepia', 'charcoal', 'dark'];
+        const selectedTheme = validThemes.includes(theme) ? theme : 'dark';
+        state.settings.theme = selectedTheme;
         state.settings.paperBackground = false;
         applyAllSettings();
         saveSettings();
-        // Propagate to isolated Nitnem theme system so other pages stay in sync
         try {
-            localStorage.setItem('nitnem_theme_override', normalizedTheme);
+            localStorage.setItem('nitnem_theme_override', selectedTheme);
+            localStorage.setItem('anhad_reader_theme', selectedTheme);
         } catch (e) {}
-        window.dispatchEvent(new CustomEvent('themechange', { detail: { theme: normalizedTheme } }));
+        window.dispatchEvent(new CustomEvent('themechange', { detail: { theme: selectedTheme } }));
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // AUTO-SCROLL ENGINE (Silky 60fps / 120fps requestAnimationFrame)
+    // ═══════════════════════════════════════════════════════════════
+
+    let _autoScrollAnimationId = null;
+    let _autoScrollLastTime = null;
+    let _autoScrollAccumulator = 0;
+
+    const AUTO_SCROLL_SPEEDS = {
+        1: 0.6, // ~36 px/s - Slow meditative
+        2: 1.1, // ~66 px/s - Steady paath
+        3: 1.8, // ~108 px/s - Fluent
+        4: 2.6, // ~156 px/s - Fast
+        5: 3.6  // ~216 px/s - Brisk
+    };
+
+    function startAutoScroll() {
+        if (state.isAutoScrolling) return;
+        state.isAutoScrolling = true;
+        _autoScrollLastTime = performance.now();
+        _autoScrollAccumulator = 0;
+
+        // Ensure floating bottom bar is unhidden so controls are visible and accessible
+        const bottomBar = document.getElementById('readerBottomBar');
+        if (bottomBar) bottomBar.classList.remove('hidden');
+
+        updateAutoScrollUI(true);
+
+        function step(currentTime) {
+            if (!state.isAutoScrolling) return;
+            const delta = Math.min(currentTime - _autoScrollLastTime, 64);
+            _autoScrollLastTime = currentTime;
+
+            const speedMultiplier = AUTO_SCROLL_SPEEDS[state.settings.autoScrollSpeed || 2] || 1.1;
+            const pxToScroll = speedMultiplier * (delta / 16.67);
+            _autoScrollAccumulator += pxToScroll;
+
+            if (_autoScrollAccumulator >= 1) {
+                const intScroll = Math.floor(_autoScrollAccumulator);
+                _autoScrollAccumulator -= intScroll;
+                window.scrollBy({ top: intScroll, behavior: 'auto' });
+
+                const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+                if (window.scrollY >= maxScroll - 6) {
+                    stopAutoScroll();
+                    return;
+                }
+            }
+
+            _autoScrollAnimationId = requestAnimationFrame(step);
+        }
+
+        _autoScrollAnimationId = requestAnimationFrame(step);
+    }
+
+    function stopAutoScroll() {
+        state.isAutoScrolling = false;
+        if (_autoScrollAnimationId) {
+            cancelAnimationFrame(_autoScrollAnimationId);
+            _autoScrollAnimationId = null;
+        }
+        updateAutoScrollUI(false);
+
+        // Keep bottom bar visible when paused so user can immediately resume or change settings
+        const bottomBar = document.getElementById('readerBottomBar');
+        if (bottomBar) bottomBar.classList.remove('hidden');
+    }
+
+    function toggleAutoScroll() {
+        if (state.isAutoScrolling) {
+            stopAutoScroll();
+        } else {
+            startAutoScroll();
+        }
+    }
+
+    function cycleAutoScrollSpeed() {
+        let currentSpeed = state.settings.autoScrollSpeed || 2;
+        currentSpeed = (currentSpeed % 5) + 1;
+        setAutoScrollSpeed(currentSpeed);
+    }
+
+    function setAutoScrollSpeed(speed) {
+        state.settings.autoScrollSpeed = speed;
+        if (els.bottomSpeedLabel) els.bottomSpeedLabel.textContent = `${speed}x`;
+        document.querySelectorAll('.aa-speed-pill').forEach(pill => {
+            pill.classList.toggle('active', parseInt(pill.dataset.speed, 10) === speed);
+        });
+        saveSettings();
+    }
+
+    function updateAutoScrollUI(isPlaying) {
+        if (els.bottomAutoScrollBtn) {
+            els.bottomAutoScrollBtn.classList.toggle('playing', isPlaying);
+            const playIcon = els.bottomAutoScrollBtn.querySelector('.icon-play');
+            const pauseIcon = els.bottomAutoScrollBtn.querySelector('.icon-pause');
+            if (playIcon) playIcon.style.display = isPlaying ? 'none' : 'block';
+            if (pauseIcon) pauseIcon.style.display = isPlaying ? 'block' : 'none';
+        }
+        if (els.aaAutoScrollToggle) {
+            els.aaAutoScrollToggle.classList.toggle('active', isPlaying);
+            els.aaAutoScrollToggle.setAttribute('aria-checked', isPlaying);
+        }
+        if (els.aaSpeedRow) els.aaSpeedRow.style.display = isPlaying ? 'flex' : 'none';
+        if (els.aaSpeedDivider) els.aaSpeedDivider.style.display = isPlaying ? 'block' : 'none';
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // APPLE BOOKS "Aa" QUICK APPEARANCE SHEET
+    // ═══════════════════════════════════════════════════════════════
+
+    function openAaMenu() {
+        state.isAaMenuOpen = true;
+        els.aaMenuOverlay?.classList.add('visible');
+        els.aaMenuSheet?.classList.add('visible');
+        updateSettingsUI();
+    }
+
+    function closeAaMenu() {
+        state.isAaMenuOpen = false;
+        els.aaMenuOverlay?.classList.remove('visible');
+        els.aaMenuSheet?.classList.remove('visible');
+    }
+
+    function toggleAaMenu() {
+        if (state.isAaMenuOpen) {
+            closeAaMenu();
+        } else {
+            openAaMenu();
+        }
     }
 
     // ═══════════════════════════════════════════════════════════════
@@ -1372,20 +1632,20 @@
             // ----------------------------------------------------------------
 
             const getNitnemDefaultTheme = () => {
-                var override = localStorage.getItem('nitnem_theme_override');
-                if (override === 'light' || override === 'dark') return override;
+                var override = localStorage.getItem('nitnem_theme_override') || localStorage.getItem('anhad_reader_theme');
+                if (['light', 'sepia', 'charcoal', 'dark'].includes(override)) return override;
                 var hour = new Date().getHours();
                 return (hour >= 6 && hour < 19) ? 'light' : 'dark';
             };
             const saved = localStorage.getItem('anhad_reader_v5');
             if (saved) {
                 const parsed = JSON.parse(saved);
-                // Sync with isolated Nitnem theme on load - prefer isolated theme
                 const nitnemTheme = getNitnemDefaultTheme();
-                parsed.theme = nitnemTheme;
+                if (!['light', 'sepia', 'charcoal', 'dark'].includes(parsed.theme)) {
+                    parsed.theme = nitnemTheme;
+                }
                 state.settings = { ...DEFAULTS, ...parsed };
             } else {
-                // No saved settings — use DEFAULTS (both backgrounds are 0 by default)
                 const nitnemTheme = getNitnemDefaultTheme();
                 state.settings = { ...DEFAULTS };
                 state.settings.theme = nitnemTheme;
@@ -1411,6 +1671,12 @@
 
         if (els.progressBar) els.progressBar.style.width = `${progress}%`;
         if (els.progressText) els.progressText.textContent = `${progress}%`;
+        if (els.bottomProgressText) els.bottomProgressText.textContent = `${progress}%`;
+        if (els.bottomProgressRing) {
+            const circumference = 56.54; // 2 * Math.PI * 9
+            const offset = circumference - (progress / 100) * circumference;
+            els.bottomProgressRing.style.strokeDashoffset = offset;
+        }
 
         // Credit one Nitnem completion when user reads 90%+ of the bani
         if (progress >= 90 && !_nitnemCompletionFired && docHeight > 200) {
@@ -1431,24 +1697,23 @@
             els.scrollTopBtn.classList.toggle('visible', scrollTop > 400);
         }
 
-        // Hide header & toggles on scroll DOWN, show on scroll UP
-        const scrollingDown = scrollTop > lastScrollTop && scrollTop > SCROLL_THRESHOLD;
-
+        // Smooth hide header, toggles, and floating bottom bar on scroll DOWN, show on scroll UP
+        const scrollDelta = scrollTop - lastScrollTop;
         const stickyTopBar = document.getElementById('readerStickyTopBar');
-        if (stickyTopBar) {
-            stickyTopBar.classList.toggle('hidden', scrollingDown);
-        }
-        if (els.readerHeader) {
-            els.readerHeader.classList.toggle('hidden', scrollingDown);
-        }
-        if (els.readerToggles) {
-            els.readerToggles.classList.toggle('hidden', scrollingDown);
-        }
-        if (els.progressText) {
-            els.progressText.classList.toggle('hidden', scrollingDown);
-        }
+        const bottomBar = document.getElementById('readerBottomBar');
 
-        lastScrollTop = scrollTop;
+        if (scrollTop <= 20) {
+            if (stickyTopBar) stickyTopBar.classList.remove('hidden');
+            if (bottomBar) bottomBar.classList.remove('hidden');
+            if (els.progressText) els.progressText.classList.remove('hidden');
+            lastScrollTop = scrollTop;
+        } else if (Math.abs(scrollDelta) > 8) {
+            const scrollingDown = scrollDelta > 0 && scrollTop > SCROLL_THRESHOLD;
+            if (stickyTopBar) stickyTopBar.classList.toggle('hidden', scrollingDown);
+            if (bottomBar && !state.isAutoScrolling) bottomBar.classList.toggle('hidden', scrollingDown);
+            if (els.progressText) els.progressText.classList.toggle('hidden', scrollingDown);
+            lastScrollTop = scrollTop;
+        }
     }
 
     function scrollToTop() {
@@ -1461,10 +1726,10 @@
 
     function toggleBookmark() {
         let favorites = JSON.parse(localStorage.getItem('anhad_favorites') || '[]');
-        const exists = favorites.some(f => f.id === state.baniId);
+        const exists = favorites.some(f => String(f.id) === String(state.baniId));
 
         if (exists) {
-            favorites = favorites.filter(f => f.id !== state.baniId);
+            favorites = favorites.filter(f => String(f.id) !== String(state.baniId));
             els.bookmarkBtn?.classList.remove('active');
         } else {
             favorites.push({
@@ -1480,7 +1745,7 @@
 
     function checkBookmark() {
         const favorites = JSON.parse(localStorage.getItem('anhad_favorites') || '[]');
-        els.bookmarkBtn?.classList.toggle('active', favorites.some(f => f.id === state.baniId));
+        els.bookmarkBtn?.classList.toggle('active', favorites.some(f => String(f.id) === String(state.baniId)));
     }
 
     // ═══════════════════════════════════════════════════════════════
@@ -1635,10 +1900,127 @@
         // Scroll
         window.addEventListener('scroll', updateProgress, { passive: true });
 
+        // Tap to toggle controls (Apple Books immersive reading mode)
+        const readingArea = document.querySelector('.reader-content') || els.versesContainer;
+        readingArea?.addEventListener('click', (e) => {
+            if (e.target.closest('button, a, input, select, .reader-btn, .settings-drawer, .settings-overlay, .picker-modal, .end-actions, .reader-bottom-bar, .aa-menu-sheet, .aa-menu-overlay')) return;
+            const selection = window.getSelection ? window.getSelection().toString() : '';
+            if (selection && selection.trim().length > 0) return;
+
+            // If auto-scrolling is active, tapping reading canvas pauses it gracefully
+            if (state.isAutoScrolling) {
+                stopAutoScroll();
+                return;
+            }
+
+            // If Aa quick appearance menu is open, tapping canvas closes it
+            if (state.isAaMenuOpen) {
+                closeAaMenu();
+                return;
+            }
+
+            const stickyTopBar = document.getElementById('readerStickyTopBar');
+            const bottomBar = document.getElementById('readerBottomBar');
+            const isHidden = stickyTopBar?.classList.contains('hidden') || bottomBar?.classList.contains('hidden');
+            if (stickyTopBar) stickyTopBar.classList.toggle('hidden', !isHidden);
+            if (bottomBar) bottomBar.classList.toggle('hidden', !isHidden);
+            if (els.progressText) els.progressText.classList.toggle('hidden', !isHidden);
+        });
+
+        // Touch / Wheel pauses auto-scroll (Apple Books pause-on-touch interaction)
+        const pauseAutoScroll = (e) => {
+            if (!state.isAutoScrolling) return;
+            if (e.target && e.target.closest && e.target.closest('.reader-bottom-bar, .aa-menu-sheet, .aa-menu-overlay')) return;
+            stopAutoScroll();
+        };
+        window.addEventListener('touchstart', pauseAutoScroll, { passive: true });
+        window.addEventListener('wheel', pauseAutoScroll, { passive: true });
+
         // Scroll top
         els.scrollTopBtn?.addEventListener('click', scrollToTop);
 
-        // Settings
+        // Apple Books Floating Bottom Bar buttons
+        els.headerAaBtn?.addEventListener('click', toggleAaMenu);
+        els.bottomAaBtn?.addEventListener('click', toggleAaMenu);
+        els.bottomAutoScrollBtn?.addEventListener('click', toggleAutoScroll);
+        els.bottomSpeedBtn?.addEventListener('click', cycleAutoScrollSpeed);
+        els.bottomProgressBtn?.addEventListener('click', scrollToTop);
+        els.bottomScrollTopBtn?.addEventListener('click', scrollToTop);
+
+        // Apple Books "Aa" Appearance Sheet controls
+        els.aaSheetClose?.addEventListener('click', closeAaMenu);
+        els.aaMenuOverlay?.addEventListener('click', closeAaMenu);
+        els.aaMoreSettingsBtn?.addEventListener('click', () => {
+            closeAaMenu();
+            openSettings();
+        });
+        els.aaAutoScrollToggle?.addEventListener('click', toggleAutoScroll);
+
+        // Quick Aa font slider
+        els.aaFontSlider?.addEventListener('input', (e) => {
+            const size = parseInt(e.target.value, 10);
+            state.settings.gurbaniFontSize = size;
+            if (els.aaSizeBadge) els.aaSizeBadge.textContent = `${size} px`;
+            if (els.gurbaniFontSizeValue) els.gurbaniFontSizeValue.textContent = `${size}px`;
+            applyFontToVerses();
+            saveSettings();
+        });
+
+        // Quick Aa stepper buttons
+        els.aaSizeMinusBtn?.addEventListener('click', () => {
+            adjustSize('gurbani', 'decrease');
+            if (els.aaFontSlider) els.aaFontSlider.value = state.settings.gurbaniFontSize;
+            if (els.aaSizeBadge) els.aaSizeBadge.textContent = `${state.settings.gurbaniFontSize} px`;
+        });
+        els.aaSizePlusBtn?.addEventListener('click', () => {
+            adjustSize('gurbani', 'increase');
+            if (els.aaFontSlider) els.aaFontSlider.value = state.settings.gurbaniFontSize;
+            if (els.aaSizeBadge) els.aaSizeBadge.textContent = `${state.settings.gurbaniFontSize} px`;
+        });
+
+        // Quick Aa font select
+        els.aaFontSelect?.addEventListener('change', (e) => {
+            const fontKey = e.target.value;
+            state.settings.fontFamily = fontKey;
+            if (els.fontFamilySelect) els.fontFamilySelect.value = fontKey;
+            if (FONT_SIZES[fontKey]) {
+                state.settings.gurbaniFontSize = FONT_SIZES[fontKey];
+                if (els.aaFontSlider) els.aaFontSlider.value = FONT_SIZES[fontKey];
+                if (els.aaSizeBadge) els.aaSizeBadge.textContent = `${FONT_SIZES[fontKey]} px`;
+            }
+            applyFontToVerses();
+            saveSettings();
+        });
+
+        // Text alignment segmented buttons
+        document.querySelectorAll('.aa-align-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const align = btn.dataset.align;
+                if (!align) return;
+                state.settings.textAlign = align;
+                if (els.textAlignSelect) els.textAlignSelect.value = align;
+                document.querySelectorAll('.aa-align-btn').forEach(b => b.classList.toggle('active', b === btn));
+                applyFontToVerses();
+                saveSettings();
+            });
+        });
+
+        // Speed pills in Aa menu
+        document.querySelectorAll('.aa-speed-pill').forEach(pill => {
+            pill.addEventListener('click', () => {
+                const speed = parseInt(pill.dataset.speed, 10);
+                if (speed >= 1 && speed <= 5) {
+                    setAutoScrollSpeed(speed);
+                }
+            });
+        });
+
+        // Theme swatches in Aa menu
+        document.querySelectorAll('.aa-theme-swatch').forEach(btn => {
+            btn.addEventListener('click', () => setTheme(btn.dataset.theme));
+        });
+
+        // Settings Drawer controls
         els.settingsBtn?.addEventListener('click', openSettings);
         els.settingsCloseFloat?.addEventListener('click', closeSettings);
         els.settingsOverlay?.addEventListener('click', closeSettings);
@@ -1648,6 +2030,14 @@
         els.toggleRoman?.addEventListener('click', () => toggleDisplay('roman'));
         els.toggleEnglish?.addEventListener('click', () => toggleDisplay('english'));
         els.togglePunjabi?.addEventListener('click', () => toggleDisplay('punjabi'));
+
+        // View mode pills in Aa Appearance Menu
+        document.querySelectorAll('.aa-mode-pill').forEach(pill => {
+            pill.addEventListener('click', () => {
+                const type = pill.dataset.type;
+                if (type) toggleDisplay(type);
+            });
+        });
 
         // Orbs opacity slider
         els.orbsOpacitySlider?.addEventListener('input', (e) => {
@@ -1778,11 +2168,19 @@
         els.pickerClose?.addEventListener('click', closeColorPicker);
         document.querySelector('.picker-backdrop')?.addEventListener('click', closeColorPicker);
 
-        // Escape key
+        // Escape key & reading shortcuts
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
-                if (state.currentColorPicker) closeColorPicker();
+                if (state.isAaMenuOpen) closeAaMenu();
+                else if (state.currentColorPicker) closeColorPicker();
                 else if (state.isSettingsOpen) closeSettings();
+            } else if (e.key === ' ' && !e.target.closest('input, select, textarea, button')) {
+                // Spacebar toggles auto-scroll
+                e.preventDefault();
+                toggleAutoScroll();
+            } else if ((e.key === 'a' || e.key === 'A') && !e.target.closest('input, select, textarea') && !e.ctrlKey && !e.metaKey) {
+                // 'A' toggles Quick Appearance Aa menu
+                toggleAaMenu();
             }
         });
     }

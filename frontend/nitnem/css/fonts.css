@@ -56,6 +56,17 @@
     font-display: swap;
 }
 
+/* Riyasti Naveen (Modern Editorial Gurmukhi) */
+@font-face {
+    font-family: 'Riyasti Naveen';
+    src: url('../g-fonts/riyasti-naveen.woff2') format('woff2'),
+         url('../g-fonts/riyasti-naveen.woff') format('woff'),
+         url('../g-fonts/riyasti-naveen.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
 /* PG Muskan */
 @font-face {
     font-family: 'PGMuskan';
@@ -92,4 +103,8 @@
 
 .font-noto {
     font-family: 'Noto Sans Gurmukhi', sans-serif !important;
+}
+
+.font-riyasti-naveen {
+    font-family: 'Riyasti Naveen', 'Noto Sans Gurmukhi', sans-serif !important;
 }

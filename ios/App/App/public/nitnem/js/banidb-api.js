@@ -499,6 +499,11 @@ const BaniDB = (function () {
     };
 })();
 
+// Make globally available
+if (typeof window !== 'undefined') {
+    window.BaniDB = BaniDB;
+}
+
 // Export for use in modules
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = BaniDB;

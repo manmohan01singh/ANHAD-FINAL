@@ -180,12 +180,26 @@ button, .btn, .button {
     }
 }
 
-/* Dark mode: hide hero banner, show portrait slider - REMOVE GAP */
+/* Light mode / daytime companion banner styling */
+body.companion-mode-active:not(.dark-mode) .greeting__hero-banner,
+html:not(.dark-mode) body.companion-mode-active .greeting__hero-banner {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    width: 100% !important;
+}
+
+/* Dark Mode / Dynamic Night: ALWAYS hide hero banner (including in companion mode) */
 html.dark-mode .greeting__hero-banner,
 [data-theme="dark"] .greeting__hero-banner,
 [data-theme-mode="dark"] .greeting__hero-banner,
 [data-time-of-day="night"] .greeting__hero-banner,
-html[data-theme-mode="auto"][data-time-of-day="night"] .greeting__hero-banner {
+html[data-theme-mode="auto"][data-time-of-day="night"] .greeting__hero-banner,
+html.dark-mode body.companion-mode-active .greeting__hero-banner,
+[data-theme="dark"] body.companion-mode-active .greeting__hero-banner,
+[data-theme-mode="dark"] body.companion-mode-active .greeting__hero-banner,
+[data-time-of-day="night"] body.companion-mode-active .greeting__hero-banner,
+html[data-theme-mode="auto"][data-time-of-day="night"] body.companion-mode-active .greeting__hero-banner {
     display: none !important;
 }
 
@@ -203,11 +217,21 @@ html.dark-mode #greetingDarkCarousel,
 [data-theme-mode="dark"] #greetingDarkCarousel,
 [data-time-of-day="night"] #greetingDarkCarousel,
 html[data-theme-mode="auto"][data-time-of-day="night"] #greetingDarkCarousel,
+html.dark-mode body.companion-mode-active #greetingDarkCarousel,
+[data-theme="dark"] body.companion-mode-active #greetingDarkCarousel,
+[data-theme-mode="dark"] body.companion-mode-active #greetingDarkCarousel,
+[data-time-of-day="night"] body.companion-mode-active #greetingDarkCarousel,
+html[data-theme-mode="auto"][data-time-of-day="night"] body.companion-mode-active #greetingDarkCarousel,
 html.dark-mode .greeting__dark-carousel-container,
 [data-theme="dark"] .greeting__dark-carousel-container,
 [data-theme-mode="dark"] .greeting__dark-carousel-container,
 [data-time-of-day="night"] .greeting__dark-carousel-container,
-html[data-theme-mode="auto"][data-time-of-day="night"] .greeting__dark-carousel-container {
+html[data-theme-mode="auto"][data-time-of-day="night"] .greeting__dark-carousel-container,
+html.dark-mode body.companion-mode-active .greeting__dark-carousel-container,
+[data-theme="dark"] body.companion-mode-active .greeting__dark-carousel-container,
+[data-theme-mode="dark"] body.companion-mode-active .greeting__dark-carousel-container,
+[data-time-of-day="night"] body.companion-mode-active .greeting__dark-carousel-container,
+html[data-theme-mode="auto"][data-time-of-day="night"] body.companion-mode-active .greeting__dark-carousel-container {
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;

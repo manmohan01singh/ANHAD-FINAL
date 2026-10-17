@@ -6,7 +6,14 @@
   <script>
     (function() {
       try {
-        const theme = localStorage.getItem('anhad_theme') || 'auto';
+        const readerSettingsRaw = localStorage.getItem('anhad_reader_v5');
+        let savedTheme = null;
+        if (readerSettingsRaw) {
+          try { savedTheme = JSON.parse(readerSettingsRaw).theme; } catch (e) {}
+        }
+        const overrideTheme = localStorage.getItem('nitnem_theme_override');
+        const globalTheme = localStorage.getItem('anhad_theme') || 'auto';
+        let theme = savedTheme || overrideTheme || globalTheme;
         let effectiveTheme = theme;
         let timeOfDay = localStorage.getItem('anhad_forced_time_of_day');
         if (theme === 'auto') {
@@ -22,30 +29,36 @@
             else timeOfDay = 'night';
           }
         }
+        
+        // Normalize themes: 'light', 'sepia', 'charcoal', 'dark'
+        if (effectiveTheme !== 'light' && effectiveTheme !== 'sepia' && effectiveTheme !== 'charcoal' && effectiveTheme !== 'dark') {
+          effectiveTheme = (effectiveTheme === 'dark' || effectiveTheme === 'night') ? 'dark' : 'light';
+        }
+
         document.documentElement.setAttribute('data-theme', effectiveTheme);
         document.documentElement.setAttribute('data-theme-mode', theme);
         if (theme === 'auto') {
           document.documentElement.setAttribute('data-time-of-day', timeOfDay);
         }
-        document.documentElement.style.colorScheme = effectiveTheme;
-        if (effectiveTheme === 'dark') {
+        const isDarkVariant = effectiveTheme === 'dark' || effectiveTheme === 'charcoal';
+        document.documentElement.style.colorScheme = isDarkVariant ? 'dark' : 'light';
+        if (isDarkVariant) {
           document.documentElement.classList.add('dark', 'dark-mode');
         } else {
           document.documentElement.classList.remove('dark', 'dark-mode');
         }
         
-        let bg = (effectiveTheme === 'dark') ? '#0D0D0F' : '#FAF8F5';
-        if (theme === 'auto') {
-          if (timeOfDay === 'morning') bg = '#FFF5EC';
-          else if (timeOfDay === 'day') bg = '#FFFDF9';
-          else if (timeOfDay === 'evening') bg = '#FFF8E7';
-          else if (timeOfDay === 'night') bg = '#0F0F12';
-        }
+        let bg = '#FAF8F5';
+        if (effectiveTheme === 'dark') bg = '#000000';
+        else if (effectiveTheme === 'charcoal') bg = '#202124';
+        else if (effectiveTheme === 'sepia') bg = '#F4ECD8';
+        else if (effectiveTheme === 'light') bg = '#FAF8F5';
+
         document.documentElement.style.backgroundColor = bg;
         document.documentElement.classList.add('theme-loaded');
 
         document.addEventListener('DOMContentLoaded', function() {
-          if (effectiveTheme === 'dark') document.body.classList.add('dark-mode');
+          if (isDarkVariant) document.body.classList.add('dark-mode');
           document.body.classList.add('theme-loaded');
         }, { once: true });
 
@@ -61,6 +74,7 @@
             const settings = JSON.parse(saved);
             const fontMap = {
               'noto': "'Noto Sans Gurmukhi', sans-serif",
+              'riyasti-naveen': "'Riyasti Naveen', 'Noto Sans Gurmukhi', sans-serif",
               'pg-serif': "'PG Serif', 'Noto Sans Gurmukhi', sans-serif",
               'mfjashan': "'MFJashan', 'Noto Sans Gurmukhi', sans-serif",
               'pg-khanna': "'PG Khanna', 'Noto Sans Gurmukhi', sans-serif",
@@ -68,8 +82,8 @@
               'riyasti': "'RiyastiHastlikhat', 'Noto Sans Gurmukhi', sans-serif",
               'pg-muskan': "'PGMuskan', 'Noto Sans Gurmukhi', sans-serif"
             };
-            const fontKey = settings.fontFamily || 'riyasti';
-            const fontFamily = fontMap[fontKey] || fontMap.riyasti;
+            const fontKey = settings.fontFamily || 'noto';
+            const fontFamily = fontMap[fontKey] || fontMap.noto;
             const fontWeight = settings.fontWeight || '500';
             const fontSize = settings.gurbaniFontSize || 32;
             const textAlign = settings.textAlign || 'center';
@@ -111,7 +125,10 @@
     <meta name="theme-color" content="#000000">
     <title>Bani Reader | ANHAD</title>
     
-    <!-- Fonts - Local fonts for offline support -->
+    <!-- Fonts - Local and web fonts for Gurmukhi readability -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Gurmukhi:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/fonts.css">
     
     <!-- Styles -->
@@ -165,54 +182,59 @@
     <!-- Reader App -->
     <div class="reader-app" id="readerApp" style="display: none;">
 
-        <!-- Progress Bar -->
-        <div class="reader-progress">
-            <div class="progress-bar" id="progressBar"></div>
-        </div>
-
-        <!-- Unified Sticky Top Bar (Never Detaches) -->
+        <!-- Apple Books Style Translucent Navigation Bar & Segmented Controls -->
         <div class="reader-sticky-top-bar" id="readerStickyTopBar">
-            <!-- iOS Navigation Bar -->
-            <header class="reader-header">
-                <a href="index.html" class="reader-back" data-anhad-back="index.html">
-                    <svg viewBox="0 0 12 20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M10 2L2 10L10 18"/>
+            <header class="reader-header" role="banner">
+                <a href="index.html" class="reader-back" data-anhad-back="index.html" aria-label="Back to Banis">
+                    <svg viewBox="0 0 12 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M8.5 3.5L2.5 10L8.5 16.5"/>
                     </svg>
                     <span>Banis</span>
                 </a>
 
-                <div class="reader-title" id="readerTitle">
+                <div class="reader-title" id="readerTitle" role="heading" aria-level="1">
                     <span class="reader-gurmukhi">ਧੁਰ ਕੀ ਬਾਣੀ ਜੀ</span>
                     <span class="reader-english">Bani</span>
                 </div>
 
-                <div class="reader-actions">
-                    <button class="reader-btn" id="bookmarkBtn" aria-label="Bookmark">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <div class="reader-actions" role="toolbar" aria-label="Reading Controls">
+                    <button class="reader-btn" id="bookmarkBtn" aria-label="Bookmark this Bani" title="Bookmark">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                             <path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/>
                         </svg>
                     </button>
-                    <button class="reader-btn" id="tickBtn" aria-label="Mark as complete in Nitnem Tracker">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                            <path d="M20 6L9 17l-5-5"/>
+                    <button class="reader-btn" id="tickBtn" aria-label="Mark complete in Nitnem Tracker" title="Mark Complete">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <circle cx="12" cy="12" r="9"/>
+                            <path d="M8.5 12.5l2.5 2.5 5-5"/>
                         </svg>
                     </button>
-                    <button class="reader-btn" id="settingsBtn" aria-label="Settings">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <button class="reader-btn aa-header-btn" id="headerAaBtn" aria-label="Quick Appearance & Fonts" title="Appearance (Aa)">
+                        <span class="header-aa-icon">Aa</span>
+                    </button>
+                    <button class="reader-btn" id="settingsBtn" aria-label="Reading Preferences and Appearance" title="Full Settings">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                             <circle cx="12" cy="12" r="3"/>
-                            <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
+                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
                         </svg>
                     </button>
                 </div>
             </header>
 
-            <!-- Display Toggles -->
-            <nav class="reader-toggles">
-                <button class="toggle-btn active" id="toggleGurmukhi">ਗੁਰਮੁਖੀ</button>
-                <button class="toggle-btn" id="toggleRoman">Roman</button>
-                <button class="toggle-btn" id="toggleEnglish">English</button>
-                <button class="toggle-btn" id="togglePunjabi">ਪੰਜਾਬੀ</button>
-            </nav>
+            <!-- Segmented Pill Display Switcher -->
+            <div class="reader-segmented-wrapper">
+                <nav class="reader-toggles" role="tablist" aria-label="Text Display Mode">
+                    <button class="toggle-btn active" id="toggleGurmukhi" role="tab" aria-selected="true">ਗੁਰਮੁਖੀ</button>
+                    <button class="toggle-btn" id="toggleRoman" role="tab" aria-selected="false">Roman</button>
+                    <button class="toggle-btn" id="toggleEnglish" role="tab" aria-selected="false">English</button>
+                    <button class="toggle-btn" id="togglePunjabi" role="tab" aria-selected="false">ਪੰਜਾਬੀ</button>
+                </nav>
+            </div>
+
+            <!-- Reading Progress Hairline -->
+            <div class="reader-progress" aria-hidden="true">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
         </div>
 
         <!-- Progress Text -->
@@ -256,12 +278,205 @@
             </div>
         </main>
 
+        <!-- Apple Books Style Floating Bottom Bar Controls -->
+        <div class="reader-bottom-bar" id="readerBottomBar" role="region" aria-label="Reading Floating Toolbar">
+            <div class="bottom-bar-inner">
+                <!-- Reading Progress Pill -->
+                <button class="bottom-pill-btn progress-pill" id="bottomProgressBtn" title="Reading Progress" aria-label="Reading progress">
+                    <svg class="progress-ring" width="22" height="22" viewBox="0 0 24 24">
+                        <circle class="ring-bg" cx="12" cy="12" r="9"/>
+                        <circle class="ring-fill" id="bottomProgressRing" cx="12" cy="12" r="9"/>
+                    </svg>
+                    <span id="bottomProgressText">0%</span>
+                </button>
+
+                <!-- Auto Scroll Play/Pause & Speed Stepper -->
+                <div class="bottom-pill-group auto-scroll-group">
+                    <button class="bottom-pill-btn auto-scroll-btn" id="bottomAutoScrollBtn" aria-label="Toggle Auto Scroll" title="Auto Scroll">
+                        <svg class="icon-play" width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M6 4l15 8-15 8V4z"/>
+                        </svg>
+                        <svg class="icon-pause" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="display:none;">
+                            <rect x="6" y="4" width="4" height="16" rx="1"/>
+                            <rect x="14" y="4" width="4" height="16" rx="1"/>
+                        </svg>
+                        <span class="auto-label">Auto</span>
+                    </button>
+                    <button class="bottom-speed-btn" id="bottomSpeedBtn" title="Auto Scroll Speed" aria-label="Auto Scroll Speed">
+                        <span id="bottomSpeedLabel">2x</span>
+                    </button>
+                </div>
+
+                <!-- Apple Books "Aa" Appearance Button -->
+                <button class="bottom-pill-btn aa-pill-btn" id="bottomAaBtn" aria-label="Quick Appearance & Fonts" title="Reading Appearance">
+                    <span class="aa-pill-label">Aa</span>
+                </button>
+
+                <!-- Scroll to Top Button -->
+                <button class="bottom-pill-btn scroll-top-pill" id="bottomScrollTopBtn" aria-label="Scroll to Top" title="Scroll to Top">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 15l-6-6-6 6"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
         <!-- Scroll Top -->
         <button class="scroll-top" id="scrollTopBtn" aria-label="Scroll to top">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                 <path d="M18 15l-6-6-6 6"/>
             </svg>
         </button>
+    </div>
+
+    <!-- Apple Books "Aa" Quick Appearance Popover / Sheet -->
+    <div class="aa-menu-overlay" id="aaMenuOverlay"></div>
+    <div class="aa-menu-sheet" id="aaMenuSheet" role="dialog" aria-modal="true" aria-label="Reading Appearance">
+        <div class="sheet-grabber"></div>
+        <div class="aa-sheet-header">
+            <span class="aa-sheet-title">Appearance</span>
+            <button class="aa-sheet-close" id="aaSheetClose" aria-label="Close Appearance Menu">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 6L6 18M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+
+        <div class="aa-sheet-body">
+            <!-- 1. Theme Swatches (Apple Books 4 Iconic Palettes) -->
+            <div class="aa-section aa-theme-section">
+                <div class="aa-theme-grid">
+                    <button class="aa-theme-swatch" data-theme="light" title="Apple Books Warm Paper (Light)">
+                        <div class="swatch-disc swatch-light">
+                            <span class="swatch-letter">A</span>
+                        </div>
+                        <span class="swatch-name">Paper</span>
+                    </button>
+                    <button class="aa-theme-swatch" data-theme="sepia" title="Apple Books Cream Sepia">
+                        <div class="swatch-disc swatch-sepia">
+                            <span class="swatch-letter">A</span>
+                        </div>
+                        <span class="swatch-name">Sepia</span>
+                    </button>
+                    <button class="aa-theme-swatch" data-theme="charcoal" title="Apple Books Charcoal Slate">
+                        <div class="swatch-disc swatch-charcoal">
+                            <span class="swatch-letter">A</span>
+                        </div>
+                        <span class="swatch-name">Charcoal</span>
+                    </button>
+                    <button class="aa-theme-swatch" data-theme="dark" title="Pure OLED True Black">
+                        <div class="swatch-disc swatch-black">
+                            <span class="swatch-letter">A</span>
+                        </div>
+                        <span class="swatch-name">Black</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 2. View Mode Segmented Pills (Quick Scripture Layers) -->
+            <div class="aa-section aa-viewmode-section">
+                <div class="aa-card">
+                    <div class="aa-row aa-viewmode-row">
+                        <span class="aa-label">View</span>
+                        <div class="aa-segmented-modes" role="group" aria-label="Reading View Modes">
+                            <button class="aa-mode-pill active" id="aaToggleGurmukhi" data-type="gurmukhi" aria-pressed="true">ਗੁਰਮੁਖੀ</button>
+                            <button class="aa-mode-pill" id="aaToggleRoman" data-type="roman" aria-pressed="false">Roman</button>
+                            <button class="aa-mode-pill" id="aaToggleEnglish" data-type="english" aria-pressed="false">English</button>
+                            <button class="aa-mode-pill" id="aaTogglePunjabi" data-type="punjabi" aria-pressed="false">ਪੰਜਾਬੀ</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. Font Sizing Stepper & Slider -->
+            <div class="aa-section aa-size-section">
+                <div class="aa-card">
+                    <div class="aa-size-row">
+                        <button class="aa-size-stepper-btn" id="aaSizeMinusBtn" aria-label="Decrease Font Size" title="Decrease Size">
+                            <span class="size-stepper-small">A</span>
+                        </button>
+                        <div class="aa-slider-track">
+                            <input type="range" class="aa-font-slider" id="aaFontSlider" min="18" max="56" step="2" value="28" aria-label="Font Size">
+                        </div>
+                        <button class="aa-size-stepper-btn" id="aaSizePlusBtn" aria-label="Increase Font Size" title="Increase Size">
+                            <span class="size-stepper-large">A</span>
+                        </button>
+                        <span class="aa-size-badge" id="aaSizeBadge">28 px</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. Font Family Selector -->
+            <div class="aa-section aa-font-section">
+                <div class="aa-card">
+                    <div class="aa-row aa-select-row">
+                        <span class="aa-label">Font</span>
+                        <select class="aa-select" id="aaFontSelect" aria-label="Gurmukhi Font">
+                            <option value="noto">Gurmukhi Lipi (Noto)</option>
+                            <option value="riyasti-naveen">Riyasti Naveen</option>
+                            <option value="pg-serif">PG Serif</option>
+                            <option value="mfjashan">MF Jashan</option>
+                            <option value="pg-khanna">PG Khanna</option>
+                            <option value="pixel-r">Pixel R</option>
+                            <option value="riyasti">Riyasti Hastlikhat</option>
+                            <option value="pg-muskan">PG Muskan</option>
+                        </select>
+                    </div>
+                    <div class="aa-divider"></div>
+                    <!-- Text Alignment -->
+                    <div class="aa-row aa-align-row">
+                        <span class="aa-label">Alignment</span>
+                        <div class="aa-segmented-align" role="radiogroup" aria-label="Text Alignment">
+                            <button class="aa-align-btn" data-align="left" aria-label="Align Left" title="Left">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="15" y2="12"/><line x1="3" y1="18" x2="19" y2="18"/></svg>
+                            </button>
+                            <button class="aa-align-btn active" data-align="center" aria-label="Align Center" title="Center">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="6" y1="12" x2="18" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>
+                            </button>
+                            <button class="aa-align-btn" data-align="right" aria-label="Align Right" title="Right">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="9" y1="12" x2="21" y2="12"/><line x1="5" y1="18" x2="21" y2="18"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. Auto Scroll Quick Bar -->
+            <div class="aa-section aa-autoscroll-section">
+                <div class="aa-card">
+                    <div class="aa-row">
+                        <div class="aa-row-info">
+                            <span class="aa-label">Auto Scroll</span>
+                            <span class="aa-sublabel">Hands-free reading</span>
+                        </div>
+                        <button class="ios-toggle" id="aaAutoScrollToggle" aria-checked="false">
+                            <span class="toggle-thumb"></span>
+                        </button>
+                    </div>
+                    <div class="aa-divider" id="aaSpeedDivider" style="display:none;"></div>
+                    <div class="aa-row aa-speed-row" id="aaSpeedRow" style="display:none;">
+                        <span class="aa-label">Speed</span>
+                        <div class="aa-speed-pills" role="radiogroup" aria-label="Scroll Speed">
+                            <button class="aa-speed-pill" data-speed="1">1x</button>
+                            <button class="aa-speed-pill active" data-speed="2">2x</button>
+                            <button class="aa-speed-pill" data-speed="3">3x</button>
+                            <button class="aa-speed-pill" data-speed="4">4x</button>
+                            <button class="aa-speed-pill" data-speed="5">5x</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. More Settings Button -->
+            <div class="aa-section aa-more-section">
+                <button class="aa-more-btn" id="aaMoreSettingsBtn">
+                    <span>All Reading Preferences</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 18l6-6-6-6"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
     </div>
 
     <!-- Settings Overlay -->
@@ -457,13 +672,21 @@
                     <div class="setting-row theme-row">
                         <span class="setting-subsection">Theme</span>
                         <div class="theme-selector">
-                            <button class="theme-bubble active" data-theme="dark">
-                                <div class="bubble-inner dark"></div>
-                                <span class="bubble-label">Dark</span>
-                            </button>
                             <button class="theme-bubble" data-theme="light">
                                 <div class="bubble-inner light"></div>
-                                <span class="bubble-label">Light</span>
+                                <span class="bubble-label">Paper</span>
+                            </button>
+                            <button class="theme-bubble" data-theme="sepia">
+                                <div class="bubble-inner sepia"></div>
+                                <span class="bubble-label">Sepia</span>
+                            </button>
+                            <button class="theme-bubble" data-theme="charcoal">
+                                <div class="bubble-inner charcoal"></div>
+                                <span class="bubble-label">Charcoal</span>
+                            </button>
+                            <button class="theme-bubble active" data-theme="dark">
+                                <div class="bubble-inner dark"></div>
+                                <span class="bubble-label">Black</span>
                             </button>
                         </div>
                     </div>
@@ -552,6 +775,7 @@
                         </div>
                         <select class="setting-select font-select" id="fontFamilySelect">
                             <option value="noto" selected>Gurmukhi Lipi</option>
+                            <option value="riyasti-naveen">Riyasti Naveen</option>
                             <option value="pg-serif">Gurmukhi Font 1</option>
                             <option value="mfjashan">Gurmukhi Font 2</option>
                             <option value="pg-khanna">Gurmukhi Font 3</option>

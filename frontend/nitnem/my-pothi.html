@@ -2439,7 +2439,9 @@
             // Sync with AuthoritativeStreakEngine if present
             try {
                 if (window.AuthoritativeStreakEngine && typeof window.AuthoritativeStreakEngine.recordNitnemCompletion === 'function') {
-                    window.AuthoritativeStreakEngine.recordNitnemCompletion(dateStr, completed[dateStr]);
+                    const pct = getHistoricalPct(dateStr, completed);
+                    const isComplete = pct === 100;
+                    window.AuthoritativeStreakEngine.recordNitnemCompletion(dateStr, completed[dateStr], pct, isComplete);
                 }
             } catch (e) {
                 console.warn('[My Pothi] AuthoritativeStreakEngine sync warning:', e);
@@ -2503,7 +2505,8 @@
 
             try {
                 if (window.AuthoritativeStreakEngine && typeof window.AuthoritativeStreakEngine.recordNitnemCompletion === 'function') {
-                    window.AuthoritativeStreakEngine.recordNitnemCompletion(dateStr, completed[dateStr]);
+                    const pct = markAllComplete ? 100 : 0;
+                    window.AuthoritativeStreakEngine.recordNitnemCompletion(dateStr, completed[dateStr], pct, markAllComplete);
                 }
             } catch (e) {}
 

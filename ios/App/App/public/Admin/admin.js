@@ -391,7 +391,7 @@
     const enableToggle = $('companionEnableToggle');
     const saveBtn = $('saveCompanionConfigBtn');
     const statusText = $('companionScheduleStatus');
-    const defaultArtwork = '../assets/companion/chaliya-2026.webp';
+    const defaultArtwork = 'assets/companion/chaliya-2026.webp';
 
     if (!previewImg || !enableToggle) return;
 

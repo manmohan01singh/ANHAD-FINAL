@@ -1663,6 +1663,18 @@
                     </div>
                 </div>
 
+                <!-- Sacred Reading Record Banner -->
+                <div class="reading-stats-banner" id="readingStatsBanner" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:rgba(212,148,58,0.12);border:1px solid rgba(247,198,52,0.3);border-radius:16px;margin:0 0 16px 0;">
+                    <div style="display:flex;align-items:center;gap:10px;">
+                        <span style="font-size:22px;">📖</span>
+                        <div>
+                            <div style="font-size:13px;font-weight:700;color:var(--sp-text-primary,#fff);">Sacred Gurbani Reading</div>
+                            <div style="font-size:11px;color:var(--sp-text-tertiary,#aaa);" id="readingStatsSub">0 sessions today</div>
+                        </div>
+                    </div>
+                    <span style="font-size:13px;font-weight:700;color:#f7c634;" id="readingStatsTime">0m read</span>
+                </div>
+
                 <!-- Progress Bar -->
                 <div class="today-bar">
                     <div class="today-bar-header">
@@ -1802,8 +1814,18 @@
                 <circle class="med-progress-ring" id="medProgressRing" cx="100" cy="100" r="85"></circle>
             </svg>
             <div class="med-center-content">
-                <div class="waheguru-text" id="waheguruText">ਵਾਹਿਗੁਰੂ</div>
-                <div class="breathing-guide" id="breathingGuide">Breathe... Remember...</div>
+                <div id="simranModeContent">
+                    <div class="waheguru-text" id="waheguruText">ਵਾਹਿਗੁਰੂ</div>
+                    <div class="breathing-guide" id="breathingGuide">Breathe... Remember...</div>
+                </div>
+                <div id="readingModeContent" class="reading-mode-content" style="display:none;padding:12px 16px;max-width:320px;text-align:center;">
+                    <div style="font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:#f7c634;margin-bottom:6px;font-weight:700;">📖 Sacred Gurbani Reading</div>
+                    <div class="reading-gurmukhi" id="readingGurmukhi" style="font-size:1.15rem;font-weight:700;color:#fff;line-height:1.45;margin-bottom:6px;font-family:'Mukta Mahee',sans-serif;">ਗੁਰ ਸਤਿਗੁਰ ਕਾ ਜੋ ਸਿਖੁ ਅਖਾਏ ਸੁ ਭਲਕੇ ਉਠਿ ਹਰਿ ਨਾਮੁ ਧਿਆਵੈ ॥</div>
+                    <div class="reading-translit" id="readingTranslit" style="font-size:0.8rem;color:#e2c388;margin-bottom:6px;font-style:italic;line-height:1.3;">Gur satgur kaa jo sikh akhaae so bhalke uth har naam dhiaavai</div>
+                    <div class="reading-translation" id="readingTranslation" style="font-size:0.82rem;color:rgba(255,255,255,0.9);line-height:1.35;margin-bottom:8px;">“One who calls themselves a disciple of the Guru shall rise early and meditate on the Lord’s Name.”</div>
+                    <div class="reading-ang" id="readingAng" style="font-size:0.75rem;color:#8E8E93;margin-bottom:8px;">Sri Guru Granth Sahib Ji • Ang 305</div>
+                    <button class="reading-next-btn" id="readingNextBtn" type="button" style="background:rgba(247,198,52,0.18);border:1px solid rgba(247,198,52,0.4);color:#f7c634;border-radius:20px;padding:4px 14px;font-size:11px;font-weight:600;cursor:pointer;">Next Verse ➔</button>
+                </div>
             </div>
         </div>
         <div class="meditation-controls-v2">
@@ -1823,6 +1845,10 @@
                 <button class="med-btn med-btn-present" id="medPresentBtn">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
                     <span class="btn-label">I Am Present</span>
+                </button>
+                <button class="med-btn med-btn-mode" id="medModeToggleBtn">
+                    <span class="btn-icon" id="medModeIcon">📖</span>
+                    <span class="btn-label" id="medModeLabel">Read Gurbani</span>
                 </button>
                 <button class="med-btn med-btn-silent" id="medSilentBtn" data-muted="false">
                     <span class="btn-icon" id="silentBtnIcon">🔊</span>
@@ -1858,7 +1884,8 @@
                 <p id="alertMessage">"Leave all work. Close your eyes. Remember Vaheguru."</p>
             </div>
             <div class="alert-footer-ios">
-                <button class="alert-btn-ios alert-btn-ready" id="alertStartNowBtn">I Am Ready</button>
+                <button class="alert-btn-ios alert-btn-ready" id="alertStartNowBtn">Start Simran (2 min)</button>
+                <button class="alert-btn-ios alert-btn-reading" id="alertStartReadingBtn" style="width:100%;background:rgba(212,148,58,0.2);border:1px solid rgba(247,198,52,0.5);color:#f7c634;margin-bottom:10px;padding:12px;border-radius:14px;font-weight:700;font-size:15px;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;">📖 Sacred Reading &amp; Simran</button>
                 <div class="alert-btn-row-ios">
                     <button class="alert-btn-ios alert-btn-silent" id="alertSilentBtn">Silent Mode</button>
                     <button class="alert-btn-ios alert-btn-skip" id="skipSessionBtn">Skip</button>
@@ -2008,6 +2035,7 @@
                     </div>
                     <div class="sound-select-wrapper">
                         <select id="notificationSound" class="sound-select">
+                            <option value="calm-singing-bowl" selected>Tibetan Singing Bowl (Calm)</option>
                             <option value="gentle-bell">Gentle Bell</option>
                             <option value="soft-chime">Soft Chime</option>
                         </select>

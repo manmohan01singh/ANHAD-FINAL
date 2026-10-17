@@ -349,9 +349,9 @@
     // listener.
     if (event === 'statechange') {
       try {
-        window.dispatchEvent(new CustomEvent('anhadAudioStateChange', {
-          detail: Object.assign({}, data, { stream: data.currentStream })
-        }));
+        const detail = Object.assign({}, data, { stream: data.currentStream });
+        window.dispatchEvent(new CustomEvent('anhadAudioStateChange', { detail }));
+        window.dispatchEvent(new CustomEvent('anhadaudiostatechange', { detail }));
       } catch (e) {}
     }
   }

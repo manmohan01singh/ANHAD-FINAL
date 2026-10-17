@@ -59,6 +59,12 @@
             // This ensures trendora-app.js and other components see the same streak
             const legacySd = localStorage.getItem('anhad_streak_data');
             let legacy = legacySd ? JSON.parse(legacySd) : {};
+            if (typeof window !== 'undefined' && window.AuthoritativeStreakEngine) {
+                try {
+                    const authState = window.AuthoritativeStreakEngine.getState();
+                    legacy = { ...legacy, ...authState };
+                } catch (e) {}
+            }
             legacy.current = data.streaks.nitnem;
             legacy.currentStreak = data.streaks.nitnem;
             if (data.streaks.nitnem > (legacy.longest || 0)) {
@@ -66,7 +72,7 @@
                 legacy.longestStreak = data.streaks.nitnem;
             }
             legacy.lastUpdated = data.lastActive;
-            legacy.lastCheckIn = getTodayString(); // CRITICAL BUG FIX! Prevents streak from resetting to 1!
+            legacy.lastCheckIn = getTodayString();
             localStorage.setItem('anhad_streak_data', JSON.stringify(legacy));
 
             // Dispatch event for real-time updates
@@ -203,14 +209,23 @@
             
             // Update streak only if not already complete today
             if (!wasComplete) {
-                const yesterday = new Date();
-                yesterday.setDate(yesterday.getDate() - 1);
-                const yesterdayStr = yesterday.toLocaleDateString('en-CA');
-                
-                if (stats.daily[yesterdayStr]?.nitnemComplete) {
-                    stats.streaks.nitnem = (stats.streaks.nitnem || 0) + 1;
+                if (typeof window !== 'undefined' && window.AuthoritativeStreakEngine) {
+                    try {
+                        const authState = window.AuthoritativeStreakEngine.recordNitnemCompletion(getTodayString());
+                        stats.streaks.nitnem = authState.currentStreak;
+                    } catch (e) {
+                        stats.streaks.nitnem = (stats.streaks.nitnem || 0) + 1;
+                    }
                 } else {
-                    stats.streaks.nitnem = 1;
+                    const yesterday = new Date();
+                    yesterday.setDate(yesterday.getDate() - 1);
+                    const yesterdayStr = yesterday.toLocaleDateString('en-CA');
+                    
+                    if (stats.daily[yesterdayStr]?.nitnemComplete) {
+                        stats.streaks.nitnem = (stats.streaks.nitnem || 0) + 1;
+                    } else {
+                        stats.streaks.nitnem = 1;
+                    }
                 }
             }
             
@@ -234,14 +249,23 @@
             today.lastUpdated = new Date().toISOString();
             
             if (today.nitnemComplete && !wasComplete) {
-                const yesterday = new Date();
-                yesterday.setDate(yesterday.getDate() - 1);
-                const yesterdayStr = yesterday.toLocaleDateString('en-CA');
-                
-                if (stats.daily[yesterdayStr]?.nitnemComplete) {
-                    stats.streaks.nitnem = (stats.streaks.nitnem || 0) + 1;
+                if (typeof window !== 'undefined' && window.AuthoritativeStreakEngine) {
+                    try {
+                        const authState = window.AuthoritativeStreakEngine.recordNitnemCompletion(getTodayString());
+                        stats.streaks.nitnem = authState.currentStreak;
+                    } catch (e) {
+                        stats.streaks.nitnem = (stats.streaks.nitnem || 0) + 1;
+                    }
                 } else {
-                    stats.streaks.nitnem = 1;
+                    const yesterday = new Date();
+                    yesterday.setDate(yesterday.getDate() - 1);
+                    const yesterdayStr = yesterday.toLocaleDateString('en-CA');
+                    
+                    if (stats.daily[yesterdayStr]?.nitnemComplete) {
+                        stats.streaks.nitnem = (stats.streaks.nitnem || 0) + 1;
+                    } else {
+                        stats.streaks.nitnem = 1;
+                    }
                 }
             } else if (!today.nitnemComplete && wasComplete) {
                 if (stats.streaks.nitnem > 0) {
@@ -318,6 +342,12 @@
 
         getStreaks: function() {
             const stats = getStats();
+            if (typeof window !== 'undefined' && window.AuthoritativeStreakEngine) {
+                try {
+                    const authState = window.AuthoritativeStreakEngine.getState();
+                    stats.streaks.nitnem = authState.currentStreak;
+                } catch (e) {}
+            }
             return stats.streaks;
         },
 

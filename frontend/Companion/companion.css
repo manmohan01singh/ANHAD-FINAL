@@ -234,3 +234,57 @@ input:checked + .companion-slider:before {
   cursor: pointer;
   box-shadow: 0 4px 14px rgba(166, 117, 36, 0.3);
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   DARK MODE COMPANION THEME OVERRIDES
+   ═══════════════════════════════════════════════════════════════════════════════ */
+html.dark-mode .companion-page,
+[data-theme="dark"] .companion-page {
+  background-color: #0D0D0F;
+  color: #F2F2F7;
+}
+
+html.dark-mode .companion-header,
+[data-theme="dark"] .companion-header {
+  background: #0D0D0F;
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+html.dark-mode .companion-header__title,
+[data-theme="dark"] .companion-header__title {
+  color: #F2F2F7;
+}
+
+html.dark-mode .companion-hero-card,
+[data-theme="dark"] .companion-hero-card,
+html.dark-mode .companion-toggle-card,
+[data-theme="dark"] .companion-toggle-card,
+html.dark-mode .companion-guide-card,
+[data-theme="dark"] .companion-guide-card {
+  background: #1C1C1E;
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+html.dark-mode .companion-hero-card__heading,
+[data-theme="dark"] .companion-hero-card__heading,
+html.dark-mode .companion-toggle-card__title,
+[data-theme="dark"] .companion-toggle-card__title {
+  color: #F2F2F7;
+}
+
+html.dark-mode .companion-hero-card__sub,
+[data-theme="dark"] .companion-hero-card__sub,
+html.dark-mode .companion-toggle-card__desc,
+[data-theme="dark"] .companion-toggle-card__desc,
+html.dark-mode .companion-guide-card__body,
+[data-theme="dark"] .companion-guide-card__body {
+  color: #AEAEB2;
+}
+
+html.dark-mode .companion-milestone-item,
+[data-theme="dark"] .companion-milestone-item {
+  background: rgba(212, 175, 55, 0.12);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+}
+

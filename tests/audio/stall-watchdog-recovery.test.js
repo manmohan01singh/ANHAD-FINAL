@@ -15,7 +15,7 @@ describe('anhad-audio-singleton: stall watchdog', () => {
     vi.useRealTimers();
   });
 
-  it('reloads via playStream 15s after a waiting event with no playing event following', async () => {
+  it('reloads via playStream 6s after a waiting event with no playing event following', async () => {
     vi.useFakeTimers();
     window.AnhadAudio.play('darbar');
     await vi.advanceTimersByTimeAsync(0);
@@ -26,14 +26,14 @@ describe('anhad-audio-singleton: stall watchdog', () => {
 
     audioEl._trigger('waiting');
 
-    await vi.advanceTimersByTimeAsync(14999);
+    await vi.advanceTimersByTimeAsync(5999);
     expect(playSpy).not.toHaveBeenCalled();
 
     await vi.advanceTimersByTimeAsync(1);
     expect(playSpy).toHaveBeenCalledTimes(1);
   });
 
-  it('does NOT reload if a playing event arrives before the 15s watchdog elapses', async () => {
+  it('does NOT reload if a playing event arrives before the 6s watchdog elapses', async () => {
     vi.useFakeTimers();
     window.AnhadAudio.play('darbar');
     await vi.advanceTimersByTimeAsync(0);
@@ -43,10 +43,10 @@ describe('anhad-audio-singleton: stall watchdog', () => {
     playSpy.mockClear();
 
     audioEl._trigger('waiting');
-    await vi.advanceTimersByTimeAsync(5000);
+    await vi.advanceTimersByTimeAsync(3000);
     audioEl._trigger('playing'); // clears the watchdog timer
 
-    await vi.advanceTimersByTimeAsync(15000);
+    await vi.advanceTimersByTimeAsync(6000);
     expect(playSpy).not.toHaveBeenCalled();
   });
 
@@ -60,7 +60,7 @@ describe('anhad-audio-singleton: stall watchdog', () => {
     playSpy.mockClear();
 
     audioEl._trigger('stalled');
-    await vi.advanceTimersByTimeAsync(15000);
+    await vi.advanceTimersByTimeAsync(6000);
 
     expect(playSpy).toHaveBeenCalledTimes(1);
   });
@@ -77,7 +77,7 @@ describe('anhad-audio-singleton: stall watchdog', () => {
     audioEl._trigger('waiting');
     window.AnhadAudio.pause(); // real pause fires a real 'pause' DOM event via the mock
 
-    await vi.advanceTimersByTimeAsync(15000);
+    await vi.advanceTimersByTimeAsync(6000);
     expect(playSpy).not.toHaveBeenCalled();
   });
 });

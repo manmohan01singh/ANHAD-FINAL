@@ -207,18 +207,46 @@
 
     function addListeningTime(minutes) {
         const stats = checkAndResetDaily();
-        stats.totalListeningMinutes += minutes;
-        stats.todayListeningMinutes += minutes;
-        stats.sessionListeningMinutes += minutes;
+        stats.totalListeningMinutes = (stats.totalListeningMinutes || 0) + minutes;
+        stats.todayListeningMinutes = (stats.todayListeningMinutes || 0) + minutes;
+        stats.sessionListeningMinutes = (stats.sessionListeningMinutes || 0) + minutes;
         stats.lastActiveDate = getTodayString();
         saveStats(stats);
 
         // Update goals
         const goals = getGoals();
-        if (goals.listenMinutes.enabled) {
-            goals.listenMinutes.current += minutes;
+        if (goals.listenMinutes && goals.listenMinutes.enabled) {
+            goals.listenMinutes.current = (goals.listenMinutes.current || 0) + minutes;
+            goals.listenMinutes.complete = goals.listenMinutes.current >= (goals.listenMinutes.target || 30);
             saveGoals(goals);
         }
+
+        // CRITICAL: Synchronize with UnifiedStats (Single Source of Truth)
+        if (typeof window !== 'undefined' && window.UnifiedStats && typeof window.UnifiedStats.recordKirtanListening === 'function') {
+            try {
+                window.UnifiedStats.recordKirtanListening(minutes);
+            } catch (e) {}
+        } else {
+            // Direct localStorage backup sync for UnifiedStats if module is not in memory
+            try {
+                const todayKey = getTodayString();
+                const raw = localStorage.getItem('anhad_unified_stats');
+                const uStats = raw ? JSON.parse(raw) : { daily: {}, streaks: {} };
+                uStats.daily = uStats.daily || {};
+                uStats.daily[todayKey] = uStats.daily[todayKey] || { angRead: 0, nitnemBanis: [], nitnemComplete: false, kirtanMinutes: 0 };
+                uStats.daily[todayKey].kirtanMinutes = (uStats.daily[todayKey].kirtanMinutes || 0) + minutes;
+                uStats.daily[todayKey].lastUpdated = new Date().toISOString();
+                localStorage.setItem('anhad_unified_stats', JSON.stringify(uStats));
+            } catch (e) {}
+        }
+
+        // Dispatch events for all dashboard/insights listeners
+        try {
+            window.dispatchEvent(new CustomEvent('statsUpdated', { detail: { minutes, total: stats.totalListeningMinutes } }));
+            window.dispatchEvent(new CustomEvent('dashboardRefresh'));
+            window.dispatchEvent(new CustomEvent('kirtanListeningUpdated', { detail: { minutes, added: minutes } }));
+            window.dispatchEvent(new CustomEvent('statsChanged', { detail: { todayListening: stats.todayListeningMinutes } }));
+        } catch (e) {}
 
         // DECOUPLED per R1: Passive audio playback must NEVER increment Amritvela/Nitnem streak.
 
@@ -440,6 +468,7 @@
     }
 
     function stopListeningSession() {
+        flushPartialListeningTime();
         if (listeningInterval) {
             clearInterval(listeningInterval);
             listeningInterval = null;
@@ -490,31 +519,47 @@
     // AUDIO INTEGRATION
     // ═══════════════════════════════════════════════════════════════════════════
 
-    // Listen for audio state changes
-    window.addEventListener('anhadaudiostatechange', (e) => {
+    // Listen for audio state changes (supporting both camelCase and lowercase CustomEvents)
+    function handleAudioStateChange(e) {
         if (e.detail && e.detail.isPlaying) {
             startListeningSession();
         } else {
             stopListeningSession();
         }
-    });
+    }
+    window.addEventListener('anhadAudioStateChange', handleAudioStateChange);
+    window.addEventListener('anhadaudiostatechange', handleAudioStateChange);
+
+    // Initial check: if audio is already playing when this script loads, start tracking immediately
+    try {
+        if (window.AnhadAudio && typeof window.AnhadAudio.isPlaying === 'function' && window.AnhadAudio.isPlaying()) {
+            startListeningSession();
+        }
+    } catch (e) {}
 
     // CRITICAL: Flush partial listening time when app goes to background or closes
-    // Without this, force-closing mid-kirtan loses all time since last 1-minute tick
+    // Without this, force-closing or pausing mid-kirtan loses all time since last 1-minute tick
     function flushPartialListeningTime() {
-        if (!listeningInterval) return; // Not listening
         const stats = getStats();
         if (!stats.sessionStartTime) return;
 
         const elapsedMs = Date.now() - stats.sessionStartTime;
-        const elapsedMinutes = Math.floor(elapsedMs / 60000);
-        if (elapsedMinutes > stats.sessionListeningMinutes) {
-            const newMinutes = elapsedMinutes - stats.sessionListeningMinutes;
-            if (newMinutes > 0) {
-                addListeningTime(newMinutes);
-                console.log(`[UserStats] Flushed ${newMinutes} min of partial listening time`);
-            }
+        const totalElapsedMin = Math.floor(elapsedMs / 60000);
+        const remainderSec = Math.floor((elapsedMs % 60000) / 1000);
+        let additionalMin = totalElapsedMin - (stats.sessionListeningMinutes || 0);
+
+        // If >= 30 seconds of remainder, credit 1 full minute
+        if (remainderSec >= 30 && additionalMin <= 0) {
+            additionalMin = 1;
         }
+
+        if (additionalMin > 0) {
+            addListeningTime(additionalMin);
+            console.log(`[UserStats] Flushed ${additionalMin} min of partial listening time (remainder: ${remainderSec}s)`);
+        }
+        stats.sessionStartTime = null;
+        stats.sessionListeningMinutes = 0;
+        saveStats(stats);
     }
 
     // Defense in depth: this file is now in smooth-navigation.js's

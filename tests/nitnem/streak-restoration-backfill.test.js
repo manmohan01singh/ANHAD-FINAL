@@ -241,5 +241,46 @@ describe('R3: Deterministic Streak Restoration & Historical Gap Backfilling', ()
       expect(duplicateAttempt.success).toBe(false);
       expect(duplicateAttempt.error).toContain('No active recovery challenge in progress');
     });
+
+    it('preserves exact restored streak across repeated recalculations and app restarts', () => {
+      vi.useFakeTimers();
+
+      // Seed 10 genuine days in amritvelaLog before break (Sep 21-30)
+      for (let d = 21; d <= 30; d++) {
+        const dayStr = `2026-09-${d}`;
+        engine.recordAmritvelaAttendance(dayStr, '03:45', 'excellent');
+      }
+
+      // Check break on Oct 08 (7 gap days: Oct 01-07)
+      const breakInfo = engine.checkStreakBreak('2026-10-08');
+      expect(breakInfo.isBroken).toBe(true);
+
+      // Start challenge on Oct 08
+      expect(engine.isRecoveryEligible('2026-10-08')).toBe(true);
+      engine.startRecoveryChallenge();
+
+      // Complete 5 days: Oct 08, 09, 10, 11, 12
+      for (let d = 8; d <= 12; d++) {
+        const dayStr = `2026-10-${d < 10 ? '0' + d : d}`;
+        vi.setSystemTime(new Date(`${dayStr}T04:00:00`));
+        engine.recordAmritvelaAttendance(dayStr, '04:00', 'good');
+      }
+
+      // Day 5 restored streak: 10 (target) + 5 (challenge) = 15
+      expect(engine.getState().currentStreak).toBe(15);
+      expect(engine.getState().brokenStreak).toBeNull();
+
+      // Recalculating streak 10 times in a row yields exactly 15 every time!
+      for (let i = 0; i < 10; i++) {
+        const recalced = engine.recalculateStreak('2026-10-12');
+        expect(recalced.currentStreak).toBe(15);
+        expect(recalced.brokenStreak).toBeNull();
+      }
+
+      // Day 6 subsequent attendance increments to 16
+      vi.setSystemTime(new Date('2026-10-13T04:00:00'));
+      const day6 = engine.recordAmritvelaAttendance('2026-10-13', '04:00', 'good');
+      expect(day6.currentStreak).toBe(16);
+    });
   });
 });

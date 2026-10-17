@@ -4498,41 +4498,34 @@
       margin-bottom: 18px !important;
     }
 
-    /* Dark Mode & Dynamic Night: Hide Standard Hero Banner (Campaign Image) - Show Circular Carousel Instead */
-    html.dark-mode body:not(.companion-mode-active) .greeting__hero-banner,
-    [data-theme="dark"] body:not(.companion-mode-active) .greeting__hero-banner,
-    [data-time-of-day="night"] body:not(.companion-mode-active) .greeting__hero-banner {
-      display: none !important;
-    }
-
-    /* ALSO hide in dark mode even if companion mode is active, unless explicitly overridden */
+    /* Dark Mode & Dynamic Night: Hide Hero Banner (Campaign Image) - Show Circular Carousel Instead */
     html.dark-mode body .greeting__hero-banner,
-    [data-theme="dark"] body .greeting__hero-banner {
-      display: none !important;
-    }
-
+    [data-theme="dark"] body .greeting__hero-banner,
+    [data-time-of-day="night"] body .greeting__hero-banner,
     html.dark-mode .greeting__hero-banner,
-    [data-theme="dark"] .greeting__hero-banner {
-      display: none !important;
-    }
-
-    /* Companion Mode in Dark Mode / Night: Show Sacred Hero Banner with Celestial Glow */
+    [data-theme="dark"] .greeting__hero-banner,
+    [data-time-of-day="night"] .greeting__hero-banner,
     html.dark-mode body.companion-mode-active .greeting__hero-banner,
     [data-theme="dark"] body.companion-mode-active .greeting__hero-banner,
     [data-time-of-day="night"] body.companion-mode-active .greeting__hero-banner {
-      display: flex !important;
-      background: radial-gradient(ellipse 70% 55% at 50% 50%, rgba(212, 175, 55, 0.16) 0%, rgba(6, 21, 39, 0.4) 60%, transparent 100%) !important;
-      border-radius: 24px !important;
+      display: none !important;
     }
-    html.dark-mode body.companion-mode-active .greeting__hero-artwork,
-    [data-theme="dark"] body.companion-mode-active .greeting__hero-artwork,
-    [data-time-of-day="night"] body.companion-mode-active .greeting__hero-artwork {
-      filter: drop-shadow(0 6px 24px rgba(0, 0, 0, 0.7)) drop-shadow(0 0 20px rgba(212, 175, 55, 0.3)) !important;
-    }
+
+    html.dark-mode #greetingDarkCarousel,
+    [data-theme="dark"] #greetingDarkCarousel,
+    [data-time-of-day="night"] #greetingDarkCarousel,
+    html.dark-mode .greeting__dark-carousel-container,
+    [data-theme="dark"] .greeting__dark-carousel-container,
+    [data-time-of-day="night"] .greeting__dark-carousel-container,
+    html.dark-mode body.companion-mode-active #greetingDarkCarousel,
+    [data-theme="dark"] body.companion-mode-active #greetingDarkCarousel,
+    [data-time-of-day="night"] body.companion-mode-active #greetingDarkCarousel,
     html.dark-mode body.companion-mode-active .greeting__dark-carousel-container,
     [data-theme="dark"] body.companion-mode-active .greeting__dark-carousel-container,
     [data-time-of-day="night"] body.companion-mode-active .greeting__dark-carousel-container {
-      display: none !important;
+      display: flex !important;
+      opacity: 1 !important;
+      visibility: visible !important;
     }
 
     /* ════════════════════════════════════════════════════════════════
@@ -6897,7 +6890,28 @@
         } catch(e) {}
 
         if (isCompanion) {
-          // Companion Mode Active: Show companion hero banner full-time across light and dark themes
+          if (showDark) {
+            // Dark Mode / Dynamic Night: Hide companion banner, preserve circular carousel
+            if (document.body) document.body.classList.remove('companion-mode-active');
+            if (heroBanner) {
+              heroBanner.classList.remove('companion-mode-active');
+              heroBanner.style.setProperty('display', 'none', 'important');
+            }
+            if (darkCarousel) {
+              darkCarousel.style.setProperty('display', 'flex', 'important');
+              if (window.PortraitSlider && typeof window.PortraitSlider.init === 'function') {
+                window.PortraitSlider.init();
+              }
+            }
+            if (window.CompanionMode && typeof window.CompanionMode.syncHeroImage === 'function' && !window.__syncingGreeting) {
+              window.__syncingGreeting = true;
+              try { window.CompanionMode.syncHeroImage(); } catch (e) {}
+              window.__syncingGreeting = false;
+            }
+            return;
+          }
+
+          // Companion Mode Active in Light Mode / Dynamic Daytime: Show companion hero banner
           if (document.body) document.body.classList.add('companion-mode-active');
           if (heroBanner) {
             heroBanner.classList.add('companion-mode-active');

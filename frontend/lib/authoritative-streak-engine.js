@@ -30,7 +30,9 @@
         NITNEM_LOG: 'nitnemTracker_nitnemLog',
         MY_POTHI_COMPLETED: 'anhad_my_pothi_completed',
         UNIFIED_STATS: 'anhad_unified_stats',
-        USER_DATA: 'nitnemTracker_userData'
+        USER_DATA: 'nitnemTracker_userData',
+        STREAK_RESTORE_POLICY: 'anhad_streak_restore_challenge',
+        PUNISHMENT_USAGE: 'nitnemTracker_punishmentUsage'
     };
 
     const RECOVERY_CONFIG_DEFAULTS = {
@@ -207,6 +209,20 @@
                 status: 'idle', // 'idle' | 'in_progress' | 'completed' | 'failed'
                 lastCompletedDate: null
             },
+            streakRestorePolicy: {
+                active: false,
+                status: 'idle', // 'idle' | 'in_progress' | 'completed' | 'expired'
+                startedAt: null,
+                expiresAt: null, // 5 hours window
+                targetSukhmaniCount: 5,
+                completedSukhmaniCount: 0,
+                completedSessions: [],
+                targetStreakToRestore: 0,
+                restoredStreak: 0,
+                restoredOnDate: null
+            },
+            activeSavedStreak: 0,
+            savedStreakDate: null,
             recoveryConfig: {
                 minDelayDays: RECOVERY_CONFIG_DEFAULTS.minDelayDays,
                 requiredConsecutiveDays: RECOVERY_CONFIG_DEFAULTS.requiredConsecutiveDays
@@ -276,9 +292,31 @@
                 qualifyingDays: Array.isArray(saved.recoveryChallenge.qualifyingDays) ? [...saved.recoveryChallenge.qualifyingDays] : [],
                 brokenStreakCountToRestore: Number(saved.recoveryChallenge.brokenStreakCountToRestore) || 0,
                 status: saved.recoveryChallenge.status || 'idle',
-                lastCompletedDate: saved.recoveryChallenge.lastCompletedDate || null
+                lastCompletedDate: saved.recoveryChallenge.lastCompletedDate || null,
+                restoredStreak: Number(saved.recoveryChallenge.restoredStreak) || 0,
+                restoredOnDate: saved.recoveryChallenge.restoredOnDate || null
             };
         }
+
+        // 6.5 Streak restore policy (5 Sukhmani Sahib in 5 Hours)
+        if (saved.streakRestorePolicy && typeof saved.streakRestorePolicy === 'object') {
+            state.streakRestorePolicy = {
+                active: Boolean(saved.streakRestorePolicy.active),
+                status: saved.streakRestorePolicy.status || 'idle',
+                startedAt: saved.streakRestorePolicy.startedAt || null,
+                expiresAt: saved.streakRestorePolicy.expiresAt || null,
+                targetSukhmaniCount: Number(saved.streakRestorePolicy.targetSukhmaniCount) || 5,
+                completedSukhmaniCount: Number(saved.streakRestorePolicy.completedSukhmaniCount) || 0,
+                completedSessions: Array.isArray(saved.streakRestorePolicy.completedSessions) ? [...saved.streakRestorePolicy.completedSessions] : [],
+                targetStreakToRestore: Number(saved.streakRestorePolicy.targetStreakToRestore) || 0,
+                restoredStreak: Number(saved.streakRestorePolicy.restoredStreak) || 0,
+                restoredOnDate: saved.streakRestorePolicy.restoredOnDate || null
+            };
+        }
+
+        // Active saved streak from streak saver punishment
+        state.activeSavedStreak = Number(saved.activeSavedStreak) || 0;
+        state.savedStreakDate = saved.savedStreakDate || null;
 
         // 7. Recovery config
         if (saved.recoveryConfig && typeof saved.recoveryConfig === 'object') {
@@ -314,12 +352,16 @@
         const pothiCompleted = loadJson(KEYS.MY_POTHI_COMPLETED, {});
 
         const dateSet = new Set();
+        const restoredDateSet = new Set();
 
         // Amritvela log
         Object.keys(amritvelaLog).forEach(d => {
             const entry = amritvelaLog[d];
             if (entry && (entry.woke === true || entry.timestamp || entry.slot)) {
                 dateSet.add(d);
+                if (entry.origin === 'restored' || entry.systemGenerated || entry.isSystemGenerated) {
+                    restoredDateSet.add(d);
+                }
             }
         });
 
@@ -328,6 +370,8 @@
             const entry = nitnemLog[d];
             if (entry && (entry.completed === true || entry.percentage === 100)) {
                 dateSet.add(d);
+                // Genuine Nitnem completion means user attended genuinely
+                restoredDateSet.delete(d);
             }
         });
 
@@ -335,19 +379,22 @@
         Object.keys(pothiCompleted).forEach(d => {
             const completedList = pothiCompleted[d];
             if (Array.isArray(completedList) && completedList.length > 0) {
-                // If Nitnem log marks completed or has substantial completion
                 const entry = nitnemLog[d];
                 if (entry && (entry.completed === true || entry.percentage === 100)) {
                     dateSet.add(d);
+                    restoredDateSet.delete(d);
                 }
             }
         });
 
-        return Array.from(dateSet);
+        return {
+            dates: Array.from(dateSet),
+            restoredDates: restoredDateSet
+        };
     }
 
     /**
-     * Calculate streak deterministically from a set of date strings.
+     * Calculate streak deterministically from date records.
      * Returns:
      * {
      *   currentStreak: number,
@@ -358,10 +405,24 @@
      *   lastContiguousRun: { count: number, lastCompletedDate: string, brokenDate: string } | null
      * }
      */
-    function calculateStreakDetails(dateStrings, asOfDateStr) {
+    function calculateStreakDetails(dateData, asOfDateStr, explicitRestoredSet) {
         const todayStr = asOfDateStr || getTodayString();
         const todayUtc = toUtcDay(todayStr);
         const yesterdayUtc = todayUtc - 1;
+
+        let dateStrings = [];
+        let restoredSet = explicitRestoredSet || new Set();
+
+        if (Array.isArray(dateData)) {
+            dateStrings = dateData;
+        } else if (dateData && typeof dateData === 'object') {
+            if (Array.isArray(dateData.dates)) {
+                dateStrings = dateData.dates;
+            }
+            if (dateData.restoredDates instanceof Set) {
+                restoredSet = dateData.restoredDates;
+            }
+        }
 
         if (!Array.isArray(dateStrings) || dateStrings.length === 0) {
             return {
@@ -392,54 +453,69 @@
             };
         }
 
-        // 1. Calculate active current streak
+        // 1. Calculate active current streak (bridging restored dates without counting them as earned days)
         let currentStreak = 0;
         let isStreakActive = false;
+        let runLength = 0;
         const latestDay = dayNumbers[0];
 
         if (latestDay === todayUtc || latestDay === yesterdayUtc) {
             isStreakActive = true;
-            currentStreak = 1;
+            runLength = 1;
+            let restoredCount = restoredSet.has(fromUtcDay(latestDay)) ? 1 : 0;
             let expectedPrev = latestDay - 1;
 
             for (let i = 1; i < dayNumbers.length; i++) {
                 if (dayNumbers[i] === expectedPrev) {
-                    currentStreak++;
+                    runLength++;
+                    if (restoredSet.has(fromUtcDay(expectedPrev))) {
+                        restoredCount++;
+                    }
                     expectedPrev--;
                 } else if (dayNumbers[i] < expectedPrev) {
                     break;
                 }
             }
+            currentStreak = Math.max(0, runLength - restoredCount);
         }
 
         // 2. Calculate all-time longest streak in the sequence
         let longestStreak = 0;
-        let run = 1;
+        let currentRun = 0;
+        let currentRestored = 0;
         for (let i = 0; i < dayNumbers.length; i++) {
-            if (i + 1 < dayNumbers.length && dayNumbers[i] - dayNumbers[i + 1] === 1) {
-                run++;
-            } else {
-                longestStreak = Math.max(longestStreak, run);
-                run = 1;
+            currentRun++;
+            if (restoredSet.has(fromUtcDay(dayNumbers[i]))) {
+                currentRestored++;
+            }
+            if (i + 1 >= dayNumbers.length || dayNumbers[i] - dayNumbers[i + 1] !== 1) {
+                const effectiveRun = Math.max(0, currentRun - currentRestored);
+                longestStreak = Math.max(longestStreak, effectiveRun);
+                currentRun = 0;
+                currentRestored = 0;
             }
         }
-        longestStreak = Math.max(longestStreak, run, currentStreak);
+        longestStreak = Math.max(longestStreak, currentStreak);
 
         // 3. Find the most recent contiguous run (for broken streak determination)
         let lastContiguousRun = null;
         if (dayNumbers.length > 0) {
-            let runCount = 1;
-            for (let i = 0; i < dayNumbers.length - 1; i++) {
-                if (dayNumbers[i] - dayNumbers[i + 1] === 1) {
-                    runCount++;
-                } else {
+            let runCount = 0;
+            let expectedDay = latestDay;
+            for (let i = 0; i < dayNumbers.length; i++) {
+                if (dayNumbers[i] === expectedDay) {
+                    if (!restoredSet.has(fromUtcDay(dayNumbers[i]))) {
+                        runCount++;
+                    }
+                    expectedDay--;
+                } else if (dayNumbers[i] < expectedDay) {
                     break;
                 }
             }
             const lastCompletedDate = fromUtcDay(latestDay);
             const brokenDate = fromUtcDay(latestDay + 1);
             lastContiguousRun = {
-                count: runCount,
+                count: Math.max(1, runCount),
                 lastCompletedDate,
                 brokenDate
             };
@@ -447,6 +523,7 @@
 
         return {
             currentStreak,
+            rawRunLength: runLength,
             longestStreak,
             sortedUtcDays: dayNumbers,
             lastCompletedDate: dayNumbers.length > 0 ? fromUtcDay(latestDay) : null,
@@ -474,29 +551,38 @@
             return migrateState(saved);
         },
 
+        _isSaving: false,
+        _isRecalculating: false,
+
         /**
          * Save state to anhad_streak_data and broadcast updates.
          */
         saveState: function (state) {
             if (!state || typeof state !== 'object') return;
+            if (this._isSaving) return state;
+            this._isSaving = true;
 
-            // Ensure mirrors
-            state.current = state.currentStreak;
-            state.longest = state.longestStreak;
-            state.lastUpdated = new Date().toISOString();
+            try {
+                // Ensure mirrors
+                state.current = state.currentStreak;
+                state.longest = state.longestStreak;
+                state.lastUpdated = new Date().toISOString();
 
-            saveJson(KEYS.STREAK_DATA, state);
-            this.syncLegacyStores(state);
+                saveJson(KEYS.STREAK_DATA, state);
+                this.syncLegacyStores(state);
 
-            // Broadcast events
-            if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function') {
-                try {
-                    window.dispatchEvent(new CustomEvent('authoritativeStreakUpdated', { detail: state }));
-                    window.dispatchEvent(new CustomEvent('streakUpdated', { detail: state }));
-                } catch (e) {}
+                // Broadcast events
+                if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function') {
+                    try {
+                        window.dispatchEvent(new CustomEvent('authoritativeStreakUpdated', { detail: state }));
+                        window.dispatchEvent(new CustomEvent('streakUpdated', { detail: state }));
+                    } catch (e) {}
+                }
+
+                return state;
+            } finally {
+                this._isSaving = false;
             }
-
-            return state;
         },
 
         /**
@@ -528,43 +614,99 @@
          * Recalculate streak state from all qualifying attendance logs.
          */
         recalculateStreak: function (asOfDateStr) {
-            const state = this.getState();
-            const todayStr = asOfDateStr || getTodayString();
-            const qualifyingDates = getQualifyingDates();
-            const details = calculateStreakDetails(qualifyingDates, todayStr);
-
-            const prevCurrent = state.currentStreak;
-            state.currentStreak = details.currentStreak;
-            state.longestStreak = Math.max(state.longestStreak, details.longestStreak, details.currentStreak);
-
-            // Maintain previousBestStreak
-            state.previousBestStreak = Math.max(
-                state.previousBestStreak || 0,
-                state.longestStreak,
-                prevCurrent
-            );
-
-            // Streak broke detection
-            if (details.currentStreak === 0 && details.lastContiguousRun) {
-                const elapsedDays = toUtcDay(todayStr) - toUtcDay(details.lastContiguousRun.brokenDate);
-                if (elapsedDays >= 1) {
-                    state.brokenStreak = {
-                        count: details.lastContiguousRun.count,
-                        brokenDate: details.lastContiguousRun.brokenDate,
-                        lastCompletedDate: details.lastContiguousRun.lastCompletedDate
-                    };
-                    state.previousBestStreak = Math.max(state.previousBestStreak, details.lastContiguousRun.count);
-                }
-            } else if (details.currentStreak > 0) {
-                state.lastCheckIn = todayStr;
-                // If streak reached or surpassed previous broken count, broken streak is resolved
-                if (state.brokenStreak && state.currentStreak >= state.brokenStreak.count) {
-                    state.brokenStreak = null;
-                }
+            if (this._isRecalculating) {
+                return this.getState();
             }
+            this._isRecalculating = true;
+            try {
+                const state = this.getState();
+                const todayStr = asOfDateStr || getTodayString();
+                const qualifyingData = getQualifyingDates();
+                const details = calculateStreakDetails(qualifyingData, todayStr);
 
-            this.saveState(state);
-            return state;
+                const prevCurrent = state.currentStreak;
+
+                // Handle restored challenge streak preservation
+                const challenge = state.recoveryChallenge;
+                let computedStreak = details.currentStreak;
+
+                if (challenge && challenge.status === 'completed' && challenge.restoredStreak) {
+                    if (details.isStreakActive) {
+                        const restoredDateUtc = toUtcDay(challenge.restoredOnDate || challenge.lastCompletedDate || todayStr);
+                        const todayUtc = toUtcDay(todayStr);
+                        const daysAfterRestoration = Math.max(0, todayUtc - restoredDateUtc);
+                        computedStreak = Math.max(details.currentStreak, challenge.restoredStreak + daysAfterRestoration);
+                    } else {
+                        // Streak lapsed after recovery
+                        challenge.status = 'idle';
+                        challenge.restoredStreak = 0;
+                    }
+                }
+
+                // Handle Streak Restore Policy (5 Sukhmani Sahib in 5 Hours) preservation
+                const restorePolicy = state.streakRestorePolicy;
+                if (restorePolicy && restorePolicy.status === 'completed' && restorePolicy.restoredStreak) {
+                    if (details.isStreakActive) {
+                        const restoredDateUtc = toUtcDay(restorePolicy.restoredOnDate || todayStr);
+                        const todayUtc = toUtcDay(todayStr);
+                        const daysAfterRestoration = Math.max(0, todayUtc - restoredDateUtc);
+                        computedStreak = Math.max(computedStreak, restorePolicy.restoredStreak + daysAfterRestoration);
+                    }
+                }
+
+                // Handle Streak Saver saved streak preservation
+                if (state.activeSavedStreak && state.activeSavedStreak > 0) {
+                    if (details.isStreakActive) {
+                        const savedDateUtc = toUtcDay(state.savedStreakDate || todayStr);
+                        const todayUtc = toUtcDay(todayStr);
+                        const daysAfterSaving = Math.max(0, todayUtc - savedDateUtc);
+                        computedStreak = Math.max(computedStreak, state.activeSavedStreak + daysAfterSaving);
+                    } else {
+                        state.activeSavedStreak = 0;
+                    }
+                }
+
+                // If rawRunLength matches or exceeds active streak, preserve the full contiguous count
+                if (details.isStreakActive && details.rawRunLength > 0 && state.currentStreak > 0) {
+                    if (details.rawRunLength >= state.currentStreak) {
+                        computedStreak = Math.max(computedStreak, state.currentStreak);
+                    }
+                }
+
+                state.currentStreak = computedStreak;
+                state.longestStreak = Math.max(state.longestStreak, details.longestStreak, state.currentStreak);
+
+                // Maintain previousBestStreak
+                state.previousBestStreak = Math.max(
+                    state.previousBestStreak || 0,
+                    state.longestStreak,
+                    prevCurrent
+                );
+
+                // Streak broke detection
+                if (state.currentStreak === 0 && details.lastContiguousRun) {
+                    const elapsedDays = toUtcDay(todayStr) - toUtcDay(details.lastContiguousRun.brokenDate);
+                    if (elapsedDays >= 1) {
+                        state.brokenStreak = {
+                            count: details.lastContiguousRun.count,
+                            brokenDate: details.lastContiguousRun.brokenDate,
+                            lastCompletedDate: details.lastContiguousRun.lastCompletedDate
+                        };
+                        state.previousBestStreak = Math.max(state.previousBestStreak, details.lastContiguousRun.count);
+                    }
+                } else if (state.currentStreak > 0) {
+                    state.lastCheckIn = todayStr;
+                    // If streak reached or surpassed previous broken count, broken streak is resolved
+                    if (state.brokenStreak && state.currentStreak >= state.brokenStreak.count) {
+                        state.brokenStreak = null;
+                    }
+                }
+
+                this.saveState(state);
+                return state;
+            } finally {
+                this._isRecalculating = false;
+            }
         },
 
         /**
@@ -612,6 +754,13 @@
             };
             saveJson(KEYS.AMRITVELA_LOG, amritvelaLog);
 
+            // If active recovery challenge, record day completion FIRST
+            const preState = this.getState();
+            if (preState.recoveryChallenge && preState.recoveryChallenge.active && preState.recoveryChallenge.status === 'in_progress') {
+                this.recordRecoveryDayCompletion(todayStr, finalTime);
+            }
+
+            // Re-fetch fresh state (includes any challenge day progression or restoration)
             const state = this.getState();
             state.lastSuccessfulSession = {
                 date: todayStr,
@@ -619,41 +768,56 @@
                 type: 'amritvela',
                 slot: finalSlot
             };
-
-            // If active recovery challenge, record day completion
-            if (state.recoveryChallenge && state.recoveryChallenge.active && state.recoveryChallenge.status === 'in_progress') {
-                this.recordRecoveryDayCompletion(todayStr, finalTime);
-            }
-
             this.saveState(state);
+
             return this.recalculateStreak(todayStr);
         },
 
         /**
-         * Record verified Nitnem full completion.
+         * Record verified Nitnem completion.
+         * Dynamically tracks completed bani IDs, completion percentage, and full streak status.
          */
-        recordNitnemCompletion: function (dateStr, completedBaniIds) {
+        recordNitnemCompletion: function (dateStr, completedBaniIds, percentage, isCompleted) {
             const todayStr = dateStr || getTodayString();
             const nitnemLog = loadJson(KEYS.NITNEM_LOG, {});
 
             const existing = nitnemLog[todayStr] || {};
+            const completedList = Array.isArray(completedBaniIds) ? completedBaniIds : (existing.completedBaniIds || []);
+
+            let finalPct;
+            let finalComplete;
+
+            if (typeof percentage === 'number') {
+                finalPct = percentage;
+                finalComplete = typeof isCompleted === 'boolean' ? isCompleted : (finalPct >= 100);
+            } else if (typeof isCompleted === 'boolean') {
+                finalComplete = isCompleted;
+                finalPct = isCompleted ? 100 : (existing.percentage || 0);
+            } else {
+                // Fallback for legacy calls passing array of completed banis
+                finalPct = completedList.length > 0 ? 100 : 0;
+                finalComplete = completedList.length > 0;
+            }
+
             nitnemLog[todayStr] = {
                 ...existing,
-                completed: true,
-                percentage: 100,
-                completedBaniIds: Array.isArray(completedBaniIds) ? completedBaniIds : (existing.completedBaniIds || []),
+                completed: finalComplete,
+                percentage: finalPct,
+                completedBaniIds: completedList,
                 lastUpdated: new Date().toISOString()
             };
             saveJson(KEYS.NITNEM_LOG, nitnemLog);
 
             const state = this.getState();
-            state.lastSuccessfulSession = {
-                date: todayStr,
-                timestamp: Date.now(),
-                type: 'nitnem',
-                slot: 'nitnem'
-            };
-            this.saveState(state);
+            if (finalComplete) {
+                state.lastSuccessfulSession = {
+                    date: todayStr,
+                    timestamp: Date.now(),
+                    type: 'nitnem',
+                    slot: 'nitnem'
+                };
+                this.saveState(state);
+            }
 
             return this.recalculateStreak(todayStr);
         },
@@ -795,6 +959,21 @@
             challenge.qualifyingDays.push(todayStr);
             challenge.lastCompletedDate = todayStr;
 
+            // Ensure qualifying challenge attendance is recorded in amritvelaLog
+            const amritLog = loadJson(KEYS.AMRITVELA_LOG, {});
+            if (!amritLog[todayStr]) {
+                const recTime = timeStr || '04:00';
+                amritLog[todayStr] = {
+                    date: todayStr,
+                    time: recTime,
+                    slot: getSlotFromTime(recTime),
+                    timestamp: new Date().toISOString(),
+                    woke: true,
+                    origin: 'user'
+                };
+                saveJson(KEYS.AMRITVELA_LOG, amritLog);
+            }
+
             const dayIndex = challenge.currentDay;
             const passage = GURBANI_PASSAGES[dayIndex - 1] || null;
 
@@ -839,6 +1018,311 @@
             };
             this.saveState(state);
             return state.recoveryChallenge;
+        },
+
+        /**
+         * Update recovery configuration (configurable 5-10 day window, default 7).
+         */
+        setRecoveryConfig: function (config) {
+            if (!config || typeof config !== 'object') return false;
+            const state = this.getState();
+            if (typeof config.minDelayDays === 'number') {
+                const days = Math.round(config.minDelayDays);
+                if (days >= 5 && days <= 10) {
+                    state.recoveryConfig.minDelayDays = days;
+                } else {
+                    return false;
+                }
+            }
+            if (typeof config.requiredConsecutiveDays === 'number') {
+                state.recoveryConfig.requiredConsecutiveDays = Math.max(1, Math.round(config.requiredConsecutiveDays));
+            }
+            this.saveState(state);
+            return true;
+        },
+
+        // ─────────────────────────────────────────────────────────────────────────────
+        // STREAK RESTORE POLICY (5 SUKHMANI SAHIB IN 5 HOURS) & STREAK BOOST
+        // ─────────────────────────────────────────────────────────────────────────────
+
+        /**
+         * Get the current state of the Streak Restore Policy (5 Sukhmani Sahib in 5 Hours).
+         */
+        getStreakRestoreState: function () {
+            const state = this.getState();
+            let policy = state.streakRestorePolicy;
+            if (!policy || typeof policy !== 'object') {
+                policy = {
+                    active: false,
+                    status: 'idle',
+                    startedAt: null,
+                    expiresAt: null,
+                    targetSukhmaniCount: 5,
+                    completedSukhmaniCount: 0,
+                    completedSessions: [],
+                    targetStreakToRestore: 0,
+                    restoredStreak: 0,
+                    restoredOnDate: null
+                };
+                state.streakRestorePolicy = policy;
+            }
+
+            // Sync with standalone persistent key
+            const stored = loadJson(KEYS.STREAK_RESTORE_POLICY, null);
+            if (stored && stored.startedAt) {
+                policy = { ...policy, ...stored };
+                state.streakRestorePolicy = policy;
+            }
+
+            // Check if active 5-hour window has expired
+            if (policy.active && policy.status === 'in_progress' && policy.expiresAt) {
+                const now = Date.now();
+                const exp = new Date(policy.expiresAt).getTime();
+                if (now > exp) {
+                    policy.active = false;
+                    policy.status = 'expired';
+                    state.streakRestorePolicy = policy;
+                    this.saveState(state);
+                    saveJson(KEYS.STREAK_RESTORE_POLICY, policy);
+                }
+            }
+
+            return policy;
+        },
+
+        /**
+         * Start the 5-Hour Streak Restore Challenge (5 Sukhmani Sahib).
+         */
+        startStreakRestoreChallenge: function (targetStreakParam) {
+            const state = this.getState();
+            const now = new Date();
+            const expiresAt = new Date(now.getTime() + 5 * 60 * 60 * 1000).toISOString(); // Exactly 5 hours
+
+            let targetStreak = Number(targetStreakParam);
+            if (isNaN(targetStreak) || targetStreak <= 0) {
+                targetStreak = Math.max(
+                    state.previousBestStreak || 0,
+                    state.longestStreak || 0,
+                    (state.brokenStreak && state.brokenStreak.count) ? state.brokenStreak.count : 0,
+                    1
+                );
+            }
+
+            const policy = {
+                active: true,
+                status: 'in_progress',
+                startedAt: now.toISOString(),
+                expiresAt: expiresAt,
+                targetSukhmaniCount: 5,
+                completedSukhmaniCount: 0,
+                completedSessions: [],
+                targetStreakToRestore: targetStreak,
+                restoredStreak: 0,
+                restoredOnDate: null
+            };
+
+            state.streakRestorePolicy = policy;
+            state.previousBestStreak = Math.max(state.previousBestStreak || 0, targetStreak);
+            this.saveState(state);
+            saveJson(KEYS.STREAK_RESTORE_POLICY, policy);
+
+            if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function') {
+                try {
+                    window.dispatchEvent(new CustomEvent('streakRestoreChallengeStarted', { detail: policy }));
+                    window.dispatchEvent(new CustomEvent('streakRestoreUpdated', { detail: policy }));
+                } catch (e) {}
+            }
+
+            return {
+                success: true,
+                challenge: policy,
+                targetStreak,
+                expiresAt
+            };
+        },
+
+        /**
+         * Record completion of 1 Sukhmani Sahib path within the 5-hour challenge.
+         */
+        recordSukhmaniCompletion: function (sessionInfo) {
+            const state = this.getState();
+            const policy = this.getStreakRestoreState();
+
+            if (!policy || !policy.active || policy.status !== 'in_progress') {
+                return {
+                    success: false,
+                    expired: policy.status === 'expired',
+                    error: policy.status === 'expired' ? '5-Hour window expired' : 'No active streak restore policy challenge in progress'
+                };
+            }
+
+            const now = Date.now();
+            const exp = new Date(policy.expiresAt).getTime();
+            if (now > exp) {
+                policy.active = false;
+                policy.status = 'expired';
+                state.streakRestorePolicy = policy;
+                this.saveState(state);
+                saveJson(KEYS.STREAK_RESTORE_POLICY, policy);
+                return {
+                    success: false,
+                    expired: true,
+                    error: 'The 5-hour window has expired. You can restart the challenge anytime!'
+                };
+            }
+
+            policy.completedSukhmaniCount = Math.min(5, (policy.completedSukhmaniCount || 0) + 1);
+            const sessionRecord = {
+                count: policy.completedSukhmaniCount,
+                completedAt: new Date().toISOString(),
+                details: sessionInfo || `Sukhmani Sahib ${policy.completedSukhmaniCount}/5`
+            };
+            policy.completedSessions.push(sessionRecord);
+
+            let completed = false;
+            let restorationResult = null;
+
+            if (policy.completedSukhmaniCount >= 5) {
+                policy.status = 'completed';
+                policy.active = false;
+                policy.restoredStreak = policy.targetStreakToRestore;
+                policy.restoredOnDate = getTodayString();
+                state.streakRestorePolicy = policy;
+
+                // Atomically restore the previous maximum streak and backfill gaps!
+                restorationResult = this.restoreStreakToMaximum(policy.targetStreakToRestore);
+                completed = true;
+            } else {
+                state.streakRestorePolicy = policy;
+                this.saveState(state);
+                saveJson(KEYS.STREAK_RESTORE_POLICY, policy);
+            }
+
+            if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function') {
+                try {
+                    window.dispatchEvent(new CustomEvent('streakRestoreProgress', { detail: { policy, completed, restorationResult } }));
+                    window.dispatchEvent(new CustomEvent('streakRestoreUpdated', { detail: policy }));
+                } catch (e) {}
+            }
+
+            return {
+                success: true,
+                completed,
+                completedCount: policy.completedSukhmaniCount,
+                remainingCount: Math.max(0, 5 - policy.completedSukhmaniCount),
+                challenge: policy,
+                restorationResult
+            };
+        },
+
+        /**
+         * Restore streak to previous maximum atomically, backfilling missing historical gaps.
+         * Sets currentStreak = targetStreak, previousBestStreak = max, and maintains streak.
+         */
+        restoreStreakToMaximum: function (targetStreakParam, daysAgoParam) {
+            const state = this.getState();
+            const todayStr = getTodayString();
+            const todayUtc = toUtcDay(todayStr);
+
+            let targetStreak = Number(targetStreakParam);
+            if (isNaN(targetStreak) || targetStreak <= 0) {
+                targetStreak = Math.max(
+                    state.previousBestStreak || 0,
+                    state.longestStreak || 0,
+                    (state.brokenStreak && state.brokenStreak.count) ? state.brokenStreak.count : 0,
+                    1
+                );
+            }
+
+            const avgWakeTime = this.calculateAverageWakeUpTime();
+            const avgSlot = getSlotFromTime(avgWakeTime);
+
+            const amritvelaLog = loadJson(KEYS.AMRITVELA_LOG, {});
+            let backfilledCount = 0;
+            const backfilledDates = [];
+
+            let daysAgo = Number(daysAgoParam);
+            if (isNaN(daysAgo) || daysAgo < 0) daysAgo = 0;
+
+            // Contiguously backfill days leading up to today so the streak is fully unbroken & active today
+            const spanDays = Math.max(targetStreak, daysAgo > 0 ? (targetStreak + daysAgo) : targetStreak);
+            const startUtc = todayUtc - spanDays + 1;
+            for (let dayUtc = startUtc; dayUtc <= todayUtc; dayUtc++) {
+                const dStr = fromUtcDay(dayUtc);
+                if (!amritvelaLog[dStr]) {
+                    amritvelaLog[dStr] = {
+                        date: dStr,
+                        time: avgWakeTime,
+                        slot: avgSlot,
+                        timestamp: new Date(`${dStr}T${avgWakeTime}:00.000Z`).toISOString(),
+                        woke: true,
+                        origin: 'restored',
+                        systemGenerated: true,
+                        isStreakSaverPatch: true
+                    };
+                    backfilledCount++;
+                    backfilledDates.push(dStr);
+                }
+            }
+
+            saveJson(KEYS.AMRITVELA_LOG, amritvelaLog);
+
+            state.currentStreak = targetStreak;
+            state.longestStreak = Math.max(state.longestStreak || 0, targetStreak);
+            state.previousBestStreak = Math.max(state.previousBestStreak || 0, targetStreak);
+            state.brokenStreak = null;
+            state.lastCheckIn = todayStr;
+            state.activeSavedStreak = targetStreak;
+            state.savedStreakDate = todayStr;
+
+            if (state.streakRestorePolicy) {
+                state.streakRestorePolicy.restoredStreak = targetStreak;
+                state.streakRestorePolicy.restoredOnDate = todayStr;
+                state.streakRestorePolicy.status = 'completed';
+                state.streakRestorePolicy.active = false;
+                saveJson(KEYS.STREAK_RESTORE_POLICY, state.streakRestorePolicy);
+            }
+
+            this.saveState(state);
+
+            return {
+                success: true,
+                restoredStreak: targetStreak,
+                targetStreak,
+                backfilledCount,
+                backfilledDates,
+                todayStr
+            };
+        },
+
+        /**
+         * Quick Streak Boost (/boost): Restores streak to previous maximum (e.g. 64 days broken 20 days ago)
+         * and backfills the gap so user can continue seamlessly today.
+         */
+        applyStreakBoost: function (targetStreak, daysAgo) {
+            return this.restoreStreakToMaximum(targetStreak, daysAgo);
+        },
+
+        /**
+         * Reset or cancel streak restore policy challenge.
+         */
+        resetStreakRestoreChallenge: function () {
+            const state = this.getState();
+            state.streakRestorePolicy = {
+                active: false,
+                status: 'idle',
+                startedAt: null,
+                expiresAt: null,
+                targetSukhmaniCount: 5,
+                completedSukhmaniCount: 0,
+                completedSessions: [],
+                targetStreakToRestore: 0,
+                restoredStreak: 0,
+                restoredOnDate: null
+            };
+            this.saveState(state);
+            saveJson(KEYS.STREAK_RESTORE_POLICY, state.streakRestorePolicy);
+            return state.streakRestorePolicy;
         },
 
         // ─────────────────────────────────────────────────────────────────────────────
@@ -946,6 +1430,8 @@
             state.previousBestStreak = Math.max(state.previousBestStreak, state.longestStreak);
             state.brokenStreak = null; // Resolved!
             state.lastCheckIn = challenge.lastCompletedDate || getTodayString();
+            challenge.restoredStreak = targetStreak + 5;
+            challenge.restoredOnDate = challenge.lastCompletedDate || getTodayString();
 
             this.saveState(state);
 

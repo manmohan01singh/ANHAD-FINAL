@@ -301,25 +301,33 @@ public class MainActivity extends BridgeActivity {
         
         String hour = getNestedStringExtra(extras, "hour");
         String minute = getNestedStringExtra(extras, "minute");
+        String mode = getNestedStringExtra(extras, "mode");
         if (hour == null) hour = "";
         if (minute == null) minute = "";
+        if (mode == null || mode.isEmpty()) mode = "simran";
         
         // Inject localStorage bridge or dispatch custom event if already on page to prevent reloading/flicker
         final String jsInject = "javascript:void(function(){" +
             "try{" +
-            "  var nh='" + hour + "'; var nm='" + minute + "';" +
+            "  var nh='" + hour + "'; var nm='" + minute + "'; var nmode='" + mode + "';" +
             "  var isNaamPage = window.location.pathname.toLowerCase().includes('naamabhyas');" +
             "  if (isNaamPage) {" +
             "    console.log('[MainActivity] Already on Naam page, dispatching click event');" +
             "    window.dispatchEvent(new CustomEvent('naamAbhyasNotificationClick', {" +
-            "      detail: { autoStart: true, hour: nh, minute: nm }" +
+            "      detail: { autoStart: true, hour: nh, minute: nm, mode: nmode, practiceType: nmode }" +
             "    }));" +
             "  } else {" +
             "    console.log('[MainActivity] Navigating to Naam page');" +
             "    localStorage.setItem('anhad_pending_naam_launch', JSON.stringify({" +
-            "      autoStart: true, hour: nh, minute: nm, timestamp: Date.now()" +
+            "      autoStart: true, hour: nh, minute: nm, mode: nmode, practiceType: nmode, timestamp: Date.now()" +
             "    }));" +
-            "    window.location.href = 'NaamAbhyas/naam-abhyas.html?autoStart=true&hour=' + nh + '&minute=' + nm;" +
+            "    var p = window.location.pathname;" +
+            "    var target = 'NaamAbhyas/naam-abhyas.html';" +
+            "    if (p.includes('/nitnem/category/')) target = '../../NaamAbhyas/naam-abhyas.html';" +
+            "    else if (p.includes('/NitnemTracker/') || p.includes('/GurbaniRadio/') || p.includes('/nitnem/') || p.includes('/sadhsangat-live/') || p.includes('/sangat/') || p.includes('/reminders/') || p.includes('/Favorites/') || p.includes('/Insights/') || p.includes('/Calendar/') || p.includes('/Hukamnama/') || p.includes('/GurbaniKhoj/') || p.includes('/SehajPaath/') || p.includes('/Notes/') || p.includes('/Profile/') || p.includes('/ShabadVichar/') || p.includes('/RandomShabad/') || p.includes('/Homepage/')) {" +
+            "      target = '../NaamAbhyas/naam-abhyas.html';" +
+            "    }" +
+            "    window.location.href = target + '?autoStart=true&hour=' + nh + '&minute=' + nm + '&mode=' + nmode;" +
             "  }" +
             "}catch(e){console.error('[MainActivity] Bridge injection failed:',e);}})()";
         
@@ -331,6 +339,7 @@ public class MainActivity extends BridgeActivity {
         intent.removeExtra("url");
         intent.removeExtra("hour");
         intent.removeExtra("minute");
+        intent.removeExtra("mode");
         if (extras.containsKey("notification")) {
             intent.removeExtra("notification");
         }

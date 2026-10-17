@@ -1176,6 +1176,10 @@ const StorageManager = {
                 anhad_streak_data: 'Streaks & Milestones',
                 STREAK_DATA_LEGACY: 'Streak Data',
                 nitnemTracker_streakData: 'Streak Data',
+                STREAK_RESTORE_POLICY: 'Streak Restore Policy',
+                anhad_streak_restore_challenge: 'Streak Restore Policy',
+                nitnemTracker_streakSaver: 'Streak Saver Punishment',
+                nitnemTracker_punishmentUsage: 'Streak Saver Usage',
                 USER_DATA: 'User Profile & Streaks',
                 nitnemTracker_userData: 'User Profile & Streaks',
                 UNIFIED_STATS: 'Unified Spiritual Stats',
@@ -1265,7 +1269,8 @@ const StorageManager = {
                 appVersion: raw.appVersion || '2.0',
                 categoriesCount: foundCategories.size,
                 categoriesList: Array.from(foundCategories),
-                rawPayload: payload
+                rawPayload: payload,
+                raw: raw
             };
         } catch (e) {
             return { isValid: false, categoriesCount: 0, categoriesList: [] };
@@ -1306,6 +1311,20 @@ const StorageManager = {
                 return false;
             }
 
+            // If streak data was restored, ensure AuthoritativeStreakEngine restores it cleanly
+            try {
+                const engine = (typeof getAuthStreakEngine === 'function') ? getAuthStreakEngine() : (typeof AuthoritativeStreakEngine !== 'undefined' ? AuthoritativeStreakEngine : null);
+                if (engine && typeof engine.restoreStreakToMaximum === 'function') {
+                    const importedStreakObj = data.anhad_streak_data || data.nitnemTracker_streakData || data.STREAK_DATA;
+                    const targetStreak = (importedStreakObj && (importedStreakObj.currentStreak || importedStreakObj.current)) || (summary.raw?.metadata?.currentStreak) || (summary.rawPayload?.metadata?.currentStreak) || 0;
+                    if (targetStreak > 0) {
+                        engine.restoreStreakToMaximum(targetStreak);
+                    }
+                }
+            } catch(stErr) {
+                console.warn('Streak restore post-import notice:', stErr);
+            }
+
             // Refresh in-memory manager state immediately
             try {
                 if (typeof NitnemManager !== 'undefined') {
@@ -1323,8 +1342,12 @@ const StorageManager = {
                     MalaManager.updateDisplay?.();
                 }
                 if (typeof StreakManager !== 'undefined') {
-                    StreakManager.calculateStreak?.();
-                    StreakManager.updateUI?.();
+                    StreakManager.recalculateStreak?.();
+                    StreakManager.updateDisplay?.();
+                }
+                if (typeof HeaderManager !== 'undefined') {
+                    HeaderManager.updatePenaltyState?.();
+                    HeaderManager.updateStreakDisplay?.();
                 }
             } catch(refreshErr) {
                 console.warn('Manager refresh notice:', refreshErr);
@@ -1916,7 +1939,7 @@ const HeaderManager = {
         // Listen for global streak updates
         window.addEventListener('streakUpdated', () => {
             console.log('[HeaderManager] Global streak updated, refreshing display...');
-            this.updateStreakDisplay();
+            this.updateStreakDisplay(false);
         });
 
         // Fix header layout styles
@@ -3188,14 +3211,17 @@ const HeaderManager = {
     /**
      * Update streak display in header
      */
-    updateStreakDisplay() {
-        if (typeof StreakManager !== 'undefined' && typeof StreakManager.recalculateStreak === 'function') {
+    updateStreakDisplay(shouldRecalculate = false) {
+        if (shouldRecalculate && typeof StreakManager !== 'undefined' && typeof StreakManager.recalculateStreak === 'function') {
             StreakManager.recalculateStreak();
         }
 
         let currentStreak = 0;
-
-        if (typeof StreakManager !== 'undefined' && StreakManager.state) {
+        const engine = (typeof getAuthStreakEngine === 'function') ? getAuthStreakEngine() : (typeof AuthoritativeStreakEngine !== 'undefined' ? AuthoritativeStreakEngine : null);
+        if (engine && typeof engine.getState === 'function') {
+            const authState = engine.getState();
+            currentStreak = (authState && (authState.currentStreak != null ? authState.currentStreak : authState.current)) || 0;
+        } else if (typeof StreakManager !== 'undefined' && StreakManager.state) {
             currentStreak = StreakManager.state.currentStreak || 0;
         } else if (typeof UnifiedStats !== 'undefined' && typeof UnifiedStats.getStreaks === 'function') {
             const streaks = UnifiedStats.getStreaks();
@@ -4741,7 +4767,7 @@ const NitnemManager = {
      * Toggle completion of a bani group
      */
     toggleGroupCompletion(baniId, period) {
-        const instances = this.selectedBanis[period].filter(b => b.id === baniId);
+        const instances = this.selectedBanis[period].filter(b => String(b.id) === String(baniId));
         const completedUIDs = this.completedToday[period];
 
         // Find instances that are NOT yet completed
@@ -4764,6 +4790,11 @@ const NitnemManager = {
             }
 
             console.log('[Nitnem] ✅ Tracked 1 bani completion');
+
+            // Auto-advance Streak Restore Policy if Sukhmani Sahib is completed
+            if ((String(baniId) === '31' || (target && target.id === 31)) && typeof StreakRestorePolicyManager !== 'undefined' && typeof StreakRestorePolicyManager.recordSukhmaniProgress === 'function') {
+                StreakRestorePolicyManager.recordSukhmaniProgress('Completed in Nitnem Tracker');
+            }
         } else {
             // All are completed -> Reset ALL for this group
             // Remove all UIDs belonging to this baniId from completed list
@@ -4819,7 +4850,7 @@ const NitnemManager = {
         // Find last instance (LIFO). Prefer uncompleted.
         let index = -1;
         for (let i = this.selectedBanis[period].length - 1; i >= 0; i--) {
-            if (this.selectedBanis[period][i].id === baniId) {
+            if (String(this.selectedBanis[period][i].id) === String(baniId)) {
                 if (!this.completedToday[period].includes(this.selectedBanis[period][i].uid)) {
                     index = i;
                     break;
@@ -8199,13 +8230,17 @@ const StreakManager = {
         this.state.lastUpdated = new Date().toISOString();
         const engine = getAuthStreakEngine();
         if (engine) {
+            const curState = engine.getState();
             engine.saveState({
-                ...engine.getState(),
+                ...curState,
                 currentStreak: this.state.currentStreak,
-                longestStreak: this.state.longestStreak,
-                previousBestStreak: this.state.previousBestStreak,
+                longestStreak: Math.max(this.state.longestStreak || 0, this.state.currentStreak || 0, curState.longestStreak || 0),
+                previousBestStreak: Math.max(this.state.previousBestStreak || 0, curState.previousBestStreak || 0, this.state.currentStreak || 0),
                 brokenStreak: this.state.brokenStreak,
-                recoveryChallenge: this.state.recoveryChallenge,
+                recoveryChallenge: this.state.recoveryChallenge || curState.recoveryChallenge,
+                streakRestorePolicy: curState.streakRestorePolicy,
+                activeSavedStreak: curState.activeSavedStreak,
+                savedStreakDate: curState.savedStreakDate,
                 lastUpdated: this.state.lastUpdated
             });
         } else {
@@ -8294,6 +8329,11 @@ const StreakManager = {
 
         // Check and render Recovery Challenge UI (R2, R3)
         this.checkRecoveryChallengeUI();
+
+        // Also ensure Streak Restore Policy UI is rendered
+        if (typeof StreakRestorePolicyManager !== 'undefined' && typeof StreakRestorePolicyManager.renderUI === 'function') {
+            StreakRestorePolicyManager.renderUI();
+        }
     },
 
     /**
@@ -8340,17 +8380,22 @@ const StreakManager = {
                         </span>
                     </div>
 
-                    <div style="display: flex; gap: 6px; margin: 10px 0 14px 0;">
+                    <div style="display: flex; justify-content: space-between; font-size: 11px; font-weight: 600; color: var(--text-secondary, #86868b); margin: 4px 0 8px 0;">
+                        <span>Completed: ${challenge.currentDay} day${challenge.currentDay === 1 ? '' : 's'}</span>
+                        <span>Remaining: ${Math.max(0, 5 - challenge.currentDay)} day${(5 - challenge.currentDay) === 1 ? '' : 's'}</span>
+                    </div>
+
+                    <div style="display: flex; gap: 6px; margin: 6px 0 14px 0;">
                         ${[1, 2, 3, 4, 5].map(d => `
                             <div style="flex: 1; height: 6px; border-radius: 3px; background: ${d <= challenge.currentDay ? 'var(--system-green, #34C759)' : 'rgba(120, 120, 128, 0.2)'}; transition: background 0.3s ease;"></div>
                         `).join('')}
                     </div>
 
-                    <div class="recovery-gurbani-box" style="padding: 12px; border-radius: 12px; background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.06); margin-bottom: 12px;">
+                    <div class="recovery-gurbani-box">
                         <div style="font-size: 16px; font-weight: 600; color: var(--ac-gold, #D4943A); font-family: 'GurbaniAkhar', 'Noto Sans Gurmukhi', sans-serif; line-height: 1.6; margin-bottom: 6px;">
                             ${passage.gurmukhi}
                         </div>
-                        <div style="font-size: 12px; color: var(--text-primary, #ffffff); line-height: 1.4; margin-bottom: 6px;">
+                        <div class="recovery-translation-text">
                             "${passage.translation}"
                         </div>
                         <div style="font-size: 11px; font-weight: 600; color: var(--text-secondary, #86868b);">
@@ -8369,16 +8414,16 @@ const StreakManager = {
         // 2. Challenge Failed / Reset Guidance
         if (challenge && challenge.status === 'failed') {
             container.innerHTML = `
-                <div class="recovery-card failed" style="margin: 16px 0; padding: 16px; border-radius: 16px; background: rgba(255, 69, 58, 0.08); border: 1px solid rgba(255, 69, 58, 0.25); text-align: left;">
+                <div class="recovery-card failed">
                     <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
                         <span style="font-size: 13px; font-weight: 700; color: #FF453A; text-transform: uppercase;">
                             🙏 Keep Chardi Kala
                         </span>
                     </div>
-                    <p style="margin: 0 0 12px 0; font-size: 13px; line-height: 1.4; color: var(--text-primary, #ffffff);">
+                    <p class="recovery-translation-text" style="margin: 0 0 12px 0;">
                         Missing a day during the challenge resets your progress. Spiritual discipline is a lifelong path of grace and effort — you can restart the 5-day challenge whenever you are ready.
                     </p>
-                    <button id="retryRecoveryBtn" style="width: 100%; padding: 10px; border-radius: 10px; border: none; background: rgba(255, 255, 255, 0.12); color: #fff; font-weight: 600; font-size: 13px; cursor: pointer;">
+                    <button id="retryRecoveryBtn" style="width: 100%; padding: 12px; border-radius: 12px; border: none; background: var(--system-orange, #FF9500); color: #000; font-weight: 700; font-size: 14px; cursor: pointer;">
                         🔄 Try Again
                     </button>
                 </div>
@@ -8717,7 +8762,9 @@ const StreakSaverManager = {
         // ═══════════════════════════════════════════════════════════════
         // RETROACTIVE CHECK: User missed yesterday's Amritvela & Nitnem
         // ═══════════════════════════════════════════════════════════════
-        const missedYesterday = !amritvelaLog[yesterdayString];
+        const nitnemLog = StorageManager.load(CONFIG.STORAGE_KEYS.NITNEM_LOG, {});
+        const attendedNitnemYesterday = nitnemLog[yesterdayString] && (nitnemLog[yesterdayString].completed || nitnemLog[yesterdayString].percentage === 100);
+        const missedYesterday = !amritvelaLog[yesterdayString] && !attendedNitnemYesterday;
 
         // Check for missed Mathila (Mala Jap during Amritvela)
         const missedMathila = this.checkMissedMathila(yesterdayString);
@@ -8731,7 +8778,16 @@ const StreakSaverManager = {
             dayBeforeYesterday.setDate(dayBeforeYesterday.getDate() - 2);
             const dbyString = dayBeforeYesterday.toLocaleDateString('en-CA');
 
-            const previousStreak = StreakManager.calculateHistoricalStreak(dbyString);
+            let previousStreak = StreakManager.calculateHistoricalStreak(dbyString);
+            if (!previousStreak || previousStreak <= 0) {
+                const engine = (typeof getAuthStreakEngine === 'function') ? getAuthStreakEngine() : null;
+                const authState = engine ? engine.getState() : null;
+                previousStreak = (authState && authState.brokenStreak && authState.brokenStreak.count)
+                    ? authState.brokenStreak.count
+                    : ((authState && authState.previousBestStreak)
+                        ? authState.previousBestStreak
+                        : (StreakManager.state.currentStreak || StreakManager.state.longestStreak || 0));
+            }
             const hadStreak = previousStreak > 0;
 
             if (hadStreak) {
@@ -8901,33 +8957,29 @@ const StreakSaverManager = {
         // Check if punishment Bani already exists in user's Nitnem
         const period = baniInfo.period;
         if (!selectedBanis[period]) selectedBanis[period] = [];
-        const existingIndex = selectedBanis[period].findIndex(b => b.id === baniInfo.id);
+        // Add punishment Banis temporarily with distinct UIDs and isPunishment flag
+        for (let i = 0; i < punishment.count; i++) {
+            selectedBanis[period].push({
+                ...baniInfo,
+                uid: `punishment_${baniInfo.id}_${i}_${Date.now()}`,
+                isPunishment: true,
+                punishmentIndex: i
+            });
+        }
 
-        if (existingIndex === -1) {
-            // Add punishment Bani temporarily with proper UIDs
-            for (let i = 0; i < punishment.count; i++) {
-                selectedBanis[period].push({
-                    ...baniInfo,
-                    uid: `punishment_${baniInfo.id}_${i}_${Date.now()}`,
-                    isPunishment: true,
-                    punishmentIndex: i
-                });
-            }
+        StorageManager.save(CONFIG.STORAGE_KEYS.SELECTED_BANIS, selectedBanis);
 
-            StorageManager.save(CONFIG.STORAGE_KEYS.SELECTED_BANIS, selectedBanis);
+        // Update saver data
+        const saverData = this.getActivePunishment();
+        if (saverData) {
+            saverData.punishmentBanisAdded = true;
+            this.savePunishmentData(saverData);
+        }
 
-            // Update saver data
-            const saverData = this.getActivePunishment();
-            if (saverData) {
-                saverData.punishmentBanisAdded = true;
-                this.savePunishmentData(saverData);
-            }
-
-            // Refresh Nitnem display
-            if (typeof NitnemManager !== 'undefined') {
-                NitnemManager.loadSelectedBanis();
-                NitnemManager.renderAllLists();
-            }
+        // Refresh Nitnem display
+        if (typeof NitnemManager !== 'undefined') {
+            NitnemManager.loadSelectedBanis();
+            NitnemManager.renderAllLists();
         }
     },
 
@@ -8967,6 +9019,7 @@ const StreakSaverManager = {
         const todayData = nitnemLog[today] || { amritvela: [], rehras: [], sohila: [] };
 
         const baniInfo = this.PUNISHMENT_BANIS[saverData.punishment.type];
+        if (!baniInfo) return;
         const period = baniInfo.period;
         const periodCompleted = todayData[period] || [];
 
@@ -8976,7 +9029,7 @@ const StreakSaverManager = {
 
         // Find all punishment banis for this type
         const punishmentBanis = periodBanis.filter(b =>
-            b.isPunishment && b.id === baniInfo.id
+            b.isPunishment && String(b.id) === String(baniInfo.id)
         );
 
         // Check if all required punishment Banis are completed
@@ -8986,6 +9039,29 @@ const StreakSaverManager = {
             if (periodCompleted.includes(punishmentBani.uid)) {
                 completedCount++;
             }
+        }
+
+        // Also check if user completed the regular bani in periodCompleted today (handles numeric, string, and reader formats)
+        if (Array.isArray(periodCompleted)) {
+            const matches = periodCompleted.filter(id => 
+                id === baniInfo.id || 
+                String(id) === String(baniInfo.id) ||
+                String(id) === `bani-${baniInfo.id}` ||
+                String(id).includes(`punishment_${baniInfo.id}`)
+            );
+            completedCount = Math.max(completedCount, matches.length);
+        }
+
+        // Also check if completed in My Pothi history for today
+        const pothiCompleted = StorageManager.load(CONFIG.STORAGE_KEYS.MY_POTHI_COMPLETED, {});
+        const todayPothi = pothiCompleted[today] || [];
+        if (Array.isArray(todayPothi)) {
+            const pothiMatches = todayPothi.filter(id => 
+                id === baniInfo.id || 
+                String(id) === String(baniInfo.id) ||
+                String(id) === `bani-${baniInfo.id}`
+            );
+            completedCount = Math.max(completedCount, pothiMatches.length);
         }
 
         if (completedCount >= saverData.punishment.count) {
@@ -9016,13 +9092,19 @@ const StreakSaverManager = {
         // Remove punishment Banis from Nitnem
         this.removePunishmentFromNitnem();
 
-        // Patch the missed date so the streak doesn't break on reload!
+        // Patch the missed date with complete metadata so the streak doesn't break on reload!
         const missedDate = saverData.context ? saverData.context.missedDate : null;
         if (missedDate) {
             const amritvelaLog = StorageManager.load(CONFIG.STORAGE_KEYS.AMRITVELA_LOG, {});
             if (!amritvelaLog[missedDate]) {
                 amritvelaLog[missedDate] = {
+                    date: missedDate,
+                    time: '04:00',
+                    slot: 'good',
+                    woke: true,
                     timestamp: new Date().toISOString(),
+                    origin: 'restored',
+                    systemGenerated: true,
                     isStreakSaverPatch: true,
                     usedPunishmentSave: true  // Mark as punishment-saved
                 };
@@ -9030,12 +9112,19 @@ const StreakSaverManager = {
             }
         }
 
-        // Restore the streak
+        // Restore the streak via AuthoritativeStreakEngine atomically!
         const restoredStreak = saverData.brokenStreak;
-        StreakManager.state.currentStreak = restoredStreak;
-        StreakManager.saveStreakData();
+        const engine = getAuthStreakEngine();
+        if (engine && typeof engine.restoreStreakToMaximum === 'function') {
+            engine.restoreStreakToMaximum(restoredStreak);
+        } else if (engine && typeof engine.restoreStreakAndBackfillGaps === 'function') {
+            engine.restoreStreakAndBackfillGaps();
+        } else {
+            StreakManager.state.currentStreak = restoredStreak;
+            StreakManager.saveStreakData();
+        }
 
-        // Re-calculate to ensure logs are synced
+        // Re-calculate to ensure logs and UI are synced
         StreakManager.recalculateStreak();
 
         // ═══ ENHANCED: Clean up ATTENDANCE_KEY to prevent stale state ═══
@@ -9070,7 +9159,14 @@ const StreakSaverManager = {
             // Punishment expired - streak breaks
             this.removePunishmentFromNitnem();
             localStorage.removeItem(this.STORAGE_KEY);
-            localStorage.removeItem(this.ATTENDANCE_KEY);
+            const engine = (typeof getAuthStreakEngine === 'function') ? getAuthStreakEngine() : null;
+            if (engine) {
+                const cur = engine.getState();
+                cur.activeSavedStreak = 0;
+                cur.savedStreakDate = null;
+                cur.currentStreak = 0;
+                engine.saveState(cur);
+            }
             StreakManager.state.currentStreak = 0;
             StreakManager.saveStreakData();
             StreakManager.recalculateStreak();
@@ -9123,6 +9219,8 @@ const StreakSaverManager = {
         } else {
             punishmentText = `Complete ${punishment.type} × ${punishment.count}`;
         }
+
+        document.getElementById('streakSaverModal')?.remove();
 
         const modalHTML = `
             <div class="modal-overlay active" id="streakSaverModal" style="pointer-events: auto;">
@@ -9193,7 +9291,7 @@ const StreakSaverManager = {
             StreakManager.state.currentStreak = 0;
             StreakManager.saveStreakData();
         }
-        document.getElementById('streakSaverModal').remove();
+        document.getElementById('streakSaverModal')?.remove();
         Toast.info('📉 Streak Lost', 'Your streak has been reset. Start fresh today!');
         this.renderPunishmentUI();
         HeaderManager.updateStreakDisplay();
@@ -9281,6 +9379,659 @@ const StreakSaverManager = {
         localStorage.setItem(this.STORAGE_KEY, JSON.stringify(data));
     }
 };
+
+/* -----------------------------------------------------------------------------
+   SECTION 20.6: STREAK RESTORE POLICY (5 SUKHMANI SAHIB IN 5 HOURS) & BOOST
+   ----------------------------------------------------------------------------- */
+
+const StreakRestorePolicyManager = {
+    timerInterval: null,
+
+    init() {
+        // Check expiration on startup
+        const engine = getAuthStreakEngine();
+        if (engine && typeof engine.getStreakRestoreState === 'function') {
+            engine.getStreakRestoreState();
+        }
+        this.renderUI();
+
+        // Listen for /boost in URL or hash
+        this.checkUrlForBoost();
+
+        if (typeof window !== 'undefined') {
+            window.addEventListener('nitnemBaniCompleted', (e) => {
+                const b = (e.detail && (e.detail.bani || e.detail.id)) || '';
+                if (String(b).toLowerCase().includes('sukhmani') || String(b) === '31') {
+                    this.recordSukhmaniProgress('Reader Completion');
+                }
+            });
+            window.addEventListener('hashchange', () => {
+                if (window.location.hash === '#boost') {
+                    this.openModal(true);
+                }
+            });
+            window.boost = (targetStreak, daysAgo) => {
+                if (targetStreak) {
+                    const eng = getAuthStreakEngine();
+                    if (eng && typeof eng.restoreStreakToMaximum === 'function') {
+                        eng.restoreStreakToMaximum(targetStreak, daysAgo || 20);
+                    }
+                    StreakManager.recalculateStreak();
+                    HeaderManager.updateStreakDisplay();
+                } else {
+                    this.openModal(true);
+                }
+            };
+        }
+    },
+
+    checkUrlForBoost() {
+        try {
+            if (typeof window === 'undefined') return;
+            const search = window.location.search || '';
+            const hash = window.location.hash || '';
+            const pathname = window.location.pathname || '';
+            if (search.includes('boost') || hash === '#boost' || search.includes('restore=policy') || pathname.endsWith('/boost')) {
+                setTimeout(() => {
+                    this.openModal(true);
+                }, 800);
+            }
+        } catch(e) {}
+    },
+
+    openModal(isBoostFocus = false) {
+        if (typeof document === 'undefined') return;
+        document.getElementById('streakRestorePolicyModal')?.remove();
+
+        const engine = getAuthStreakEngine();
+        const authState = (engine && typeof engine.getState === 'function') ? engine.getState() : {};
+        const challenge = (engine && typeof engine.getStreakRestoreState === 'function') ? engine.getStreakRestoreState() : {};
+
+        const maxPreviousStreak = Math.max(
+            authState.previousBestStreak || 0,
+            authState.longestStreak || 0,
+            (authState.brokenStreak && authState.brokenStreak.count) ? authState.brokenStreak.count : 0,
+            challenge.targetStreakToRestore || 0,
+            64
+        );
+
+        const isActive = challenge && challenge.active && challenge.status === 'in_progress';
+        const completedCount = challenge.completedSukhmaniCount || 0;
+
+        let timeRemainingStr = '05:00:00';
+        if (isActive && challenge.expiresAt) {
+            const msLeft = Math.max(0, new Date(challenge.expiresAt).getTime() - Date.now());
+            const hours = Math.floor(msLeft / (1000 * 60 * 60));
+            const mins = Math.floor((msLeft % (1000 * 60 * 60)) / (1000 * 60));
+            const secs = Math.floor((msLeft % (1000 * 60)) / 1000);
+            timeRemainingStr = `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        }
+
+        const modalHTML = `
+            <div class="modal-overlay active" id="streakRestorePolicyModal" style="pointer-events: auto; z-index: 10002;">
+                <div class="modal-container streak-restore-modal-container" style="max-width: 520px; border-radius: 24px; padding: 24px; background: var(--bg-card, #1c1c1e); color: var(--text-primary, #ffffff); box-shadow: 0 20px 60px rgba(0,0,0,0.6); max-height: 90vh; overflow-y: auto;">
+                    
+                    <!-- Header -->
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
+                        <div>
+                            <div style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 12px; background: rgba(212, 148, 58, 0.15); color: #D4943A; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">
+                                <span>📜</span> Streak Restore Policy
+                            </div>
+                            <h2 style="font-size: 20px; font-weight: 800; margin: 0; color: var(--text-primary, #ffffff);">
+                                5 Sukhmani Sahib in 5 Hours
+                            </h2>
+                            <p style="font-size: 13px; color: var(--text-secondary, #86868b); margin: 4px 0 0 0;">
+                                Restore your maximum historical streak through Gurbani devotion.
+                            </p>
+                        </div>
+                        <button onclick="StreakRestorePolicyManager.closeModal()" style="background: rgba(120,120,128,0.2); border: none; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; color: var(--text-secondary, #86868b); cursor: pointer; font-size: 16px;">✕</button>
+                    </div>
+
+                    <!-- Previous Max Streak Banner -->
+                    <div style="background: linear-gradient(135deg, rgba(212, 148, 58, 0.12), rgba(255, 149, 0, 0.06)); border: 1px solid rgba(212, 148, 58, 0.3); border-radius: 16px; padding: 14px 16px; margin-bottom: 18px; display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <span style="font-size: 11px; text-transform: uppercase; font-weight: 700; color: #D4943A; letter-spacing: 0.5px;">Previous Max Streak (Stored Locally)</span>
+                            <div style="font-size: 24px; font-weight: 800; color: #ffffff; display: flex; align-items: center; gap: 6px; margin-top: 2px;">
+                                <span>🔥</span>
+                                <span id="policyDisplayMaxStreak">${maxPreviousStreak}</span>
+                                <span style="font-size: 14px; font-weight: 600; color: #86868b;">Days</span>
+                            </div>
+                        </div>
+                        <div style="text-align: right;">
+                            <label style="font-size: 11px; color: #86868b; display: block; margin-bottom: 4px;">Customize Max:</label>
+                            <input type="number" id="policyCustomMaxInput" value="${maxPreviousStreak}" min="1" max="9999" style="width: 70px; padding: 6px 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.4); color: #fff; font-size: 14px; font-weight: 700; text-align: center;">
+                        </div>
+                    </div>
+
+                    <!-- Tab Switcher -->
+                    <div style="display: flex; gap: 8px; margin-bottom: 18px; background: rgba(120,120,128,0.15); padding: 4px; border-radius: 12px;">
+                        <button id="policyTabChallengeBtn" onclick="StreakRestorePolicyManager.switchTab('challenge')" style="flex: 1; padding: 8px 12px; border-radius: 10px; border: none; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.2s; ${!isBoostFocus ? 'background: #D4943A; color: #000;' : 'background: transparent; color: #86868b;'}">
+                            ⏳ 5-Hour Challenge
+                        </button>
+                        <button id="policyTabBoostBtn" onclick="StreakRestorePolicyManager.switchTab('boost')" style="flex: 1; padding: 8px 12px; border-radius: 10px; border: none; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.2s; ${isBoostFocus ? 'background: #D4943A; color: #000;' : 'background: transparent; color: #86868b;'}">
+                            ⚡ Streak Boost (/boost)
+                        </button>
+                    </div>
+
+                    <!-- TAB 1: 5-Hour Challenge Content -->
+                    <div id="policyTabChallengeContent" style="${!isBoostFocus ? 'display: block;' : 'display: none;'}">
+                        ${isActive ? `
+                            <!-- Live Challenge Active View -->
+                            <div style="background: rgba(52, 199, 89, 0.1); border: 1px solid rgba(52, 199, 89, 0.3); border-radius: 16px; padding: 14px 16px; margin-bottom: 16px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                    <span style="font-size: 13px; font-weight: 700; color: #34C759; display: flex; align-items: center; gap: 6px;">
+                                        <span class="pulse-dot" style="width: 8px; height: 8px; border-radius: 50%; background: #34C759; display: inline-block;"></span>
+                                        Challenge in Progress
+                                    </span>
+                                    <span id="policyLiveCountdown" style="font-family: monospace; font-size: 16px; font-weight: 800; color: #34C759; background: rgba(52,199,89,0.15); padding: 4px 10px; border-radius: 8px;">
+                                        ${timeRemainingStr}
+                                    </span>
+                                </div>
+                                <div style="font-size: 12px; color: #86868b; margin-bottom: 10px;">
+                                    Progress: <strong>${completedCount} of 5 Completed</strong>
+                                </div>
+                                <div style="display: flex; gap: 6px; margin-bottom: 6px;">
+                                    ${[1, 2, 3, 4, 5].map(i => `
+                                        <div style="flex: 1; height: 8px; border-radius: 4px; background: ${i <= completedCount ? '#34C759' : 'rgba(120,120,128,0.25)'}; transition: background 0.3s ease;"></div>
+                                    `).join('')}
+                                </div>
+                            </div>
+
+                            <!-- 5 Sukhmani Sahib Slots -->
+                            <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 18px;">
+                                ${[1, 2, 3, 4, 5].map(i => {
+                                    const isDone = i <= completedCount;
+                                    return `
+                                        <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; border-radius: 14px; background: ${isDone ? 'rgba(52, 199, 89, 0.08)' : 'rgba(255, 255, 255, 0.04)'}; border: 1px solid ${isDone ? 'rgba(52, 199, 89, 0.25)' : 'rgba(255, 255, 255, 0.08)'};">
+                                            <div style="display: flex; align-items: center; gap: 10px;">
+                                                <span style="font-size: 18px;">${isDone ? '✅' : '📖'}</span>
+                                                <div>
+                                                    <div style="font-weight: 700; font-size: 14px; color: ${isDone ? '#34C759' : '#fff'};">
+                                                        Sukhmani Sahib #${i}
+                                                    </div>
+                                                    <span style="font-size: 11px; color: #86868b;">
+                                                        ${isDone ? 'Completed' : 'Full Paath of Sukhmani Sahib'}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div style="display: flex; gap: 6px;">
+                                                ${!isDone ? `
+                                                    <button onclick="StreakRestorePolicyManager.openReader()" style="padding: 6px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.08); color: #fff; font-size: 12px; font-weight: 600; cursor: pointer;">
+                                                        Read
+                                                    </button>
+                                                    <button onclick="StreakRestorePolicyManager.markSlotComplete(${i})" style="padding: 6px 12px; border-radius: 8px; border: none; background: #D4943A; color: #000; font-size: 12px; font-weight: 700; cursor: pointer;">
+                                                        Mark Done ✓
+                                                    </button>
+                                                ` : `
+                                                    <span style="font-size: 12px; font-weight: 700; color: #34C759; padding: 4px 8px;">Done ✓</span>
+                                                `}
+                                            </div>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+
+                            <button onclick="StreakRestorePolicyManager.cancelChallenge()" style="width: 100%; padding: 10px; border-radius: 12px; border: none; background: rgba(255,69,58,0.15); color: #FF453A; font-weight: 600; font-size: 13px; cursor: pointer;">
+                                Reset / Cancel Challenge
+                            </button>
+                        ` : `
+                            <!-- Idle State: Explanation and Start Button -->
+                            <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 16px; margin-bottom: 18px;">
+                                <h4 style="font-size: 15px; font-weight: 700; margin: 0 0 8px 0; color: #D4943A;">
+                                    How the Policy Works:
+                                </h4>
+                                <ul style="margin: 0; padding-left: 20px; font-size: 13px; color: #ebebf5; line-height: 1.6;">
+                                    <li>When your streak is broken, start this challenge.</li>
+                                    <li>You have exactly <strong>5 Hours</strong> from activation.</li>
+                                    <li>Complete <strong>5 recitations of Sukhmani Sahib</strong>.</li>
+                                    <li>Upon completing the 5th paath, your <strong>previous maximum streak is fully restored</strong>.</li>
+                                    <li>All gap dates are backfilled locally so your streak continues today!</li>
+                                </ul>
+                            </div>
+
+                            <button onclick="StreakRestorePolicyManager.startChallenge()" style="width: 100%; padding: 14px; border-radius: 14px; border: none; background: linear-gradient(135deg, #D4943A, #FF9500); color: #000; font-size: 15px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 16px rgba(212, 148, 58, 0.4);">
+                                <span>🚀</span> Start 5-Hour Challenge Now
+                            </button>
+                        `}
+                    </div>
+
+                    <!-- TAB 2: Instant Boost (/boost) Content -->
+                    <div id="policyTabBoostContent" style="${isBoostFocus ? 'display: block;' : 'display: none;'}">
+                        <div style="background: rgba(255, 149, 0, 0.08); border: 1px solid rgba(255, 149, 0, 0.25); border-radius: 16px; padding: 16px; margin-bottom: 18px;">
+                            <div style="font-size: 14px; font-weight: 700; color: #FF9500; margin-bottom: 6px;">
+                                ⚡ Quick Streak Restore & Continuity (/boost)
+                            </div>
+                            <p style="font-size: 13px; color: #ebebf5; margin: 0 0 14px 0; line-height: 1.5;">
+                                Want to restore your streak to a previous maximum (e.g. <strong>64 days from 20 days ago</strong>) and continue your discipline seamlessly? Enter the details below:
+                            </p>
+
+                            <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px;">
+                                <div>
+                                    <label style="font-size: 12px; font-weight: 700; color: #86868b; display: block; margin-bottom: 4px;">
+                                        Previous Maximum Streak (Days):
+                                    </label>
+                                    <input type="number" id="boostTargetStreak" value="${maxPreviousStreak}" min="1" max="9999" style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.4); color: #fff; font-size: 16px; font-weight: 700; box-sizing: border-box;">
+                                </div>
+                                <div>
+                                    <label style="font-size: 12px; font-weight: 700; color: #86868b; display: block; margin-bottom: 4px;">
+                                        Days Since Streak Broke / Gap Days:
+                                    </label>
+                                    <input type="number" id="boostGapDays" value="20" min="0" max="365" style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.4); color: #fff; font-size: 16px; font-weight: 700; box-sizing: border-box;">
+                                </div>
+                            </div>
+
+                            <button onclick="StreakRestorePolicyManager.applyBoost()" style="width: 100%; padding: 14px; border-radius: 14px; border: none; background: linear-gradient(135deg, #FF9500, #FFCC00); color: #000; font-size: 15px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                <span>⚡</span> Apply Streak Boost & Continue Streak
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        `;
+
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+        // Start live countdown updater if active
+        if (isActive) {
+            this.startLiveTimer();
+        }
+    },
+
+    switchTab(tab) {
+        const challengeBtn = document.getElementById('policyTabChallengeBtn');
+        const boostBtn = document.getElementById('policyTabBoostBtn');
+        const challengeContent = document.getElementById('policyTabChallengeContent');
+        const boostContent = document.getElementById('policyTabBoostContent');
+
+        if (tab === 'boost') {
+            if (challengeBtn) { challengeBtn.style.background = 'transparent'; challengeBtn.style.color = '#86868b'; }
+            if (boostBtn) { boostBtn.style.background = '#D4943A'; boostBtn.style.color = '#000'; }
+            if (challengeContent) challengeContent.style.display = 'none';
+            if (boostContent) boostContent.style.display = 'block';
+        } else {
+            if (challengeBtn) { challengeBtn.style.background = '#D4943A'; challengeBtn.style.color = '#000'; }
+            if (boostBtn) { boostBtn.style.background = 'transparent'; boostBtn.style.color = '#86868b'; }
+            if (challengeContent) challengeContent.style.display = 'block';
+            if (boostContent) boostContent.style.display = 'none';
+        }
+    },
+
+    startLiveTimer() {
+        if (this.timerInterval) clearInterval(this.timerInterval);
+        this.timerInterval = setInterval(() => {
+            const countdownEl = document.getElementById('policyLiveCountdown');
+            if (!countdownEl) {
+                clearInterval(this.timerInterval);
+                return;
+            }
+            const engine = getAuthStreakEngine();
+            if (!engine || typeof engine.getStreakRestoreState !== 'function') return;
+            const policy = engine.getStreakRestoreState();
+            if (!policy || !policy.active || policy.status !== 'in_progress') {
+                clearInterval(this.timerInterval);
+                this.openModal();
+                return;
+            }
+            const msLeft = Math.max(0, new Date(policy.expiresAt).getTime() - Date.now());
+            if (msLeft <= 0) {
+                clearInterval(this.timerInterval);
+                if (typeof Toast !== 'undefined' && Toast.error) {
+                    Toast.error('⏰ Time Expired', 'The 5-hour window has expired. You can restart the challenge anytime.');
+                }
+                this.openModal();
+                return;
+            }
+            const hours = Math.floor(msLeft / (1000 * 60 * 60));
+            const mins = Math.floor((msLeft % (1000 * 60 * 60)) / (1000 * 60));
+            const secs = Math.floor((msLeft % (1000 * 60)) / 1000);
+            countdownEl.textContent = `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        }, 1000);
+    },
+
+    startChallenge() {
+        const customInput = document.getElementById('policyCustomMaxInput');
+        const targetStreak = customInput ? Number(customInput.value) : 64;
+
+        const engine = getAuthStreakEngine();
+        if (!engine || typeof engine.startStreakRestoreChallenge !== 'function') {
+            if (typeof Toast !== 'undefined' && Toast.error) {
+                Toast.error('Engine Unavailable', 'Streak engine is initializing.');
+            }
+            return;
+        }
+        const res = engine.startStreakRestoreChallenge(targetStreak);
+        if (res && res.success) {
+            if (typeof Toast !== 'undefined' && Toast.success) {
+                Toast.success('🚀 Challenge Started!', `Complete 5 Sukhmani Sahib within 5 hours to restore your ${res.targetStreak}-day streak!`);
+            }
+            this.openModal();
+            this.renderUI();
+        }
+    },
+
+    markSlotComplete(slotIndex) {
+        const engine = getAuthStreakEngine();
+        if (!engine || typeof engine.recordSukhmaniCompletion !== 'function') return;
+        const res = engine.recordSukhmaniCompletion(`Sukhmani Sahib #${slotIndex}`);
+
+        if (res && res.success) {
+            if (res.completed) {
+                this.closeModal();
+                StreakManager.recalculateStreak();
+                HeaderManager.updatePenaltyState();
+                HeaderManager.updateStreakDisplay();
+                if (typeof Toast !== 'undefined' && Toast.success) {
+                    Toast.success('🎉 Max Streak Restored!', `Congratulations! Your ${res.challenge.restoredStreak}-day streak has been restored and backfilled!`);
+                }
+                if (typeof CelebrationManager !== 'undefined' && CelebrationManager.show) {
+                    CelebrationManager.show('streakSaved');
+                }
+                this.renderUI();
+            } else {
+                if (typeof Toast !== 'undefined' && Toast.success) {
+                    Toast.success(`Sukhmani Sahib #${slotIndex} Marked Done`, `${res.completedCount}/5 completed. Keep going!`);
+                }
+                this.openModal();
+                this.renderUI();
+            }
+        } else {
+            if (typeof Toast !== 'undefined' && Toast.error) {
+                Toast.error('Challenge Notice', res.error || 'Could not record progress');
+            }
+        }
+    },
+
+    applyBoost() {
+        const streakInput = document.getElementById('boostTargetStreak');
+        const gapInput = document.getElementById('boostGapDays');
+
+        const targetStreak = streakInput ? Number(streakInput.value) || 64 : 64;
+        const gapDays = gapInput ? Number(gapInput.value) || 20 : 20;
+
+        const engine = getAuthStreakEngine();
+        if (engine && typeof engine.restoreStreakToMaximum === 'function') {
+            engine.restoreStreakToMaximum(targetStreak, gapDays);
+        } else {
+            StreakManager.state.currentStreak = targetStreak;
+            StreakManager.saveStreakData();
+        }
+        StreakManager.recalculateStreak();
+        HeaderManager.updatePenaltyState();
+        HeaderManager.updateStreakDisplay();
+        this.closeModal();
+        this.renderUI();
+        if (typeof Toast !== 'undefined' && Toast.success) {
+            Toast.success('⚡ Streak Boost Applied!', `Your streak is now set to ${targetStreak} days and ready to continue!`);
+        }
+        if (typeof CelebrationManager !== 'undefined' && CelebrationManager.show) {
+            CelebrationManager.show('streakSaved');
+        }
+    },
+
+    cancelChallenge() {
+        if (typeof confirm === 'function' && !confirm('Cancel this 5-hour recovery challenge? Your progress will reset.')) {
+            return;
+        }
+        const engine = getAuthStreakEngine();
+        if (engine && typeof engine.resetStreakRestoreChallenge === 'function') {
+            engine.resetStreakRestoreChallenge();
+        }
+        if (this.timerInterval) clearInterval(this.timerInterval);
+        this.openModal();
+        this.renderUI();
+    },
+
+    recordSukhmaniProgress(details) {
+        const engine = getAuthStreakEngine();
+        if (!engine || typeof engine.getStreakRestoreState !== 'function') return;
+        const policy = engine.getStreakRestoreState();
+        if (!policy || !policy.active || policy.status !== 'in_progress') return;
+
+        const nextSlot = (policy.completedSukhmaniCount || 0) + 1;
+        this.markSlotComplete(nextSlot, details);
+    },
+
+    openReader() {
+        if (typeof window !== 'undefined') {
+            window.location.href = '../nitnem/reader.html?id=31';
+        }
+    },
+
+    closeModal() {
+        if (this.timerInterval) clearInterval(this.timerInterval);
+        if (typeof document !== 'undefined') {
+            document.getElementById('streakRestorePolicyModal')?.remove();
+        }
+    },
+
+    renderUI() {
+        if (typeof document === 'undefined') return;
+        let container = document.getElementById('streakRestorePolicyContainer');
+        if (!container) {
+            const statGrid = document.querySelector('.streak-stat-grid');
+            if (statGrid && statGrid.parentNode) {
+                container = document.createElement('div');
+                container.id = 'streakRestorePolicyContainer';
+                statGrid.parentNode.insertBefore(container, statGrid.nextSibling);
+            }
+        }
+        if (!container) return;
+
+        const engine = getAuthStreakEngine();
+        const policy = (engine && typeof engine.getStreakRestoreState === 'function') ? engine.getStreakRestoreState() : null;
+
+        if (policy && policy.active && policy.status === 'in_progress') {
+            container.innerHTML = `
+                <div class="streak-restore-active-card" onclick="StreakRestorePolicyManager.openModal()" style="margin: 12px 0; padding: 14px; border-radius: 16px; background: rgba(212, 148, 58, 0.12); border: 1px solid rgba(212, 148, 58, 0.35); cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="font-size: 20px;">📜</span>
+                        <div>
+                            <strong style="font-size: 13px; color: #D4943A; display: block;">Streak Restore Policy Active</strong>
+                            <span style="font-size: 12px; color: #ebebf5;">Sukhmani Sahib: ${policy.completedSukhmaniCount}/5 completed</span>
+                        </div>
+                    </div>
+                    <span style="font-size: 12px; font-weight: 700; background: #D4943A; color: #000; padding: 4px 10px; border-radius: 8px;">View ›</span>
+                </div>
+            `;
+        } else {
+            container.innerHTML = `
+                <button class="streak-restore-policy-btn" id="streakRestorePolicyBtn" onclick="StreakRestorePolicyManager.openModal()" style="width: 100%; margin: 10px 0; padding: 12px 16px; border-radius: 14px; border: 1px solid rgba(212, 148, 58, 0.3); background: rgba(212, 148, 58, 0.08); color: #fff; display: flex; align-items: center; justify-content: space-between; cursor: pointer; text-align: left;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="font-size: 18px;">📜</span>
+                        <div>
+                            <strong style="font-size: 13px; color: #D4943A; display: block;">Streak Restore Policy</strong>
+                            <span style="font-size: 11px; color: #86868b;">Do 5 Sukhmani Sahib in 5 Hours to restore max streak</span>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <span onclick="event.stopPropagation(); StreakRestorePolicyManager.openModal(true);" style="font-size: 11px; font-weight: 700; color: #FF9500; background: rgba(255, 149, 0, 0.15); padding: 3px 8px; border-radius: 6px;">⚡ /boost</span>
+                        <span style="color: #D4943A; font-size: 16px;">›</span>
+                    </div>
+                </button>
+            `;
+        }
+    }
+};
+
+/* -----------------------------------------------------------------------------
+   SECTION 20.7: EASY DATA BACKUP (IMPORT & EXPORT)
+   ----------------------------------------------------------------------------- */
+
+const StreakBackupManager = {
+    exportBackup() {
+        try {
+            const engine = getAuthStreakEngine();
+            const streakData = (engine && typeof engine.getState === 'function') ? engine.getState() : StorageManager.load(CONFIG.STORAGE_KEYS.STREAK_DATA, {});
+            const amritvelaLog = StorageManager.load(CONFIG.STORAGE_KEYS.AMRITVELA_LOG, {});
+            const nitnemLog = StorageManager.load(CONFIG.STORAGE_KEYS.NITNEM_LOG, {});
+            const malaLog = StorageManager.load(CONFIG.STORAGE_KEYS.MALA_LOG, {});
+            const selectedBanis = StorageManager.load(CONFIG.STORAGE_KEYS.SELECTED_BANIS, {});
+            const myPothiCompleted = StorageManager.load(CONFIG.STORAGE_KEYS.MY_POTHI_COMPLETED, {});
+            const restorePolicy = (engine && typeof engine.getStreakRestoreState === 'function') ? engine.getStreakRestoreState() : null;
+
+            const backup = {
+                app: 'Anhad',
+                appName: 'ANHAD Nitnem Progress Backup',
+                appVersion: CONFIG.APP_VERSION || '2.0',
+                exportTimestamp: new Date().toISOString(),
+                exportDate: Utils.getTodayString(),
+                metadata: {
+                    currentStreak: streakData.currentStreak || 0,
+                    previousBestStreak: streakData.previousBestStreak || 0,
+                    longestStreak: streakData.longestStreak || 0
+                },
+                data: {
+                    anhad_streak_data: streakData,
+                    nitnemTracker_streakData: streakData,
+                    nitnemTracker_amritvelaLog: amritvelaLog,
+                    nitnemTracker_nitnemLog: nitnemLog,
+                    nitnemTracker_malaLog: malaLog,
+                    nitnemTracker_selectedBanis: selectedBanis,
+                    anhad_my_pothi_completed: myPothiCompleted,
+                    anhad_streak_restore_challenge: restorePolicy
+                }
+            };
+
+            const jsonStr = JSON.stringify(backup, null, 2);
+
+            if (typeof navigator !== 'undefined' && navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(jsonStr).then(() => {
+                    if (typeof Toast !== 'undefined' && Toast.success) {
+                        Toast.success('📥 Backup Copied & Downloaded', 'Data copied to clipboard and file downloaded!');
+                    }
+                }).catch(() => {});
+            }
+
+            if (typeof document !== 'undefined') {
+                const blob = new Blob([jsonStr], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `anhad-spiritual-backup-${Utils.getTodayString()}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }
+        } catch(e) {
+            console.error('Backup export error:', e);
+            if (typeof Toast !== 'undefined' && Toast.error) {
+                Toast.error('Export Failed', 'Could not export backup: ' + e.message);
+            }
+        }
+    },
+
+    openImportModal() {
+        if (typeof document === 'undefined') return;
+        document.getElementById('easyDataImportModal')?.remove();
+
+        const modalHTML = `
+            <div class="modal-overlay active" id="easyDataImportModal" style="pointer-events: auto; z-index: 10002;">
+                <div class="modal-container" style="max-width: 500px; border-radius: 24px; padding: 24px; background: var(--bg-card, #1c1c1e); color: #fff;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                        <h3 style="margin: 0; font-size: 18px; font-weight: 800; display: flex; align-items: center; gap: 8px;">
+                            <span>📤</span> Import Spiritual Data
+                        </h3>
+                        <button onclick="document.getElementById('easyDataImportModal').remove()" style="background: rgba(120,120,128,0.2); border: none; border-radius: 50%; width: 32px; height: 32px; color: #86868b; cursor: pointer;">✕</button>
+                    </div>
+
+                    <p style="font-size: 13px; color: #86868b; margin-bottom: 14px;">
+                        Restore your Nitnem streaks, Amritvela logs, and reading history across devices.
+                    </p>
+
+                    <!-- File input -->
+                    <div style="border: 2px dashed rgba(255,255,255,0.15); border-radius: 14px; padding: 20px; text-align: center; margin-bottom: 14px; cursor: pointer;" onclick="document.getElementById('easyBackupFileInput').click()">
+                        <span style="font-size: 28px; display: block; margin-bottom: 6px;">📁</span>
+                        <span style="font-size: 14px; font-weight: 700; color: #D4943A;">Choose Backup JSON File</span>
+                        <input type="file" id="easyBackupFileInput" accept=".json,application/json" style="display:none;" onchange="StreakBackupManager.handleFile(event)">
+                    </div>
+
+                    <!-- Direct Paste Area -->
+                    <div style="margin-bottom: 16px;">
+                        <label style="font-size: 12px; font-weight: 700; color: #86868b; display: block; margin-bottom: 6px;">Or Paste JSON Data Directly:</label>
+                        <textarea id="easyBackupPasteArea" placeholder="Paste your backup JSON text here..." style="width: 100%; height: 90px; padding: 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.15); background: rgba(0,0,0,0.3); color: #fff; font-family: monospace; font-size: 11px; resize: vertical; box-sizing: border-box;"></textarea>
+                    </div>
+
+                    <div style="display: flex; gap: 10px;">
+                        <button onclick="document.getElementById('easyDataImportModal').remove()" style="flex: 1; padding: 12px; border-radius: 12px; border: none; background: rgba(120,120,128,0.2); color: #fff; font-weight: 700; cursor: pointer;">
+                            Cancel
+                        </button>
+                        <button onclick="StreakBackupManager.handlePasteImport()" style="flex: 2; padding: 12px; border-radius: 12px; border: none; background: #D4943A; color: #000; font-weight: 800; cursor: pointer;">
+                            Restore Data Now
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+    },
+
+    handleFile(e) {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            this.processJsonString(event.target.result);
+        };
+        reader.readAsText(file);
+    },
+
+    handlePasteImport() {
+        const text = document.getElementById('easyBackupPasteArea')?.value?.trim();
+        if (!text) {
+            if (typeof Toast !== 'undefined' && Toast.warning) {
+                Toast.warning('Empty Input', 'Please paste valid backup JSON data.');
+            }
+            return;
+        }
+        this.processJsonString(text);
+    },
+
+    processJsonString(jsonStr) {
+        try {
+            const success = StorageManager.importData(jsonStr);
+            if (success) {
+                // If backup contains streak data, ensure streak is restored and not wiped!
+                let parsed = JSON.parse(jsonStr);
+                let payload = parsed.data || parsed.backup || parsed;
+                const streakObj = payload.anhad_streak_data || payload.nitnemTracker_streakData || null;
+                const targetStreak = (streakObj && (streakObj.currentStreak || streakObj.current)) || (parsed.metadata && parsed.metadata.currentStreak) || (payload.metadata && payload.metadata.currentStreak) || 0;
+                if (targetStreak > 0) {
+                    const engine = getAuthStreakEngine();
+                    if (engine && typeof engine.restoreStreakToMaximum === 'function') {
+                        engine.restoreStreakToMaximum(targetStreak);
+                    }
+                }
+
+                if (typeof document !== 'undefined') {
+                    document.getElementById('easyDataImportModal')?.remove();
+                }
+                StreakManager.recalculateStreak();
+                HeaderManager.updatePenaltyState();
+                HeaderManager.updateStreakDisplay();
+                if (typeof Toast !== 'undefined' && Toast.success) {
+                    Toast.success('✅ Data Restored!', 'Spiritual data and streaks successfully imported!');
+                }
+            } else {
+                if (typeof Toast !== 'undefined' && Toast.error) {
+                    Toast.error('Import Failed', 'Invalid or incompatible backup format.');
+                }
+            }
+        } catch(e) {
+            if (typeof Toast !== 'undefined' && Toast.error) {
+                Toast.error('Parse Error', 'Failed to read JSON backup: ' + e.message);
+            }
+        }
+    }
+};
+
+// Global aliases
+if (typeof window !== 'undefined') {
+    window.StreakRestorePolicyManager = StreakRestorePolicyManager;
+    window.StreakBackupManager = StreakBackupManager;
+}
 
 /* -----------------------------------------------------------------------------
    SECTION 21: ACHIEVEMENT SYSTEM
@@ -12679,6 +13430,7 @@ const initializeFullApp = async () => {
         await safeInit('AlarmManager', () => AlarmManager.init());
         await safeInit('StreakManager', () => StreakManager.init());
         await safeInit('StreakSaverManager', () => StreakSaverManager.init());
+        await safeInit('StreakRestorePolicyManager', () => StreakRestorePolicyManager.init());
         await safeInit('AchievementManager', async () => await AchievementManager.init());
         await safeInit('ReportsManager', () => ReportsManager.init());
         await safeInit('CelebrationManager', () => CelebrationManager.init());
@@ -12925,6 +13677,8 @@ if (typeof module !== 'undefined' && module.exports) {
     Object.assign(module.exports, {
         DailyResetManager,
         StreakSaverManager,
+        StreakRestorePolicyManager,
+        StreakBackupManager,
         ReportsManager,
         StreakManager,
         AuthoritativeStreakEngine: getAuthStreakEngine(),

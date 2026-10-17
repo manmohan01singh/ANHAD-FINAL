@@ -971,16 +971,18 @@
         if (!totalMinutes || totalMinutes <= 0) return '0h 00m';
         const hours = Math.floor(totalMinutes / 60);
         const mins = Math.round(totalMinutes % 60);
-        if (hours === 0) return `${mins}m`;
         return `${hours}h ${mins < 10 ? '0' + mins : mins}m`;
     }
 
     function loadQuickStats() {
-        let stats = {}, streak = {}, sehajStats = {}, unifiedData = null;
+        let stats = {}, streak = {}, sehajStats = {}, sehajState = {}, sehajProgress = {}, sehajProgressAlt = {}, unifiedData = null;
         try {
             stats = JSON.parse(localStorage.getItem('anhad_user_stats') || '{}');
             streak = JSON.parse(localStorage.getItem('anhad_streak_data') || '{}');
             sehajStats = JSON.parse(localStorage.getItem('sehajPaathStats') || '{}');
+            sehajState = JSON.parse(localStorage.getItem('sehajPaathState') || '{}');
+            sehajProgress = JSON.parse(localStorage.getItem('sehajPaathProgress') || '{}');
+            sehajProgressAlt = JSON.parse(localStorage.getItem('gurbani_sehajPaath_progress') || '{}');
             const storedUnified = localStorage.getItem('anhad_unified_stats');
             if (storedUnified) unifiedData = JSON.parse(storedUnified);
         } catch (e) {}
@@ -988,7 +990,7 @@
         const todayKey = new Date().toLocaleDateString('en-CA');
         let unifiedToday = unifiedData?.daily?.[todayKey];
 
-        // 1. Today's listening minutes
+        // 1. Today's listening minutes (Aggregate UnifiedStats, user_stats, and active audio)
         let todayMin = 0;
         if (window.UnifiedStats && typeof window.UnifiedStats.getTodayStats === 'function') {
             const ut = window.UnifiedStats.getTodayStats();
@@ -1034,15 +1036,50 @@
         let totalMin = Math.max(stats.totalListeningMinutes || 0, unifiedLifetimeMin, weeklyMin, todayMin);
 
         // 4. Sehaj Paath and Angs read
+        const sehajCurrentAng = (sehajState && typeof sehajState.currentAng === 'number' && sehajState.currentAng > 1) 
+            ? (sehajState.currentAng - 1) 
+            : 0;
+        const pCurrentAng = (sehajProgress && typeof sehajProgress.currentAng === 'number' && sehajProgress.currentAng > 1)
+            ? (sehajProgress.currentAng - 1)
+            : 0;
+        const pCurrentAngAlt = (sehajProgressAlt && typeof sehajProgressAlt.currentAng === 'number' && sehajProgressAlt.currentAng > 1)
+            ? (sehajProgressAlt.currentAng - 1)
+            : 0;
         const totalAngs = Math.max(
             sehajStats.totalAngsRead || 0,
+            sehajStats.angsRead || 0,
+            sehajCurrentAng,
+            pCurrentAng,
+            pCurrentAngAlt,
             stats.sehajPaath?.totalAngsRead || 0,
+            stats.totalPagesRead || 0,
             unifiedLifetimeAngs,
             weeklyAngsSum
         );
 
-        // 5. Active Streak (Accurate: 0 days if no activity, never forced to 1)
+        // 5. Active Streak (Check AuthoritativeStreakEngine, UnifiedStats, and anhad_streak_data)
+        let authStreak = 0;
+        if (typeof window !== 'undefined' && window.AuthoritativeStreakEngine) {
+            try {
+                if (typeof window.AuthoritativeStreakEngine.getState === 'function') {
+                    authStreak = window.AuthoritativeStreakEngine.getState().currentStreak || 0;
+                } else if (typeof window.AuthoritativeStreakEngine.getStreak === 'function') {
+                    authStreak = window.AuthoritativeStreakEngine.getStreak() || 0;
+                }
+            } catch (e) {}
+        }
+        if (!authStreak) {
+            try {
+                const authRaw = localStorage.getItem('authoritative_streak_state');
+                if (authRaw) {
+                    const parsed = JSON.parse(authRaw);
+                    authStreak = parsed.currentStreak || 0;
+                }
+            } catch (e) {}
+        }
+
         const bestStreak = Math.max(
+            authStreak,
             unifiedData?.streaks?.nitnem || 0,
             unifiedData?.streaks?.sehajPath || 0,
             unifiedData?.streaks?.kirtan || 0,
@@ -1065,11 +1102,16 @@
             totalHoursEl.textContent = formatHoursAndMins(totalMin);
         }
         if (todayEl) {
-            todayEl.textContent = `${todayMin} min`;
+            todayEl.textContent = todayMin >= 60 ? formatHoursAndMins(todayMin) : `${todayMin} min`;
         }
         if (wl) {
-            const weeklyHours = Math.round((weeklyMin / 60) * 10) / 10;
-            wl.textContent = `${weeklyHours}h`;
+            if (weeklyMin < 60) {
+                wl.textContent = `${weeklyMin} min`;
+            } else {
+                const hours = Math.floor(weeklyMin / 60);
+                const mins = Math.round(weeklyMin % 60);
+                wl.textContent = mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
+            }
         }
         if (wa) {
             wa.textContent = `${totalAngs} Angs`;
@@ -1111,6 +1153,10 @@
                             const s = sessionSec % 60;
                             liveTime.textContent = m > 0 ? `${m}m ${s}s` : `${s}s`;
                         }
+                        // Refresh stats every 30s while listening
+                        if (sessionSec % 30 === 0) {
+                            loadQuickStats();
+                        }
                     }, 1000);
                 }
             } else {
@@ -1128,10 +1174,12 @@
             if (window.AnhadAudio.isPlaying()) updateLiveState(true);
         }
 
-        window.addEventListener('anhadaudiostatechange', (e) => {
+        const handleAudioChange = (e) => {
             const isPlaying = e.detail && e.detail.isPlaying;
             updateLiveState(!!isPlaying);
-        });
+        };
+        window.addEventListener('anhadAudioStateChange', handleAudioChange);
+        window.addEventListener('anhadaudiostatechange', handleAudioChange);
 
         window.addEventListener('statsUpdated', loadQuickStats);
         window.addEventListener('dashboardRefresh', loadQuickStats);
@@ -1141,7 +1189,7 @@
         window.addEventListener('nitnemBaniCompleted', loadQuickStats);
         window.addEventListener('nitnemDayCompleted', loadQuickStats);
         window.addEventListener('storage', (e) => {
-            if (e.key && (e.key.includes('stats') || e.key.includes('streak') || e.key.includes('unified'))) {
+            if (e.key && (e.key.includes('stats') || e.key.includes('streak') || e.key.includes('unified') || e.key.includes('sehaj'))) {
                 loadQuickStats();
             }
         });
@@ -1293,10 +1341,30 @@
 
     // Register with smooth-navigation Page Init Lifecycle for 100% reliable SPA entry
     window.__anhadPageInit = window.__anhadPageInit || {};
-    window.__anhadPageInit['/Insights/insights.html'] = init;
-    window.__anhadPageInit['/Insights/insights'] = init;
-    window.__anhadPageInit['/frontend/Insights/insights.html'] = init;
-    window.__anhadPageInit['/frontend/Insights/insights'] = init;
+    const insightRoutes = [
+        '/Insights/insights.html',
+        '/Insights/insights',
+        '/insights/insights.html',
+        '/insights/insights',
+        '/insights.html',
+        '/insights',
+        '/frontend/Insights/insights.html',
+        '/frontend/Insights/insights',
+        '/frontend/insights/insights.html',
+        '/frontend/insights/insights',
+        '/frontend/insights'
+    ];
+    insightRoutes.forEach(route => {
+        window.__anhadPageInit[route] = init;
+    });
+
+    // SPA page navigation listener
+    window.addEventListener('anhad_page_changed', function (e) {
+        const url = (e && e.detail && e.detail.url) || (window.location && window.location.pathname) || '';
+        if (url.toLowerCase().includes('insight')) {
+            init();
+        }
+    });
 
     // Window globals for inline HTML event handlers
     window.openModal = openModal;

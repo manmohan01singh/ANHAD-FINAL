@@ -65,11 +65,12 @@ public class FullScreenAlarmActivity extends AppCompatActivity {
         TextView message = findViewById(R.id.alarmMessage);
         Button dismissBtn = findViewById(R.id.btnDismiss);
         Button startBtn = findViewById(R.id.btnStart);
+        Button readingBtn = findViewById(R.id.btnReading);
 
         if (titleText != null) title.setText(titleText);
         if (messageText != null) message.setText(messageText);
 
-        // Play alarm sound (assuming a default sound is in res/raw/naam_alarm.mp3, or we can use default ringtone)
+        // Play alarm sound with calm singing bowl
         playAlarmSound();
 
         dismissBtn.setOnClickListener(new View.OnClickListener() {
@@ -82,27 +83,38 @@ public class FullScreenAlarmActivity extends AppCompatActivity {
         startBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Open MainActivity and pass routing info
-                Intent launchIntent = new Intent(FullScreenAlarmActivity.this, MainActivity.class);
-                launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                
-                // We use standard capacitor notification extras style to be caught by MainActivity
-                launchIntent.putExtra("type", "naam_abhyas");
-                launchIntent.putExtra("action", "auto_start_naam");
-                launchIntent.putExtra("hour", hour != null ? hour : "");
-                launchIntent.putExtra("minute", minute != null ? minute : "");
-                
-                startActivity(launchIntent);
-                stopAlarmAndFinish();
+                launchSession("simran", hour, minute);
             }
         });
+
+        if (readingBtn != null) {
+            readingBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    launchSession("reading", hour, minute);
+                }
+            });
+        }
+    }
+
+    private void launchSession(String mode, String hour, String minute) {
+        Intent launchIntent = new Intent(FullScreenAlarmActivity.this, MainActivity.class);
+        launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        launchIntent.putExtra("type", "naam_abhyas");
+        launchIntent.putExtra("action", "auto_start_naam");
+        launchIntent.putExtra("mode", mode);
+        launchIntent.putExtra("practiceType", mode);
+        launchIntent.putExtra("hour", hour != null ? hour : "");
+        launchIntent.putExtra("minute", minute != null ? minute : "");
+        startActivity(launchIntent);
+        stopAlarmAndFinish();
     }
 
     private void playAlarmSound() {
         try {
-            Uri defaultRingtoneUri = android.media.RingtoneManager.getDefaultUri(android.media.RingtoneManager.TYPE_ALARM);
+            Uri soundUri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.naam_bell);
             mediaPlayer = new MediaPlayer();
-            mediaPlayer.setDataSource(this, defaultRingtoneUri);
+            mediaPlayer.setDataSource(this, soundUri);
             mediaPlayer.setAudioAttributes(new AudioAttributes.Builder()
                     .setUsage(AudioAttributes.USAGE_ALARM)
                     .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
@@ -111,7 +123,26 @@ public class FullScreenAlarmActivity extends AppCompatActivity {
             mediaPlayer.prepare();
             mediaPlayer.start();
         } catch (Exception e) {
-            Log.e(TAG, "Error playing alarm sound", e);
+            Log.w(TAG, "Failed to play R.raw.naam_bell, falling back to default alarm ringtone", e);
+            try {
+                Uri defaultRingtoneUri = android.media.RingtoneManager.getDefaultUri(android.media.RingtoneManager.TYPE_ALARM);
+                if (defaultRingtoneUri == null) {
+                    defaultRingtoneUri = android.media.RingtoneManager.getDefaultUri(android.media.RingtoneManager.TYPE_NOTIFICATION);
+                }
+                if (defaultRingtoneUri != null) {
+                    mediaPlayer = new MediaPlayer();
+                    mediaPlayer.setDataSource(this, defaultRingtoneUri);
+                    mediaPlayer.setAudioAttributes(new AudioAttributes.Builder()
+                            .setUsage(AudioAttributes.USAGE_ALARM)
+                            .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                            .build());
+                    mediaPlayer.setLooping(true);
+                    mediaPlayer.prepare();
+                    mediaPlayer.start();
+                }
+            } catch (Exception ex) {
+                Log.e(TAG, "Error playing fallback alarm sound", ex);
+            }
         }
     }
 

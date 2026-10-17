@@ -117,14 +117,16 @@
     // ═══════════════════════════════════════════════════════════════════════════
 
     function setupAutoDetection() {
-        // Listen for audio state changes
-        window.addEventListener('anhadaudiostatechange', (e) => {
+        // Listen for audio state changes (supporting both camelCase and lowercase)
+        const onAudioState = (e) => {
             if (e.detail && e.detail.isPlaying) {
                 startListening();
             } else {
                 stopListening();
             }
-        });
+        };
+        window.addEventListener('anhadAudioStateChange', onAudioState);
+        window.addEventListener('anhadaudiostatechange', onAudioState);
 
         // Listen for audio coordinator events
         window.addEventListener('audiocoordinatorstatechange', (e) => {

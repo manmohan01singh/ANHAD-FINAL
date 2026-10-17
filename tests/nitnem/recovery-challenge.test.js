@@ -293,4 +293,83 @@ describe('R2: Previous-Best Streak Recovery Challenge', () => {
       expect(resetState.currentDay).toBe(0);
     });
   });
+
+  describe('5. Real Attendance Progression & Configurable Delay API', () => {
+    it('recordAmritvelaAttendance advances recovery challenge sequentially without state overwrite', () => {
+      vi.useFakeTimers();
+
+      // Seed broken streak of 10 days
+      const state = engine.getState();
+      state.previousBestStreak = 10;
+      state.longestStreak = 10;
+      state.currentStreak = 0;
+      state.brokenStreak = { count: 10, brokenDate: '2026-10-01', lastCompletedDate: '2026-09-30' };
+      engine.saveState(state);
+
+      // Start challenge on 2026-10-08 (8 days after break)
+      vi.setSystemTime(new Date('2026-10-08T04:00:00'));
+      engine.startRecoveryChallenge();
+
+      // Day 1 attendance via recordAmritvelaAttendance
+      engine.recordAmritvelaAttendance('2026-10-08', '03:45', 'excellent');
+      let current = engine.getState();
+      expect(current.recoveryChallenge.currentDay).toBe(1);
+      expect(current.recoveryChallenge.active).toBe(true);
+
+      // Day 2 attendance
+      vi.setSystemTime(new Date('2026-10-09T04:00:00'));
+      engine.recordAmritvelaAttendance('2026-10-09', '04:00', 'good');
+      current = engine.getState();
+      expect(current.recoveryChallenge.currentDay).toBe(2);
+
+      // Day 3 attendance
+      vi.setSystemTime(new Date('2026-10-10T04:10:00'));
+      engine.recordAmritvelaAttendance('2026-10-10', '04:10', 'good');
+      current = engine.getState();
+      expect(current.recoveryChallenge.currentDay).toBe(3);
+
+      // Day 4 attendance
+      vi.setSystemTime(new Date('2026-10-11T03:50:00'));
+      engine.recordAmritvelaAttendance('2026-10-11', '03:50', 'excellent');
+      current = engine.getState();
+      expect(current.recoveryChallenge.currentDay).toBe(4);
+
+      // Day 5 attendance -> RESTORES STREAK ATOMICALLY!
+      vi.setSystemTime(new Date('2026-10-12T04:05:00'));
+      engine.recordAmritvelaAttendance('2026-10-12', '04:05', 'good');
+      current = engine.getState();
+      expect(current.recoveryChallenge.status).toBe('completed');
+      expect(current.recoveryChallenge.active).toBe(false);
+      expect(current.currentStreak).toBe(15); // 10 (target) + 5 (challenge days)
+      expect(current.brokenStreak).toBeNull();
+
+      // Recalculating streak preserves exact restored streak deterministically!
+      const recalced = engine.recalculateStreak('2026-10-12');
+      expect(recalced.currentStreak).toBe(15);
+      expect(recalced.brokenStreak).toBeNull();
+
+      // Day 6 subsequent real attendance continues streak to 16
+      vi.setSystemTime(new Date('2026-10-13T04:00:00'));
+      const day6 = engine.recordAmritvelaAttendance('2026-10-13', '04:00', 'good');
+      expect(day6.currentStreak).toBe(16);
+    });
+
+    it('setRecoveryConfig validates bounds (5-10 days) and updates delay config', () => {
+      // Valid update to 6 days
+      expect(engine.setRecoveryConfig({ minDelayDays: 6 })).toBe(true);
+      expect(engine.getState().recoveryConfig.minDelayDays).toBe(6);
+
+      // Valid update to 10 days
+      expect(engine.setRecoveryConfig({ minDelayDays: 10 })).toBe(true);
+      expect(engine.getState().recoveryConfig.minDelayDays).toBe(10);
+
+      // Invalid update (< 5) rejected
+      expect(engine.setRecoveryConfig({ minDelayDays: 4 })).toBe(false);
+      expect(engine.getState().recoveryConfig.minDelayDays).toBe(10);
+
+      // Invalid update (> 10) rejected
+      expect(engine.setRecoveryConfig({ minDelayDays: 12 })).toBe(false);
+      expect(engine.getState().recoveryConfig.minDelayDays).toBe(10);
+    });
+  });
 });
