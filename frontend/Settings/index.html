@@ -82,7 +82,12 @@
   <script src="../lib/global-theme.js" defer></script>
   <script src="../lib/desktop-sidebar.js" defer></script>
   <script src="../js/anhad-core.js" defer></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js" defer></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js" defer></script>
+  <script src="../lib/firebase-client.js" defer></script>
   <script src="../lib/anhad-auth.js" defer></script>
+  <script src="../lib/cloud-sync.js" defer></script>
+  <script src="../lib/firebase-welcome-modal.js" defer></script>
   <script src="../lib/companion-mode.js" defer></script>
   <script src="../lib/reading-migration.js" defer></script>
 </head>
@@ -133,24 +138,59 @@
 
     <!-- COMPANION & READING MIGRATION Section -->
     <section class="settings-section">
-      <h2 class="settings-section__title">SPIRITUAL PROGRESS & BACKUP</h2>
+      <h2 class="settings-section__title">SPIRITUAL PROGRESS & CLOUD STORAGE</h2>
       
-      <div class="settings-group">
+      <!-- Firebase Cloud Backup Card -->
+      <div class="settings-group" style="margin-bottom: 16px;">
+        <div class="settings-item" style="cursor: default;">
+          <div class="settings-item__icon">☁️</div>
+          <div class="settings-item__content">
+            <div class="settings-item__label">Automatic Firebase Cloud Storage</div>
+            <div class="settings-item__desc">Streaks, Sehaj Paath, Naam Abhyas, My Pothi & Shabads</div>
+          </div>
+          <span class="settings-badge settings-badge-guest" id="cloudBackupBadge">Checking...</span>
+        </div>
 
+        <div class="settings-item" style="cursor: default;">
+          <div class="settings-item__icon">🔄</div>
+          <div class="settings-item__content">
+            <div class="settings-item__label" style="font-size: 0.9375rem;">Cloud Status & Sync Code</div>
+            <div class="settings-item__desc" id="cloudSyncStatusDesc">Loading status...</div>
+          </div>
+          <button class="settings-btn settings-btn-secondary" id="cloudCopyCodeBtn" onclick="handleCopySyncCode()" style="flex: 0 0 auto; padding: 6px 12px; font-size: 0.75rem;">
+            <span>📋 Copy Code</span>
+          </button>
+        </div>
+
+        <div class="settings-btn-row" style="flex-wrap: wrap; gap: 8px;">
+          <button class="settings-btn settings-btn-primary" id="cloudBackupNowBtn" onclick="handleCloudBackupNow()" style="min-width: 140px;">
+            <span>☁️ Backup Now</span>
+          </button>
+          <button class="settings-btn settings-btn-secondary" id="cloudRestoreBtn" onclick="handleCloudRestoreNow()" style="min-width: 140px;">
+            <span>📥 Restore Cloud</span>
+          </button>
+          <button class="settings-btn settings-btn-secondary" id="cloudCodeRestoreBtn" onclick="handlePromptRestoreByCode()" style="min-width: 140px;">
+            <span>🔑 Enter Code</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Offline JSON File Export/Import -->
+      <div class="settings-group">
         <div class="settings-item">
           <div class="settings-item__icon">💾</div>
           <div class="settings-item__content">
-            <div class="settings-item__label">Reading Progress Migration</div>
-            <div class="settings-item__desc">Export/import Nitnem, My Pothi & Sehaj Paath across devices</div>
+            <div class="settings-item__label">Offline JSON Backup File</div>
+            <div class="settings-item__desc">Manual uncompressed JSON file export/import</div>
           </div>
         </div>
 
         <div class="settings-btn-row">
           <button class="settings-btn settings-btn-secondary" id="exportProgressBtn" onclick="handleExportProgress()">
-            <span>📥 Export Backup</span>
+            <span>📥 Export File</span>
           </button>
           <button class="settings-btn settings-btn-secondary" id="importProgressBtn" onclick="handleImportProgress()">
-            <span>📤 Import Backup</span>
+            <span>📤 Import File</span>
           </button>
           <input type="file" id="importFileInput" accept=".json,application/json" style="display:none;" onchange="handleFileSelected(event)">
         </div>
@@ -466,9 +506,123 @@
         if (confirm('Sign out of your Anhad Sangat account? Your local progress will remain preserved.')) {
           await window.AnhadAuth.signOut();
           updateAuthUI();
+          updateCloudSyncUI();
         }
       } else {
         window.location.href = '../auth/index.html?returnUrl=' + encodeURIComponent(window.location.href);
+      }
+    }
+
+    // ── Cloud Sync Handlers ──
+    async function updateCloudSyncUI() {
+      if (!window.AnhadCloudSync) return;
+      try {
+        const status = await window.AnhadCloudSync.getStatus();
+        const badge = document.getElementById('cloudBackupBadge');
+        const desc = document.getElementById('cloudSyncStatusDesc');
+        const profile = window.AnhadAuth ? window.AnhadAuth.getProfile() : null;
+        const isGuest = !profile || profile.isAnonymous || profile.isGuest;
+
+        if (badge) {
+          if (!isGuest) {
+            badge.className = 'settings-badge settings-badge-auth';
+            badge.textContent = 'Cloud Active';
+          } else {
+            badge.className = 'settings-badge settings-badge-guest';
+            badge.textContent = 'Guest Active';
+          }
+        }
+
+        if (desc) {
+          const lastTime = status.lastBackupAt ? new Date(status.lastBackupAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Never';
+          const code = status.syncCode || 'Not generated';
+          desc.innerHTML = `Last Synced: <strong>${lastTime}</strong> · Code: <strong style="color:var(--accent,#D4943A);font-family:monospace;letter-spacing:1px;">${code}</strong>`;
+        }
+      } catch (e) {
+        console.warn('Failed to update cloud sync UI:', e);
+      }
+    }
+
+    async function handleCloudBackupNow() {
+      const btn = document.getElementById('cloudBackupNowBtn');
+      if (btn) btn.disabled = true;
+      try {
+        if (!window.AnhadCloudSync) throw new Error('Cloud sync engine not ready');
+        const res = await window.AnhadCloudSync.backupNow();
+        const code = res?.syncCode || res?.data?.syncCode || '';
+        if (res && res.ok) {
+          alert('✅ Cloud Backup Successful!\n\nYour Nitnem streak, Sehaj Paath progress, Naam Abhyas, and My Pothi are safely preserved in Firebase Cloud.\n\nTransfer Sync Code: ' + (code || ''));
+          await updateCloudSyncUI();
+        } else {
+          alert('Backup failed: ' + (res?.error || 'Unknown error'));
+        }
+      } catch (err) {
+        alert('Cloud backup error: ' + (err.message || err));
+      } finally {
+        if (btn) btn.disabled = false;
+      }
+    }
+
+    async function handleCloudRestoreNow() {
+      if (!confirm('Restore your devotional progress from Firebase Cloud?\n\nThis will merge your cloud streaks, Sehaj Paath, Naam Abhyas, and bookmarks.')) {
+        return;
+      }
+      const btn = document.getElementById('cloudRestoreBtn');
+      if (btn) btn.disabled = true;
+      try {
+        if (!window.AnhadCloudSync) throw new Error('Cloud sync engine not ready');
+        const res = await window.AnhadCloudSync.restoreFromCloud();
+        if (res && res.ok) {
+          alert('🎉 Devotional data successfully restored from Firebase Cloud!\n\nReloading application...');
+          window.location.reload();
+        } else {
+          alert('Restore failed: ' + (res?.error || 'No backup found for this account. Try restoring with a Transfer Code.'));
+        }
+      } catch (err) {
+        alert('Cloud restore error: ' + (err.message || err));
+      } finally {
+        if (btn) btn.disabled = false;
+      }
+    }
+
+    async function handlePromptRestoreByCode() {
+      const code = prompt('Enter your 8-character ANHAD Transfer Code (e.g. ANHAD-A7K9) from your previous device:');
+      if (!code || !code.trim()) return;
+
+      try {
+        if (!window.AnhadCloudSync) throw new Error('Cloud sync engine not ready');
+        const res = await window.AnhadCloudSync.restoreByCode(code.trim());
+        if (res && res.ok) {
+          alert('🎉 Account and progress restored from Transfer Code!\n\nReloading application...');
+          window.location.reload();
+        } else {
+          alert('Restore failed: ' + (res?.error || 'Invalid code or backup not found.'));
+        }
+      } catch (err) {
+        alert('Restore error: ' + (err.message || err));
+      }
+    }
+
+    async function handleCopySyncCode() {
+      if (!window.AnhadCloudSync) return;
+      let status = await window.AnhadCloudSync.getStatus();
+      if (!status.syncCode) {
+        const res = await window.AnhadCloudSync.backupNow();
+        const generatedCode = res?.syncCode || res?.data?.syncCode;
+        if (generatedCode) {
+          status.syncCode = generatedCode;
+        }
+      }
+      if (status.syncCode) {
+        try {
+          await navigator.clipboard.writeText(status.syncCode);
+          alert('📋 Transfer Code copied: ' + status.syncCode + '\n\nKeep this code safe to restore on any new phone or device!');
+          await updateCloudSyncUI();
+        } catch(e) {
+          prompt('Your Transfer Code (copy with Ctrl+C):', status.syncCode);
+        }
+      } else {
+        alert('Please run a cloud backup first to generate a code.');
       }
     }
 
@@ -494,15 +648,23 @@
         if (result.success) {
           alert('Successfully imported reading progress! Nitnem and Pothi data restored.');
           e.target.value = '';
+          if (window.AnhadCloudSync) {
+            window.AnhadCloudSync.triggerDebouncedSync();
+          }
         } else {
           alert('Import failed: ' + (result.error || 'Invalid file'));
         }
       }
     }
 
-    window.addEventListener('anhad_auth_state_changed', updateAuthUI);
+    window.addEventListener('anhad_auth_state_changed', () => {
+      updateAuthUI();
+      updateCloudSyncUI();
+    });
+    window.addEventListener('anhad_cloud_sync_completed', updateCloudSyncUI);
     document.addEventListener('DOMContentLoaded', () => {
       updateAuthUI();
+      setTimeout(updateCloudSyncUI, 200);
     });
   </script>
 

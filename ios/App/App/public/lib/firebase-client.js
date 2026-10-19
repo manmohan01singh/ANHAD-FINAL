@@ -18,22 +18,22 @@
 
   const getStoredApiKey = () => {
     try {
-      return window.ANHAD_FIREBASE_API_KEY || localStorage.getItem('anhad_firebase_api_key') || "AIzaSyB-E2ywcCux1nvoAUyPK58CESv2qID2esE";
+      return window.ANHAD_FIREBASE_API_KEY || localStorage.getItem('anhad_firebase_api_key') || "AIzaSyDqNs8nRgS5scBpmq19ZucO3KvacRQOiZE";
     } catch(e) {
-      return "AIzaSyB-E2ywcCux1nvoAUyPK58CESv2qID2esE";
+      return "AIzaSyDqNs8nRgS5scBpmq19ZucO3KvacRQOiZE";
     }
   };
 
-  // Firebase Web Configuration for project: anhad-4bf78
+  // Firebase Web Configuration for project: anhad-11533
   // NOTE: Firebase Web API key is an application identifier, not a server secret.
   const FIREBASE_CONFIG = {
     apiKey: getStoredApiKey(),
-    authDomain: "anhad-4bf78.firebaseapp.com",
-    projectId: "anhad-4bf78",
-    storageBucket: "anhad-4bf78.firebasestorage.app",
-    messagingSenderId: "447388316124",
-    appId: "1:447388316124:web:5eea6006bea62df6dc5f19",
-    measurementId: "G-2KV59GB5XT"
+    authDomain: "anhad-11533.firebaseapp.com",
+    projectId: "anhad-11533",
+    storageBucket: "anhad-11533.firebasestorage.app",
+    messagingSenderId: "1054664869114",
+    appId: "1:1054664869114:web:0ca73de92ee73cdb733543",
+    measurementId: "G-RCQFZENXBJ"
   };
 
   let app = null;

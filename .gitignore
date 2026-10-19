@@ -14,6 +14,7 @@ backend/.env.*
 !backend/.env.example
 
 # Service account credentials, keys, and certificates - STRICTLY IGNORED
+backend/config/*.json
 service-account*.json
 firebase-adminsdk*.json
 *serviceaccount*.json

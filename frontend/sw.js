@@ -12,7 +12,7 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
-const CACHE_VERSION = 'anhad-v13.11.1'; // v13.11.1: Streak engine stack overflow recursion fix, streak restore policy & boost stability.
+const CACHE_VERSION = 'anhad-v14.0.0'; // v14.0.0: Firebase Cloud Sync, Transfer Sync Code migration, spiritual notifications DB persistence, and auth modal.
 // v10.29.0: Root-caused why fixes kept looking reverted on both localhost AND the deployed site despite correct source: .js/.css requests (rule 4 below) used cacheFirst(), which NEVER revalidates a hit — once any browser fetched e.g. nav-glass.css once, it kept serving that exact response forever regardless of CACHE_VERSION bumps, until the whole detect-new-SW/install/activate/reload chain happened to complete for that specific client. .html already used staleWhileRevalidate for exactly this reason (see the v10.13-v10.22 history below) but .js/.css never did. Moved .js/.css to staleWhileRevalidate too (new rule 3c) — verified live by injecting a fake stale response into an active client's cache and confirming the SECOND fetch (not a reload, not a cache clear, ~1s later) automatically served the real current file. Also: de-clobbered window.__anhadPageInit — trendora-app.js and homepage-data.js registered the identical 4 keys for Home and the second one to load silently overwrote the first, so only one of the two intended repopulation paths ever actually ran; now both compose, with the double-render debounce moved inside refreshHomeForSpa itself so having two live trigger paths again can't reintroduce the flash. Shell script loads that fail now retry once and log clearly instead of onerror=resolve silently treating a failed fetch as success forever. Added missing cache-busting query params to smooth-navigation.js/homepage-data.js. Live-measured the reported Home bottom gap on a guaranteed-fresh load: padding-bottom computes to exactly 110px, on-screen gap measures 109.67px — matches source exactly, confirming the gap itself was never a code bug, only ever a symptom of the same stale-cache issue this version fixes at the root.
 // v10.28.0: Decreased excessive bottom padding-bottom from 160px to 110px in nav-glass.css, and upgraded the Nitnem, Sehaj Paath, and Hukamnama practice cards with premium 3D soft claymorphism (ambient soft colored drop shadows + inset light reflection and shadow highlights) in both Light & Dark modes.
 // v10.26.0: Found the REAL remaining cause of the Home/Favorites "two-time flash" the user kept reporting even after v10.23/v10.24 — a CSS entrance animation (.page-enter, anhad-core.css), applied by JS via smooth-navigation.js's unconditional post-swap AnhadCore.init() -> initTransition() call, on an #app container that was already fully painted and visible. Adding a class that newly matches an `animation` rule restarts it regardless of how it's added — so this genuinely replayed the 0.48s "fade up from below" entrance on top of content the user was already looking at, on every single arrival at Home/Favorites. Insights never showed this because its own swapped content (#mainContent) already ships `page-enter` baked into its static HTML, so the later JS class-add is a true no-op there (class already present). Fix: added `page-enter` to Home's and Favorites' own #app markup, matching Insights' pattern exactly, instead of touching the JS trigger at all — verified via CDP by sampling #app's actual computed opacity every 25ms across 5 rapid Home<->Favorites round trips (the exact "gets worse the more I test" scenario reported): 172 samples, zero re-triggers, zero errors. Also fixed the Learning page's Daily Gursikhi Quiz re-prompting the same already-answered question on every revisit — it had no persistence at all; now stores {date, selectedIdx} in localStorage (en-CA date, matching the app's existing per-day convention) and restores the answered state instead of a fresh clickable question until the next calendar day.
@@ -836,27 +836,69 @@ self.addEventListener('message', (event) => {
   if (event.data?.type === 'SET_ALARMS' && Array.isArray(event.data.alarms)) {
     console.log('[SW] Received SET_ALARMS with', event.data.alarms.length, 'alarms');
     event.data.alarms.forEach(alarm => {
+      const isSpiritual = alarm.type === 'spiritual';
+      const isNaam = alarm.type === 'naamAbhyas';
+      const h = Number(alarm.hour !== undefined ? alarm.hour : (alarm.data?.hour !== undefined ? alarm.data.hour : (alarm.time ? alarm.time.split(':')[0] : 0)));
+      const m = Number(alarm.startMinute !== undefined ? alarm.startMinute : (alarm.data?.startMinute !== undefined ? alarm.data.startMinute : (alarm.time ? alarm.time.split(':')[1] : 0)));
+      const scheduledMs = getNextAlarmTime(alarm.time);
+
       const notifPayload = {
         id: alarm.id,
         title: alarm.title,
-        body: alarm.type === 'naamAbhyas'
+        body: isNaam
           ? 'Leave all work. Remember Vaheguru. ਵਾਹਿਗੁਰੂ'
-          : `Time for ${alarm.title}`,
-        scheduledTime: getNextAlarmTime(alarm.time),
+          : (isSpiritual ? 'Pause for a moment and remember the True Creator. 🌸✨' : `Time for ${alarm.title}`),
+        scheduledTime: scheduledMs,
+        hour: h,
+        startMinute: m,
         data: {
-          url: alarm.type === 'naamAbhyas'
+          url: isNaam
             ? '/NaamAbhyas/naam-abhyas.html?autoStart=true'
-            : `/reminders/alarm.html?id=${alarm.id}&title=${encodeURIComponent(alarm.title)}`,
+            : (isSpiritual ? '/index.html' : `/reminders/alarm.html?id=${alarm.id}&title=${encodeURIComponent(alarm.title)}`),
           type: alarm.type,
-          alarmData: alarm.data
+          alarmData: alarm.data || { hour: h, startMinute: m }
         },
-        tag: alarm.type === 'naamAbhyas' ? `naam-abhyas-${alarm.id}` : `smart-reminder-${alarm.id}`,
-        requireInteraction: true,
-        actions: alarm.type === 'naamAbhyas'
+        tag: isNaam ? `naam-abhyas-${alarm.id}` : (isSpiritual ? `spiritual-${alarm.id}` : `smart-reminder-${alarm.id}`),
+        requireInteraction: !isSpiritual,
+        actions: isNaam
           ? [{ action: 'start', title: '🙏 Start' }, { action: 'snooze', title: 'Snooze' }]
-          : [{ action: 'open', title: 'Open' }, { action: 'snooze', title: 'Snooze' }]
+          : [{ action: 'open', title: 'Open' }, { action: 'dismiss', title: 'Dismiss' }]
       };
+
+      // 1. In-memory scheduling
       scheduleNotification(notifPayload);
+
+      // 2. Persistent IndexedDB save so it wakes up and fires even after browser idles
+      saveAlarmToDB(notifPayload);
+    });
+  }
+
+  if (event.data?.type === 'SCHEDULE_SPIRITUAL_NOTIFICATIONS' && Array.isArray(event.data.notifications)) {
+    console.log('[SW] Received SCHEDULE_SPIRITUAL_NOTIFICATIONS with', event.data.notifications.length, 'items');
+    event.data.notifications.forEach(notif => {
+      const payload = {
+        id: notif.id,
+        title: notif.title,
+        body: notif.body,
+        scheduledTime: notif.scheduledTime,
+        data: {
+          url: notif.extra?.url || 'index.html',
+          type: 'spiritualNudge',
+          category: notif.extra?.category
+        },
+        tag: `spiritual-${notif.id}`,
+        requireInteraction: false,
+        actions: [
+          { action: 'open', title: 'Open' },
+          { action: 'dismiss', title: 'Dismiss' }
+        ]
+      };
+
+      // 1. In-memory scheduling
+      scheduleNotification(payload);
+
+      // 2. Persistent IndexedDB save
+      saveRandomSpiritualNotifToDB(payload);
     });
   }
 
@@ -1059,6 +1101,57 @@ async function scheduleDailyReminders() {
 // RANDOM SPIRITUAL NOTIFICATIONS CHECKER
 // Reads from IndexedDB 'random_spiritual_notifs' store and fires any due ones
 // ═══════════════════════════════════════════════════════════════════════════════
+async function saveRandomSpiritualNotifToDB(notif) {
+  if (!notif || !notif.id) return;
+  const DB_NAME = 'GurbaniRadioSW';
+  const STORE_NAME = 'random_spiritual_notifs';
+  try {
+    const db = await new Promise((resolve, reject) => {
+      const req = indexedDB.open(DB_NAME, 3);
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+      req.onupgradeneeded = (event) => {
+        const d = event.target.result;
+        if (!d.objectStoreNames.contains('notification_schedule')) {
+          const ns = d.createObjectStore('notification_schedule', { keyPath: 'id' });
+          ns.createIndex('scheduledTime', 'scheduledTime', { unique: false });
+          ns.createIndex('fired', 'fired', { unique: false });
+        }
+        if (!d.objectStoreNames.contains(STORE_NAME)) {
+          const rs = d.createObjectStore(STORE_NAME, { keyPath: 'id' });
+          rs.createIndex('scheduledTime', 'scheduledTime', { unique: false });
+          rs.createIndex('fired', 'fired', { unique: false });
+        }
+      };
+    });
+
+    if (!db.objectStoreNames.contains(STORE_NAME)) {
+      db.close();
+      return;
+    }
+
+    const tx = db.transaction(STORE_NAME, 'readwrite');
+    const store = tx.objectStore(STORE_NAME);
+    const entry = {
+      id: notif.id,
+      title: notif.title || '💫 Divine Reflection',
+      body: notif.body || 'Pause for a moment and remember the True Creator. 🌸✨',
+      scheduledTime: notif.scheduledTime || Date.now(),
+      fired: false,
+      tag: notif.tag || `spiritual-${notif.id}`,
+      data: notif.data || { url: 'index.html', type: 'spiritualNudge' }
+    };
+    await new Promise((resolve, reject) => {
+      const req = store.put(entry);
+      req.onsuccess = () => resolve();
+      req.onerror = () => reject(req.error);
+    });
+    db.close();
+  } catch(e) {
+    console.warn('[SW] saveRandomSpiritualNotifToDB note:', e);
+  }
+}
+
 async function checkRandomSpiritualNotifications() {
   const DB_NAME = 'GurbaniRadioSW';
   const STORE_NAME = 'random_spiritual_notifs';
@@ -1091,8 +1184,8 @@ async function checkRandomSpiritualNotifications() {
     const now = Date.now();
     const firedIds = [];
 
-    // Get all unfired notifications
-    const notifs = await new Promise((resolve, reject) => {
+    // Get all notifications
+    let notifs = await new Promise((resolve, reject) => {
       const tx = db.transaction(STORE_NAME, 'readonly');
       const store = tx.objectStore(STORE_NAME);
       const req = store.getAll();
@@ -1100,16 +1193,49 @@ async function checkRandomSpiritualNotifications() {
       req.onerror = () => reject(req.error);
     });
 
+    // If store is empty, autonomously generate 3 daytime slots for today from content JSON!
+    if (!notifs || notifs.length === 0) {
+      const content = await loadNotificationContent();
+      const randomItems = content?.notifications?.random_spiritual_reminders || [];
+      const slots = [
+        { h: 10, m: 15 },
+        { h: 14, m: 30 },
+        { h: 18, m: 45 }
+      ];
+      const todayDate = new Date();
+      for (let i = 0; i < slots.length; i++) {
+        const item = randomItems[i % Math.max(1, randomItems.length)] || {
+          title: '💫 Divine Reflection',
+          body: 'Pause for a moment and remember the True Creator. 🌸✨'
+        };
+        const scheduled = new Date(todayDate.getFullYear(), todayDate.getMonth(), todayDate.getDate(), slots[i].h, slots[i].m, 0);
+        await saveRandomSpiritualNotifToDB({
+          id: `random_auto_${slots[i].h}_${slots[i].m}`,
+          title: item.title,
+          body: item.body,
+          scheduledTime: scheduled.getTime(),
+          tag: `spiritual-auto-${i}`
+        });
+      }
+      // Re-fetch populated notifs
+      const txPop = db.transaction(STORE_NAME, 'readonly');
+      notifs = await new Promise((resolve) => {
+        const r = txPop.objectStore(STORE_NAME).getAll();
+        r.onsuccess = () => resolve(r.result || []);
+        r.onerror = () => resolve([]);
+      });
+    }
+
     for (const notif of notifs) {
       if (notif.fired) continue;
       const timeDiff = now - notif.scheduledTime;
-      // Fire if within -1min to +20min window (generous to catch periodic sync gaps)
-      if (timeDiff >= -60000 && timeDiff <= 1200000) {
+      // Fire if within -1min to +60min window to accommodate periodic sync schedules
+      if (timeDiff >= -60000 && timeDiff <= 3600000) {
         if (!_hasShownToday(notif.id)) {
           await self.registration.showNotification(notif.title, {
             body: notif.body,
-            icon: notif.icon || 'assets/icon-192x192.png',
-            badge: 'assets/icon-72x72.png',
+            icon: notif.icon || '/assets/icon-192x192.png',
+            badge: '/assets/icon-72x72.png',
             tag: notif.tag || `spiritual-${notif.id}`,
             renotify: true,
             requireInteraction: false,
@@ -1236,14 +1362,18 @@ async function checkAndFireAlarmsFromDB(today, currentHour, currentMinute) {
         continue; // Skip alarms for other days
       }
 
-      const alarmTime = alarm.hour * 60 + alarm.startMinute;
+      const h = Number(alarm.hour !== undefined ? alarm.hour : (alarm.data?.hour !== undefined ? alarm.data.hour : (alarm.data?.alarmData?.hour !== undefined ? alarm.data.alarmData.hour : (alarm.time ? alarm.time.split(':')[0] : (new Date(alarm.scheduledTime).getHours())))));
+      const m = Number(alarm.startMinute !== undefined ? alarm.startMinute : (alarm.data?.startMinute !== undefined ? alarm.data.startMinute : (alarm.data?.alarmData?.startMinute !== undefined ? alarm.data.alarmData.startMinute : (alarm.time ? alarm.time.split(':')[1] : (new Date(alarm.scheduledTime).getMinutes())))));
+
+      if (Number.isNaN(h) || Number.isNaN(m)) continue;
+      const alarmTime = h * 60 + m;
       const timeDiff = currentTime - alarmTime;
 
-      // Fire if within 0-15 minute window
-      if (timeDiff >= 0 && timeDiff <= 15) {
+      // Fire if within 0-25 minute window
+      if (timeDiff >= 0 && timeDiff <= 25) {
         await fireNaamNotification({
-          hour: alarm.hour,
-          startMinute: alarm.startMinute,
+          hour: h,
+          startMinute: m,
           duration: alarm.duration || 2  // Fallback to 2 minutes if not specified
         }, today);
 
@@ -1634,13 +1764,16 @@ async function saveAlarmToDB(alarm) {
     const tx = db.transaction(STORES.NOTIFICATION_SCHEDULE, 'readwrite');
     const store = tx.objectStore(STORES.NOTIFICATION_SCHEDULE);
 
+    const h = Number(alarm.hour !== undefined ? alarm.hour : (alarm.data?.hour !== undefined ? alarm.data.hour : (alarm.data?.alarmData?.hour !== undefined ? alarm.data.alarmData.hour : (alarm.time ? alarm.time.split(':')[0] : (alarm.scheduledTime ? new Date(alarm.scheduledTime).getHours() : 0)))));
+    const m = Number(alarm.startMinute !== undefined ? alarm.startMinute : (alarm.data?.startMinute !== undefined ? alarm.data.startMinute : (alarm.data?.alarmData?.startMinute !== undefined ? alarm.data.alarmData.startMinute : (alarm.time ? alarm.time.split(':')[1] : (alarm.scheduledTime ? new Date(alarm.scheduledTime).getMinutes() : 0)))));
+
     const entry = {
-      id: alarm.id || `naam_${alarm.hour}_${alarm.startMinute}_${Date.now()}`,
+      id: alarm.id || `naam_${h}_${m}_${Date.now()}`,
       title: alarm.title || '🙏 ਨਾਮ ਅਭਿਆਸ | Naam Abhyas',
       body: alarm.body || `Leave all work. Remember Vaheguru for ${alarm.duration || 2} minutes.`,
-      scheduledTime: alarm.scheduledTime || new Date().getTime(),
-      hour: alarm.hour,
-      startMinute: alarm.startMinute,
+      scheduledTime: alarm.scheduledTime || (alarm.time ? getNextAlarmTime(alarm.time) : new Date().getTime()),
+      hour: h,
+      startMinute: m,
       duration: alarm.duration || 2,
       fired: false,
       createdAt: Date.now(),

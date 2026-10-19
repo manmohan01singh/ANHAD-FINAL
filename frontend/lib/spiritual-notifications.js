@@ -165,7 +165,7 @@
             subtitle: 'Sacred Ang reading & reflection',
             icon: '📖',
             defaultTime: '16:00',
-            url: 'sehaj-paath/index.html',
+            url: 'SehajPaath/sehaj-paath.html',
             action: 'open_sehaj_paath',
             section: 'day'
         },
@@ -626,36 +626,115 @@
             return notifications;
         }
 
+        async scheduleWebAlarms(notifications) {
+            if (!notifications || !Array.isArray(notifications)) return;
+            const now = Date.now();
+            const upcoming = notifications.filter(n => {
+                const targetMs = n.schedule?.at ? new Date(n.schedule.at).getTime() : 0;
+                return targetMs > now && targetMs < now + 24 * 60 * 60 * 1000;
+            });
+
+            // 1. Send to Service Worker
+            if (typeof navigator !== 'undefined' && navigator.serviceWorker && navigator.serviceWorker.controller) {
+                try {
+                    navigator.serviceWorker.controller.postMessage({
+                        type: 'SCHEDULE_SPIRITUAL_NOTIFICATIONS',
+                        notifications: upcoming.map(u => ({
+                            id: u.id,
+                            title: u.title,
+                            body: u.body,
+                            scheduledTime: new Date(u.schedule.at).getTime(),
+                            channelId: u.channelId,
+                            extra: u.extra
+                        }))
+                    });
+                } catch(e) {}
+            }
+
+            // 2. Clear previous web timers
+            if (this._webTimers && Array.isArray(this._webTimers)) {
+                this._webTimers.forEach(t => clearTimeout(t));
+            }
+            this._webTimers = [];
+
+            // 3. Set foreground timers for upcoming alerts today (up to 12 hours)
+            upcoming.forEach(item => {
+                const delay = new Date(item.schedule.at).getTime() - now;
+                if (delay > 0 && delay < 12 * 60 * 60 * 1000) {
+                    const timer = setTimeout(() => {
+                        this.fireNotificationItem(item);
+                    }, delay);
+                    this._webTimers.push(timer);
+                }
+            });
+            console.log(`[SpiritualNotifications] Scheduled ${upcoming.length} web/PWA spiritual notifications for today`);
+        }
+
+        async fireNotificationItem(item) {
+            if (!item) return;
+            const title = item.title;
+            const body = item.body;
+            let fired = false;
+
+            if (typeof navigator !== 'undefined' && navigator.serviceWorker && navigator.serviceWorker.ready) {
+                try {
+                    const reg = await navigator.serviceWorker.ready;
+                    if (reg && typeof reg.showNotification === 'function') {
+                        await reg.showNotification(title, {
+                            body: body,
+                            icon: resolveAppUrl('assets/icon-192x192.png'),
+                            badge: resolveAppUrl('assets/icon-72x72.png'),
+                            tag: 'spiritual-' + item.id,
+                            data: item.extra || {}
+                        });
+                        fired = true;
+                    }
+                } catch(e) {}
+            }
+
+            if (!fired && 'Notification' in window && Notification.permission === 'granted') {
+                try {
+                    new Notification(title, {
+                        body: body,
+                        icon: resolveAppUrl('assets/icon-192x192.png'),
+                        badge: resolveAppUrl('assets/icon-72x72.png')
+                    });
+                    fired = true;
+                } catch(e) {}
+            }
+
+            const meta = (item.extra?.category && this.meta[item.extra.category]) || { icon: '💫' };
+            this.showInAppNotificationTestCard(title, body, item.extra?.translation, meta);
+        }
+
         async scheduleAll() {
-            if (!this.isNative() || !window.Capacitor.Plugins.LocalNotifications) {
-                console.log('[SpiritualNotifications] PWA environment: local scheduling ready on client sync');
-                return [];
+            const notifications = await this.buildNotifications();
+
+            if (this.isNative() && window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.LocalNotifications) {
+                const LN = window.Capacitor.Plugins.LocalNotifications;
+                try {
+                    const perms = await LN.checkPermissions();
+                    if (perms.display !== 'granted') {
+                        await LN.requestPermissions();
+                    }
+
+                    await this.ensureChannel();
+                    await this.cancelAll();
+
+                    if (notifications.length > 0) {
+                        await LN.schedule({ notifications });
+                        const ids = notifications.map(n => n.id);
+                        localStorage.setItem(STORAGE_KEYS.MANAGED_IDS, JSON.stringify(ids));
+                        console.log(`[SpiritualNotifications] Scheduled ${notifications.length} exact notifications across 19 categories!`);
+                    }
+                } catch (e) {
+                    console.error('[SpiritualNotifications] Failed to schedule native notifications:', e);
+                }
             }
 
-            const LN = window.Capacitor.Plugins.LocalNotifications;
-            try {
-                const perms = await LN.checkPermissions();
-                if (perms.display !== 'granted') {
-                    await LN.requestPermissions();
-                }
-
-                await this.ensureChannel();
-                await this.cancelAll();
-
-                const notifications = await this.buildNotifications();
-
-                if (notifications.length > 0) {
-                    await LN.schedule({ notifications });
-                    const ids = notifications.map(n => n.id);
-                    localStorage.setItem(STORAGE_KEYS.MANAGED_IDS, JSON.stringify(ids));
-                    console.log(`[SpiritualNotifications] Scheduled ${notifications.length} exact notifications across 19 categories!`);
-                }
-
-                return notifications;
-            } catch (e) {
-                console.error('[SpiritualNotifications] Failed to schedule notifications:', e);
-                return [];
-            }
+            // Also schedule for Web / PWA
+            await this.scheduleWebAlarms(notifications);
+            return notifications;
         }
 
         /**
@@ -962,20 +1041,38 @@
                 window.location.href = resolveAppUrl('index.html');
             }
         }
+        async fireRandomNotificationNow() {
+            return await this.testNotification('random_spiritual_reminders');
+        }
     }
 
     window.SpiritualNotifications = new SpiritualNotifications();
 
-    if (window.SpiritualNotifications.isNative()) {
-        const today = new Date().toDateString();
-        const lastScheduled = localStorage.getItem(STORAGE_KEYS.LAST_SCHEDULED_DATE);
-        if (lastScheduled !== today) {
-            window.SpiritualNotifications.scheduleAll().then(() => {
-                localStorage.setItem(STORAGE_KEYS.LAST_SCHEDULED_DATE, today);
-            }).catch(e => {
-                console.error('[SpiritualNotifications] Auto-schedule error:', e);
-            });
-        }
+    const today = new Date().toDateString();
+    const lastScheduled = localStorage.getItem(STORAGE_KEYS.LAST_SCHEDULED_DATE);
+    if (lastScheduled !== today) {
+        window.SpiritualNotifications.scheduleAll().then(() => {
+            localStorage.setItem(STORAGE_KEYS.LAST_SCHEDULED_DATE, today);
+        }).catch(e => {
+            console.error('[SpiritualNotifications] Auto-schedule error:', e);
+        });
+    } else {
+        // Even if native notifications were scheduled earlier today,
+        // ALWAYS refresh web/PWA foreground timers and service worker alarms for this session!
+        window.SpiritualNotifications.buildNotifications().then(notifications => {
+            window.SpiritualNotifications.scheduleWebAlarms(notifications);
+        }).catch(() => {});
+    }
+
+    // Refresh web timers when returning to foreground
+    if (typeof document !== 'undefined') {
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible' && window.SpiritualNotifications) {
+                window.SpiritualNotifications.buildNotifications().then(notifications => {
+                    window.SpiritualNotifications.scheduleWebAlarms(notifications);
+                }).catch(() => {});
+            }
+        });
     }
 
     window.addEventListener('nitnemUpdate', (e) => {

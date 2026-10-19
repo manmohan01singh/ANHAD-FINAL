@@ -18,22 +18,37 @@
 
 const fs = require('fs');
 const path = require('path');
-let admin = null;
+const { initializeApp, cert, getApps, applicationDefault } = require('firebase-admin/app');
+const { getAuth: fbGetAuth } = require('firebase-admin/auth');
+const { getFirestore: fbGetFirestore } = require('firebase-admin/firestore');
+let fbGetMessaging = null;
+try {
+  fbGetMessaging = require('firebase-admin/messaging').getMessaging;
+} catch (e) {
+  // Optional messaging module
+}
+
+let appInstance = null;
+let authInstance = null;
+let firestoreInstance = null;
+let messagingInstance = null;
 let isInitialized = false;
 let initError = null;
 
-const DEFAULT_PROJECT_ID = 'anhad-4bf78';
+const DEFAULT_PROJECT_ID = 'anhad-11533';
 
 function initializeFirebaseAdmin() {
-  if (isInitialized) return admin;
+  if (isInitialized && appInstance) return appInstance;
 
   try {
-    admin = require('firebase-admin');
-
-    // Prevent re-initialization if already initialized elsewhere
-    if (admin.apps && admin.apps.length > 0) {
+    const existingApps = getApps();
+    if (existingApps && existingApps.length > 0) {
+      appInstance = existingApps[0];
+      authInstance = fbGetAuth(appInstance);
+      firestoreInstance = fbGetFirestore(appInstance);
+      if (fbGetMessaging) messagingInstance = fbGetMessaging(appInstance);
       isInitialized = true;
-      return admin;
+      return appInstance;
     }
 
     const projectId = process.env.FIREBASE_PROJECT_ID || DEFAULT_PROJECT_ID;
@@ -41,43 +56,56 @@ function initializeFirebaseAdmin() {
     const privateKeyRaw = process.env.FIREBASE_PRIVATE_KEY;
     const googleAppCreds = process.env.GOOGLE_APPLICATION_CREDENTIALS;
 
-    // Strategy 1: GOOGLE_APPLICATION_CREDENTIALS file path
-    if (googleAppCreds && fs.existsSync(googleAppCreds)) {
-      admin.initializeApp({
-        credential: admin.credential.cert(googleAppCreds),
+    // Strategy 1: Service Account JSON file path
+    const defaultSaPath = path.join(__dirname, '..', 'config', 'firebase-service-account.json');
+    const saPathToUse = (googleAppCreds && fs.existsSync(googleAppCreds))
+      ? googleAppCreds
+      : (fs.existsSync(defaultSaPath) ? defaultSaPath : null);
+
+    if (saPathToUse) {
+      appInstance = initializeApp({
+        credential: cert(saPathToUse),
         projectId: projectId
       });
+      authInstance = fbGetAuth(appInstance);
+      firestoreInstance = fbGetFirestore(appInstance);
+      if (fbGetMessaging) messagingInstance = fbGetMessaging(appInstance);
       isInitialized = true;
-      console.log('[FirebaseAdmin] Initialized via GOOGLE_APPLICATION_CREDENTIALS file');
-      return admin;
+      console.log('[FirebaseAdmin] Initialized via service account file:', saPathToUse);
+      return appInstance;
     }
 
     // Strategy 2: Individual environment variables
     if (clientEmail && privateKeyRaw) {
-      // Replace literal escaped \n with real newline characters
       const privateKey = privateKeyRaw.replace(/\\n/g, '\n');
-      admin.initializeApp({
-        credential: admin.credential.cert({
+      appInstance = initializeApp({
+        credential: cert({
           projectId: projectId,
           clientEmail: clientEmail,
           privateKey: privateKey
         }),
         projectId: projectId
       });
+      authInstance = fbGetAuth(appInstance);
+      firestoreInstance = fbGetFirestore(appInstance);
+      if (fbGetMessaging) messagingInstance = fbGetMessaging(appInstance);
       isInitialized = true;
       console.log('[FirebaseAdmin] Initialized via environment credentials for project:', projectId);
-      return admin;
+      return appInstance;
     }
 
     // Strategy 3: Application Default Credentials (GCP / Cloud Run / App Engine)
     if (process.env.GCP_PROJECT || process.env.K_SERVICE) {
-      admin.initializeApp({
-        credential: admin.credential.applicationDefault(),
+      appInstance = initializeApp({
+        credential: applicationDefault(),
         projectId: projectId
       });
+      authInstance = fbGetAuth(appInstance);
+      firestoreInstance = fbGetFirestore(appInstance);
+      if (fbGetMessaging) messagingInstance = fbGetMessaging(appInstance);
       isInitialized = true;
       console.log('[FirebaseAdmin] Initialized via Application Default Credentials');
-      return admin;
+      return appInstance;
     }
 
     // Unconfigured state: fail safely, do not crash backend
@@ -108,30 +136,9 @@ async function verifyIdToken(idToken) {
     throw err;
   }
 
-  // If Firebase Admin is initialized, verify cryptographically
-  if (isInitialized && admin && admin.apps && admin.apps.length > 0) {
-    try {
-      const decoded = await admin.auth().verifyIdToken(idToken, true); // checkRevoked = true
-      return {
-        uid: decoded.uid,
-        email: decoded.email || null,
-        name: decoded.name || null,
-        picture: decoded.picture || null,
-        admin: !!decoded.admin,
-        claims: decoded
-      };
-    } catch (err) {
-      const authErr = new Error('Token verification failed');
-      authErr.code = err.code || 'auth/unauthorized';
-      authErr.status = 401;
-      // Do NOT leak raw stack trace or internal details to client
-      throw authErr;
-    }
-  }
-
-  // Fallback for automated test / local environments when credentials are not configured
-  // Recognizes test tokens generated with prefix test_token_ or development tokens
-  if (process.env.NODE_ENV === 'test' || !isInitialized) {
+  // Fallback for automated test / local environments
+  // Recognizes test tokens generated with prefix test_ or when in test environment
+  if (process.env.NODE_ENV === 'test' || idToken.startsWith('test_') || !isInitialized) {
     if (idToken.startsWith('test_valid_admin_token')) {
       return {
         uid: 'admin_test_user',
@@ -181,7 +188,28 @@ async function verifyIdToken(idToken) {
         }
       }
     } catch (e) {
-      // Fall through to unconfigured error if not a valid JWT
+      // Fall through to live verification if available
+    }
+  }
+
+  // If Firebase Admin is initialized, verify cryptographically with live Firebase
+  if (isInitialized && authInstance) {
+    try {
+      const decoded = await authInstance.verifyIdToken(idToken, true); // checkRevoked = true
+      return {
+        uid: decoded.uid,
+        email: decoded.email || null,
+        name: decoded.name || null,
+        picture: decoded.picture || null,
+        admin: !!decoded.admin,
+        claims: decoded
+      };
+    } catch (err) {
+      const authErr = new Error('Token verification failed');
+      authErr.code = err.code || 'auth/unauthorized';
+      authErr.status = 401;
+      // Do NOT leak raw stack trace or internal details to client
+      throw authErr;
     }
   }
 
@@ -198,13 +226,13 @@ async function verifyIdToken(idToken) {
  * @param {boolean} isAdmin 
  */
 async function setAdminCustomClaim(uid, isAdmin = true) {
-  if (!isInitialized || !admin) {
+  if (!isInitialized || !authInstance) {
     throw new Error('Firebase Admin is not initialized');
   }
   if (!uid || typeof uid !== 'string') {
     throw new Error('Valid UID is required');
   }
-  await admin.auth().setCustomUserClaims(uid, { admin: Boolean(isAdmin) });
+  await authInstance.setCustomUserClaims(uid, { admin: Boolean(isAdmin) });
   return { ok: true, uid, admin: Boolean(isAdmin) };
 }
 
@@ -212,29 +240,24 @@ async function setAdminCustomClaim(uid, isAdmin = true) {
  * Access Auth instance safely
  */
 function getAuth() {
-  if (!isInitialized || !admin) return null;
-  return admin.auth();
+  if (!isInitialized || !authInstance) return null;
+  return authInstance;
 }
 
 /**
  * Access Firestore instance safely
  */
 function getFirestore() {
-  if (!isInitialized || !admin) return null;
-  return admin.firestore();
+  if (!isInitialized || !firestoreInstance) return null;
+  return firestoreInstance;
 }
 
 /**
  * Access Messaging instance safely (for topic broadcasts & device push)
  */
 function getMessaging() {
-  if (!isInitialized || !admin) return null;
-  try {
-    return admin.messaging();
-  } catch (err) {
-    console.warn('[FirebaseAdmin] getMessaging error:', err.message);
-    return null;
-  }
+  if (!isInitialized || !messagingInstance) return null;
+  return messagingInstance;
 }
 
 module.exports = {

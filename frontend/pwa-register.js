@@ -408,14 +408,9 @@ class PWAManager {
   }
 
   async ensureAlarmsRegistered() {
-    const lastRegistration = localStorage.getItem('pwa_alarms_registered_at');
-    const today = new Date().toDateString();
-
-    if (lastRegistration !== today) {
-      await this.registerAlarmsWithSW();
-      await this.setupPeriodicSync();
-      localStorage.setItem('pwa_alarms_registered_at', today);
-    }
+    await this.registerAlarmsWithSW();
+    await this.setupPeriodicSync();
+    localStorage.setItem('pwa_alarms_registered_at', new Date().toDateString());
   }
 
   async registerAlarmsWithSW() {
@@ -474,29 +469,66 @@ class PWAManager {
       const naamConfig = localStorage.getItem('naam_abhyas_config');
       if (naamConfig) {
         const config = JSON.parse(naamConfig);
-        if (config.enabled) {
-          const history = localStorage.getItem('naam_abhyas_history');
-          const historyData = history ? JSON.parse(history) : {};
-          const today = now.toLocaleDateString('en-CA');
-          const schedule = historyData.scheduleHistory?.[today] || {};
+        if (config.enabled !== false) {
+          let rawSched = null;
+          try { rawSched = JSON.parse(localStorage.getItem('naam_abhyas_schedule')); } catch(e) {}
+          let scheduleMap = (rawSched && rawSched._schedule) ? rawSched._schedule : (rawSched || {});
 
-          Object.entries(schedule).forEach(([hour, session]) => {
-            if (session && session.status === 'pending') {
+          // Fallback to activeHours if schedule not yet generated today
+          if (!scheduleMap || Object.keys(scheduleMap).length === 0) {
+            const startH = Number(config.activeHours?.start || 5);
+            const endH = Number(config.activeHours?.end || 22);
+            scheduleMap = {};
+            for (let h = startH; h <= endH; h++) {
+              scheduleMap[h] = { hour: h, startMinute: 15, status: 'pending' };
+            }
+          }
+
+          Object.entries(scheduleMap).forEach(([hour, session]) => {
+            if (session && session.status !== 'completed' && session.startMinute !== undefined) {
+              const h = parseInt(hour, 10);
+              const m = parseInt(session.startMinute, 10);
               const sessionTime = new Date();
-              sessionTime.setHours(parseInt(hour), session.startMinute, 0, 0);
+              sessionTime.setHours(h, m, 0, 0);
 
               if (sessionTime > now) {
                 alarms.push({
-                  id: `naamAbhyas_${hour}_${session.startMinute}`,
+                  id: `naamAbhyas_${h}_${m}`,
                   type: 'naamAbhyas',
                   title: 'ਨਾਮ ਅਭਿਆਸ | Naam Abhyas',
-                  time: `${String(hour).padStart(2, '0')}:${String(session.startMinute).padStart(2, '0')}`,
+                  time: `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`,
                   enabled: true,
-                  data: { hour: parseInt(hour), startMinute: session.startMinute }
+                  data: { hour: h, startMinute: m }
                 });
               }
             }
           });
+        }
+      }
+    } catch (e) { /* ignore */ }
+
+    // 2.5 Daytime Random Spiritual Reminders
+    try {
+      const spConfigRaw = localStorage.getItem('spiritual_notifications_config');
+      const spConfig = spConfigRaw ? JSON.parse(spConfigRaw) : { random_spiritual_reminders: { enabled: true, count: 3, startHour: 8, endHour: 21 } };
+      if (spConfig.random_spiritual_reminders?.enabled !== false) {
+        const count = spConfig.random_spiritual_reminders?.count || 3;
+        const startH = spConfig.random_spiritual_reminders?.startHour || 8;
+        const endH = spConfig.random_spiritual_reminders?.endHour || 21;
+        for (let i = 0; i < count; i++) {
+          const h = startH + Math.floor(((endH - startH) / Math.max(1, count)) * i) + 1;
+          const m = 15 + (i * 15);
+          const rTime = new Date();
+          rTime.setHours(h, m, 0, 0);
+          if (rTime > now) {
+            alarms.push({
+              id: `random_spiritual_${h}_${m}`,
+              type: 'spiritual',
+              title: '💫 Divine Reflection',
+              time: `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`,
+              enabled: true
+            });
+          }
         }
       }
     } catch (e) { /* ignore */ }

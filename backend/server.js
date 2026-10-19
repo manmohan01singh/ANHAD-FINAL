@@ -35,6 +35,7 @@ const companionNotifications = require('./lib/companion-notifications');
 const campaignEngine = require('./lib/campaign-engine');
 const adminEngine = require('./lib/admin-engine');
 const broadcastEngine = require('./lib/broadcast-engine');
+const cloudBackupEngine = require('./lib/cloud-backup-engine');
 
 
 const app = express();
@@ -840,9 +841,79 @@ app.post('/api/user/sync', (req, res) => {
 
 app.get('/api/config/firebase-web', (req, res) => {
     res.json({
-        apiKey: process.env.FIREBASE_WEB_API_KEY || 'AIzaSyB-E2ywcCux1nvoAUyPK58CESv2qID2esE',
-        projectId: process.env.FIREBASE_PROJECT_ID || 'anhad-4bf78'
+        apiKey: process.env.FIREBASE_WEB_API_KEY || 'AIzaSyDqNs8nRgS5scBpmq19ZucO3KvacRQOiZE',
+        projectId: process.env.FIREBASE_PROJECT_ID || 'anhad-11533'
     });
+});
+
+/**
+ * ═══════════════════════════════════════════════════════════════════════════
+ * CLOUD BACKUP & FIREBASE STORAGE API (Zero Data Loss Architecture)
+ * ═══════════════════════════════════════════════════════════════════════════
+ */
+app.post('/api/user/cloud-backup', requireAuth, async (req, res) => {
+    try {
+        const uid = req.user.uid;
+        const { bundle, syncCode } = req.body || {};
+        if (!bundle || typeof bundle !== 'object') {
+            return res.status(400).json({ ok: false, error: 'Valid backup bundle is required' });
+        }
+        const result = await cloudBackupEngine.saveBackup(uid, bundle, syncCode);
+        res.json(result);
+    } catch (err) {
+        console.error('[Server] Cloud backup error:', err);
+        res.status(500).json({ ok: false, error: err.message || 'Failed to save cloud backup' });
+    }
+});
+
+app.get('/api/user/cloud-restore', requireAuth, async (req, res) => {
+    try {
+        const uid = req.user.uid;
+        const backup = await cloudBackupEngine.getBackup(uid);
+        if (!backup) {
+            return res.status(404).json({ ok: false, error: 'No cloud backup found for this account' });
+        }
+        res.json({ ok: true, backup, summary: cloudBackupEngine.extractSummary(backup) });
+    } catch (err) {
+        console.error('[Server] Cloud restore error:', err);
+        res.status(500).json({ ok: false, error: err.message || 'Failed to retrieve cloud backup' });
+    }
+});
+
+app.post('/api/user/cloud-restore-by-code', async (req, res) => {
+    try {
+        const { syncCode } = req.body || {};
+        if (!syncCode || typeof syncCode !== 'string') {
+            return res.status(400).json({ ok: false, error: 'Valid sync code is required' });
+        }
+        const backup = await cloudBackupEngine.getBackupByCode(syncCode);
+        if (!backup) {
+            return res.status(404).json({ ok: false, error: 'No cloud backup found for code: ' + syncCode });
+        }
+        res.json({ ok: true, backup, summary: cloudBackupEngine.extractSummary(backup) });
+    } catch (err) {
+        console.error('[Server] Restore by code error:', err);
+        res.status(500).json({ ok: false, error: err.message || 'Failed to restore by code' });
+    }
+});
+
+app.get('/api/user/cloud-status', requireAuth, async (req, res) => {
+    try {
+        const uid = req.user.uid;
+        const backup = await cloudBackupEngine.getBackup(uid);
+        if (!backup) {
+            return res.json({ ok: true, hasBackup: false });
+        }
+        res.json({
+            ok: true,
+            hasBackup: true,
+            backedUpAt: backup.backedUpAt,
+            syncCode: backup.syncCode,
+            summary: cloudBackupEngine.extractSummary(backup)
+        });
+    } catch (err) {
+        res.status(500).json({ ok: false, error: err.message });
+    }
 });
 
 
